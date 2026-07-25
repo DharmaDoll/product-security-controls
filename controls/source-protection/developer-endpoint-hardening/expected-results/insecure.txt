@@ -1,3 +1,21 @@
-The insecure policy is rejected with a non-zero exit status and prints:
-
-REJECTED insecure policy: 11 control checks failed
+FAIL disk_encryption: expected=required actual=disabled
+FAIL screen_lock: expected=required actual=disabled
+FAIL automatic_updates: expected=required actual=manual
+FAIL local_admin: expected=false actual=true
+FAIL credential_lifetime: expected=short-lived actual=static
+FAIL credential_storage: expected=system-keychain-or-approved-manager actual=plaintext-files
+FAIL hardware_backed_keys: expected=required actual=disabled
+FAIL secrets_in_workspace: expected=false actual=true
+FAIL pre_commit_secret_scan: expected=required actual=disabled
+FAIL repository_secret_scan: expected=required actual=disabled
+FAIL docker_socket_exposed: expected=false actual=true
+FAIL package_install_isolation: expected=required actual=host-unrestricted
+FAIL dependency_update_guard: expected=release-cooldown-and-security-updates actual=immediate-unreviewed
+FAIL local_debug_services: expected=disabled actual=enabled
+FAIL developer_egress_control: expected=allowlist actual=unrestricted
+FAIL phishing_resistant_mfa: expected=required actual=optional
+FAIL sensitive_data_file_guard: expected=required actual=disabled
+FAIL ai_tools_network: expected=allowlist actual=unrestricted
+FAIL workspace_mount: expected=read-only-by-default actual=read-write
+FAIL backup_encryption: expected=required actual=disabled
+REJECTED insecure policy: 20 control checks failed

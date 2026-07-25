@@ -4,12 +4,17 @@ domain: source-protection
 summary: Protect developer source code, credentials, and local development tools with enforceable endpoint policy requirements.
 security_functions:
   - prevent
+  - detect
   - verify
 threats:
   - id: DEV-ENDPOINT-CREDENTIAL-THEFT
     description: A stolen, malware-infected, or over-privileged developer endpoint exposes credentials or source code.
   - id: DEV-ENDPOINT-UNTRUSTED-EXECUTION
     description: Untrusted packages, extensions, local services, or AI tools execute with excessive developer privileges.
+  - id: DEV-ENDPOINT-DATA-EXFILTRATION
+    description: Secrets, source code, or sensitive data leave the endpoint through commits, unmanaged services, or unauthorized cloud storage.
+  - id: DEV-ENDPOINT-IDENTITY-PERSISTENCE
+    description: Long-lived credentials or weak identity lifecycle controls preserve access after credential theft or offboarding.
 implementations:
   insecure:
     - insecure/endpoint-policy.conf
@@ -19,8 +24,9 @@ verification:
   commands:
     - make verify-control CONTROL=PSB-SOURCE-001
   expected:
-    - secure endpoint policy passes all required checks
-    - insecure endpoint policy is rejected with a non-zero result
+    - secure endpoint policy passes all 20 required checks, including all ten imported operational requirements
+    - insecure endpoint policy is rejected with a non-zero result and 20 failed checks
+    - complete verifier output matches the sanitized expected evidence
     - policy validation failure is distinct from a clean result
 mappings:
   - framework: mitre-attack
@@ -49,7 +55,9 @@ mappings:
     review_date: "2026-07-25"
 limitations:
   - This control validates a declared policy; it does not prove that an unmanaged endpoint actually enforces every setting.
-  - MDM, EDR, disk encryption, patch compliance, and remote-wipe evidence require organization-specific integrations.
+  - MDM, EDR, IdP, SWG or CASB, CI scanning, disk encryption, patch compliance, and remote-wipe evidence require organization-specific integrations.
+  - Pre-commit hooks and file-pattern rules are bypassable signals and require repository-side enforcement and content-aware review.
+  - The supplied operational baseline cites source 1 without bibliographic details, so its provenance cannot be independently verified.
   - A hardened endpoint cannot compensate for a malicious repository, dependency, Skill, MCP server, or editor extension.
   - Endpoint policy values are examples and must be adapted to the operating system and organization.
 status: prototype

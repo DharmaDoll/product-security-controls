@@ -1,3 +1,21 @@
-The secure policy passes all checks and prints:
-
+PASS disk_encryption=required
+PASS screen_lock=required
+PASS automatic_updates=required
+PASS local_admin=false
+PASS credential_lifetime=short-lived
+PASS credential_storage=system-keychain-or-approved-manager
+PASS hardware_backed_keys=required
+PASS secrets_in_workspace=false
+PASS pre_commit_secret_scan=required
+PASS repository_secret_scan=required
+PASS docker_socket_exposed=false
+PASS package_install_isolation=required
+PASS dependency_update_guard=release-cooldown-and-security-updates
+PASS local_debug_services=disabled
+PASS developer_egress_control=allowlist
+PASS phishing_resistant_mfa=required
+PASS sensitive_data_file_guard=required
+PASS ai_tools_network=allowlist
+PASS workspace_mount=read-only-by-default
+PASS backup_encryption=required
 ACCEPTED secure policy
