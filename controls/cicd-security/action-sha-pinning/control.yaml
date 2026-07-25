@@ -1,0 +1,50 @@
+id: PSB-CICD-001
+title: Pin external GitHub Actions and reusable workflows to immutable commits
+domain: cicd-security
+summary: Prevent reviewed workflow dependencies from silently changing through mutable Git references.
+security_functions:
+  - prevent
+  - verify
+threats:
+  - id: SUPPLY-CHAIN-MUTABLE-ACTION
+    description: A mutable Action or reusable workflow reference is moved or compromised and executes code that was not reviewed.
+implementations:
+  insecure:
+    - insecure/workflow.yml
+  secure:
+    - secure/workflow.yml
+    - secure/local-action/action.yml
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-CICD-001
+  expected:
+    - external GitHub Actions and reusable workflows use full 40-character commit SHAs
+    - Docker-based actions use immutable sha256 image digests
+    - mutable tags branches short SHAs and dynamic references are rejected
+    - policy violations and verifier execution errors have distinct exit codes
+mappings:
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1195.001
+    relationship: mitigates
+    confidence: medium
+    rationale: Immutable references reduce the opportunity to replace a reviewed workflow dependency or development tool through a moved Git reference.
+    reviewer: product-security
+    review_date: "2026-07-25"
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PW.4.1
+    relationship: supports
+    confidence: medium
+    rationale: Pinning reviewed third-party workflow components supports controlled acquisition and maintenance but does not establish that the component is secure.
+    reviewer: product-security
+    review_date: "2026-07-25"
+limitations:
+  - A pinned commit can already contain malicious or vulnerable code and must still be reviewed.
+  - The verifier checks immutable reference syntax but does not prove that a SHA belongs to the named upstream repository.
+  - Nested dependencies inside an Action or reusable workflow are outside this local verifier's scope.
+  - Pinning prevents automatic security updates so controlled update automation and review remain necessary.
+  - Repository organization or enterprise enforcement must be configured separately and may apply different rules to reusable workflows.
+status: prototype
+owner: product-security
+evidence_level: E3

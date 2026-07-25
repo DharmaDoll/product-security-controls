@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+"""Validate every discovered control package."""
+
+from __future__ import annotations
+
+from control_metadata import discover_controls, validate_controls
+
+
+def main() -> int:
+    try:
+        controls = discover_controls()
+        errors = validate_controls(controls)
+    except (OSError, ValueError) as error:
+        print(f"control validation error: {error}")
+        return 2
+
+    if errors:
+        for error in errors:
+            print(f"ERROR {error}")
+        return 1
+
+    print(f"validated {len(controls)} control package(s)")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,8 @@
+FAIL controls/cicd-security/action-sha-pinning/insecure/workflow.yml:10 actions/checkout@v6 - reference 'v6' is not a full 40-character commit SHA
+FAIL controls/cicd-security/action-sha-pinning/insecure/workflow.yml:11 actions/setup-python@a309ff8 - reference 'a309ff8' is not a full 40-character commit SHA
+FAIL controls/cicd-security/action-sha-pinning/insecure/workflow.yml:12 example-org/security-action@main - reference 'main' is not a full 40-character commit SHA
+FAIL controls/cicd-security/action-sha-pinning/insecure/workflow.yml:13 example-org/dynamic-action@${{ inputs.action_ref }} - dynamic external reference is not immutable
+FAIL controls/cicd-security/action-sha-pinning/insecure/workflow.yml:14 docker://alpine:latest - Docker action must use an immutable sha256 digest
+FAIL controls/cicd-security/action-sha-pinning/insecure/workflow.yml:15 example-org/quoted-action@v2 - reference 'v2' is not a full 40-character commit SHA
+FAIL controls/cicd-security/action-sha-pinning/insecure/workflow.yml:18 example-org/ci/.github/workflows/reviewed.yml@v1 - reference 'v1' is not a full 40-character commit SHA
+REJECTED 7 violation(s) in 7 uses reference(s)

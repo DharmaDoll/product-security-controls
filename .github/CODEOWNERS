@@ -1,0 +1,8 @@
+# Security-sensitive implementation and policy changes require owner review.
+AGENTS.md @DharmaDoll
+/controls/ @DharmaDoll
+/.github/workflows/ @DharmaDoll
+/frameworks/ @DharmaDoll
+/policies/ @DharmaDoll
+/schemas/ @DharmaDoll
+/scripts/ @DharmaDoll

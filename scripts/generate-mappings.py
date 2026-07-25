@@ -2,109 +2,10 @@
 from __future__ import annotations
 
 import argparse
-import glob
-import os
-import re
 from collections import defaultdict
 from typing import Any
 
-
-_SCALAR_RE = re.compile(r"^-?\d+$")
-
-
-def parse_scalar(value: str) -> Any:
-    if value == "":
-        return ""
-    if value in {"true", "false"}:
-        return value == "true"
-    if _SCALAR_RE.match(value):
-        return int(value)
-    if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
-        return value[1:-1]
-    return value
-
-
-def parse_yaml_subset(path: str) -> dict[str, Any]:
-    with open(path, "r", encoding="utf-8") as handle:
-        entries = [
-            (
-                line_number,
-                len(raw_line.rstrip("\n")) - len(raw_line.rstrip("\n").lstrip(" ")),
-                raw_line.strip(),
-            )
-            for line_number, raw_line in enumerate(handle, start=1)
-            if raw_line.strip() and not raw_line.lstrip().startswith("#")
-        ]
-
-    def parse_block(index: int, indent: int) -> tuple[Any, int]:
-        if index >= len(entries):
-            return {}, index
-
-        is_list = entries[index][2].startswith("- ")
-        value: list[Any] | dict[str, Any] = [] if is_list else {}
-
-        while index < len(entries):
-            line_number, current_indent, text = entries[index]
-            if current_indent < indent:
-                break
-            if current_indent > indent:
-                raise ValueError(f"{path}:{line_number}: unexpected indentation")
-
-            if is_list:
-                if not text.startswith("- "):
-                    break
-                item_text = text[2:]
-                if ": " in item_text:
-                    key, scalar = item_text.split(": ", 1)
-                    item: dict[str, Any] = {key: parse_scalar(scalar)}
-                    index += 1
-                    while index < len(entries) and entries[index][1] > current_indent:
-                        nested_line, nested_indent, nested_text = entries[index]
-                        if nested_indent != current_indent + 2 or ": " not in nested_text:
-                            raise ValueError(f"{path}:{nested_line}: unsupported list mapping syntax")
-                        nested_key, nested_scalar = nested_text.split(": ", 1)
-                        item[nested_key] = parse_scalar(nested_scalar)
-                        index += 1
-                    value.append(item)
-                elif item_text.endswith(":"):
-                    key = item_text[:-1]
-                    nested, index = parse_block(index + 1, current_indent + 2)
-                    value.append({key: nested})
-                else:
-                    value.append(parse_scalar(item_text))
-                    index += 1
-                continue
-
-            if text.startswith("- "):
-                break
-            if ": " in text:
-                key, scalar = text.split(": ", 1)
-                value[key] = parse_scalar(scalar)
-                index += 1
-                continue
-            if text.endswith(":"):
-                key = text[:-1]
-                nested, index = parse_block(index + 1, current_indent + 2)
-                value[key] = nested
-                continue
-
-            raise ValueError(f"{path}:{line_number}: unsupported YAML syntax")
-
-        return value, index
-
-    parsed, next_index = parse_block(0, 0)
-    if next_index != len(entries) or not isinstance(parsed, dict):
-        raise ValueError(f"{path}: unsupported YAML document")
-    return parsed
-
-
-def load_controls() -> list[dict[str, Any]]:
-    controls: list[dict[str, Any]] = []
-    for path in sorted(glob.glob("controls/*/*/control.yaml")):
-        data = parse_yaml_subset(path)
-        data["_path"] = path
-        controls.append(data)
-    return controls
+from control_metadata import REPOSITORY_ROOT, discover_controls, validate_controls
 
 
 def markdown_cell(value: Any) -> str:
@@ -123,7 +24,13 @@ def generate_mappings(controls: list[dict[str, Any]]) -> int:
                 }
             )
 
-    os.makedirs("generated/mappings", exist_ok=True)
+    output_directory = REPOSITORY_ROOT / "generated" / "mappings"
+    output_directory.mkdir(parents=True, exist_ok=True)
+    expected_files = {f"{framework}.md" for framework in by_framework}
+    for existing in output_directory.glob("*.md"):
+        if existing.name not in expected_files:
+            existing.unlink()
+
     for framework, rows in sorted(by_framework.items()):
         lines = [
             f"# {framework} mappings",
@@ -149,8 +56,8 @@ def generate_mappings(controls: list[dict[str, Any]]) -> int:
                 + " |"
             )
 
-        with open(f"generated/mappings/{framework}.md", "w", encoding="utf-8") as handle:
-            handle.write("\n".join(lines) + "\n")
+        output = output_directory / f"{framework}.md"
+        output.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     return len(by_framework)
 
@@ -160,7 +67,12 @@ def main() -> int:
     parser.add_argument("--check-only", action="store_true", help="Parse control metadata without writing files.")
     args = parser.parse_args()
 
-    controls = load_controls()
+    controls = discover_controls()
+    errors = validate_controls(controls)
+    if errors:
+        for error in errors:
+            print(f"ERROR {error}")
+        return 1
     if args.check_only:
         print(f"control metadata parsed: {len(controls)} controls")
         return 0

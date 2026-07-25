@@ -1,0 +1,8 @@
+name: Repository-owned fixture action
+description: Demonstrates a local Action that does not cross a remote repository boundary.
+runs:
+  using: composite
+  steps:
+    - name: Confirm local action execution
+      shell: bash
+      run: echo "repository-owned action fixture"

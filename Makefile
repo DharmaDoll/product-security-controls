@@ -9,12 +9,12 @@ lint: validate-controls
 verify: test
 
 test:
-	@bash controls/source-protection/developer-endpoint-hardening/tests/test.sh
+	@python3 -m unittest discover -s tests -p 'test_*.py'
+	@python3 scripts/run-controls.py
 
 verify-control:
 	@test -n "$(CONTROL)" || (echo "CONTROL is required" >&2; exit 2)
-	@test "$(CONTROL)" = "PSB-SOURCE-001" || (echo "unknown control: $(CONTROL)" >&2; exit 2)
-	@bash controls/source-protection/developer-endpoint-hardening/tests/test.sh
+	@python3 scripts/run-controls.py --control "$(CONTROL)"
 
 generate-index:
 	@bash scripts/generate-index.sh

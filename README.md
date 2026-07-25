@@ -45,6 +45,13 @@ controls/<domain>/<control>/
 └── scripts/
 ```
 
+## Implemented controls
+
+| Control | Outcome | Evidence |
+|---|---|---|
+| `PSB-CICD-001` | External GitHub Actions and reusable workflows use immutable references | E3 |
+| `PSB-SOURCE-001` | Developer endpoint policy protects local development trust boundaries | E3 |
+
 ## Framework mapping
 
 Each control is mapped to applicable items from:
