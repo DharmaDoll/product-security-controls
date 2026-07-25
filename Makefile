@@ -4,7 +4,7 @@ bootstrap:
 	@echo "No external bootstrap required."
 
 lint: validate-controls
-	@ruby -e 'require "yaml"; Dir["controls/*/*/control.yaml"].each { |path| YAML.load_file(path) }; puts "control metadata parsed"'
+	@python3 scripts/generate-mappings.py --check-only
 
 verify: test
 
