@@ -1,0 +1,57 @@
+id: PSB-SOURCE-001
+title: Harden developer endpoints and local trust boundaries
+domain: source-protection
+summary: Protect developer source code, credentials, and local development tools with enforceable endpoint policy requirements.
+security_functions:
+  - prevent
+  - verify
+threats:
+  - id: DEV-ENDPOINT-CREDENTIAL-THEFT
+    description: A stolen, malware-infected, or over-privileged developer endpoint exposes credentials or source code.
+  - id: DEV-ENDPOINT-UNTRUSTED-EXECUTION
+    description: Untrusted packages, extensions, local services, or AI tools execute with excessive developer privileges.
+implementations:
+  insecure:
+    - insecure/endpoint-policy.conf
+  secure:
+    - secure/endpoint-policy.conf
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-SOURCE-001
+  expected:
+    - secure endpoint policy passes all required checks
+    - insecure endpoint policy is rejected with a non-zero result
+    - policy validation failure is distinct from a clean result
+mappings:
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1552.001
+    relationship: mitigates
+    confidence: medium
+    rationale: Protected credential storage and prohibition of secrets in workspaces reduce exposure to credentials in files.
+    reviewer: product-security
+    review_date: "2026-07-25"
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1555
+    relationship: mitigates
+    confidence: medium
+    rationale: System-managed credential storage and endpoint access controls reduce exposure of credentials from password stores.
+    reviewer: product-security
+    review_date: "2026-07-25"
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PS.3.1
+    relationship: supports
+    confidence: medium
+    rationale: Least privilege, protected credentials, and endpoint policy checks support protection of code and development environments.
+    reviewer: product-security
+    review_date: "2026-07-25"
+limitations:
+  - This control validates a declared policy; it does not prove that an unmanaged endpoint actually enforces every setting.
+  - MDM, EDR, disk encryption, patch compliance, and remote-wipe evidence require organization-specific integrations.
+  - A hardened endpoint cannot compensate for a malicious repository, dependency, Skill, MCP server, or editor extension.
+  - Endpoint policy values are examples and must be adapted to the operating system and organization.
+status: prototype
+owner: product-security
+evidence_level: E3

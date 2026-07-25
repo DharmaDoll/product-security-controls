@@ -1,0 +1,3 @@
+The insecure policy is rejected with a non-zero exit status and prints:
+
+REJECTED insecure policy: 11 control checks failed
