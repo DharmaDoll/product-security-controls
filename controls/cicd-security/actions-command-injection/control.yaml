@@ -1,0 +1,49 @@
+id: PSB-CICD-002
+title: Prevent GitHub Actions command injection from direct expression interpolation
+domain: cicd-security
+summary: Keep attacker-influenced GitHub Actions expressions out of generated runner shell scripts.
+security_functions:
+  - prevent
+  - verify
+threats:
+  - id: CI-UNTRUSTED-CONTEXT-COMMAND-INJECTION
+    description: An attacker-controlled event field or workflow value is substituted directly into a run script and interpreted as shell commands.
+implementations:
+  insecure:
+    - insecure/workflow.yml
+  secure:
+    - secure/workflow.yml
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-CICD-002
+  expected:
+    - direct GitHub Actions expressions in run scalars are rejected
+    - expressions passed through env are accepted
+    - expressions in non-executable concurrency fields are not treated as shell injection
+    - policy violations and verifier execution errors have distinct exit codes
+mappings:
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHAS-CONCEPT-SCRIPT-INJECTIONS
+    relationship: mitigates
+    confidence: high
+    rationale: The control prevents expression values from being substituted into the temporary shell scripts described by GitHub's script-injection guidance.
+    reviewer: product-security
+    review_date: "2026-07-27"
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHAS-REF-SECURE-USE
+    relationship: supports
+    confidence: high
+    rationale: The secure example implements GitHub's recommendation to pass context values through an intermediate environment variable instead of generating shell source from them.
+    reviewer: product-security
+    review_date: "2026-07-27"
+limitations:
+  - The verifier prohibits all direct expressions in run scalars and therefore rejects some constrained values that may not be attacker-controlled.
+  - Passing data through env is insufficient if shell variables are unquoted or later evaluated as code.
+  - Indirect taint through generated files repository scripts Actions outputs or third-party Actions requires separate analysis.
+  - Composite Actions and invoked scripts are outside this workflow-only verifier scope.
+  - Unsupported YAML forms fail as verifier errors rather than clean results.
+status: prototype
+owner: product-security
+evidence_level: E3

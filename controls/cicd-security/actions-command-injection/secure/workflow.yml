@@ -1,0 +1,41 @@
+name: Secure expression-to-shell boundary
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Build target
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: secure-verification-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Treat pull request metadata as data
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          printf 'Reviewing: %s\n' "$PR_TITLE"
+          printf 'Head: %s\n' "$HEAD_REF"
+      - name: Validate before selecting a build target
+        env:
+          REQUESTED_TARGET: ${{ inputs.target }}
+        run: |
+          case "$REQUESTED_TARGET" in
+            lint|test|verify)
+              make "$REQUESTED_TARGET"
+              ;;
+            *)
+              printf 'Unsupported target: %s\n' "$REQUESTED_TARGET" >&2
+              exit 1
+              ;;
+          esac

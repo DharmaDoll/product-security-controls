@@ -1,0 +1,24 @@
+name: Insecure direct expression interpolation
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Build target
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Vulnerable pull request title
+        run: echo "Reviewing ${{ github.event.pull_request.title }}"
+      - name: Vulnerable branch name
+        run: |
+          printf 'Head: %s\n' "${{ github.head_ref }}"
+      - name: Vulnerable manual input
+        run: make "${{ inputs.target }}"

@@ -1,0 +1,4 @@
+FAIL controls/cicd-security/actions-command-injection/insecure/workflow.yml:19 ${{ github.event.pull_request.title }} - direct expression interpolation in run script
+FAIL controls/cicd-security/actions-command-injection/insecure/workflow.yml:22 ${{ github.head_ref }} - direct expression interpolation in run script
+FAIL controls/cicd-security/actions-command-injection/insecure/workflow.yml:24 ${{ inputs.target }} - direct expression interpolation in run script
+REJECTED 3 expression(s) in 3 run step(s)
