@@ -1,0 +1,4 @@
+strictDepBuilds: false
+dangerouslyAllowAllBuilds: true
+allowBuilds:
+  native-fixture@*: true

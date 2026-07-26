@@ -1,0 +1,61 @@
+id: PSB-DEPS-002
+title: install時の任意コード実行をdefault denyにする
+domain: dependency-security
+summary: dependency install時のlifecycle scriptとsource buildを既定で拒否し、必要な実行だけを限定承認する。
+security_functions:
+  - prevent
+  - verify
+threats:
+  - id: DEPENDENCY-INSTALL-SCRIPT-EXECUTION
+    description: 侵害または偽装されたdependencyのinstall scriptやsource build backendが開発端末またはCI権限で任意コードを実行する。
+  - id: DEPENDENCY-BUILD-ALLOWLIST-BYPASS
+    description: fail-open設定、broad allowlist、期限切れ例外、またはsdist fallbackによってinstall-time code executionの拒否が迂回される。
+implementations:
+  insecure:
+    - insecure/install-execution-policy.json
+    - insecure/npm/.npmrc
+    - insecure/pnpm/pnpm-workspace.yaml
+    - insecure/bun/bunfig.toml
+    - insecure/pip/requirements.txt
+  secure:
+    - secure/install-execution-policy.json
+    - secure/npm/.npmrc
+    - secure/pnpm/pnpm-workspace.yaml
+    - secure/bun/bunfig.toml
+    - secure/pip/requirements.txt
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-DEPS-002
+  expected:
+    - npmとBunのrepository-owned設定がinstall scriptを全停止する
+    - pnpm 11が未review buildをerrorにしexact versionの時限承認だけを許可する
+    - pipがsource distributionを拒否しexact pinとSHA-256 hashを要求する
+    - broadまたは期限切れの承認とfail-open設定が拒否される
+    - 設定欠落またはparse失敗がcleanな結果と区別される
+mappings:
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1195.001
+    relationship: mitigates
+    confidence: high
+    rationale: software dependencyのinstall hookまたはsource buildをdefault denyにし、compromised dependencyが取得直後に実行される経路を減らす。
+    reviewer: product-security
+    review_date: "2026-07-27"
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PW.4.1
+    relationship: supports
+    confidence: high
+    rationale: third-party component取得時の実行policy、version固定、integrity、例外reviewを検証し、controlled acquisitionとmaintenanceを支援する。
+    reviewer: product-security
+    review_date: "2026-07-27"
+limitations:
+  - Install-time executionを止めてもimport、test、compiler plugin、application runtimeでの悪性code実行は防止しない。
+  - Wheel-only installationはsource buildを止めるがwheel内のruntime codeが安全であることは保証しない。
+  - Native buildが必要なdependencyにはcredentialとnetworkを制限した隔離buildおよび期限付き例外が必要になる。
+  - このreferenceのpnpm profileはpnpm 11.xを対象とし、pnpm 10以前の設定を検証しない。
+  - Package manager、registry、lockfile、binary artifact自体の完全性は別途検証する必要がある。
+  - 検証器または設定parseの失敗をcleanな結果として扱ってはいけない。
+status: prototype
+owner: product-security
+evidence_level: E3

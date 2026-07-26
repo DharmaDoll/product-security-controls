@@ -1,0 +1,20 @@
+FAIL policy.default_action must be deny
+FAIL policy.maximum_approval_hours exceeds reference maximum 720
+FAIL policy.approvals[0].version must be an exact version
+FAIL pnpm:native-fixture@* owner and approver must differ
+FAIL pnpm:native-fixture@* justification is too short
+FAIL pnpm:native-fixture@* approval is not active
+FAIL npm ignore-scripts must be true
+FAIL npm dangerously-allow-all-scripts must not be true
+FAIL pnpm strictDepBuilds must be true
+FAIL pnpm dangerouslyAllowAllBuilds must be false
+FAIL pnpm allowBuilds entry must pin exact version: native-fixture@*
+FAIL Bun install.ignoreScripts must be true
+FAIL Bun install.exact must be true
+FAIL Bun install.frozenLockfile must be true
+FAIL pip requirements must set --only-binary=:all:
+FAIL pip requirements must set --require-hashes
+FAIL pip requirement must use an exact version: fixture-wheel>=1.0
+FAIL pip requirement must have a SHA-256 hash: fixture-wheel>=1.0
+FAIL approval is unused: pnpm:native-fixture@*
+RESULT rejected with 19 finding(s)

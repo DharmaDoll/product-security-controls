@@ -1,0 +1,1 @@
+PASS install execution policy: 4 ecosystem profiles verified, 1 approved script

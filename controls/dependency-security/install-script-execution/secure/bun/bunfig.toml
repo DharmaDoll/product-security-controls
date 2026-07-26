@@ -1,0 +1,4 @@
+[install]
+ignoreScripts = true
+exact = true
+frozenLockfile = true
