@@ -1,0 +1,11 @@
+{
+  "dependencies": [
+    {
+      "package": "brand-new-lib",
+      "version": "9.9.9",
+      "registry": "https://registry-typo.example.invalid",
+      "integrity": "",
+      "artifact": "artifacts/brand-new-lib-9.9.9.artifact"
+    }
+  ]
+}

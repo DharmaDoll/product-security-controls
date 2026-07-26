@@ -1,0 +1,9 @@
+{
+  "minimum_release_age_hours": 0,
+  "allowed_registries": [
+    "https://registry.example.invalid"
+  ],
+  "require_integrity": true,
+  "max_exception_hours": 72,
+  "exceptions": []
+}

@@ -1,0 +1,60 @@
+id: PSB-DEPS-001
+title: 依存パッケージの公開直後採用をrelease cooldownで制御
+domain: dependency-security
+summary: 新しいdependency versionの採用を一定期間遅延し、公開直後のsupply-chain compromiseへの露出を減らす。
+security_functions:
+  - prevent
+  - verify
+threats:
+  - id: DEPENDENCY-NEW-RELEASE-COMPROMISE
+    description: 侵害されたmaintainerまたはregistryから公開された直後のmalicious versionを開発端末やCIが自動採用する。
+  - id: DEPENDENCY-COOLDOWN-BYPASS
+    description: allowlist外registry、integrity欠落、広すぎる例外、またはmetadata検証失敗によってcooldownが迂回される。
+implementations:
+  insecure:
+    - insecure/cooldown-policy.json
+    - insecure/lockfile.json
+    - insecure/registry-metadata.json
+    - insecure/artifacts/brand-new-lib-9.9.9.artifact
+  secure:
+    - secure/cooldown-policy.json
+    - secure/lockfile.json
+    - secure/registry-metadata.json
+    - secure/artifacts/stable-lib-1.4.0.artifact
+    - secure/artifacts/urgent-security-fix-2.0.1.artifact
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-DEPS-001
+  expected:
+    - 7日以上経過したdependencyが許可される
+    - exactかつowner、理由、承認者、期限付きの緊急例外だけがcooldownを迂回できる
+    - cooldownが短すぎるpolicy、公開直後version、allowlist外registry、integrity欠落が拒否される
+    - lockfile artifactのsha256がmetadataおよび実ファイルと一致する
+    - metadata欠落、JSON破損、artifact読取失敗がcleanな結果と区別される
+mappings:
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1195.001
+    relationship: mitigates
+    confidence: medium
+    rationale: 公開直後versionの自動採用を遅らせ、software dependency compromise直後の露出を減らすが、malicious dependency自体を検出するものではない。
+    reviewer: product-security
+    review_date: "2026-07-27"
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PW.4.1
+    relationship: supports
+    confidence: medium
+    rationale: dependencyの取得元、version、公開時刻、integrity、例外を検証することでthird-party componentのcontrolled acquisitionとmaintenanceを支援する。
+    reviewer: product-security
+    review_date: "2026-07-27"
+limitations:
+  - 7日のcooldownは運用baselineであり、packageが安全になることを保証する時間ではない。
+  - 待機期間を過ぎたmalware、長期潜伏、typosquatting、dependency confusionは別controlが必要である。
+  - Metadata snapshotの真正性とregistry自体の非侵害はこのlocal verifierだけでは証明できない。
+  - 緊急security updateでは期限付きexact version例外が必要になる場合がある。
+  - Cooldownはlockfile、integrity、dependency review、SCA、registry制限と組み合わせる必要がある。
+  - Metadata取得または検証器の失敗をcleanな結果として扱ってはいけない。
+status: prototype
+owner: product-security
+evidence_level: E3

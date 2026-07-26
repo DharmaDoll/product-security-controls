@@ -1,0 +1,5 @@
+FAIL policy.minimum_release_age_hours is 0; reference minimum is 168
+FAIL brand-new-lib@9.9.9 uses unapproved registry https://registry-typo.example.invalid
+FAIL brand-new-lib@9.9.9 has missing or invalid sha256 integrity
+FAIL brand-new-lib@9.9.9 age is 24 hours; minimum is 168
+REJECTED 4 cooldown finding(s)

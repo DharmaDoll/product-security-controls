@@ -1,0 +1,19 @@
+{
+  "minimum_release_age_hours": 168,
+  "allowed_registries": [
+    "https://registry.example.invalid"
+  ],
+  "require_integrity": true,
+  "max_exception_hours": 72,
+  "exceptions": [
+    {
+      "package": "urgent-security-fix",
+      "version": "2.0.1",
+      "owner": "product-security",
+      "justification": "Synthetic emergency update fixture for a critical security fix.",
+      "approved_by": "security-reviewer",
+      "created_at": "2026-07-26T00:00:00Z",
+      "expires_at": "2026-07-29T00:00:00Z"
+    }
+  ]
+}

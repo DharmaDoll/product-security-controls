@@ -1,0 +1,18 @@
+{
+  "dependencies": [
+    {
+      "package": "stable-lib",
+      "version": "1.4.0",
+      "registry": "https://registry.example.invalid",
+      "integrity": "sha256:c26910562c881d6abfef67c093b35e86fff1e72bf8d27b9f98b940a1322faedc",
+      "artifact": "artifacts/stable-lib-1.4.0.artifact"
+    },
+    {
+      "package": "urgent-security-fix",
+      "version": "2.0.1",
+      "registry": "https://registry.example.invalid",
+      "integrity": "sha256:55d695c81fea676b222118d368b214617fa5ab64207f3c0cccb5e710a764400b",
+      "artifact": "artifacts/urgent-security-fix-2.0.1.artifact"
+    }
+  ]
+}

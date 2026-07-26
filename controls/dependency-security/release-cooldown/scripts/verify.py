@@ -1,0 +1,360 @@
+#!/usr/bin/env python3
+"""Verify dependency release age, registry, integrity, and exceptions."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import re
+import sys
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any
+from urllib.parse import urlparse
+
+
+REFERENCE_MINIMUM_HOURS = 168
+REFERENCE_MAX_EXCEPTION_HOURS = 72
+INTEGRITY_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
+PACKAGE_RE = re.compile(r"^[A-Za-z0-9@][A-Za-z0-9@._/-]*$")
+VERSION_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9.+_-]*$")
+
+
+class InputError(ValueError):
+    """Raised when verification inputs cannot establish a reliable result."""
+
+
+@dataclass(frozen=True)
+class ExceptionRecord:
+    package: str
+    version: str
+    owner: str
+    justification: str
+    approved_by: str
+    created_at: datetime
+    expires_at: datetime
+
+
+def load_json(path: Path, label: str) -> dict[str, Any]:
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            value = json.load(handle)
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        raise InputError(f"cannot load {label} {path}: {error}") from error
+    if not isinstance(value, dict):
+        raise InputError(f"{label} must be a JSON object")
+    return value
+
+
+def parse_timestamp(value: Any, label: str) -> datetime:
+    if not isinstance(value, str) or not value.endswith("Z"):
+        raise InputError(f"{label} must be an RFC 3339 UTC timestamp ending in Z")
+    try:
+        parsed = datetime.fromisoformat(value[:-1] + "+00:00")
+    except ValueError as error:
+        raise InputError(f"{label} is not a valid timestamp: {value!r}") from error
+    if parsed.tzinfo != timezone.utc:
+        raise InputError(f"{label} must use UTC")
+    return parsed
+
+
+def require_nonempty_text(value: Any, label: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise InputError(f"{label} must be non-empty text")
+    return value.strip()
+
+
+def validate_registry_url(value: Any, label: str) -> str:
+    url = require_nonempty_text(value, label)
+    parsed = urlparse(url)
+    if (
+        parsed.scheme != "https"
+        or not parsed.hostname
+        or parsed.username
+        or parsed.password
+        or parsed.query
+        or parsed.fragment
+        or parsed.path not in {"", "/"}
+    ):
+        raise InputError(
+            f"{label} must be an HTTPS registry origin without credentials, "
+            "query, fragment, or path"
+        )
+    return url.rstrip("/")
+
+
+def validate_exact_identifier(value: Any, label: str, pattern: re.Pattern[str]) -> str:
+    text = require_nonempty_text(value, label)
+    if "*" in text or not pattern.fullmatch(text):
+        raise InputError(f"{label} must be an exact identifier: {text!r}")
+    return text
+
+
+def load_policy(
+    value: dict[str, Any], as_of: datetime
+) -> tuple[int, set[str], bool, list[ExceptionRecord], list[str]]:
+    findings: list[str] = []
+    minimum_hours = value.get("minimum_release_age_hours")
+    max_exception_hours = value.get("max_exception_hours")
+    require_integrity = value.get("require_integrity")
+    if not isinstance(minimum_hours, int) or minimum_hours < 0:
+        raise InputError("policy.minimum_release_age_hours must be a non-negative integer")
+    if minimum_hours < REFERENCE_MINIMUM_HOURS:
+        findings.append(
+            "policy.minimum_release_age_hours is "
+            f"{minimum_hours}; reference minimum is {REFERENCE_MINIMUM_HOURS}"
+        )
+    if not isinstance(max_exception_hours, int) or max_exception_hours <= 0:
+        raise InputError("policy.max_exception_hours must be a positive integer")
+    if max_exception_hours > REFERENCE_MAX_EXCEPTION_HOURS:
+        findings.append(
+            "policy.max_exception_hours is "
+            f"{max_exception_hours}; reference maximum is "
+            f"{REFERENCE_MAX_EXCEPTION_HOURS}"
+        )
+    effective_max_exception_hours = min(
+        max_exception_hours, REFERENCE_MAX_EXCEPTION_HOURS
+    )
+    if require_integrity is not True:
+        findings.append("policy.require_integrity must be true")
+
+    raw_registries = value.get("allowed_registries")
+    if not isinstance(raw_registries, list) or not raw_registries:
+        raise InputError("policy.allowed_registries must be a non-empty list")
+    registries = {
+        validate_registry_url(registry, "policy.allowed_registries[]")
+        for registry in raw_registries
+    }
+    if len(registries) != len(raw_registries):
+        raise InputError("policy.allowed_registries contains duplicates")
+
+    raw_exceptions = value.get("exceptions")
+    if not isinstance(raw_exceptions, list):
+        raise InputError("policy.exceptions must be a list")
+    exceptions: list[ExceptionRecord] = []
+    exception_keys: set[tuple[str, str]] = set()
+    for index, raw_exception in enumerate(raw_exceptions):
+        label = f"policy.exceptions[{index}]"
+        if not isinstance(raw_exception, dict):
+            raise InputError(f"{label} must be an object")
+        package = validate_exact_identifier(
+            raw_exception.get("package"), f"{label}.package", PACKAGE_RE
+        )
+        version = validate_exact_identifier(
+            raw_exception.get("version"), f"{label}.version", VERSION_RE
+        )
+        key = (package, version)
+        if key in exception_keys:
+            raise InputError(f"{label} duplicates exception for {package}@{version}")
+        exception_keys.add(key)
+        created_at = parse_timestamp(raw_exception.get("created_at"), f"{label}.created_at")
+        expires_at = parse_timestamp(raw_exception.get("expires_at"), f"{label}.expires_at")
+        if expires_at <= created_at:
+            raise InputError(f"{label}.expires_at must be after created_at")
+        if expires_at - created_at > timedelta(hours=effective_max_exception_hours):
+            findings.append(
+                f"exception {package}@{version} exceeds "
+                f"{effective_max_exception_hours} hour maximum"
+            )
+        owner = require_nonempty_text(raw_exception.get("owner"), f"{label}.owner")
+        justification = require_nonempty_text(
+            raw_exception.get("justification"), f"{label}.justification"
+        )
+        approved_by = require_nonempty_text(
+            raw_exception.get("approved_by"), f"{label}.approved_by"
+        )
+        if len(justification) < 20:
+            findings.append(
+                f"exception {package}@{version} justification is too short"
+            )
+        if owner == approved_by:
+            findings.append(
+                f"exception {package}@{version} owner and approver must differ"
+            )
+        exception = ExceptionRecord(
+            package=package,
+            version=version,
+            owner=owner,
+            justification=justification,
+            approved_by=approved_by,
+            created_at=created_at,
+            expires_at=expires_at,
+        )
+        exceptions.append(exception)
+        if as_of < created_at:
+            findings.append(f"exception {package}@{version} is not active yet")
+    return minimum_hours, registries, require_integrity is True, exceptions, findings
+
+
+def resolve_artifact(lockfile_path: Path, raw_path: Any, label: str) -> Path:
+    relative = Path(require_nonempty_text(raw_path, label))
+    if relative.is_absolute():
+        raise InputError(f"{label} must be relative to the lockfile")
+    root = lockfile_path.parent.resolve()
+    resolved = (root / relative).resolve()
+    try:
+        resolved.relative_to(root)
+    except ValueError as error:
+        raise InputError(f"{label} escapes the lockfile directory") from error
+    if not resolved.is_file():
+        raise InputError(f"{label} does not exist: {relative}")
+    return resolved
+
+
+def artifact_integrity(path: Path) -> str:
+    digest = hashlib.sha256()
+    try:
+        with path.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(chunk)
+    except OSError as error:
+        raise InputError(f"cannot read artifact {path}: {error}") from error
+    return f"sha256:{digest.hexdigest()}"
+
+
+def verify(
+    policy_path: Path,
+    lockfile_path: Path,
+    metadata_path: Path,
+    as_of: datetime,
+) -> tuple[int, int, list[str]]:
+    policy = load_json(policy_path, "policy")
+    lockfile = load_json(lockfile_path, "lockfile")
+    metadata = load_json(metadata_path, "metadata")
+    (
+        minimum_hours,
+        allowed_registries,
+        require_integrity,
+        exceptions,
+        findings,
+    ) = load_policy(policy, as_of)
+    effective_minimum = max(minimum_hours, REFERENCE_MINIMUM_HOURS)
+
+    dependencies = lockfile.get("dependencies")
+    if not isinstance(dependencies, list) or not dependencies:
+        raise InputError("lockfile.dependencies must be a non-empty list")
+    packages = metadata.get("packages")
+    if not isinstance(packages, dict):
+        raise InputError("metadata.packages must be an object")
+
+    seen_dependencies: set[tuple[str, str]] = set()
+    used_exceptions: set[tuple[str, str]] = set()
+    for index, dependency in enumerate(dependencies):
+        label = f"lockfile.dependencies[{index}]"
+        if not isinstance(dependency, dict):
+            raise InputError(f"{label} must be an object")
+        package = validate_exact_identifier(
+            dependency.get("package"), f"{label}.package", PACKAGE_RE
+        )
+        version = validate_exact_identifier(
+            dependency.get("version"), f"{label}.version", VERSION_RE
+        )
+        key = (package, version)
+        if key in seen_dependencies:
+            raise InputError(f"duplicate dependency {package}@{version}")
+        seen_dependencies.add(key)
+
+        registry = validate_registry_url(dependency.get("registry"), f"{label}.registry")
+        if registry not in allowed_registries:
+            findings.append(f"{package}@{version} uses unapproved registry {registry}")
+
+        package_metadata = packages.get(package)
+        if not isinstance(package_metadata, dict):
+            raise InputError(f"metadata missing package {package}")
+        versions = package_metadata.get("versions")
+        if not isinstance(versions, dict) or not isinstance(versions.get(version), dict):
+            raise InputError(f"metadata missing version {package}@{version}")
+        version_metadata = versions[version]
+        metadata_registry = validate_registry_url(
+            version_metadata.get("registry"),
+            f"metadata {package}@{version}.registry",
+        )
+        if metadata_registry != registry:
+            findings.append(
+                f"{package}@{version} registry differs between lockfile and metadata"
+            )
+
+        released_at = parse_timestamp(
+            version_metadata.get("released_at"),
+            f"metadata {package}@{version}.released_at",
+        )
+        if released_at > as_of:
+            raise InputError(f"metadata release time is in the future for {package}@{version}")
+        age_hours = int((as_of - released_at).total_seconds() // 3600)
+
+        lock_integrity = dependency.get("integrity")
+        metadata_integrity = version_metadata.get("integrity")
+        integrity_valid = (
+            isinstance(lock_integrity, str)
+            and INTEGRITY_RE.fullmatch(lock_integrity) is not None
+        )
+        if require_integrity and not integrity_valid:
+            findings.append(f"{package}@{version} has missing or invalid sha256 integrity")
+        if integrity_valid:
+            if metadata_integrity != lock_integrity:
+                findings.append(
+                    f"{package}@{version} integrity differs between lockfile and metadata"
+                )
+            artifact = resolve_artifact(lockfile_path, dependency.get("artifact"), f"{label}.artifact")
+            if artifact_integrity(artifact) != lock_integrity:
+                findings.append(f"{package}@{version} artifact sha256 does not match lockfile")
+
+        if age_hours < effective_minimum:
+            active_exception = next(
+                (
+                    exception
+                    for exception in exceptions
+                    if (exception.package, exception.version) == key
+                    and exception.created_at <= as_of < exception.expires_at
+                ),
+                None,
+            )
+            if active_exception is None:
+                findings.append(
+                    f"{package}@{version} age is {age_hours} hours; "
+                    f"minimum is {effective_minimum}"
+                )
+            else:
+                used_exceptions.add(key)
+
+    for exception in exceptions:
+        key = (exception.package, exception.version)
+        if key not in used_exceptions:
+            findings.append(f"exception {exception.package}@{exception.version} is unused")
+
+    return len(dependencies), len(used_exceptions), findings
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--policy", required=True, type=Path)
+    parser.add_argument("--lockfile", required=True, type=Path)
+    parser.add_argument("--metadata", required=True, type=Path)
+    parser.add_argument("--as-of", required=True)
+    args = parser.parse_args()
+
+    try:
+        as_of = parse_timestamp(args.as_of, "--as-of")
+        dependencies, used_exceptions, findings = verify(
+            args.policy, args.lockfile, args.metadata, as_of
+        )
+    except InputError as error:
+        print(f"ERROR {error}", file=sys.stderr)
+        return 2
+
+    for finding in findings:
+        print(f"FAIL {finding}")
+    if findings:
+        print(f"REJECTED {len(findings)} cooldown finding(s)")
+        return 1
+    print(
+        f"ACCEPTED {dependencies} dependencies; "
+        f"{used_exceptions} cooldown exception(s)"
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
