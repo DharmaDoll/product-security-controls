@@ -1,0 +1,1 @@
+PASS frozen lockfile manifest registry and artifact integrity verified

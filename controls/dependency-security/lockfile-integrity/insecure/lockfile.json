@@ -1,0 +1,12 @@
+{
+  "lockfile_version": 1,
+  "frozen": false,
+  "manifest_sha256": "sha256-not-checked",
+  "dependencies": {
+    "floating-lib": {
+      "version": "9.9.9",
+      "registry": "http://untrusted.example.test/path",
+      "artifact": "artifacts/floating-lib-9.9.9.pkg"
+    }
+  }
+}

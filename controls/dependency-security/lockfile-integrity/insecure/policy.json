@@ -1,0 +1,6 @@
+{
+  "require_frozen": false,
+  "require_manifest_digest": false,
+  "allowed_registries": ["http://registry.example.test"],
+  "allowed_integrity_algorithms": ["sha1"]
+}

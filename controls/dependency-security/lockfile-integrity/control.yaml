@@ -1,0 +1,55 @@
+id: PSB-DEPS-003
+title: lockfileと取得artifactの完全性を強制する
+domain: dependency-security
+summary: Frozen dependency graphとmanifest、registry、exact version、artifact integrityの一致を検証する。
+security_functions:
+  - prevent
+  - verify
+threats:
+  - id: DEPENDENCY-LOCKFILE-INTEGRITY-BYPASS
+    description: Lockfile書換え、未承認registry、version range、またはartifact差替えによりreview済みdependency graphが迂回される。
+implementations:
+  insecure:
+    - insecure/policy.json
+    - insecure/manifest.json
+    - insecure/lockfile.json
+    - insecure/artifacts/floating-lib-9.9.9.pkg
+  secure:
+    - secure/policy.json
+    - secure/manifest.json
+    - secure/lockfile.json
+    - secure/artifacts/stable-lib-1.4.0.pkg
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-DEPS-003
+  expected:
+    - frozen lockfileとmanifestのdependency集合およびversionが一致する
+    - registryがcredentialなしHTTPS allowlistに限定される
+    - artifact SHA-256がlockfileと一致する
+    - version range、lockfile書換え、artifact改ざんが拒否される
+    - 入力欠落またはparse失敗がcleanな結果と区別される
+mappings:
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1195.001
+    relationship: mitigates
+    confidence: high
+    rationale: Software dependencyの解決結果と取得artifactを固定・検証し、dependency compromiseや取得経路改ざんによる差替えを抑制する。
+    reviewer: product-security
+    review_date: "2026-07-27"
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PW.4.1
+    relationship: supports
+    confidence: high
+    rationale: Third-party componentの取得元、version、dependency graph、integrityを機械検証しcontrolled acquisitionを支援する。
+    reviewer: product-security
+    review_date: "2026-07-27"
+limitations:
+  - 正しいhashはartifactの安全性を証明しない。
+  - 実package manager固有lockfileには個別adapterが必要である。
+  - Registry、package manager、review済みlockfile自体の侵害は別controlが必要である。
+  - 検証器または入力読取失敗をcleanな結果として扱ってはいけない。
+status: prototype
+owner: product-security
+evidence_level: E3
