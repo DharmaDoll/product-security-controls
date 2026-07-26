@@ -23,6 +23,14 @@ verification:
     - mutable tags branches short SHAs and dynamic references are rejected
     - policy violations and verifier execution errors have distinct exit codes
 mappings:
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHAS-REF-SECURE-USE
+    relationship: supports
+    confidence: high
+    rationale: The control directly implements GitHub's recommendation to pin third-party Actions to full-length commit SHAs while retaining separate review and update requirements.
+    reviewer: product-security
+    review_date: "2026-07-27"
   - framework: mitre-attack
     version: "v19.1"
     id: T1195.001

@@ -1,0 +1,139 @@
+{
+  "name": "github-security-guidance",
+  "publisher": "GitHub",
+  "product": "GitHub.com documentation",
+  "source_repository": "https://github.com/github/docs",
+  "source_commit": "b17436de8f10c3e7f6a185d6813bf94bc82d22f8",
+  "source_commit_date": "2026-07-24",
+  "review_date": "2026-07-27",
+  "mapping_version": "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)",
+  "collections": [
+    {
+      "id": "GH-SUPPLY-CHAIN-BEST-PRACTICES",
+      "title": "Implement supply chain best practices",
+      "index_url": "https://docs.github.com/en/code-security/tutorials/implement-supply-chain-best-practices",
+      "page_ids": [
+        "GHSC-END-TO-END",
+        "GHSC-SECURE-ACCOUNTS",
+        "GHSC-SECURE-CODE",
+        "GHSC-SECURE-BUILDS"
+      ]
+    },
+    {
+      "id": "GH-ACTIONS-SECURITY-CONCEPTS",
+      "title": "Security in GitHub Actions",
+      "index_url": "https://docs.github.com/en/actions/concepts/security",
+      "page_ids": [
+        "GHAS-CONCEPT-SECRETS",
+        "GHAS-CONCEPT-GITHUB-TOKEN",
+        "GHAS-CONCEPT-OIDC",
+        "GHAS-CONCEPT-ARTIFACT-ATTESTATIONS",
+        "GHAS-CONCEPT-SCRIPT-INJECTIONS",
+        "GHAS-CONCEPT-COMPROMISED-RUNNERS",
+        "GHAS-CONCEPT-KUBERNETES-ADMISSION"
+      ]
+    },
+    {
+      "id": "GH-ACTIONS-SECURITY-REFERENCE",
+      "title": "Security reference for GitHub Actions",
+      "index_url": "https://docs.github.com/en/actions/reference/security",
+      "page_ids": [
+        "GHAS-REF-SECURE-USE",
+        "GHAS-REF-PULL-REQUEST-TARGET",
+        "GHAS-REF-SECRETS",
+        "GHAS-REF-OIDC"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "id": "GHSC-END-TO-END",
+      "title": "Securing your end-to-end supply chain",
+      "url": "https://docs.github.com/en/code-security/tutorials/implement-supply-chain-best-practices/end-to-end-supply-chain-overview"
+    },
+    {
+      "id": "GHSC-SECURE-ACCOUNTS",
+      "title": "Best practices for securing accounts",
+      "url": "https://docs.github.com/en/code-security/tutorials/implement-supply-chain-best-practices/securing-accounts"
+    },
+    {
+      "id": "GHSC-SECURE-CODE",
+      "title": "Best practices for securing code in your supply chain",
+      "url": "https://docs.github.com/en/code-security/tutorials/implement-supply-chain-best-practices/securing-code"
+    },
+    {
+      "id": "GHSC-SECURE-BUILDS",
+      "title": "Best practices for securing your build system",
+      "url": "https://docs.github.com/en/code-security/tutorials/implement-supply-chain-best-practices/securing-builds"
+    },
+    {
+      "id": "GHAS-CONCEPT-SECRETS",
+      "title": "Secrets",
+      "url": "https://docs.github.com/en/actions/concepts/security/secrets"
+    },
+    {
+      "id": "GHAS-CONCEPT-GITHUB-TOKEN",
+      "title": "GITHUB_TOKEN",
+      "url": "https://docs.github.com/en/actions/concepts/security/github_token"
+    },
+    {
+      "id": "GHAS-CONCEPT-OIDC",
+      "title": "OpenID Connect",
+      "url": "https://docs.github.com/en/actions/concepts/security/openid-connect"
+    },
+    {
+      "id": "GHAS-CONCEPT-ARTIFACT-ATTESTATIONS",
+      "title": "Artifact attestations",
+      "url": "https://docs.github.com/en/actions/concepts/security/artifact-attestations"
+    },
+    {
+      "id": "GHAS-CONCEPT-SCRIPT-INJECTIONS",
+      "title": "Script injections",
+      "url": "https://docs.github.com/en/actions/concepts/security/script-injections"
+    },
+    {
+      "id": "GHAS-CONCEPT-COMPROMISED-RUNNERS",
+      "title": "Compromised runners",
+      "url": "https://docs.github.com/en/actions/concepts/security/compromised-runners"
+    },
+    {
+      "id": "GHAS-CONCEPT-KUBERNETES-ADMISSION",
+      "title": "Kubernetes admissions controller",
+      "url": "https://docs.github.com/en/actions/concepts/security/kubernetes-admissions-controller"
+    },
+    {
+      "id": "GHAS-REF-SECURE-USE",
+      "title": "Secure use reference",
+      "url": "https://docs.github.com/en/actions/reference/security/secure-use"
+    },
+    {
+      "id": "GHAS-REF-PULL-REQUEST-TARGET",
+      "title": "Securely using pull_request_target",
+      "url": "https://docs.github.com/en/actions/reference/security/securely-using-pull_request_target"
+    },
+    {
+      "id": "GHAS-REF-SECRETS",
+      "title": "Secrets reference",
+      "url": "https://docs.github.com/en/actions/reference/security/secrets"
+    },
+    {
+      "id": "GHAS-REF-OIDC",
+      "title": "OpenID Connect reference",
+      "url": "https://docs.github.com/en/actions/reference/security/oidc"
+    }
+  ],
+  "supporting_references": [
+    {
+      "title": "Workflow syntax for GitHub Actions",
+      "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax"
+    },
+    {
+      "title": "Contexts reference",
+      "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts"
+    },
+    {
+      "title": "Events that trigger workflows",
+      "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows"
+    }
+  ]
+}

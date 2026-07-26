@@ -8,6 +8,24 @@ It does not automatically prove compliance.
 
 ## Framework roles
 
+### GitHub security guidance
+
+Use the pinned GitHub security guidance registry for GitHub-specific
+implementation recommendations covering software supply-chain protection and
+GitHub Actions security.
+
+Relationship examples:
+
+- supports
+- verifies
+- related-to
+
+GitHub documentation is vendor guidance, not a formal compliance framework.
+Mappings must identify a page-level registry ID and must not imply that use of
+a GitHub feature is sufficient to satisfy a broader security outcome. The
+registry version is the reviewed `github/docs` commit because the published
+documentation does not have a framework-style version number.
+
 ### MITRE ATT&CK
 
 Use for relevant attacker behavior and techniques.
