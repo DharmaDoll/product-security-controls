@@ -50,7 +50,11 @@ controls/<domain>/<control>/
 | Control | Outcome | Evidence |
 |---|---|---|
 | `PSB-CICD-001` | External GitHub Actions and reusable workflows use immutable references | E3 |
+| `PSB-CICD-002` | GitHub Actions expressions do not generate runner shell source | E3 |
+| `PSB-DEPS-001` | 依存パッケージの公開直後採用を7日間のcooldownで制御 | E3 |
+| `PSB-DEPS-002` | install時のdependency code executionをdefault denyに制御 | E3 |
 | `PSB-SOURCE-001` | Developer endpoint policy protects local development trust boundaries | E3 |
+| `PSB-SOURCE-002` | リポジトリ所有のGit hooksで開発端末からの情報漏洩を予防 | E3 |
 
 ## Framework mapping
 
@@ -62,6 +66,7 @@ Each control is mapped to applicable items from:
 - SLSA
 - NIST SSDF
 - MITRE ATLAS
+- GitHub security guidance
 
 Mappings are relationships, not automatic claims of compliance.
 

@@ -67,6 +67,10 @@ Map each assertion to the organization's endpoint control plane. Examples:
 - pre-commit and repository-side secret scanning;
 - no broad Docker socket or filesystem mounts;
 - isolated package installation and controlled dependency-update timing;
+- dependency resolveとupdateに`PSB-DEPS-001`のrepository-owned cooldown
+  policyを適用し、通常installではcommitted lockfileを使用する;
+- dependency install時は`PSB-DEPS-002`でlifecycle scriptとsource buildを
+  default denyにし、必要な実行だけをreview済みの時限例外に限定する;
 - phishing-resistant MFA and centrally managed identity lifecycle;
 - managed developer egress and cloud-storage access;
 - sensitive-data file guards before commit;

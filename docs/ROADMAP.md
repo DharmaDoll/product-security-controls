@@ -19,7 +19,10 @@ Do not add multiple security tools yet.
 Implement four complete controls:
 
 1. GitHub Actions immutable SHA pinning — implemented as `PSB-CICD-001`
-2. Dependency lockfile and update cooldown
+2. Dependency lockfile and update cooldown — cooldown implemented as
+   `PSB-DEPS-001`; install-time code execution default-deny is implemented as
+   `PSB-DEPS-002`; broader ecosystem-specific lockfile enforcement remains
+   planned
 3. Secure secret handling in an application
 4. Trivy verification for container/IaC/secret examples
 
