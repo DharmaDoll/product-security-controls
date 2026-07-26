@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+set -eu
+
+repository_root="$(git rev-parse --show-toplevel)" || exit 2
+exec python3 "$repository_root/.githooks/scan-sensitive.py" \
+  --pre-push "${1:-}"

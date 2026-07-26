@@ -1,0 +1,14 @@
+[core]
+	hooksPath = /tmp/shared-hooks
+[credential]
+	helper = store
+[safe]
+	directory = *
+[push]
+	default = matching
+[commit]
+	gpgSign = false
+[tag]
+	gpgSign = false
+[user]
+	useConfigOnly = false

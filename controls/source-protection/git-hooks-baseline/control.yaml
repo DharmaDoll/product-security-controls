@@ -1,0 +1,65 @@
+id: PSB-SOURCE-002
+title: リポジトリ所有の開発者向けGit hooksセキュリティベースライン
+domain: source-protection
+summary: commit前とpushで導入される全履歴から情報漏洩の可能性を検出する。
+security_functions:
+  - prevent
+  - detect
+  - verify
+threats:
+  - id: SOURCE-LOCAL-SECRET-COMMIT
+    description: 開発者がローカルworktreeからsecret、機密ファイル、credentialを含むmetadataをcommitする。
+  - id: SOURCE-PUSH-HISTORICAL-DISCLOSURE
+    description: 機密情報を最新treeから削除してもpushで導入される過去commitに残っている。
+  - id: SOURCE-UNTRUSTED-GIT-HOOK
+    description: Gitがglobal、絶対パス、共有hooks pathから未レビューのhook codeを実行する。
+  - id: SOURCE-DEVELOPER-IDENTITY-DISCLOSURE
+    description: Git metadataまたはremote設定から個人メールアドレスやcredentialが意図せず漏洩する。
+implementations:
+  insecure:
+    - insecure/recommended.gitconfig
+  secure:
+    - secure/recommended.gitconfig
+    - secure/.githooks/pre-commit
+    - secure/.githooks/commit-msg
+    - secure/.githooks/pre-push
+    - secure/.githooks/scan-sensitive.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-SOURCE-002
+  expected:
+    - 安全なlocal Git設定と必須のrepository-owned hooksが受け入れられる
+    - 共有hooks、平文credential保存、wildcard safe.directory、未署名履歴、広いpush defaultが拒否される
+    - 禁止対象の実行形式、archive、database、生成物、key store、metadata、環境設定ファイルが拒否される
+    - AWS、Google、JWT、Bearer、GitHub、private key、Slack、generic credential patternが値を表示せず拒否される
+    - 5 MiBの方針値を超えるファイルが拒否される
+    - stagedされた機密ファイル、commit message、push履歴内のsecretが値を表示せず拒否される
+    - scanner実行エラーがcleanな結果と区別される
+mappings:
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1552.001
+    relationship: mitigates
+    confidence: medium
+    rationale: ローカルでのsecretおよび機密ファイル検査はファイル内credentialの誤公開を減らすが、回避可能でpatternにも限界がある。
+    reviewer: product-security
+    review_date: "2026-07-27"
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PS.3.1
+    relationship: supports
+    confidence: medium
+    rationale: レビューで保護されたrepository-owned hooksとローカルのcredentialおよびidentity保護は、source codeと開発環境の保護を支援する。
+    reviewer: product-security
+    review_date: "2026-07-27"
+limitations:
+  - Local hooksは回避、変更、省略できるため、独立したserver-sideおよびCI enforcementが必要である。
+  - Pattern matchingはすべての機密値を検出できず、非機密fixtureを拒否する可能性もある。
+  - 5 MiBのfile size上限はrepository方針であり、標準が定めるsecurity boundaryではない。
+  - Reference scannerは顧客データ、社外秘source、内部architecture、すべての個人情報を分類しない。
+  - Commit署名はkeyを認証するが、commit内容が安全であることを証明しない。
+  - Credential helper、署名identity、公開用email方針にはplatformおよび組織固有の設定が必要である。
+  - Hookまたはscannerの失敗はローカル操作をblockし、cleanな結果として扱ってはいけない。
+status: prototype
+owner: product-security
+evidence_level: E3

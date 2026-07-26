@@ -1,0 +1,12 @@
+FAIL core.hookspath: expected=.githooks actual=/tmp/shared-hooks
+FAIL push.default: expected=simple actual=matching
+FAIL commit.gpgsign: expected=true actual=false
+FAIL tag.gpgsign: expected=true actual=false
+FAIL user.useconfigonly: expected=true actual=false
+FAIL credential.helper: plaintext store is prohibited
+FAIL safe.directory: wildcard trust is prohibited
+FAIL hook commit-msg: missing
+FAIL hook pre-commit: missing
+FAIL hook pre-push: missing
+FAIL hook scan-sensitive.py: missing
+REJECTED 11 baseline finding(s)

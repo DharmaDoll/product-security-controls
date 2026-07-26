@@ -1,0 +1,10 @@
+[core]
+	hooksPath = .githooks
+[push]
+	default = simple
+[commit]
+	gpgSign = true
+[tag]
+	gpgSign = true
+[user]
+	useConfigOnly = true
