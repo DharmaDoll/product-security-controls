@@ -71,6 +71,8 @@ Map each assertion to the organization's endpoint control plane. Examples:
   policyを適用し、通常installではcommitted lockfileを使用する;
 - dependency install時は`PSB-DEPS-002`でlifecycle scriptとsource buildを
   default denyにし、必要な実行だけをreview済みの時限例外に限定する;
+- 通常installでは`PSB-DEPS-003`のfrozen graph、registry、artifact integrityを
+  検証し、開発端末での暗黙のlockfile再生成を許可しない;
 - phishing-resistant MFA and centrally managed identity lifecycle;
 - managed developer egress and cloud-storage access;
 - sensitive-data file guards before commit;

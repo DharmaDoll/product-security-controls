@@ -21,8 +21,8 @@ Implement four complete controls:
 1. GitHub Actions immutable SHA pinning — implemented as `PSB-CICD-001`
 2. Dependency lockfile and update cooldown — cooldown implemented as
    `PSB-DEPS-001`; install-time code execution default-deny is implemented as
-   `PSB-DEPS-002`; broader ecosystem-specific lockfile enforcement remains
-   planned
+   `PSB-DEPS-002`; normalized frozen lockfile and artifact integrity verification
+   is implemented as `PSB-DEPS-003`
 3. Secure secret handling in an application
 4. Trivy verification for container/IaC/secret examples
 
@@ -54,6 +54,9 @@ Add:
 - verified downloads;
 - container digest pinning.
 
+Build credential, privilege, sandbox, egress, and telemetry containment is
+implemented as `PSB-BUILD-001`.
+
 Also add source-protection controls for public repository exposure, including
 GitHub dorking scenarios, secret discovery in current and historical content,
 visibility review, and remediation verification. These controls must test
@@ -79,6 +82,9 @@ Add:
 - provenance;
 - signing and verification.
 
+Signed SLSA provenance expectation verification is implemented as
+`PSB-REL-001`.
+
 ## Phase 5 — AI development security
 
 Add:
@@ -101,3 +107,6 @@ Add:
 - generated framework indexes;
 - control maturity dashboard;
 - repository template documentation.
+
+SBOM impact search and evidence-first supply-chain incident response planning is
+implemented as `PSB-GOV-001`.
