@@ -1,0 +1,25 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.14.3",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_instance.direct",
+          "type": "aws_instance",
+          "values": {
+            "provider": "aws",
+            "region": "unapproved-region",
+            "disk_encryption": "none",
+            "public_ip": true,
+            "network_zone": "public",
+            "admin_access": "internet-ssh",
+            "iam_wildcard": true,
+            "image": "ubuntu:latest",
+            "tags": {}
+          }
+        }
+      ]
+    }
+  }
+}

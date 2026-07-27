@@ -1,0 +1,349 @@
+id: PSB-IAC-001
+title: Provide a secure IaC golden path with policy enforcement
+domain: container-cloud-iac-security
+summary: Combine versioned secure-by-default infrastructure modules resolved-plan policy gates provider enforcement and drift control.
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - verify
+  - govern
+threats:
+  - id: IAC-INSECURE-DIRECT-RESOURCE
+    description: A developer bypasses the approved module and creates unencrypted publicly reachable or over-privileged infrastructure.
+  - id: IAC-PLAN-GATE-BYPASS
+    description: Source scanning warning mode unknown values or scanner failure permits a dangerous resolved plan to deploy.
+  - id: IAC-PROVISIONING-PATH-BYPASS
+    description: Console API or alternate provisioning paths bypass the CI policy decision.
+  - id: IAC-RUNTIME-DRIFT
+    description: Deployed infrastructure drifts from the approved IaC revision or unsafe remediation damages availability and evidence.
+implementations:
+  insecure:
+    - insecure/golden-path-policy.json
+    - insecure/tfplan.json
+  secure:
+    - secure/golden-path-policy.json
+    - secure/tfplan.json
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-IAC-001
+  expected:
+    - secure module plan CI provider and drift policy passes all 12 checks
+    - insecure direct resource fail-open gate static credential and destructive remediation are rejected in 12 distinct rows
+    - malformed policy or plan input returns ERROR rather than a clean result
+checks:
+  - id: IAC-001
+    title: Approved IaC modules are versioned and integrity bound
+    required_state: approved registry source exact version digest and complete provider profiles
+    responsible_role: ci-platform
+    applies_to:
+      - iac-module-registry
+      - infrastructure-source
+    context:
+      threat_actor: compromised module publisher mutable source reference or developer selecting an unreviewed module
+      attack_or_failure_scenario: module code changes without application review or one cloud provider profile lacks the approved baseline
+      why_required: version and integrity binding make the platform-owned security component reviewable while a complete catalog avoids provider-specific gaps
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-IAC-001
+      expected: mutable unverified or incomplete module metadata is rejected
+      evidence:
+        - sanitized verifier output
+        - module release review
+    mapping_status: reviewed
+  - id: IAC-002
+    title: Compute modules enforce secure multi-cloud defaults
+    required_state: encrypted private no-public-IP compute with approved image tags and region for AWS GCP and Azure
+    responsible_role: ci-platform
+    applies_to:
+      - iac-module
+      - terraform-plan
+    context:
+      threat_actor: developer mistake direct resource author or attacker weakening exposed compute configuration
+      attack_or_failure_scenario: a plan creates unencrypted public untagged or mutable-image compute outside the approved module
+      why_required: secure module defaults remove repeated application-team configuration while plan validation proves the expanded resource retains the baseline
+    verification:
+      type: automated
+      method: evaluate secure and insecure Terraform plan JSON fixtures with make verify-control CONTROL=PSB-IAC-001
+      expected: every provider profile uses the approved module encryption private network no public IP digest image tags and region
+      evidence:
+        - sanitized plan verifier output
+    mapping_status: reviewed
+  - id: IAC-003
+    title: Compute administration is private and least privileged
+    required_state: approved provider administration path with no wildcard IAM
+    responsible_role: ci-platform
+    applies_to:
+      - terraform-plan
+      - cloud-identity
+    context:
+      threat_actor: internet attacker stolen administrator credential or developer adding convenience access
+      attack_or_failure_scenario: direct SSH public administration or wildcard IAM grants broad control of provisioned compute
+      why_required: provider-managed private administration and explicit privilege reduce the attack surface left even when disks and networks are otherwise hardened
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-IAC-001
+      expected: internet administration and wildcard identity grants are rejected
+      evidence:
+        - sanitized plan verifier output
+    mapping_status: reviewed
+  - id: IAC-004
+    title: PaC evaluates the resolved Terraform plan
+    required_state: deny decision over terraform show JSON with the complete reviewed rule set
+    responsible_role: ci-platform
+    applies_to:
+      - terraform-plan
+      - ci-quality-gate
+    context:
+      threat_actor: nested module dynamic configuration or contributor hiding unsafe values behind source abstractions
+      attack_or_failure_scenario: source-text scanning passes while module expansion produces an unsafe resource in the executable plan
+      why_required: resolved-plan evaluation checks the infrastructure Terraform intends to change rather than assuming module source and inputs fully describe the outcome
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-IAC-001
+      expected: source-only warning-only or incomplete decision configuration is rejected
+      evidence:
+        - sanitized decision output
+        - reviewed policy test
+    mapping_status: reviewed
+  - id: IAC-005
+    title: PaC findings unknowns and execution errors fail closed
+    required_state: finding blocks unknown values require block or review and tool failure is ERROR
+    responsible_role: ci-platform
+    applies_to:
+      - ci-quality-gate
+      - policy-engine
+    context:
+      threat_actor: contributor exploiting fail-open behavior or policy engine dependency and input failure
+      attack_or_failure_scenario: a denied unknown unevaluated or failed plan continues to deployment as if no finding existed
+      why_required: decision-state separation prevents availability problems in the guardrail from silently removing the guardrail
+    verification:
+      type: automated
+      method: run positive negative and malformed fixtures with make verify-control CONTROL=PSB-IAC-001
+      expected: insecure plan exits 1 malformed input exits 2 and neither is clean
+      evidence:
+        - negative-test output
+        - error-state output
+    mapping_status: reviewed
+  - id: IAC-006
+    title: Reusable CI composes implemented security controls
+    required_state: immutable reusable workflow with explicit minimum permissions and separate implemented and planned capabilities
+    responsible_role: ci-platform
+    applies_to:
+      - reusable-ci-workflow
+      - ci-quality-gate
+    context:
+      threat_actor: template maintainer introducing drift or application team copying and weakening security jobs
+      attack_or_failure_scenario: repositories run divergent mutable or over-privileged pipelines and claim planned scanners SBOM or signing as active
+      why_required: central immutable composition reduces adoption effort while explicit capability status prevents documentation from overstating actual enforcement
+    verification:
+      type: hybrid
+      method: verify composition metadata then verify each referenced implemented control independently
+      expected: required implemented controls are present planned controls stay marked planned and reusable workflow policy is immutable and least privileged
+      evidence:
+        - sanitized composition verifier output
+        - referenced control verifier outputs
+    mapping_status: reviewed
+  - id: IAC-007
+    title: Deployment identity is short lived and job scoped
+    required_state: deploy-only OIDC with exact audience maximum 15-minute lifetime and no stored cloud key
+    responsible_role: ci-platform
+    applies_to:
+      - deploy-job
+      - cloud-identity
+    context:
+      threat_actor: malicious build step untrusted pull request or attacker stealing a stored cloud access key
+      attack_or_failure_scenario: non-deploy code obtains durable broad cloud credentials or exchanges an OIDC token against an overly broad trust policy
+      why_required: job isolation exact audience and short lifetime constrain credential availability beyond merely enabling id-token write
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-IAC-001 and inspect cloud trust policy
+      expected: static keys wildcard audience long sessions and non-deploy credential access are rejected
+      evidence:
+        - sanitized verifier output
+        - cloud trust policy
+    mapping_status: reviewed
+  - id: IAC-008
+    title: Provider enforcement covers CI bypass paths
+    required_state: versioned fail-mode policy on create and update across every provisioning path
+    responsible_role: ci-platform
+    applies_to:
+      - cloud-control-plane
+      - policy-engine
+    context:
+      threat_actor: privileged user alternate automation or attacker changing infrastructure outside the approved pipeline
+      attack_or_failure_scenario: console API SDK or another IaC tool creates or updates a resource without the CI plan decision
+      why_required: provider-side enforcement closes mutation paths outside repository automation that a reusable workflow cannot observe
+    verification:
+      type: external-evidence
+      method: inspect provider policy scope and execute sanitized create and update bypass tests
+      expected: every in-scope provisioning path receives a blocking policy decision
+      evidence:
+        - provider enforcement configuration
+        - sanitized bypass negative test
+    mapping_status: reviewed
+  - id: IAC-009
+    title: Runtime state is checked continuously for drift
+    required_state: compare runtime state to an approved IaC revision within 24 hours and report unresolved scans as ERROR
+    responsible_role: ci-platform
+    applies_to:
+      - cloud-runtime-state
+      - drift-monitor
+    context:
+      threat_actor: console operator compromised cloud identity or failed reconciliation changing deployed resources
+      attack_or_failure_scenario: public access missing encryption weakened identity or other drift persists after an initially compliant deployment
+      why_required: recurring desired-state comparison covers post-deploy mutation while explicit error state prevents monitoring outages from appearing compliant
+    verification:
+      type: hybrid
+      method: verify drift policy metadata and inject a sanitized runtime drift fixture in the production adapter
+      expected: drift is detected within the objective and scanner failure is not clean
+      evidence:
+        - sanitized drift report
+        - monitoring health evidence
+    mapping_status: reviewed
+  - id: IAC-010
+    title: Automatic remediation is bounded and safe
+    required_state: only reviewed reversible actions auto-run and destructive changes require approval
+    responsible_role: ci-platform
+    applies_to:
+      - corrective-control
+      - cloud-runtime-state
+    context:
+      threat_actor: faulty policy compromised automation or operator enabling overly broad corrective action
+      attack_or_failure_scenario: drift automation deletes isolates or rekeys production resources causing outage or destroying investigation evidence
+      why_required: an explicit safe-action allowlist preserves rapid correction without granting an unattended policy engine unlimited destructive authority
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-IAC-001 and review corrective-control negative tests
+      expected: unlisted or destructive remediation requires impact review and approval
+      evidence:
+        - sanitized policy verifier output
+        - corrective action test
+    mapping_status: reviewed
+  - id: IAC-011
+    title: Golden-path exceptions are narrow and expire
+    required_state: exact resource rule owner justification compensating control and expiration
+    responsible_role: security
+    applies_to:
+      - policy-exception
+      - infrastructure-source
+    context:
+      threat_actor: maintainer normalizing a temporary override or attacker benefiting from a wildcard bypass
+      attack_or_failure_scenario: permanent or broad suppression disables module plan provider or drift enforcement for unrelated resources
+      why_required: exact ownership justification and expiry keep necessary deviations visible and prevent the exception path from replacing the golden path
+    verification:
+      type: hybrid
+      method: verify exception metadata and test expired wildcard and unowned exceptions
+      expected: broad unowned unjustified or expired exceptions fail validation
+      evidence:
+        - exception record
+        - expiry negative-test output
+    mapping_status: reviewed
+  - id: IAC-012
+    title: Plan artifacts are protected and expire
+    required_state: encrypted access-controlled short retention with no Terraform plan committed to source
+    responsible_role: ci-platform
+    applies_to:
+      - terraform-plan
+      - ci-artifact
+    context:
+      threat_actor: repository reader artifact consumer or log collector accessing sensitive resolved plan values
+      attack_or_failure_scenario: binary or JSON plans persist secrets internal topology identifiers or sensitive configuration in source or broadly readable artifacts
+      why_required: plan confidentiality and retention address exposure created by resolved-plan inspection itself and are not provided by policy redaction alone
+    verification:
+      type: external-evidence
+      method: inspect artifact access encryption retention and repository file policy
+      expected: plans never enter source and expire from an access-controlled encrypted artifact store
+      evidence:
+        - artifact retention policy
+        - sanitized repository scan
+    mapping_status: reviewed
+mappings:
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-QA-03.01
+    relationship: supports
+    confidence: high
+    rationale: Blocking resolved-plan checks and distinct failure states support addressing pass or fail checks before infrastructure changes are accepted.
+    reviewer: product-security
+    review_date: "2026-07-28"
+    applies_to:
+      - IAC-002
+      - IAC-003
+      - IAC-004
+      - IAC-005
+      - IAC-008
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-QA-04.02
+    relationship: supports
+    confidence: medium
+    rationale: Central reusable module and workflow policy plus provider enforcement support consistent security requirements across participating infrastructure codebases.
+    reviewer: product-security
+    review_date: "2026-07-28"
+    applies_to:
+      - IAC-001
+      - IAC-006
+      - IAC-008
+      - IAC-009
+      - IAC-010
+      - IAC-011
+      - IAC-012
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-AC-04.01
+    relationship: supports
+    confidence: high
+    rationale: Explicit job-minimum workflow permissions and deploy-only short-lived OIDC reduce CI deployment privilege.
+    reviewer: product-security
+    review_date: "2026-07-28"
+    applies_to:
+      - IAC-006
+      - IAC-007
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PW.6.1
+    relationship: supports
+    confidence: medium
+    rationale: Versioned secure modules automated plan validation controlled deployment tooling and drift checks support use of tools that improve the security of produced infrastructure.
+    reviewer: product-security
+    review_date: "2026-07-28"
+    applies_to:
+      - IAC-001
+      - IAC-002
+      - IAC-003
+      - IAC-004
+      - IAC-005
+      - IAC-006
+      - IAC-007
+      - IAC-008
+      - IAC-009
+      - IAC-010
+      - IAC-011
+      - IAC-012
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHSC-SECURE-BUILDS
+    relationship: supports
+    confidence: medium
+    rationale: Immutable reusable control composition least-privilege deployment identity and automated policy decisions support a hardened build and deployment path without proving the cloud environment is secure.
+    reviewer: product-security
+    review_date: "2026-07-28"
+    applies_to:
+      - IAC-004
+      - IAC-005
+      - IAC-006
+      - IAC-007
+limitations:
+  - Fixtures model a sanitized Terraform plan contract and do not execute Terraform or authenticate to a cloud provider.
+  - Resolved plans can contain unknown or sensitive values and policy must block or require explicit review when required facts are unavailable.
+  - AWS GCP and Azure examples are minimum common outcomes and do not replace provider-specific threat models modules tests or organization controls.
+  - A hardened or CIS-labeled image still requires immutable identity update ownership vulnerability management and runtime hardening evidence.
+  - CloudFormation Hooks and similar controls may cover only selected provisioning paths resource types operations accounts and regions.
+  - Drift detection cannot prove continuous compliance when the scanner lacks permission coverage or availability.
+  - Automatic remediation can cause outages or destroy evidence and is restricted to reviewed reversible actions.
+  - Planned Trivy SCA SBOM provenance distribution signing and OIDC profiles remain gaps until their dedicated controls are implemented and verified.
+  - Framework mappings are supporting relationships and do not establish cloud security certification or compliance.
+status: prototype
+owner: product-security
+evidence_level: E3

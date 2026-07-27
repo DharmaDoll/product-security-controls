@@ -1,0 +1,13 @@
+FAIL IAC-001 approved versioned module distribution: module source is not an approved registry; module version is mutable; module integrity is not a SHA-256 digest; provider profiles are incomplete; secure defaults can be silently overridden
+FAIL IAC-002 secure multi-cloud compute defaults: aws_instance.direct bypasses approved module; aws_instance.direct lacks required disk encryption; aws_instance.direct exposes a public IP; aws_instance.direct is not on a private network; aws_instance.direct lacks required tags; aws_instance.direct uses an unapproved region; plan does not exercise all provider profiles
+FAIL IAC-003 least-privilege administration paths: aws_instance.direct uses an unapproved administration path; aws_instance.direct contains wildcard administration privilege
+FAIL IAC-004 resolved plan decision gate: gate does not inspect the resolved Terraform plan JSON; gate has no deny decision; gate rule set is incomplete
+FAIL IAC-005 fail-closed policy evaluation: policy finding does not block; unknown plan values are accepted; scanner failure can appear clean
+FAIL IAC-006 reusable CI control composition: security jobs are copied rather than centrally reusable; reusable workflow reference is mutable; workflow permissions are not explicit and minimal; implemented control composition is incomplete; planned gates are absent or represented as implemented
+FAIL IAC-007 short-lived deployment identity: deployment does not use deploy-only OIDC; OIDC audience is not exact; OIDC lifetime exceeds 15 minutes; stored cloud keys remain enabled
+FAIL IAC-008 provider-side bypass enforcement: provider enforcement only warns; provider enforcement misses create or update; CI bypass paths are not covered; provider policy version is mutable
+FAIL IAC-009 continuous drift detection: drift interval exceeds 24 hours; drift has no approved desired-state source; drift scanner failure can appear clean
+FAIL IAC-010 bounded corrective action: automatic remediation is empty or destructive; destructive remediation lacks approval
+FAIL IAC-011 narrow expiring exceptions: exceptions are broad unowned unjustified or permanent
+FAIL IAC-012 sensitive plan artifact handling: plan artifacts can expose persistent sensitive values
+REJECTED golden path: 12 control checks failed

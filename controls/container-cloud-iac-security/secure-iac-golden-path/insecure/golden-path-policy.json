@@ -1,0 +1,47 @@
+{
+  "module": {
+    "source": "git::https://example.invalid/platform/secure-compute.git",
+    "version": "main",
+    "integrity": "",
+    "approved_image": "ubuntu:latest",
+    "providers": ["aws"],
+    "secure_defaults_locked": false
+  },
+  "plan_gate": {
+    "input": "terraform-source-text",
+    "decision": "warn",
+    "required_rules": ["encryption"],
+    "failure_mode": "continue",
+    "unknown_values": "allow",
+    "scanner_error": "clean"
+  },
+  "ci_composition": {
+    "template": "copy-paste",
+    "immutable_reference": false,
+    "permissions": "write-all",
+    "implemented_controls": [],
+    "planned_controls": []
+  },
+  "deployment_identity": {
+    "type": "static-access-key",
+    "job": "all-jobs",
+    "audience": "*",
+    "ttl_minutes": 0,
+    "stored_cloud_keys": true
+  },
+  "provider_enforcement": {
+    "mode": "warn",
+    "operations": ["create"],
+    "coverage": "ci-only",
+    "policy_version": "latest"
+  },
+  "drift": {
+    "scan_hours": 0,
+    "desired_state_source": "live-console",
+    "unresolved_state": "clean",
+    "safe_auto_remediation": ["delete-resource"],
+    "destructive_remediation": "automatic"
+  },
+  "exceptions": "wildcard-permanent",
+  "plan_artifacts": "public-persistent-committed"
+}

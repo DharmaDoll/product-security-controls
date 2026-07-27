@@ -1,0 +1,13 @@
+PASS IAC-001 approved versioned module distribution
+PASS IAC-002 secure multi-cloud compute defaults
+PASS IAC-003 least-privilege administration paths
+PASS IAC-004 resolved plan decision gate
+PASS IAC-005 fail-closed policy evaluation
+PASS IAC-006 reusable CI control composition
+PASS IAC-007 short-lived deployment identity
+PASS IAC-008 provider-side bypass enforcement
+PASS IAC-009 continuous drift detection
+PASS IAC-010 bounded corrective action
+PASS IAC-011 narrow expiring exceptions
+PASS IAC-012 sensitive plan artifact handling
+ACCEPTED golden path

@@ -66,6 +66,28 @@ PSB-GOV-001,PSB-GOV-001-INC-002,build-platform,automated,sanitized verifier outp
 PSB-GOV-001,PSB-GOV-001-INC-003,incident-response,automated,generated dry-run response plan
 PSB-GOV-001,PSB-GOV-001-INC-004,incident-response,automated,negative-test output
 PSB-GOV-001,PSB-GOV-001-INC-005,incident-response,automated,negative-test output
+PSB-IAC-001,PSB-IAC-001-IAC-001,ci-platform,automated,sanitized verifier output
+PSB-IAC-001,PSB-IAC-001-IAC-001,ci-platform,automated,module release review
+PSB-IAC-001,PSB-IAC-001-IAC-002,ci-platform,automated,sanitized plan verifier output
+PSB-IAC-001,PSB-IAC-001-IAC-003,ci-platform,automated,sanitized plan verifier output
+PSB-IAC-001,PSB-IAC-001-IAC-004,ci-platform,automated,sanitized decision output
+PSB-IAC-001,PSB-IAC-001-IAC-004,ci-platform,automated,reviewed policy test
+PSB-IAC-001,PSB-IAC-001-IAC-005,ci-platform,automated,negative-test output
+PSB-IAC-001,PSB-IAC-001-IAC-005,ci-platform,automated,error-state output
+PSB-IAC-001,PSB-IAC-001-IAC-006,ci-platform,hybrid,sanitized composition verifier output
+PSB-IAC-001,PSB-IAC-001-IAC-006,ci-platform,hybrid,referenced control verifier outputs
+PSB-IAC-001,PSB-IAC-001-IAC-007,ci-platform,hybrid,sanitized verifier output
+PSB-IAC-001,PSB-IAC-001-IAC-007,ci-platform,hybrid,cloud trust policy
+PSB-IAC-001,PSB-IAC-001-IAC-008,ci-platform,external-evidence,provider enforcement configuration
+PSB-IAC-001,PSB-IAC-001-IAC-008,ci-platform,external-evidence,sanitized bypass negative test
+PSB-IAC-001,PSB-IAC-001-IAC-009,ci-platform,hybrid,sanitized drift report
+PSB-IAC-001,PSB-IAC-001-IAC-009,ci-platform,hybrid,monitoring health evidence
+PSB-IAC-001,PSB-IAC-001-IAC-010,ci-platform,hybrid,sanitized policy verifier output
+PSB-IAC-001,PSB-IAC-001-IAC-010,ci-platform,hybrid,corrective action test
+PSB-IAC-001,PSB-IAC-001-IAC-011,security,hybrid,exception record
+PSB-IAC-001,PSB-IAC-001-IAC-011,security,hybrid,expiry negative-test output
+PSB-IAC-001,PSB-IAC-001-IAC-012,ci-platform,external-evidence,artifact retention policy
+PSB-IAC-001,PSB-IAC-001-IAC-012,ci-platform,external-evidence,sanitized repository scan
 PSB-REL-001,PSB-REL-001-REL-001,release-manager,automated,sanitized verifier output
 PSB-REL-001,PSB-REL-001-REL-002,release-manager,automated,sanitized verifier output
 PSB-REL-001,PSB-REL-001-REL-002,release-manager,automated,trusted signer policy

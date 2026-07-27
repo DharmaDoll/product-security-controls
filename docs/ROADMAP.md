@@ -73,6 +73,14 @@ Add:
 Build credential, privilege, sandbox, egress, and telemetry containment is
 implemented as `PSB-BUILD-001`.
 
+Secure infrastructure golden-path composition is implemented as
+`PSB-IAC-001`. It provides a versioned multi-cloud secure-compute module
+contract, resolved Terraform plan decision gate, fail-closed policy behavior,
+explicit composition of implemented versus planned CI capabilities,
+provider-side bypass enforcement requirements, continuous drift detection,
+and bounded corrective action. It does not mark the planned Trivy, SBOM,
+provenance distribution, artifact signing, or cloud OIDC profiles complete.
+
 Also add source-protection controls for public repository exposure, including
 GitHub dorking scenarios, secret discovery in current and historical content,
 visibility review, and remediation verification. These controls must test
@@ -217,20 +225,22 @@ SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
 
 ### P1 — Foundational product-security controls
 
-1. `PSB-SOURCE-004` — source-platform OAuth, PAT, SSH, and App credential
+1. `PSB-IAC-001` — secure-by-default IaC modules, resolved-plan PaC decision
+   gate, provider enforcement, and bounded drift remediation — implemented.
+2. `PSB-SOURCE-004` — source-platform OAuth, PAT, SSH, and App credential
    lifecycle with least privilege, expiration, protected storage, inventory,
    revocation, and audit evidence — implemented.
-2. `PSB-CICD-004` — explicit least-privilege workflow and job permissions,
+3. `PSB-CICD-004` — explicit least-privilege workflow and job permissions,
    rejecting broad write scopes.
-3. `PSB-CICD-005` — fork-safe and untrusted-PR-safe workflows with no privileged
+4. `PSB-CICD-005` — fork-safe and untrusted-PR-safe workflows with no privileged
    credential exposure or execution through `pull_request_target`.
-4. `PSB-CODE-001` — application secret handling with externalized secrets,
+5. `PSB-CODE-001` — application secret handling with externalized secrets,
    rotation-safe configuration, and negative leakage tests.
-5. `PSB-CODE-002` — authentication and session lifecycle, including secure
+6. `PSB-CODE-002` — authentication and session lifecycle, including secure
    recovery and invalidation behavior.
-6. `PSB-CODE-003` — object- and function-level authorization with IDOR negative
+7. `PSB-CODE-003` — object- and function-level authorization with IDOR negative
    tests.
-7. `PSB-DETECT-001` — pinned, integrity-verified Trivy verification for
+8. `PSB-DETECT-001` — pinned, integrity-verified Trivy verification for
    filesystem, container, IaC, secret, and SBOM fixtures, with scanner errors
    distinct from clean results.
 

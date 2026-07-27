@@ -1,0 +1,47 @@
+{
+  "module": {
+    "source": "registry.example.invalid/platform/secure-compute/multicloud",
+    "version": "3.2.1",
+    "integrity": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "approved_image": "registry.example.invalid/platform/hardened-os@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "providers": ["aws", "gcp", "azure"],
+    "secure_defaults_locked": true
+  },
+  "plan_gate": {
+    "input": "terraform-show-json",
+    "decision": "deny",
+    "required_rules": ["encryption", "private-network", "no-public-ip", "least-privilege-admin", "approved-image", "required-tags", "approved-region"],
+    "failure_mode": "block",
+    "unknown_values": "block-or-explicit-review",
+    "scanner_error": "error"
+  },
+  "ci_composition": {
+    "template": "reusable-workflow",
+    "immutable_reference": true,
+    "permissions": "explicit-job-minimum",
+    "implemented_controls": ["PSB-CICD-001", "PSB-CICD-003", "PSB-BUILD-001", "PSB-BUILD-003", "PSB-SOURCE-002", "PSB-IAC-001"],
+    "planned_controls": ["PSB-CICD-006", "PSB-DETECT-001", "PSB-REL-002", "PSB-REL-003"]
+  },
+  "deployment_identity": {
+    "type": "oidc",
+    "job": "deploy-only",
+    "audience": "https://cloud.example.invalid/golden-path",
+    "ttl_minutes": 15,
+    "stored_cloud_keys": false
+  },
+  "provider_enforcement": {
+    "mode": "fail",
+    "operations": ["create", "update"],
+    "coverage": "all-provisioning-paths",
+    "policy_version": "2026.07.28"
+  },
+  "drift": {
+    "scan_hours": 24,
+    "desired_state_source": "approved-iac-revision",
+    "unresolved_state": "error",
+    "safe_auto_remediation": ["remove-public-ip", "restore-required-tags"],
+    "destructive_remediation": "approval-required"
+  },
+  "exceptions": "exact-owned-justified-expiring",
+  "plan_artifacts": "encrypted-access-controlled-expiring-never-committed"
+}

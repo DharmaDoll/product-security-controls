@@ -1,0 +1,55 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.14.3",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "module.secure_compute.aws_instance.this",
+          "type": "aws_instance",
+          "values": {
+            "provider": "aws",
+            "region": "ap-northeast-1",
+            "disk_encryption": "customer-managed-kms",
+            "public_ip": false,
+            "network_zone": "private",
+            "admin_access": "ssm-session-manager",
+            "iam_wildcard": false,
+            "image": "registry.example.invalid/platform/hardened-os@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "tags": {"owner": "platform", "data-classification": "internal"}
+          }
+        },
+        {
+          "address": "module.secure_compute.google_compute_instance.this",
+          "type": "google_compute_instance",
+          "values": {
+            "provider": "gcp",
+            "region": "asia-northeast1",
+            "disk_encryption": "cloud-kms-cmek",
+            "public_ip": false,
+            "network_zone": "private",
+            "admin_access": "iap-os-login",
+            "iam_wildcard": false,
+            "image": "registry.example.invalid/platform/hardened-os@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "tags": {"owner": "platform", "data-classification": "internal"}
+          }
+        },
+        {
+          "address": "module.secure_compute.azurerm_linux_virtual_machine.this",
+          "type": "azurerm_linux_virtual_machine",
+          "values": {
+            "provider": "azure",
+            "region": "japaneast",
+            "disk_encryption": "key-vault-cmk",
+            "public_ip": false,
+            "network_zone": "private",
+            "admin_access": "entra-bastion",
+            "iam_wildcard": false,
+            "image": "registry.example.invalid/platform/hardened-os@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "tags": {"owner": "platform", "data-classification": "internal"}
+          }
+        }
+      ]
+    }
+  }
+}

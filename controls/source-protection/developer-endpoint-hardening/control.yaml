@@ -29,7 +29,7 @@ verification:
     - insecure endpoint policy is rejected with a non-zero result and 28 failed checks
     - complete verifier output matches the sanitized expected evidence
     - policy validation failure is distinct from a clean result
-    - read-only Linux assessment emits all 20 check states without host identifiers or matched secret values
+    - read-only Linux assessment emits all 28 check states without host identifiers or matched secret values
     - FAIL NOT_CHECKED and assessment execution ERROR use distinct exit states
 assessment:
   command: assessment/assess.py

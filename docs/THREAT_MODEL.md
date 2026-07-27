@@ -85,6 +85,21 @@ evidence.
 - missing provenance;
 - mutable container tags.
 
+### Cloud and IaC golden-path threats
+
+- application teams bypassing approved modules and creating unencrypted,
+  publicly reachable, mutable-image, or over-privileged infrastructure;
+- source-only scanning missing unsafe values introduced by module expansion in
+  the resolved plan;
+- policy findings, unknown values, missing plans, or scanner failures being
+  treated as clean;
+- console, API, SDK, or alternate IaC paths bypassing repository CI gates;
+- deployed resources drifting from an approved IaC revision;
+- broad corrective automation causing outages or destroying investigation
+  evidence;
+- reusable CI templates claiming planned scanning, SBOM, signing, provenance
+  distribution, or OIDC controls as already implemented.
+
 ### AI-assisted development threats
 
 - poisoned Skills;
