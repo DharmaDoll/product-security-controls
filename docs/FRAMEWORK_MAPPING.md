@@ -78,6 +78,10 @@ Top 10 is too coarse to serve as the only implementation requirement.
 
 Use for detailed application security verification requirements.
 
+The pinned baseline is ASVS `5.0.0`. Mapping identifiers must use the
+version-qualified form recommended by OWASP, for example
+`v5.0.0-1.2.5`; unqualified identifiers such as `1.2.5` are not accepted.
+
 Relationship examples:
 
 - supports

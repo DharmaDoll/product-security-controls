@@ -11,6 +11,7 @@ Framework registries currently include:
   and case studies.
 - `nist-ssdf/` — NIST SP 800-218 Secure Software Development Framework tasks
   referenced by controls.
+- `owasp-asvs/` — OWASP ASVS 5.0.0 application verification requirements.
 - `slsa/` — SLSA source and build integrity requirements referenced by
   controls.
 
