@@ -31,6 +31,76 @@ verification:
     - signer-builder pair、build type、source repository、full commit、refが期待値に一致する
     - trust signalの欠落または低下が拒否される
     - crypto toolまたはparser失敗がcleanな結果と区別される
+checks:
+  - id: REL-001
+    title: Artifact digest matches the provenance subject
+    required_state: exact cryptographic digest correspondence
+    responsible_role: release-manager
+    applies_to:
+      - release-artifact
+      - provenance
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-001
+      expected: substituted artifacts and mismatched subjects are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: REL-002
+    title: Provenance signature verifies with the trusted public key
+    required_state: valid signature from a consumer-approved signer
+    responsible_role: release-manager
+    applies_to:
+      - release-artifact
+      - provenance
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-001
+      expected: missing invalid and untrusted signatures are rejected
+      evidence:
+        - sanitized verifier output
+        - trusted signer policy
+    mapping_status: reviewed
+  - id: REL-003
+    title: Provenance matches consumer-owned build expectations
+    required_state: signer builder build type source commit and ref match policy
+    responsible_role: release-manager
+    applies_to:
+      - provenance
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-001
+      expected: provenance outside the approved build expectation is rejected
+      evidence:
+        - sanitized verifier output
+        - verification policy
+    mapping_status: reviewed
+  - id: REL-004
+    title: Release trust signals cannot silently downgrade
+    required_state: required signature and provenance signals remain present
+    responsible_role: release-manager
+    applies_to:
+      - release-artifact
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-001
+      expected: absent or weaker trust signals are rejected
+      evidence:
+        - negative-test output
+    mapping_status: reviewed
+  - id: REL-005
+    title: Cryptographic verification failures are not clean results
+    required_state: crypto tool and parser failures produce an error
+    responsible_role: release-manager
+    applies_to:
+      - release-verifier
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-001
+      expected: verifier execution failure uses a distinct non-zero result
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
 mappings:
   - framework: slsa
     version: "1.2"
@@ -40,6 +110,10 @@ mappings:
     rationale: SLSA provenance statementのsubject digest、predicate type、builder、build inputを署名とともにconsumer expectationへ照合する。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - REL-001
+      - REL-003
+      - REL-004
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: PS.2.1
@@ -48,6 +122,11 @@ mappings:
     rationale: Software releaseの完全性を暗号署名とprovenance expectationで検証し、改ざん検知を支援する。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - REL-001
+      - REL-002
+      - REL-003
+      - REL-004
   - framework: openssf-osps-baseline
     version: "2026.02.19"
     id: OSPS-BR-06.01
@@ -56,6 +135,10 @@ mappings:
     rationale: Release artifactのcryptographic digestを含むsigned provenanceをconsumer expectationへ照合し、署名またはsigned manifest要件を検証する。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - REL-001
+      - REL-002
+      - REL-004
 limitations:
   - このfixtureはSLSA Build levelの正式assessmentまたはcomplianceを証明しない。
   - Keyless certificate、transparency log、revocation、timestamp検証は実環境adapterが必要である。

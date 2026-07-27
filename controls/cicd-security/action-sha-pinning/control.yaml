@@ -22,6 +22,72 @@ verification:
     - Docker-based actions use immutable sha256 image digests
     - mutable tags branches short SHAs and dynamic references are rejected
     - policy violations and verifier execution errors have distinct exit codes
+checks:
+  - id: ACT-001
+    title: External GitHub Actions use full commit SHAs
+    required_state: full 40-character commit SHA
+    responsible_role: repository-admin
+    applies_to:
+      - ci-workflow
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-001
+      expected: external Action references without a full SHA are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: ACT-002
+    title: External reusable workflows use full commit SHAs
+    required_state: full 40-character commit SHA
+    responsible_role: repository-admin
+    applies_to:
+      - ci-workflow
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-001
+      expected: external reusable workflow references without a full SHA are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: ACT-003
+    title: Docker-based Actions use immutable image digests
+    required_state: sha256 image digest
+    responsible_role: repository-admin
+    applies_to:
+      - ci-workflow
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-001
+      expected: Docker image tags and unpinned images are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: ACT-004
+    title: Mutable and dynamic workflow references are rejected
+    required_state: no tag branch short SHA or dynamic external reference
+    responsible_role: repository-admin
+    applies_to:
+      - ci-workflow
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-001
+      expected: all mutable reference fixtures fail validation
+      evidence:
+        - negative-test output
+    mapping_status: reviewed
+  - id: ACT-005
+    title: Reference verification failures are distinct from policy findings
+    required_state: verifier errors and policy violations use different exit states
+    responsible_role: repository-admin
+    applies_to:
+      - ci-verifier
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-001
+      expected: execution errors cannot be interpreted as clean results
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
 mappings:
   - framework: github-security-guidance
     version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
@@ -31,6 +97,10 @@ mappings:
     rationale: The control directly implements GitHub's recommendation to pin third-party Actions to full-length commit SHAs while retaining separate review and update requirements.
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - ACT-001
+      - ACT-002
+      - ACT-004
   - framework: mitre-attack
     version: "v19.1"
     id: T1195.001
@@ -39,6 +109,11 @@ mappings:
     rationale: Immutable references reduce the opportunity to replace a reviewed workflow dependency or development tool through a moved Git reference.
     reviewer: product-security
     review_date: "2026-07-25"
+    applies_to:
+      - ACT-001
+      - ACT-002
+      - ACT-003
+      - ACT-004
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: PW.4.1
@@ -47,6 +122,11 @@ mappings:
     rationale: Pinning reviewed third-party workflow components supports controlled acquisition and maintenance but does not establish that the component is secure.
     reviewer: product-security
     review_date: "2026-07-25"
+    applies_to:
+      - ACT-001
+      - ACT-002
+      - ACT-003
+      - ACT-004
 limitations:
   - A pinned commit can already contain malicious or vulnerable code and must still be reviewed.
   - The verifier checks immutable reference syntax but does not prove that a SHA belongs to the named upstream repository.

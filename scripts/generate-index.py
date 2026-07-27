@@ -23,15 +23,22 @@ def main() -> int:
         "",
         "Generated control catalog. Do not edit manually.",
         "",
-        "| ID | Domain | Title | Status | Evidence |",
-        "| --- | --- | --- | --- | --- |",
+        "| ID | Domain | Title | Checks | Status | Evidence |",
+        "| --- | --- | --- | --- | --- | --- |",
     ]
     for control in sorted(controls, key=lambda item: item["id"]):
         lines.append(
             "| "
             + " | ".join(
-                markdown_cell(control[field])
-                for field in ("id", "domain", "title", "status", "evidence_level")
+                markdown_cell(value)
+                for value in (
+                    control["id"],
+                    control["domain"],
+                    control["title"],
+                    len(control["checks"]),
+                    control["status"],
+                    control["evidence_level"],
+                )
             )
             + " |"
         )

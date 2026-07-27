@@ -37,7 +37,20 @@ RELATIONSHIPS = {
 CONFIDENCE_LEVELS = {"low", "medium", "high"}
 STATUSES = {"idea", "planned", "prototype", "reference", "adopted", "deprecated"}
 EVIDENCE_LEVELS = {"E0", "E1", "E2", "E3", "E4"}
+CHECK_ROLES = {
+    "developer",
+    "repository-admin",
+    "ci-platform",
+    "build-platform",
+    "release-manager",
+    "security",
+    "incident-response",
+    "shared",
+}
+VERIFICATION_TYPES = {"automated", "manual", "external-evidence", "hybrid"}
+MAPPING_STATUSES = {"reviewed", "provisional", "unmapped"}
 CONTROL_ID_RE = re.compile(r"^PSB-[A-Z]+-[0-9]{3}$")
+CHECK_ID_RE = re.compile(r"^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$")
 _INTEGER_RE = re.compile(r"^-?\d+$")
 
 
@@ -90,15 +103,19 @@ def parse_yaml_subset(path: Path) -> dict[str, Any]:
                     key, scalar = item_text.split(": ", 1)
                     item: dict[str, Any] = {key: parse_scalar(scalar)}
                     index += 1
-                    while index < len(entries) and entries[index][1] > current_indent:
-                        nested_line, nested_indent, nested_text = entries[index]
-                        if nested_indent != current_indent + 2 or ": " not in nested_text:
+                    if index < len(entries) and entries[index][1] > current_indent:
+                        nested, index = parse_block(index, current_indent + 2)
+                        if not isinstance(nested, dict):
+                            nested_line = entries[index][0] if index < len(entries) else line_number
                             raise MetadataError(
-                                f"{path}:{nested_line}: unsupported list mapping syntax"
+                                f"{path}:{nested_line}: list mapping fields must be a mapping"
                             )
-                        nested_key, nested_scalar = nested_text.split(": ", 1)
-                        item[nested_key] = parse_scalar(nested_scalar)
-                        index += 1
+                        for nested_key, nested_value in nested.items():
+                            if nested_key in item:
+                                raise MetadataError(
+                                    f"{path}:{line_number}: duplicate key {nested_key!r}"
+                                )
+                            item[nested_key] = nested_value
                     value.append(item)
                 elif item_text.endswith(":"):
                     key = item_text[:-1]
@@ -113,11 +130,15 @@ def parse_yaml_subset(path: Path) -> dict[str, Any]:
                 break
             if ": " in text:
                 key, scalar = text.split(": ", 1)
+                if key in value:
+                    raise MetadataError(f"{path}:{line_number}: duplicate key {key!r}")
                 value[key] = parse_scalar(scalar)
                 index += 1
                 continue
             if text.endswith(":"):
                 key = text[:-1]
+                if key in value:
+                    raise MetadataError(f"{path}:{line_number}: duplicate key {key!r}")
                 nested, index = parse_block(index + 1, current_indent + 2)
                 value[key] = nested
                 continue
@@ -217,7 +238,72 @@ def validate_controls(controls: list[dict[str, Any]]) -> list[str]:
                 if not isinstance(verification.get(field), list) or not verification[field]:
                     errors.append(f"{label}: verification.{field} must be a non-empty list")
 
+        checks = control.get("checks")
+        check_ids: set[str] = set()
+        mapping_status_by_check: dict[str, str] = {}
+        if not isinstance(checks, list) or not checks:
+            errors.append(f"{label}: checks must be a non-empty list")
+        else:
+            for index, check in enumerate(checks):
+                check_label = f"{label}: checks[{index}]"
+                if not isinstance(check, dict):
+                    errors.append(f"{check_label} must be a mapping")
+                    continue
+                for field in (
+                    "id",
+                    "title",
+                    "required_state",
+                    "responsible_role",
+                    "mapping_status",
+                ):
+                    _require_text(check, field, errors, check_label)
+                check_id = check.get("id")
+                if isinstance(check_id, str):
+                    if not CHECK_ID_RE.fullmatch(check_id):
+                        errors.append(f"{check_label}: invalid check id {check_id!r}")
+                    if check_id in check_ids:
+                        errors.append(f"{check_label}: duplicate check id {check_id!r}")
+                    check_ids.add(check_id)
+                    mapping_status_by_check[check_id] = check.get("mapping_status", "")
+                if check.get("responsible_role") not in CHECK_ROLES:
+                    errors.append(
+                        f"{check_label}: unsupported responsible_role "
+                        f"{check.get('responsible_role')!r}"
+                    )
+                applies_to = check.get("applies_to")
+                if not isinstance(applies_to, list) or not applies_to:
+                    errors.append(f"{check_label}: applies_to must be a non-empty list")
+                elif any(not isinstance(item, str) or not item.strip() for item in applies_to):
+                    errors.append(f"{check_label}: applies_to entries must be non-empty strings")
+                check_verification = check.get("verification")
+                if not isinstance(check_verification, dict):
+                    errors.append(f"{check_label}: verification must be a mapping")
+                else:
+                    for field in ("type", "method", "expected"):
+                        _require_text(
+                            check_verification,
+                            field,
+                            errors,
+                            f"{check_label}: verification",
+                        )
+                    if check_verification.get("type") not in VERIFICATION_TYPES:
+                        errors.append(
+                            f"{check_label}: unsupported verification type "
+                            f"{check_verification.get('type')!r}"
+                        )
+                    evidence = check_verification.get("evidence")
+                    if not isinstance(evidence, list) or not evidence:
+                        errors.append(
+                            f"{check_label}: verification.evidence must be a non-empty list"
+                        )
+                if check.get("mapping_status") not in MAPPING_STATUSES:
+                    errors.append(
+                        f"{check_label}: unsupported mapping_status "
+                        f"{check.get('mapping_status')!r}"
+                    )
+
         mappings = control.get("mappings")
+        mapped_check_ids: set[str] = set()
         if not isinstance(mappings, list) or not mappings:
             errors.append(f"{label}: mappings must be a non-empty list")
         else:
@@ -246,6 +332,27 @@ def validate_controls(controls: list[dict[str, Any]]) -> list[str]:
                     errors.append(
                         f"{mapping_label}: unsupported confidence {mapping.get('confidence')!r}"
                     )
+                applies_to = mapping.get("applies_to")
+                if not isinstance(applies_to, list) or not applies_to:
+                    errors.append(f"{mapping_label}: applies_to must be a non-empty list")
+                else:
+                    for check_id in applies_to:
+                        if check_id not in check_ids:
+                            errors.append(
+                                f"{mapping_label}: unknown check id {check_id!r}"
+                            )
+                        elif isinstance(check_id, str):
+                            mapped_check_ids.add(check_id)
+
+        for check_id, mapping_status in mapping_status_by_check.items():
+            if mapping_status in {"reviewed", "provisional"} and check_id not in mapped_check_ids:
+                errors.append(
+                    f"{label}: check {check_id!r} is {mapping_status} but has no mapping"
+                )
+            if mapping_status == "unmapped" and check_id in mapped_check_ids:
+                errors.append(
+                    f"{label}: check {check_id!r} is unmapped but is referenced by a mapping"
+                )
 
         limitations = control.get("limitations")
         if not isinstance(limitations, list) or not limitations:

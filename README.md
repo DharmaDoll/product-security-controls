@@ -51,6 +51,7 @@ controls/<domain>/<control>/
 |---|---|---|
 | `PSB-CICD-001` | External GitHub Actions and reusable workflows use immutable references | E3 |
 | `PSB-CICD-002` | GitHub Actions expressions do not generate runner shell source | E3 |
+| `PSB-CICD-003` | pinned zizmorでworkflowをblock判定し、trusted branchのSARIFを記録 | E3 |
 | `PSB-DEPS-001` | 依存パッケージの公開直後採用を7日間のcooldownで制御 | E3 |
 | `PSB-DEPS-002` | install時のdependency code executionをdefault denyに制御 | E3 |
 | `PSB-DEPS-003` | frozen lockfileとartifact integrityを検証 | E3 |
@@ -62,6 +63,21 @@ controls/<domain>/<control>/
 
 Software supply-chain controlの関係は
 [`docs/SUPPLY_CHAIN_PRINCIPLES.md`](docs/SUPPLY_CHAIN_PRINCIPLES.md)を参照してください。
+
+## Adoption checklist
+
+全controlの原子的な確認項目、担当、確認方法、必要な証跡、行単位の
+framework mappingをCSV、Markdown、Excelへ生成します。
+
+```bash
+make generate
+```
+
+index、framework reverse mapping、checklistをまとめて最新化します。
+checklistだけを更新する場合は`make generate-checklists`を使用できます。
+生成物は`generated/checklists/`に保存されます。`control.yaml`が正本であり、
+生成されたspreadsheetは直接編集しません。組織固有の担当、判定、証跡URL、
+期限、例外IDは`product-security-assessment-template.xlsx`へ記録します。
 
 ## Framework mapping
 

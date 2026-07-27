@@ -169,6 +169,12 @@ Every mapping records:
 - rationale;
 - reviewer;
 - review date.
+- the atomic check identifiers to which the rationale applies.
+
+Generated checklist rows show only mappings whose `applies_to` explicitly
+references that check. A parent control mapping is never inherited
+automatically. Checks without a reviewed relationship are displayed as
+`UNMAPPED — framework review required`.
 
 Confidence levels:
 

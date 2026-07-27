@@ -46,6 +46,21 @@ verification:
     - all third-party actions use full commit SHAs
     - workflow permissions remain minimal
 
+checks:
+  - id: ACT-001
+    title: External Actions use full commit SHAs
+    required_state: full 40-character commit SHA
+    responsible_role: repository-admin
+    applies_to:
+      - ci-workflow
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-001
+      expected: mutable Action references are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+
 mappings:
   - framework: mitre-attack
     version: "<pinned-version>"
@@ -53,6 +68,8 @@ mappings:
     relationship: mitigates
     confidence: medium
     rationale: Reduces exposure to software supply-chain compromise.
+    applies_to:
+      - ACT-001
   - framework: nist-ssdf
     version: "<pinned-version>"
     id: "<practice-or-task>"
@@ -67,6 +84,18 @@ limitations:
 status: planned
 owner: product-security
 ```
+
+## Atomic adoption checks
+
+`checks` are the source for generated adoption checklists. One check describes
+one assessable required state. Compound expectations must be split so a user can
+assign responsibility and record an unambiguous result.
+
+`responsible_role` identifies the primary adopter. `verification.type`
+distinguishes local automation from manual or organization-owned evidence.
+Framework mappings use `applies_to` to link a reviewed rationale to specific
+checks. A check with no reviewed relationship uses `mapping_status: unmapped`;
+the parent control's mappings must not be copied to it implicitly.
 
 ## Control maturity
 

@@ -1,0 +1,1 @@
+ACCEPTED zizmor 1.28.0 workflow with separate blocking and trusted SARIF jobs

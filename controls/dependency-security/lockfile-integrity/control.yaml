@@ -28,6 +28,72 @@ verification:
     - artifact SHA-256がlockfileと一致する
     - version range、lockfile書換え、artifact改ざんが拒否される
     - 入力欠落またはparse失敗がcleanな結果と区別される
+checks:
+  - id: LOCK-001
+    title: Manifest and frozen lockfile dependency graphs match
+    required_state: identical dependency names and exact versions
+    responsible_role: developer
+    applies_to:
+      - dependency-graph
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-003
+      expected: graph drift and implicit lockfile rewrites are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: LOCK-002
+    title: Dependency registries use a credential-free HTTPS allowlist
+    required_state: approved HTTPS registry origins only
+    responsible_role: repository-admin
+    applies_to:
+      - dependency-registry
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-003
+      expected: unapproved registries and credential-bearing URLs are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: LOCK-003
+    title: Downloaded artifact digest matches the lockfile
+    required_state: verified SHA-256 for every artifact
+    responsible_role: developer
+    applies_to:
+      - dependency-artifact
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-003
+      expected: modified artifacts and missing integrity values are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: LOCK-004
+    title: Floating versions and dependency graph changes are rejected
+    required_state: exact versions and frozen reviewed lockfile
+    responsible_role: developer
+    applies_to:
+      - dependency-graph
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-003
+      expected: version ranges lockfile changes and substitutions fail validation
+      evidence:
+        - negative-test output
+    mapping_status: reviewed
+  - id: LOCK-005
+    title: Lockfile verification failures are not clean results
+    required_state: missing unreadable or malformed input produces an error
+    responsible_role: developer
+    applies_to:
+      - dependency-verifier
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-003
+      expected: verifier errors use a distinct non-zero result
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
 mappings:
   - framework: mitre-attack
     version: "v19.1"
@@ -37,6 +103,11 @@ mappings:
     rationale: Software dependencyの解決結果と取得artifactを固定・検証し、dependency compromiseや取得経路改ざんによる差替えを抑制する。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - LOCK-001
+      - LOCK-002
+      - LOCK-003
+      - LOCK-004
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: PW.4.1
@@ -45,6 +116,11 @@ mappings:
     rationale: Third-party componentの取得元、version、dependency graph、integrityを機械検証しcontrolled acquisitionを支援する。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - LOCK-001
+      - LOCK-002
+      - LOCK-003
+      - LOCK-004
 limitations:
   - 正しいhashはartifactの安全性を証明しない。
   - 実package manager固有lockfileには個別adapterが必要である。

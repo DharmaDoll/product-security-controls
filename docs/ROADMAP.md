@@ -46,6 +46,7 @@ Prioritize ASVS mappings.
 
 Add:
 
+- GitHub Actions static analysis — implemented as `PSB-CICD-003`;
 - minimal permissions;
 - fork-safe workflows;
 - dependency review;

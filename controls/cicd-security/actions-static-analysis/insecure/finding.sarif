@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "zizmor",
+          "version": "1.28.0"
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "results": [
+        {
+          "ruleId": "template-injection",
+          "level": "error",
+          "message": {
+            "text": "untrusted input reaches a run script"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/ci.yml"
+                },
+                "region": {
+                  "startLine": 20
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

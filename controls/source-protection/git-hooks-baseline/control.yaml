@@ -35,6 +35,165 @@ verification:
     - 5 MiBの方針値を超えるファイルが拒否される
     - stagedされた機密ファイル、commit message、push履歴内のsecretが値を表示せず拒否される
     - scanner実行エラーがcleanな結果と区別される
+checks:
+  - id: GHK-001
+    title: Security hooks are repository owned
+    required_state: reviewed relative core.hooksPath and required hook files
+    responsible_role: developer
+    applies_to:
+      - developer-endpoint
+      - source-repository
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-SOURCE-002
+      expected: the secure repository-owned hook profile is accepted
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: GHK-002
+    title: Global absolute and shared hook paths are rejected
+    required_state: no unreviewed external hook execution path
+    responsible_role: developer
+    applies_to:
+      - developer-endpoint
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-SOURCE-002
+      expected: unsafe hook paths fail validation
+      evidence:
+        - negative-test output
+    mapping_status: reviewed
+  - id: GHK-003
+    title: Plaintext credential storage is disabled in Git configuration
+    required_state: approved credential helper and no embedded remote credentials
+    responsible_role: developer
+    applies_to:
+      - developer-endpoint
+      - source-repository
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-SOURCE-002
+      expected: plaintext credentials and unsafe credential settings are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: GHK-004
+    title: Wildcard safe.directory is rejected
+    required_state: only explicitly trusted repository paths
+    responsible_role: developer
+    applies_to:
+      - developer-endpoint
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-SOURCE-002
+      expected: wildcard repository trust fails validation
+      evidence:
+        - negative-test output
+    mapping_status: reviewed
+  - id: GHK-005
+    title: Commit signing and narrow push behavior are required
+    required_state: signed commits and non-broad push default
+    responsible_role: developer
+    applies_to:
+      - source-repository
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-SOURCE-002
+      expected: unsigned history and broad push defaults are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: GHK-006
+    title: Prohibited sensitive file formats are rejected
+    required_state: reviewed deny rules for executables archives databases key stores and sensitive metadata
+    responsible_role: developer
+    applies_to:
+      - source-repository
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-SOURCE-002
+      expected: sanitized prohibited-file fixtures fail before commit
+      evidence:
+        - negative-test output
+    mapping_status: reviewed
+  - id: GHK-007
+    title: Secret patterns are rejected without disclosing values
+    required_state: approved secret patterns with redacted findings
+    responsible_role: developer
+    applies_to:
+      - source-repository
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-SOURCE-002
+      expected: representative fake credentials fail and their values are not printed
+      evidence:
+        - sanitized negative-test output
+    mapping_status: reviewed
+  - id: GHK-008
+    title: Oversized files are rejected by repository policy
+    required_state: staged files do not exceed the reviewed five MiB policy
+    responsible_role: developer
+    applies_to:
+      - source-repository
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-SOURCE-002
+      expected: a sanitized oversized fixture fails before commit
+      evidence:
+        - negative-test output
+    mapping_status: reviewed
+  - id: GHK-009
+    title: Staged content is scanned before commit
+    required_state: sensitive files and secrets in the index are rejected
+    responsible_role: developer
+    applies_to:
+      - source-repository
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-SOURCE-002
+      expected: staged sensitive content is rejected
+      evidence:
+        - sanitized negative-test output
+    mapping_status: reviewed
+  - id: GHK-010
+    title: Commit messages are scanned before commit
+    required_state: credentials and sensitive metadata in commit messages are rejected
+    responsible_role: developer
+    applies_to:
+      - source-repository
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-SOURCE-002
+      expected: sanitized secret-bearing commit messages are rejected
+      evidence:
+        - sanitized negative-test output
+    mapping_status: reviewed
+  - id: GHK-011
+    title: All introduced push history is scanned
+    required_state: secrets in any newly pushed commit are rejected
+    responsible_role: developer
+    applies_to:
+      - source-repository
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-SOURCE-002
+      expected: removing a secret from the latest tree does not bypass history scanning
+      evidence:
+        - sanitized negative-test output
+    mapping_status: reviewed
+  - id: GHK-012
+    title: Hook and scanner failures block the operation
+    required_state: execution error is distinct from clean and fails closed
+    responsible_role: developer
+    applies_to:
+      - source-verifier
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-SOURCE-002
+      expected: missing tools and scanner errors cannot report clean
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
 mappings:
   - framework: mitre-attack
     version: "v19.1"
@@ -44,6 +203,12 @@ mappings:
     rationale: ローカルでのsecretおよび機密ファイル検査はファイル内credentialの誤公開を減らすが、回避可能でpatternにも限界がある。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - GHK-003
+      - GHK-007
+      - GHK-009
+      - GHK-010
+      - GHK-011
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: PS.3.1
@@ -52,6 +217,18 @@ mappings:
     rationale: レビューで保護されたrepository-owned hooksとローカルのcredentialおよびidentity保護は、source codeと開発環境の保護を支援する。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - GHK-001
+      - GHK-002
+      - GHK-003
+      - GHK-004
+      - GHK-005
+      - GHK-006
+      - GHK-007
+      - GHK-008
+      - GHK-009
+      - GHK-010
+      - GHK-011
   - framework: openssf-osps-baseline
     version: "2026.02.19"
     id: OSPS-BR-07.01
@@ -60,6 +237,12 @@ mappings:
     rationale: Repositoryへcommitされる前にsecret patternと機密ファイルを検出・拒否し、unencrypted sensitive dataの意図しない保存防止を支援する。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - GHK-006
+      - GHK-007
+      - GHK-009
+      - GHK-010
+      - GHK-011
   - framework: cisa-product-security-bad-practices
     version: "2 (January 2025)"
     id: CISA-PSBP-PP-08
@@ -68,6 +251,11 @@ mappings:
     rationale: Commit前にhardcoded credentialとsecret patternを検出・拒否してsource codeへの混入を減らすが、pattern外のsecretやhook bypassまでは防止できない。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - GHK-007
+      - GHK-009
+      - GHK-010
+      - GHK-011
 limitations:
   - Local hooksは回避、変更、省略できるため、独立したserver-sideおよびCI enforcementが必要である。
   - Pattern matchingはすべての機密値を検出できず、非機密fixtureを拒否する可能性もある。

@@ -32,6 +32,74 @@ verification:
     - pipがsource distributionを拒否しexact pinとSHA-256 hashを要求する
     - broadまたは期限切れの承認とfail-open設定が拒否される
     - 設定欠落またはparse失敗がcleanな結果と区別される
+checks:
+  - id: INS-001
+    title: npm and Bun dependency install scripts are disabled
+    required_state: repository-owned configuration denies lifecycle scripts
+    responsible_role: developer
+    applies_to:
+      - dependency-install
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-002
+      expected: npm and Bun profiles that permit install scripts are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: INS-002
+    title: pnpm permits only reviewed time-bound builds
+    required_state: unreviewed builds fail and exact approvals expire
+    responsible_role: developer
+    applies_to:
+      - dependency-install
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-002
+      expected: broad expired or non-exact build approvals are rejected
+      evidence:
+        - sanitized verifier output
+        - approved build exception
+    mapping_status: reviewed
+  - id: INS-003
+    title: pip rejects source builds and verifies exact artifacts
+    required_state: binary-only exact pins with SHA-256 hashes
+    responsible_role: developer
+    applies_to:
+      - dependency-install
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-002
+      expected: source distributions ranges and missing hashes are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: INS-004
+    title: Install execution exceptions are narrow and fail closed
+    required_state: exact reviewed unexpired exceptions only
+    responsible_role: security
+    applies_to:
+      - dependency-policy
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-002
+      expected: broad expired and fail-open exceptions are rejected
+      evidence:
+        - negative-test output
+        - exception approval
+    mapping_status: reviewed
+  - id: INS-005
+    title: Install-policy parsing failures are not clean results
+    required_state: missing or malformed configuration produces an error
+    responsible_role: developer
+    applies_to:
+      - dependency-verifier
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-002
+      expected: input and parse errors use a distinct non-zero result
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
 mappings:
   - framework: mitre-attack
     version: "v19.1"
@@ -41,6 +109,11 @@ mappings:
     rationale: software dependencyのinstall hookまたはsource buildをdefault denyにし、compromised dependencyが取得直後に実行される経路を減らす。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - INS-001
+      - INS-002
+      - INS-003
+      - INS-004
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: PW.4.1
@@ -49,6 +122,11 @@ mappings:
     rationale: third-party component取得時の実行policy、version固定、integrity、例外reviewを検証し、controlled acquisitionとmaintenanceを支援する。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - INS-001
+      - INS-002
+      - INS-003
+      - INS-004
 limitations:
   - Install-time executionを止めてもimport、test、compiler plugin、application runtimeでの悪性code実行は防止しない。
   - Wheel-only installationはsource buildを止めるがwheel内のruntime codeが安全であることは保証しない。

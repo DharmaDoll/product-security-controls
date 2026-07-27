@@ -1,0 +1,1 @@
+ERROR controls/cicd-security/actions-static-analysis/insecure/scanner-error.sarif scanner invocation was not successful

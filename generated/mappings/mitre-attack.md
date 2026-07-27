@@ -1,12 +1,12 @@
 # mitre-attack mappings
 
-| Control | Framework version | Identifier | Relationship | Confidence | Rationale |
-| --- | --- | --- | --- | --- | --- |
-| PSB-CICD-001 - Pin external GitHub Actions and reusable workflows to immutable commits | v19.1 | T1195.001 | mitigates | medium | Immutable references reduce the opportunity to replace a reviewed workflow dependency or development tool through a moved Git reference. |
-| PSB-DEPS-001 - 依存パッケージの公開直後採用をrelease cooldownで制御 | v19.1 | T1195.001 | mitigates | medium | 公開直後versionの自動採用を遅らせ、software dependency compromise直後の露出を減らすが、malicious dependency自体を検出するものではない。 |
-| PSB-DEPS-002 - install時の任意コード実行をdefault denyにする | v19.1 | T1195.001 | mitigates | high | software dependencyのinstall hookまたはsource buildをdefault denyにし、compromised dependencyが取得直後に実行される経路を減らす。 |
-| PSB-DEPS-003 - lockfileと取得artifactの完全性を強制する | v19.1 | T1195.001 | mitigates | high | Software dependencyの解決結果と取得artifactを固定・検証し、dependency compromiseや取得経路改ざんによる差替えを抑制する。 |
-| PSB-GOV-001 - supply-chain incidentの影響範囲と対応planを即時生成する | v19.1 | T1195.001 | detects | medium | 既知のcompromised dependency versionをSBOM inventoryへ照合して影響するsoftware dependency usageを検出する。 |
-| PSB-SOURCE-001 - Harden developer endpoints and local trust boundaries | v19.1 | T1552.001 | mitigates | medium | Protected credential storage and prohibition of secrets in workspaces reduce exposure to credentials in files. |
-| PSB-SOURCE-002 - リポジトリ所有の開発者向けGit hooksセキュリティベースライン | v19.1 | T1552.001 | mitigates | medium | ローカルでのsecretおよび機密ファイル検査はファイル内credentialの誤公開を減らすが、回避可能でpatternにも限界がある。 |
-| PSB-SOURCE-001 - Harden developer endpoints and local trust boundaries | v19.1 | T1555 | mitigates | medium | System-managed credential storage and endpoint access controls reduce exposure of credentials from password stores. |
+| Control | Checks | Framework version | Identifier | Relationship | Confidence | Rationale |
+| --- | --- | --- | --- | --- | --- | --- |
+| PSB-CICD-001 - Pin external GitHub Actions and reusable workflows to immutable commits | PSB-CICD-001-ACT-001, PSB-CICD-001-ACT-002, PSB-CICD-001-ACT-003, PSB-CICD-001-ACT-004 | v19.1 | T1195.001 | mitigates | medium | Immutable references reduce the opportunity to replace a reviewed workflow dependency or development tool through a moved Git reference. |
+| PSB-DEPS-001 - 依存パッケージの公開直後採用をrelease cooldownで制御 | PSB-DEPS-001-COOL-001, PSB-DEPS-001-COOL-002, PSB-DEPS-001-COOL-003 | v19.1 | T1195.001 | mitigates | medium | 公開直後versionの自動採用を遅らせ、software dependency compromise直後の露出を減らすが、malicious dependency自体を検出するものではない。 |
+| PSB-DEPS-002 - install時の任意コード実行をdefault denyにする | PSB-DEPS-002-INS-001, PSB-DEPS-002-INS-002, PSB-DEPS-002-INS-003, PSB-DEPS-002-INS-004 | v19.1 | T1195.001 | mitigates | high | software dependencyのinstall hookまたはsource buildをdefault denyにし、compromised dependencyが取得直後に実行される経路を減らす。 |
+| PSB-DEPS-003 - lockfileと取得artifactの完全性を強制する | PSB-DEPS-003-LOCK-001, PSB-DEPS-003-LOCK-002, PSB-DEPS-003-LOCK-003, PSB-DEPS-003-LOCK-004 | v19.1 | T1195.001 | mitigates | high | Software dependencyの解決結果と取得artifactを固定・検証し、dependency compromiseや取得経路改ざんによる差替えを抑制する。 |
+| PSB-GOV-001 - supply-chain incidentの影響範囲と対応planを即時生成する | PSB-GOV-001-INC-001 | v19.1 | T1195.001 | detects | medium | 既知のcompromised dependency versionをSBOM inventoryへ照合して影響するsoftware dependency usageを検出する。 |
+| PSB-SOURCE-001 - Harden developer endpoints and local trust boundaries | PSB-SOURCE-001-DEH-002, PSB-SOURCE-001-DEH-004, PSB-SOURCE-001-DEH-005, PSB-SOURCE-001-END-005 | v19.1 | T1552.001 | mitigates | medium | Protected credential storage and prohibition of secrets in workspaces reduce exposure to credentials in files. |
+| PSB-SOURCE-002 - リポジトリ所有の開発者向けGit hooksセキュリティベースライン | PSB-SOURCE-002-GHK-003, PSB-SOURCE-002-GHK-007, PSB-SOURCE-002-GHK-009, PSB-SOURCE-002-GHK-010, PSB-SOURCE-002-GHK-011 | v19.1 | T1552.001 | mitigates | medium | ローカルでのsecretおよび機密ファイル検査はファイル内credentialの誤公開を減らすが、回避可能でpatternにも限界がある。 |
+| PSB-SOURCE-001 - Harden developer endpoints and local trust boundaries | PSB-SOURCE-001-DEH-002 | v19.1 | T1555 | mitigates | medium | System-managed credential storage and endpoint access controls reduce exposure of credentials from password stores. |

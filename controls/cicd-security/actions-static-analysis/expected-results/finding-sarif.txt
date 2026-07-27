@@ -1,0 +1,2 @@
+FAIL template-injection .github/workflows/ci.yml:20
+REJECTED 1 SARIF finding(s)

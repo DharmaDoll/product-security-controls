@@ -31,6 +31,75 @@ verification:
     - 証跡保全を先頭にしたowner approval付きdry-run planを生成する
     - 影響検出、該当なし、検証不能が異なる終了コードになる
     - 不完全inventoryとunsafe runbookが拒否される
+checks:
+  - id: INC-001
+    title: Exact package versions can be traced to affected products
+    required_state: repository build and artifact impact is queryable
+    responsible_role: incident-response
+    applies_to:
+      - incident-response
+      - sbom-inventory
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-GOV-001
+      expected: an exact package version returns all linked repositories builds and artifacts
+      evidence:
+        - sanitized impact report
+    mapping_status: reviewed
+  - id: INC-002
+    title: SBOM and build evidence remain integrity linked
+    required_state: CycloneDX serial build record and evidence digest match
+    responsible_role: build-platform
+    applies_to:
+      - sbom-inventory
+      - build-evidence
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-GOV-001
+      expected: incomplete or mismatched inventory records are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: INC-003
+    title: Response planning preserves evidence before containment
+    required_state: owner-approved dry-run plan begins with evidence preservation
+    responsible_role: incident-response
+    applies_to:
+      - incident-response
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-GOV-001
+      expected: unsafe destructive or unapproved runbooks are rejected
+      evidence:
+        - generated dry-run response plan
+    mapping_status: reviewed
+  - id: INC-004
+    title: Impact detected no impact and verification failure are distinct
+    required_state: separate exit states for each assessment outcome
+    responsible_role: incident-response
+    applies_to:
+      - incident-response
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-GOV-001
+      expected: verification failures can never be interpreted as no impact
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
+  - id: INC-005
+    title: Incomplete inventory and unsafe runbooks fail validation
+    required_state: complete integrity-linked inventory and safe runbook
+    responsible_role: incident-response
+    applies_to:
+      - incident-response
+      - sbom-inventory
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-GOV-001
+      expected: insecure fixtures are rejected
+      evidence:
+        - negative-test output
+    mapping_status: reviewed
 mappings:
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
@@ -40,6 +109,10 @@ mappings:
     rationale: Releaseに含まれるcomponentをSBOM inventoryで継続的に識別し、報告された汚染versionとの影響照合を支援する。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - INC-001
+      - INC-002
+      - INC-005
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: RV.2.1
@@ -48,6 +121,10 @@ mappings:
     rationale: 影響artifactとbuild evidenceを特定し、containment、credential失効、safe rebuildのrisk response planを生成する。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - INC-001
+      - INC-003
+      - INC-005
   - framework: mitre-attack
     version: "v19.1"
     id: T1195.001
@@ -56,6 +133,8 @@ mappings:
     rationale: 既知のcompromised dependency versionをSBOM inventoryへ照合して影響するsoftware dependency usageを検出する。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - INC-001
 limitations:
   - SBOMの完全性と鮮度が不足するとfalse negativeが生じる。
   - Exact package version照合は侵害の事実を証明しない。

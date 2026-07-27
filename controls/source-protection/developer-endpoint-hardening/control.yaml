@@ -28,6 +28,282 @@ verification:
     - insecure endpoint policy is rejected with a non-zero result and 20 failed checks
     - complete verifier output matches the sanitized expected evidence
     - policy validation failure is distinct from a clean result
+checks:
+  - id: DEH-001
+    title: Credentials are short lived
+    required_state: static credentials replaced by short-lived sessions
+    responsible_role: shared
+    applies_to:
+      - developer-endpoint
+      - identity-platform
+    verification:
+      type: external-evidence
+      method: inspect credential issuance and maximum lifetime policy
+      expected: routine development access does not depend on long-lived static tokens
+      evidence:
+        - identity or source-platform credential policy
+    mapping_status: reviewed
+  - id: DEH-002
+    title: Credentials use an approved secure store
+    required_state: system keychain or approved secret manager
+    responsible_role: developer
+    applies_to:
+      - developer-endpoint
+    verification:
+      type: hybrid
+      method: inspect the credential helper and run the declarative policy fixture
+      expected: plaintext workspace shell-history and dotfile storage is prohibited
+      evidence:
+        - credential helper configuration
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: DEH-003
+    title: Developer keys are hardware backed
+    required_state: non-exportable hardware-backed key with user verification
+    responsible_role: shared
+    applies_to:
+      - developer-endpoint
+      - identity-platform
+    verification:
+      type: external-evidence
+      method: inspect key enrollment and authenticator policy
+      expected: approved SSH or authentication keys are hardware protected
+      evidence:
+        - key enrollment record
+    mapping_status: reviewed
+  - id: DEH-004
+    title: Secrets are scanned before commit
+    required_state: reviewed pre-commit secret scanning enabled
+    responsible_role: developer
+    applies_to:
+      - developer-endpoint
+      - source-repository
+    verification:
+      type: hybrid
+      method: verify hook configuration and run a sanitized negative fixture
+      expected: a representative fake secret is rejected before commit
+      evidence:
+        - hook configuration
+        - sanitized negative-test output
+    mapping_status: reviewed
+  - id: DEH-005
+    title: Repository-side secret scanning is enforced
+    required_state: mandatory server-side scan independent of local hooks
+    responsible_role: repository-admin
+    applies_to:
+      - source-repository
+    verification:
+      type: external-evidence
+      method: inspect repository rulesets and secret-scanning configuration
+      expected: bypassing the local hook does not permit an undetected merge
+      evidence:
+        - repository ruleset or required-check evidence
+    mapping_status: reviewed
+  - id: DEH-006
+    title: Dependency installation is isolated from the host
+    required_state: disposable restricted package-install environment
+    responsible_role: shared
+    applies_to:
+      - developer-endpoint
+      - dependency-install
+    verification:
+      type: external-evidence
+      method: inspect developer environment provisioning and sandbox policy
+      expected: install-time code cannot read routine host credentials
+      evidence:
+        - sandbox or managed workspace policy
+    mapping_status: unmapped
+  - id: DEH-007
+    title: Dependency updates use cooldown and security exception policy
+    required_state: release cooldown with expedited reviewed vulnerability updates
+    responsible_role: repository-admin
+    applies_to:
+      - dependency-update
+    verification:
+      type: hybrid
+      method: verify PSB-DEPS-001 and inspect update automation policy
+      expected: new releases wait for the cooldown unless an exact reviewed exception applies
+      evidence:
+        - dependency update configuration
+        - PSB-DEPS-001 verifier output
+    mapping_status: unmapped
+  - id: DEH-008
+    title: Developer egress uses an approved allowlist
+    required_state: managed access to approved repositories and storage services
+    responsible_role: security
+    applies_to:
+      - developer-network
+    verification:
+      type: external-evidence
+      method: inspect SWG CASB proxy DNS or equivalent policy
+      expected: unauthorized repositories and storage services are denied
+      evidence:
+        - managed egress policy
+        - sanitized access-control test
+    mapping_status: reviewed
+  - id: DEH-009
+    title: Authentication is centralized and phishing resistant
+    required_state: managed IdP lifecycle with phishing-resistant MFA
+    responsible_role: security
+    applies_to:
+      - identity-platform
+    verification:
+      type: external-evidence
+      method: inspect IdP authentication and deprovisioning policy
+      expected: FIDO2 passkey or equivalent phishing-resistant authentication is required
+      evidence:
+        - IdP policy and lifecycle evidence
+    mapping_status: reviewed
+  - id: DEH-010
+    title: Sensitive data files are detected before commit
+    required_state: staged file size type and content checks enabled
+    responsible_role: developer
+    applies_to:
+      - developer-endpoint
+      - source-repository
+    verification:
+      type: hybrid
+      method: run sanitized sensitive-file fixtures and inspect repository-side enforcement
+      expected: representative sensitive data files are rejected without exposing their contents
+      evidence:
+        - sanitized negative-test output
+        - repository required-check evidence
+    mapping_status: reviewed
+  - id: END-001
+    title: Full-disk encryption is enforced
+    required_state: encryption required for all developer endpoint storage
+    responsible_role: shared
+    applies_to:
+      - developer-endpoint
+    verification:
+      type: external-evidence
+      method: inspect endpoint-management compliance
+      expected: the managed endpoint reports full-disk encryption enabled
+      evidence:
+        - MDM compliance record
+    mapping_status: reviewed
+  - id: END-002
+    title: Automatic screen lock is enforced
+    required_state: organization-approved inactivity timeout
+    responsible_role: shared
+    applies_to:
+      - developer-endpoint
+    verification:
+      type: external-evidence
+      method: inspect endpoint-management screen-lock policy
+      expected: unattended access requires reauthentication
+      evidence:
+        - MDM compliance record
+    mapping_status: reviewed
+  - id: END-003
+    title: Operating system and developer tools update automatically
+    required_state: supported versions with enforced security updates
+    responsible_role: shared
+    applies_to:
+      - developer-endpoint
+    verification:
+      type: external-evidence
+      method: inspect OS and developer-tool patch compliance
+      expected: unsupported or overdue endpoints are reported noncompliant
+      evidence:
+        - patch compliance record
+    mapping_status: reviewed
+  - id: END-004
+    title: Routine development does not use local administrator privileges
+    required_state: standard user by default with controlled elevation
+    responsible_role: shared
+    applies_to:
+      - developer-endpoint
+    verification:
+      type: external-evidence
+      method: inspect endpoint privilege policy and local group membership
+      expected: routine developer sessions are not permanent local administrators
+      evidence:
+        - privilege-management compliance record
+    mapping_status: reviewed
+  - id: END-005
+    title: Workspaces contain no secrets
+    required_state: no credentials in project files dotfiles or shell history
+    responsible_role: developer
+    applies_to:
+      - developer-endpoint
+    verification:
+      type: hybrid
+      method: run an approved local secret scan and inspect credential practices
+      expected: no active credential is stored in plaintext workspace locations
+      evidence:
+        - sanitized secret-scan report
+    mapping_status: reviewed
+  - id: END-006
+    title: Container sockets are not broadly exposed
+    required_state: no unrestricted host Docker socket access
+    responsible_role: developer
+    applies_to:
+      - developer-endpoint
+      - local-container-runtime
+    verification:
+      type: manual
+      method: inspect workspace mounts and container runtime access
+      expected: untrusted development workloads cannot control the host container daemon
+      evidence:
+        - container runtime configuration
+    mapping_status: reviewed
+  - id: END-007
+    title: Local debug services are disabled by default
+    required_state: no unmanaged externally reachable debug service
+    responsible_role: developer
+    applies_to:
+      - developer-endpoint
+    verification:
+      type: manual
+      method: inspect listening services and development launch configuration
+      expected: debug services are disabled or bound to an approved local interface
+      evidence:
+        - sanitized service inventory
+    mapping_status: reviewed
+  - id: END-008
+    title: AI development tools use approved network destinations
+    required_state: allowlisted AI tool and MCP network access
+    responsible_role: shared
+    applies_to:
+      - developer-endpoint
+      - ai-development-tool
+    verification:
+      type: external-evidence
+      method: inspect managed AI tool and developer egress policy
+      expected: unapproved model endpoints tools and MCP servers are denied
+      evidence:
+        - AI tool allowlist
+        - managed egress policy
+    mapping_status: reviewed
+  - id: END-009
+    title: Shared workspaces are read only by default
+    required_state: explicit narrow write mounts only
+    responsible_role: developer
+    applies_to:
+      - developer-endpoint
+      - development-sandbox
+    verification:
+      type: manual
+      method: inspect container cloud-workspace or agent filesystem mounts
+      expected: broad host and shared workspace write access is absent
+      evidence:
+        - workspace mount configuration
+    mapping_status: reviewed
+  - id: END-010
+    title: Developer endpoint backups are encrypted
+    required_state: approved encrypted backup with controlled access
+    responsible_role: shared
+    applies_to:
+      - developer-endpoint
+      - backup-service
+    verification:
+      type: external-evidence
+      method: inspect managed backup encryption and access policy
+      expected: endpoint source and local artifacts are not copied to plaintext backups
+      evidence:
+        - backup compliance record
+    mapping_status: reviewed
 mappings:
   - framework: mitre-attack
     version: "v19.1"
@@ -37,6 +313,11 @@ mappings:
     rationale: Protected credential storage and prohibition of secrets in workspaces reduce exposure to credentials in files.
     reviewer: product-security
     review_date: "2026-07-25"
+    applies_to:
+      - DEH-002
+      - DEH-004
+      - DEH-005
+      - END-005
   - framework: mitre-attack
     version: "v19.1"
     id: T1555
@@ -45,6 +326,8 @@ mappings:
     rationale: System-managed credential storage and endpoint access controls reduce exposure of credentials from password stores.
     reviewer: product-security
     review_date: "2026-07-25"
+    applies_to:
+      - DEH-002
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: PS.3.1
@@ -53,6 +336,25 @@ mappings:
     rationale: Least privilege, protected credentials, and endpoint policy checks support protection of code and development environments.
     reviewer: product-security
     review_date: "2026-07-25"
+    applies_to:
+      - DEH-001
+      - DEH-002
+      - DEH-003
+      - DEH-004
+      - DEH-005
+      - DEH-008
+      - DEH-009
+      - DEH-010
+      - END-001
+      - END-002
+      - END-003
+      - END-004
+      - END-005
+      - END-006
+      - END-007
+      - END-008
+      - END-009
+      - END-010
 limitations:
   - This control validates a declared policy; it does not prove that an unmanaged endpoint actually enforces every setting.
   - MDM, EDR, IdP, SWG or CASB, CI scanning, disk encryption, patch compliance, and remote-wipe evidence require organization-specific integrations.

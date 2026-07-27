@@ -43,7 +43,8 @@
 ├── tests/
 ├── generated/
 │   ├── CONTROL_INDEX.md
-│   └── mappings/
+│   ├── mappings/
+│   └── checklists/
 ├── docs/
 │   ├── PROJECT_CHARTER.md
 │   ├── ARCHITECTURE.md
@@ -80,3 +81,7 @@ ai-development-security/security-skill-governance/
 ```
 
 Tools are referenced inside controls.
+
+Generated checklist CSV, Markdown, and XLSX files are derived from atomic
+`checks` and check-level mapping links in `control.yaml`. Regenerate them with
+`make generate-checklists`; do not maintain a separate spreadsheet source.

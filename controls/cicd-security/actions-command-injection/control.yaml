@@ -21,6 +21,59 @@ verification:
     - expressions passed through env are accepted
     - expressions in non-executable concurrency fields are not treated as shell injection
     - policy violations and verifier execution errors have distinct exit codes
+checks:
+  - id: INJ-001
+    title: Runner scripts do not directly interpolate Actions expressions
+    required_state: no direct expression interpolation in run scalars
+    responsible_role: developer
+    applies_to:
+      - ci-workflow
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-002
+      expected: direct expressions in executable run fields are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: INJ-002
+    title: Untrusted workflow values cross the shell boundary through environment variables
+    required_state: expression assigned to env and safely consumed as data
+    responsible_role: developer
+    applies_to:
+      - ci-workflow
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-002
+      expected: the reviewed environment-variable pattern is accepted
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: INJ-003
+    title: Non-executable expression fields are not reported as shell injection
+    required_state: context-aware analysis of executable fields
+    responsible_role: repository-admin
+    applies_to:
+      - ci-verifier
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-002
+      expected: concurrency expressions are not treated as runner shell source
+      evidence:
+        - positive-test output
+    mapping_status: unmapped
+  - id: INJ-004
+    title: Workflow parsing failures are distinct from clean analysis
+    required_state: unsupported or malformed YAML produces an error
+    responsible_role: repository-admin
+    applies_to:
+      - ci-verifier
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-002
+      expected: parser errors cannot be interpreted as no findings
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
 mappings:
   - framework: github-security-guidance
     version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
@@ -30,6 +83,8 @@ mappings:
     rationale: The control prevents expression values from being substituted into the temporary shell scripts described by GitHub's script-injection guidance.
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - INJ-001
   - framework: github-security-guidance
     version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
     id: GHAS-REF-SECURE-USE
@@ -38,6 +93,9 @@ mappings:
     rationale: The secure example implements GitHub's recommendation to pass context values through an intermediate environment variable instead of generating shell source from them.
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - INJ-001
+      - INJ-002
   - framework: openssf-osps-baseline
     version: "2026.02.19"
     id: OSPS-BR-01.01
@@ -46,6 +104,9 @@ mappings:
     rationale: CI/CD pipelineのuntrusted metadataをshell sourceへ直接展開せず、境界を越える前に安全な値として扱う要件をpositive/negative testで検証する。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - INJ-001
+      - INJ-002
 limitations:
   - The verifier prohibits all direct expressions in run scalars and therefore rejects some constrained values that may not be attacker-controlled.
   - Passing data through env is insufficient if shell variables are unquoted or later evaluated as code.

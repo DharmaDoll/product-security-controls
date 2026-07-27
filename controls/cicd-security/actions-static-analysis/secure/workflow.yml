@@ -1,0 +1,59 @@
+name: GitHub Actions security analysis
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions: {}
+
+concurrency:
+  group: actions-security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: Block workflow security findings
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009d3f1e5b2c74e2e27d2e5 # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Run zizmor as a blocking check
+        uses: zizmorcore/zizmor-action@6fc4b006235f201fdab3722e17240ab420d580e5 # v0.6.1
+        with:
+          inputs: .github
+          collect: all
+          online-audits: false
+          version: "1.28.0"
+          token: ""
+          advanced-security: false
+          fail-on-no-inputs: true
+
+  report:
+    name: Upload trusted-branch SARIF
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009d3f1e5b2c74e2e27d2e5 # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Run zizmor and upload SARIF
+        uses: zizmorcore/zizmor-action@6fc4b006235f201fdab3722e17240ab420d580e5 # v0.6.1
+        with:
+          inputs: .github
+          collect: all
+          online-audits: false
+          version: "1.28.0"
+          token: ""
+          advanced-security: true
+          fail-on-no-inputs: true

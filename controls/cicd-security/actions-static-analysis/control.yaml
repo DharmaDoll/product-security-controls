@@ -1,0 +1,132 @@
+id: PSB-CICD-003
+title: Statically analyze GitHub Actions workflows with a pinned scanner
+domain: cicd-security
+summary: Detect actionable workflow weaknesses with pinned zizmor checks while separating untrusted pull-request gating from privileged SARIF upload.
+security_functions:
+  - detect
+  - verify
+threats:
+  - id: CI-WORKFLOW-WEAKNESS-REACHES-DEFAULT-BRANCH
+    description: A workflow change introduces command injection mutable dependencies dangerous triggers or excessive permissions and is merged without an automated security signal.
+  - id: CI-SCANNER-FAILURE-MISREAD-AS-CLEAN
+    description: A failed or malformed static-analysis run is treated as if it produced zero findings.
+implementations:
+  insecure:
+    - insecure/workflow.yml
+    - insecure/finding.sarif
+    - insecure/scanner-error.sarif
+  secure:
+    - secure/workflow.yml
+    - secure/clean.sarif
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-CICD-003
+  expected:
+    - scanner Action and zizmor version are immutable and integrity-bound
+    - pull requests are blocked by an unprivileged scanner job
+    - SARIF write permission is restricted to trusted main-branch pushes
+    - clean findings policy violations and scanner failures use distinct exit states
+    - adopted workflow matches the reviewed secure example
+checks:
+  - id: SAS-001
+    title: Workflow scanner and Action are immutable and integrity-bound
+    required_state: pinned scanner version and full Action commit SHA
+    responsible_role: repository-admin
+    applies_to:
+      - ci-workflow
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-003
+      expected: mutable scanner dependencies are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: SAS-002
+    title: Pull requests are gated by an unprivileged scanner job
+    required_state: untrusted pull-request scan has no privileged credentials
+    responsible_role: repository-admin
+    applies_to:
+      - ci-workflow
+    verification:
+      type: hybrid
+      method: verify the workflow fixture and inspect required merge checks
+      expected: scanner findings block merge without privileged pull-request execution
+      evidence:
+        - sanitized verifier output
+        - repository ruleset evidence
+    mapping_status: reviewed
+  - id: SAS-003
+    title: SARIF write permission is limited to trusted pushes
+    required_state: security-events write only on trusted main-branch push
+    responsible_role: repository-admin
+    applies_to:
+      - ci-workflow
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-003
+      expected: untrusted pull-request jobs cannot upload privileged SARIF
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: SAS-004
+    title: Clean findings scanner failures and policy findings are distinct
+    required_state: separate fail-closed exit states
+    responsible_role: repository-admin
+    applies_to:
+      - ci-verifier
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-003
+      expected: malformed SARIF and scanner errors never report clean
+      evidence:
+        - negative-test output
+    mapping_status: reviewed
+  - id: SAS-005
+    title: Adopted workflow matches the reviewed secure workflow
+    required_state: no unreviewed drift from the secure workflow baseline
+    responsible_role: repository-admin
+    applies_to:
+      - ci-workflow
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-003
+      expected: the adopted workflow satisfies all reviewed policy assertions
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+mappings:
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHAS-REF-SECURE-USE
+    relationship: supports
+    confidence: high
+    rationale: The control automates GitHub Actions workflow review while pinning external Actions minimizing token permissions and preventing privileged pull-request execution.
+    reviewer: product-security
+    review_date: "2026-07-27"
+    applies_to:
+      - SAS-001
+      - SAS-002
+      - SAS-003
+      - SAS-004
+      - SAS-005
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-VM-06.02
+    relationship: supports
+    confidence: medium
+    rationale: GitHub Actions設定変更を自動security testingの対象にし、検出とscanner failureを区別することでsecurity weakness policyの実施を支援する。
+    reviewer: product-security
+    review_date: "2026-07-27"
+    applies_to:
+      - SAS-002
+      - SAS-004
+      - SAS-005
+limitations:
+  - Static rules cannot prove that effective token permissions are minimal for the commands a job actually executes.
+  - Environment protection rules rulesets repository settings and action-specific input semantics require separate review.
+  - Offline audits intentionally omit checks that require GitHub API access.
+  - SARIF upload alone is not a merge gate and requires code-scanning merge protection when used as an enforcement signal.
+  - The pinned scanner and Action still require periodic review before intentional upgrades.
+status: adopted
+owner: product-security
+evidence_level: E3

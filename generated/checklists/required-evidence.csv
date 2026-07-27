@@ -1,0 +1,95 @@
+﻿Control ID,Check ID,Responsible Role,Verification Type,Required Evidence
+PSB-BUILD-001,PSB-BUILD-001-BLD-001,build-platform,automated,sanitized verifier output
+PSB-BUILD-001,PSB-BUILD-001-BLD-002,build-platform,automated,sanitized verifier output
+PSB-BUILD-001,PSB-BUILD-001-BLD-002,build-platform,automated,build and deploy job definition
+PSB-BUILD-001,PSB-BUILD-001-BLD-003,build-platform,automated,sanitized verifier output
+PSB-BUILD-001,PSB-BUILD-001-BLD-003,build-platform,automated,egress policy
+PSB-BUILD-001,PSB-BUILD-001-BLD-004,build-platform,automated,sanitized verifier output
+PSB-BUILD-001,PSB-BUILD-001-BLD-004,build-platform,automated,runner policy
+PSB-BUILD-001,PSB-BUILD-001-BLD-005,security,hybrid,sanitized verifier output
+PSB-BUILD-001,PSB-BUILD-001-BLD-005,security,hybrid,telemetry policy and sample event
+PSB-BUILD-001,PSB-BUILD-001-BLD-006,build-platform,automated,negative-test output
+PSB-CICD-001,PSB-CICD-001-ACT-001,repository-admin,automated,sanitized verifier output
+PSB-CICD-001,PSB-CICD-001-ACT-002,repository-admin,automated,sanitized verifier output
+PSB-CICD-001,PSB-CICD-001-ACT-003,repository-admin,automated,sanitized verifier output
+PSB-CICD-001,PSB-CICD-001-ACT-004,repository-admin,automated,negative-test output
+PSB-CICD-001,PSB-CICD-001-ACT-005,repository-admin,automated,negative-test output
+PSB-CICD-002,PSB-CICD-002-INJ-001,developer,automated,sanitized verifier output
+PSB-CICD-002,PSB-CICD-002-INJ-002,developer,automated,sanitized verifier output
+PSB-CICD-002,PSB-CICD-002-INJ-003,repository-admin,automated,positive-test output
+PSB-CICD-002,PSB-CICD-002-INJ-004,repository-admin,automated,negative-test output
+PSB-CICD-003,PSB-CICD-003-SAS-001,repository-admin,automated,sanitized verifier output
+PSB-CICD-003,PSB-CICD-003-SAS-002,repository-admin,hybrid,sanitized verifier output
+PSB-CICD-003,PSB-CICD-003-SAS-002,repository-admin,hybrid,repository ruleset evidence
+PSB-CICD-003,PSB-CICD-003-SAS-003,repository-admin,automated,sanitized verifier output
+PSB-CICD-003,PSB-CICD-003-SAS-004,repository-admin,automated,negative-test output
+PSB-CICD-003,PSB-CICD-003-SAS-005,repository-admin,automated,sanitized verifier output
+PSB-DEPS-001,PSB-DEPS-001-COOL-001,repository-admin,automated,sanitized verifier output
+PSB-DEPS-001,PSB-DEPS-001-COOL-002,security,automated,sanitized verifier output
+PSB-DEPS-001,PSB-DEPS-001-COOL-002,security,automated,exception approval
+PSB-DEPS-001,PSB-DEPS-001-COOL-003,repository-admin,automated,negative-test output
+PSB-DEPS-001,PSB-DEPS-001-COOL-004,repository-admin,automated,sanitized verifier output
+PSB-DEPS-001,PSB-DEPS-001-COOL-005,developer,automated,sanitized verifier output
+PSB-DEPS-001,PSB-DEPS-001-COOL-006,repository-admin,automated,negative-test output
+PSB-DEPS-002,PSB-DEPS-002-INS-001,developer,automated,sanitized verifier output
+PSB-DEPS-002,PSB-DEPS-002-INS-002,developer,automated,sanitized verifier output
+PSB-DEPS-002,PSB-DEPS-002-INS-002,developer,automated,approved build exception
+PSB-DEPS-002,PSB-DEPS-002-INS-003,developer,automated,sanitized verifier output
+PSB-DEPS-002,PSB-DEPS-002-INS-004,security,automated,negative-test output
+PSB-DEPS-002,PSB-DEPS-002-INS-004,security,automated,exception approval
+PSB-DEPS-002,PSB-DEPS-002-INS-005,developer,automated,negative-test output
+PSB-DEPS-003,PSB-DEPS-003-LOCK-001,developer,automated,sanitized verifier output
+PSB-DEPS-003,PSB-DEPS-003-LOCK-002,repository-admin,automated,sanitized verifier output
+PSB-DEPS-003,PSB-DEPS-003-LOCK-003,developer,automated,sanitized verifier output
+PSB-DEPS-003,PSB-DEPS-003-LOCK-004,developer,automated,negative-test output
+PSB-DEPS-003,PSB-DEPS-003-LOCK-005,developer,automated,negative-test output
+PSB-GOV-001,PSB-GOV-001-INC-001,incident-response,automated,sanitized impact report
+PSB-GOV-001,PSB-GOV-001-INC-002,build-platform,automated,sanitized verifier output
+PSB-GOV-001,PSB-GOV-001-INC-003,incident-response,automated,generated dry-run response plan
+PSB-GOV-001,PSB-GOV-001-INC-004,incident-response,automated,negative-test output
+PSB-GOV-001,PSB-GOV-001-INC-005,incident-response,automated,negative-test output
+PSB-REL-001,PSB-REL-001-REL-001,release-manager,automated,sanitized verifier output
+PSB-REL-001,PSB-REL-001-REL-002,release-manager,automated,sanitized verifier output
+PSB-REL-001,PSB-REL-001-REL-002,release-manager,automated,trusted signer policy
+PSB-REL-001,PSB-REL-001-REL-003,release-manager,automated,sanitized verifier output
+PSB-REL-001,PSB-REL-001-REL-003,release-manager,automated,verification policy
+PSB-REL-001,PSB-REL-001-REL-004,release-manager,automated,negative-test output
+PSB-REL-001,PSB-REL-001-REL-005,release-manager,automated,negative-test output
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-001,shared,external-evidence,identity or source-platform credential policy
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-002,developer,hybrid,credential helper configuration
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-002,developer,hybrid,sanitized verifier output
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-003,shared,external-evidence,key enrollment record
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-004,developer,hybrid,hook configuration
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-004,developer,hybrid,sanitized negative-test output
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-005,repository-admin,external-evidence,repository ruleset or required-check evidence
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-006,shared,external-evidence,sandbox or managed workspace policy
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-007,repository-admin,hybrid,dependency update configuration
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-007,repository-admin,hybrid,PSB-DEPS-001 verifier output
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-008,security,external-evidence,managed egress policy
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-008,security,external-evidence,sanitized access-control test
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-009,security,external-evidence,IdP policy and lifecycle evidence
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-010,developer,hybrid,sanitized negative-test output
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-010,developer,hybrid,repository required-check evidence
+PSB-SOURCE-001,PSB-SOURCE-001-END-001,shared,external-evidence,MDM compliance record
+PSB-SOURCE-001,PSB-SOURCE-001-END-002,shared,external-evidence,MDM compliance record
+PSB-SOURCE-001,PSB-SOURCE-001-END-003,shared,external-evidence,patch compliance record
+PSB-SOURCE-001,PSB-SOURCE-001-END-004,shared,external-evidence,privilege-management compliance record
+PSB-SOURCE-001,PSB-SOURCE-001-END-005,developer,hybrid,sanitized secret-scan report
+PSB-SOURCE-001,PSB-SOURCE-001-END-006,developer,manual,container runtime configuration
+PSB-SOURCE-001,PSB-SOURCE-001-END-007,developer,manual,sanitized service inventory
+PSB-SOURCE-001,PSB-SOURCE-001-END-008,shared,external-evidence,AI tool allowlist
+PSB-SOURCE-001,PSB-SOURCE-001-END-008,shared,external-evidence,managed egress policy
+PSB-SOURCE-001,PSB-SOURCE-001-END-009,developer,manual,workspace mount configuration
+PSB-SOURCE-001,PSB-SOURCE-001-END-010,shared,external-evidence,backup compliance record
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-001,developer,automated,sanitized verifier output
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-002,developer,automated,negative-test output
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-003,developer,automated,sanitized verifier output
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-004,developer,automated,negative-test output
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-005,developer,automated,sanitized verifier output
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-006,developer,automated,negative-test output
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-007,developer,automated,sanitized negative-test output
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-008,developer,automated,negative-test output
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-009,developer,automated,sanitized negative-test output
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-010,developer,automated,sanitized negative-test output
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-011,developer,automated,sanitized negative-test output
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-012,developer,automated,negative-test output

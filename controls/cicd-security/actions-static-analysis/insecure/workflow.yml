@@ -1,0 +1,20 @@
+name: Insecure GitHub Actions security analysis
+
+on:
+  pull_request:
+
+permissions: write-all
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run an unpinned and floating scanner
+        uses: zizmorcore/zizmor-action@v0.6.1
+        with:
+          inputs: .
+          online-audits: true
+          version: latest
+          advanced-security: true
+          fail-on-no-inputs: false

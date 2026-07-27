@@ -45,6 +45,24 @@ class ControlMetadataValidationTest(unittest.TestCase):
         errors = validate_controls([control])
         self.assertTrue(any("unsupported relationship" in error for error in errors))
 
+    def test_unknown_mapping_check_is_rejected(self) -> None:
+        control = copy.deepcopy(self.controls[0])
+        control["mappings"][0]["applies_to"] = ["UNKNOWN-CHECK"]
+        errors = validate_controls([control])
+        self.assertTrue(any("unknown check id" in error for error in errors))
+
+    def test_reviewed_check_requires_mapping(self) -> None:
+        control = copy.deepcopy(self.controls[0])
+        check_id = control["checks"][0]["id"]
+        for mapping in control["mappings"]:
+            mapping["applies_to"] = [
+                candidate for candidate in mapping["applies_to"] if candidate != check_id
+            ]
+            if not mapping["applies_to"]:
+                mapping["applies_to"] = [control["checks"][1]["id"]]
+        errors = validate_controls([control])
+        self.assertTrue(any("has no mapping" in error for error in errors))
+
     def test_metadata_domain_must_match_directory(self) -> None:
         control = copy.deepcopy(self.controls[0])
         control["domain"] = "secure-design"

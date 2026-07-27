@@ -31,6 +31,86 @@ verification:
     - cooldownが短すぎるpolicy、公開直後version、allowlist外registry、integrity欠落が拒否される
     - lockfile artifactのsha256がmetadataおよび実ファイルと一致する
     - metadata欠落、JSON破損、artifact読取失敗がcleanな結果と区別される
+checks:
+  - id: COOL-001
+    title: New dependency releases observe the minimum cooldown
+    required_state: release age is at least seven days
+    responsible_role: repository-admin
+    applies_to:
+      - dependency-update
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-001
+      expected: releases younger than the policy minimum are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: COOL-002
+    title: Urgent dependency exceptions are exact and time bound
+    required_state: exact version owner reason approver and expiry required
+    responsible_role: security
+    applies_to:
+      - dependency-update
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-001
+      expected: broad incomplete and expired exceptions are rejected
+      evidence:
+        - sanitized verifier output
+        - exception approval
+    mapping_status: reviewed
+  - id: COOL-003
+    title: Cooldown policy cannot be weakened below the baseline
+    required_state: minimum cooldown is seven days
+    responsible_role: repository-admin
+    applies_to:
+      - dependency-policy
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-001
+      expected: shorter cooldown policy values are rejected
+      evidence:
+        - negative-test output
+    mapping_status: reviewed
+  - id: COOL-004
+    title: Dependency metadata comes from an approved registry
+    required_state: credential-free HTTPS registry allowlist
+    responsible_role: repository-admin
+    applies_to:
+      - dependency-registry
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-001
+      expected: metadata from an unapproved registry is rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: COOL-005
+    title: Cooldown inputs and artifacts are integrity verified
+    required_state: lockfile metadata and artifact SHA-256 values match
+    responsible_role: developer
+    applies_to:
+      - dependency-artifact
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-001
+      expected: missing or mismatched integrity values are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: COOL-006
+    title: Cooldown verification failures are not clean results
+    required_state: metadata parse and artifact read failures produce an error
+    responsible_role: repository-admin
+    applies_to:
+      - dependency-verifier
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-001
+      expected: input failures use a distinct non-zero result
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
 mappings:
   - framework: mitre-attack
     version: "v19.1"
@@ -40,6 +120,10 @@ mappings:
     rationale: 公開直後versionの自動採用を遅らせ、software dependency compromise直後の露出を減らすが、malicious dependency自体を検出するものではない。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - COOL-001
+      - COOL-002
+      - COOL-003
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: PW.4.1
@@ -48,6 +132,12 @@ mappings:
     rationale: dependencyの取得元、version、公開時刻、integrity、例外を検証することでthird-party componentのcontrolled acquisitionとmaintenanceを支援する。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - COOL-001
+      - COOL-002
+      - COOL-003
+      - COOL-004
+      - COOL-005
 limitations:
   - 7日のcooldownは運用baselineであり、packageが安全になることを保証する時間ではない。
   - 待機期間を過ぎたmalware、長期潜伏、typosquatting、dependency confusionは別controlが必要である。

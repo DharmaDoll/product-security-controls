@@ -20,6 +20,10 @@ def generate_mappings(controls: list[dict[str, Any]]) -> int:
                 {
                     "control_id": control["id"],
                     "title": control["title"],
+                    "check_ids": [
+                        f"{control['id']}-{check_id}"
+                        for check_id in mapping["applies_to"]
+                    ],
                     "mapping": mapping,
                 }
             )
@@ -35,8 +39,8 @@ def generate_mappings(controls: list[dict[str, Any]]) -> int:
         lines = [
             f"# {framework} mappings",
             "",
-            "| Control | Framework version | Identifier | Relationship | Confidence | Rationale |",
-            "| --- | --- | --- | --- | --- | --- |",
+            "| Control | Checks | Framework version | Identifier | Relationship | Confidence | Rationale |",
+            "| --- | --- | --- | --- | --- | --- | --- |",
         ]
         for row in sorted(rows, key=lambda row: (row["mapping"]["id"], row["control_id"])):
             mapping = row["mapping"]
@@ -46,6 +50,7 @@ def generate_mappings(controls: list[dict[str, Any]]) -> int:
                 + " | ".join(
                     [
                         markdown_cell(control),
+                        markdown_cell(", ".join(row["check_ids"])),
                         markdown_cell(mapping["version"]),
                         markdown_cell(mapping["id"]),
                         markdown_cell(mapping["relationship"]),

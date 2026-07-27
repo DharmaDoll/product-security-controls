@@ -25,6 +25,90 @@ verification:
     - egressがcredentialなしHTTPS origin allowlistでdefault denyになる
     - ephemeral non-root read-only sandboxとprocess network telemetryが必須になる
     - input欠落またはparse失敗がcleanな結果と区別される
+checks:
+  - id: BLD-001
+    title: Untrusted build has no credential or write permission
+    required_state: credential-free and read-only control-plane access
+    responsible_role: build-platform
+    applies_to:
+      - build-environment
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-BUILD-001
+      expected: untrusted build plans with credentials or write permissions are rejected
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: BLD-002
+    title: Build and deploy use separate trust boundaries
+    required_state: artifact-only handoff between build and deploy
+    responsible_role: build-platform
+    applies_to:
+      - build-environment
+      - deployment-pipeline
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-BUILD-001
+      expected: build cannot directly use deploy privileges
+      evidence:
+        - sanitized verifier output
+        - build and deploy job definition
+    mapping_status: reviewed
+  - id: BLD-003
+    title: Build egress is default deny
+    required_state: credential-free HTTPS origin allowlist
+    responsible_role: build-platform
+    applies_to:
+      - build-network
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-BUILD-001
+      expected: broad or credential-bearing egress is rejected
+      evidence:
+        - sanitized verifier output
+        - egress policy
+    mapping_status: reviewed
+  - id: BLD-004
+    title: Untrusted build runs in an ephemeral restricted sandbox
+    required_state: ephemeral non-root read-only sandbox
+    responsible_role: build-platform
+    applies_to:
+      - build-environment
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-BUILD-001
+      expected: persistent privileged or writable sandboxes are rejected
+      evidence:
+        - sanitized verifier output
+        - runner policy
+    mapping_status: reviewed
+  - id: BLD-005
+    title: Build process and network activity is observable
+    required_state: process and network telemetry required
+    responsible_role: security
+    applies_to:
+      - build-environment
+    verification:
+      type: hybrid
+      method: verify the reference policy and inspect the telemetry integration
+      expected: policy requires telemetry and the production backend records it
+      evidence:
+        - sanitized verifier output
+        - telemetry policy and sample event
+    mapping_status: reviewed
+  - id: BLD-006
+    title: Build-policy verification fails closed
+    required_state: invalid or missing input is an error rather than clean
+    responsible_role: build-platform
+    applies_to:
+      - build-verifier
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-BUILD-001
+      expected: malformed and missing input use a distinct non-zero result
+      evidence:
+        - negative-test output
+    mapping_status: reviewed
 mappings:
   - framework: slsa
     version: "1.2"
@@ -34,6 +118,10 @@ mappings:
     rationale: Build間の影響を抑えるephemeral isolationとprovenance signing secretをuser-defined buildから分離するSLSA Build L3の方向性を支援するが、platform assessmentは行わない。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - BLD-001
+      - BLD-002
+      - BLD-004
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: PW.6.1
@@ -42,6 +130,12 @@ mappings:
     rationale: Build processをleast privilegeと分離された環境で実行し、softwareをsecureにcompile packageするpracticeを支援する。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - BLD-001
+      - BLD-002
+      - BLD-003
+      - BLD-004
+      - BLD-005
   - framework: openssf-osps-baseline
     version: "2026.02.19"
     id: OSPS-BR-01.03
@@ -50,6 +144,10 @@ mappings:
     rationale: Untrusted code snapshotを扱うbuildからprivileged CI/CD credentialとdeploy assetを分離する要件をfail-closed policy testで検証する。
     reviewer: product-security
     review_date: "2026-07-27"
+    applies_to:
+      - BLD-001
+      - BLD-002
+      - BLD-006
 limitations:
   - Reference JSONはrunner sandboxまたはnetwork firewall自体を構築しない。
   - SLSA Build levelの正式assessmentやcomplianceを証明しない。

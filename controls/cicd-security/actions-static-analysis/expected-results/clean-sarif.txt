@@ -1,0 +1,1 @@
+ACCEPTED zizmor 1.28.0 SARIF with 0 findings
