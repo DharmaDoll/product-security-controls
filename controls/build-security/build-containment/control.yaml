@@ -28,7 +28,7 @@ verification:
 mappings:
   - framework: slsa
     version: "1.2"
-    id: Build-L3-Hardened-Builds
+    id: build-track-basics#build-l3-hardened-builds
     relationship: supports
     confidence: medium
     rationale: Build間の影響を抑えるephemeral isolationとprovenance signing secretをuser-defined buildから分離するSLSA Build L3の方向性を支援するが、platform assessmentは行わない。

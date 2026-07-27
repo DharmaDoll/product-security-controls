@@ -34,7 +34,7 @@ verification:
 mappings:
   - framework: slsa
     version: "1.2"
-    id: Build-Provenance
+    id: build-provenance
     relationship: verifies
     confidence: high
     rationale: SLSA provenance statementのsubject digest、predicate type、builder、build inputを署名とともにconsumer expectationへ照合する。

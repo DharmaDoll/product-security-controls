@@ -1,0 +1,53 @@
+{
+  "name": "nist-ssdf",
+  "publisher": "National Institute of Standards and Technology",
+  "release": "NIST SP 800-218, SSDF Version 1.1, February 2022",
+  "mapping_version": "1.1 (SP 800-218, 2022)",
+  "review_date": "2026-07-27",
+  "source": {
+    "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-218.pdf",
+    "sha256": "617746e553a9e2da49bfbd4eef0dfc3094758a39b869314e4173ac36605cde22"
+  },
+  "coverage": {
+    "scope": "SSDF task identifiers currently referenced by repository controls",
+    "completeness": "reviewed-mapping-subset"
+  },
+  "entries": [
+    {
+      "id": "PS.2.1",
+      "title": "Make software integrity verification information available to software acquirers",
+      "type": "task",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/218/final"
+    },
+    {
+      "id": "PS.3.1",
+      "title": "Securely archive files and supporting data for each software release",
+      "type": "task",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/218/final"
+    },
+    {
+      "id": "PW.4.1",
+      "title": "Acquire and maintain well-secured software components",
+      "type": "task",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/218/final"
+    },
+    {
+      "id": "PW.6.1",
+      "title": "Use build tools that improve executable security",
+      "type": "task",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/218/final"
+    },
+    {
+      "id": "RV.1.1",
+      "title": "Gather information to identify and confirm vulnerabilities",
+      "type": "task",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/218/final"
+    },
+    {
+      "id": "RV.2.1",
+      "title": "Analyze each vulnerability to plan risk response",
+      "type": "task",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/218/final"
+    }
+  ]
+}

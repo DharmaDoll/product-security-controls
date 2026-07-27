@@ -1,0 +1,1688 @@
+{
+  "name": "mitre-atlas",
+  "publisher": "MITRE",
+  "release": "ATLAS content 2026.05, data format 6.0.0",
+  "mapping_version": "2026.05 (format 6.0.0)",
+  "review_date": "2026-07-27",
+  "source": {
+    "url": "https://raw.githubusercontent.com/mitre-atlas/atlas-data/v2026.05/dist/v6/ATLAS-2026.05.yaml",
+    "repository": "https://github.com/mitre-atlas/atlas-data",
+    "tag": "v2026.05",
+    "commit": "da9ebf9b66e6902ad97c267e2a20af0bd996a60f",
+    "sha256": "defd9014c6d5f5954460ef438faea583fcb1830ff81e85709628efb43037cc3a"
+  },
+  "coverage": {
+    "scope": "ATLAS tactics, techniques, sub-techniques, mitigations, and case studies",
+    "completeness": "complete-release"
+  },
+  "entries": [
+    {
+      "id": "AML.CS0000",
+      "title": "Evasion of Deep Learning Detector for Malware C&C Traffic",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0000/"
+    },
+    {
+      "id": "AML.CS0001",
+      "title": "Botnet Domain Generation Algorithm (DGA) Detection Evasion",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0001/"
+    },
+    {
+      "id": "AML.CS0002",
+      "title": "VirusTotal Poisoning",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0002/"
+    },
+    {
+      "id": "AML.CS0003",
+      "title": "Bypassing Cylance's AI Malware Detection",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0003/"
+    },
+    {
+      "id": "AML.CS0004",
+      "title": "Camera Hijack Attack on Facial Recognition System",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0004/"
+    },
+    {
+      "id": "AML.CS0005",
+      "title": "Attack on Machine Translation Services",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0005/"
+    },
+    {
+      "id": "AML.CS0006",
+      "title": "ClearviewAI Misconfiguration",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0006/"
+    },
+    {
+      "id": "AML.CS0007",
+      "title": "GPT-2 Model Replication",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0007/"
+    },
+    {
+      "id": "AML.CS0008",
+      "title": "ProofPoint Evasion",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0008/"
+    },
+    {
+      "id": "AML.CS0009",
+      "title": "Tay Poisoning",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0009/"
+    },
+    {
+      "id": "AML.CS0010",
+      "title": "Microsoft Azure Service Disruption",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0010/"
+    },
+    {
+      "id": "AML.CS0011",
+      "title": "Microsoft Edge AI Evasion",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0011/"
+    },
+    {
+      "id": "AML.CS0012",
+      "title": "Face Identification System Evasion via Physical Countermeasures",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0012/"
+    },
+    {
+      "id": "AML.CS0013",
+      "title": "Backdoor Attack on Deep Learning Models in Mobile Apps",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0013/"
+    },
+    {
+      "id": "AML.CS0014",
+      "title": "Confusing Antimalware Neural Networks",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0014/"
+    },
+    {
+      "id": "AML.CS0015",
+      "title": "Compromised PyTorch Dependency Chain",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0015/"
+    },
+    {
+      "id": "AML.CS0016",
+      "title": "Achieving Code Execution in MathGPT via Prompt Injection",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0016/"
+    },
+    {
+      "id": "AML.CS0017",
+      "title": "Bypassing ID.me Identity Verification",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0017/"
+    },
+    {
+      "id": "AML.CS0018",
+      "title": "Arbitrary Code Execution with Google Colab",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0018/"
+    },
+    {
+      "id": "AML.CS0019",
+      "title": "PoisonGPT",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0019/"
+    },
+    {
+      "id": "AML.CS0020",
+      "title": "Indirect Prompt Injection Threats: Bing Chat Data Pirate",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0020/"
+    },
+    {
+      "id": "AML.CS0021",
+      "title": "ChatGPT Conversation Exfiltration",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0021/"
+    },
+    {
+      "id": "AML.CS0022",
+      "title": "ChatGPT Package Hallucination",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0022/"
+    },
+    {
+      "id": "AML.CS0023",
+      "title": "ShadowRay",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0023/"
+    },
+    {
+      "id": "AML.CS0024",
+      "title": "Morris II Worm: RAG-Based Attack",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0024/"
+    },
+    {
+      "id": "AML.CS0025",
+      "title": "Web-Scale Data Poisoning: Split-View Attack",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0025/"
+    },
+    {
+      "id": "AML.CS0026",
+      "title": "Financial Transaction Hijacking with M365 Copilot as an Insider",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0026/"
+    },
+    {
+      "id": "AML.CS0027",
+      "title": "Organization Confusion on Hugging Face",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0027/"
+    },
+    {
+      "id": "AML.CS0028",
+      "title": "AI Model Tampering via Supply Chain Attack",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0028/"
+    },
+    {
+      "id": "AML.CS0029",
+      "title": "Google Bard Conversation Exfiltration",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0029/"
+    },
+    {
+      "id": "AML.CS0030",
+      "title": "LLM Jacking",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0030/"
+    },
+    {
+      "id": "AML.CS0031",
+      "title": "Malicious Models on Hugging Face",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0031/"
+    },
+    {
+      "id": "AML.CS0032",
+      "title": "Attempted Evasion of ML Phishing Webpage Detection System",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0032/"
+    },
+    {
+      "id": "AML.CS0033",
+      "title": "Live Deepfake Image Injection to Evade Mobile KYC Verification",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0033/"
+    },
+    {
+      "id": "AML.CS0034",
+      "title": "ProKYC: Deepfake Tool for Account Fraud Attacks",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0034/"
+    },
+    {
+      "id": "AML.CS0035",
+      "title": "Data Exfiltration from Slack AI via Indirect Prompt Injection",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0035/"
+    },
+    {
+      "id": "AML.CS0036",
+      "title": "AIKatz: Attacking LLM Desktop Applications",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0036/"
+    },
+    {
+      "id": "AML.CS0037",
+      "title": "Data Exfiltration via Agent Tools in Copilot Studio",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0037/"
+    },
+    {
+      "id": "AML.CS0038",
+      "title": "Planting Instructions for Delayed Automatic AI Agent Tool Invocation",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0038/"
+    },
+    {
+      "id": "AML.CS0039",
+      "title": "Living Off AI: Prompt Injection via Jira Service Management",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0039/"
+    },
+    {
+      "id": "AML.CS0040",
+      "title": "Hacking ChatGPT's Memories with Prompt Injection",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0040/"
+    },
+    {
+      "id": "AML.CS0041",
+      "title": "Rules File Backdoor: Supply Chain Attack on AI Coding Assistants",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0041/"
+    },
+    {
+      "id": "AML.CS0042",
+      "title": "SesameOp: Novel backdoor uses OpenAI Assistants API for command and control",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0042/"
+    },
+    {
+      "id": "AML.CS0043",
+      "title": "Malware Prototype with Embedded Prompt Injection",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0043/"
+    },
+    {
+      "id": "AML.CS0044",
+      "title": "LAMEHUG: Malware Leveraging Dynamic AI-Generated Commands",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0044/"
+    },
+    {
+      "id": "AML.CS0045",
+      "title": "Data Exfiltration via an MCP Server used by Cursor",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0045/"
+    },
+    {
+      "id": "AML.CS0046",
+      "title": "Data Destruction via Indirect Prompt Injection Targeting Claude Computer-Use",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0046/"
+    },
+    {
+      "id": "AML.CS0047",
+      "title": "Code to Deploy Destructive AI Agent Discovered in Amazon Q VS Code Extension",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0047/"
+    },
+    {
+      "id": "AML.CS0048",
+      "title": "Exposed ClawdBot Control Interfaces Leads to Credential Access and Execution",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0048/"
+    },
+    {
+      "id": "AML.CS0049",
+      "title": "Supply Chain Compromise via Poisoned ClawdBot Skill",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0049/"
+    },
+    {
+      "id": "AML.CS0050",
+      "title": "OpenClaw 1-Click Remote Code Execution",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0050/"
+    },
+    {
+      "id": "AML.CS0051",
+      "title": "OpenClaw Command & Control via Prompt Injection",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0051/"
+    },
+    {
+      "id": "AML.CS0052",
+      "title": "LLMSmith: RCE Vulnerabilities in LLM-Integrated Applications",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0052/"
+    },
+    {
+      "id": "AML.CS0053",
+      "title": "Poisoned Postmark MCP Server Email Exfiltration",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0053/"
+    },
+    {
+      "id": "AML.CS0054",
+      "title": "Data Exfiltration via Remote Poisoned MCP Tool",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0054/"
+    },
+    {
+      "id": "AML.CS0055",
+      "title": "AI ClickFix: Hijacking Computer-Use Agents Using ClickFix",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0055/"
+    },
+    {
+      "id": "AML.CS0056",
+      "title": "Model Distillation Campaigns Targeting Anthropic Claude",
+      "type": "case-study",
+      "source_url": "https://atlas.mitre.org/case-studies/AML.CS0056/"
+    },
+    {
+      "id": "AML.M0000",
+      "title": "Limit Public Release of Information",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0000/"
+    },
+    {
+      "id": "AML.M0001",
+      "title": "Limit Model Artifact Release",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0001/"
+    },
+    {
+      "id": "AML.M0002",
+      "title": "Passive AI Output Obfuscation",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0002/"
+    },
+    {
+      "id": "AML.M0003",
+      "title": "Model Hardening",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0003/"
+    },
+    {
+      "id": "AML.M0004",
+      "title": "Restrict Number of AI Model Queries",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0004/"
+    },
+    {
+      "id": "AML.M0005",
+      "title": "Control Access to AI Models and Data at Rest",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0005/"
+    },
+    {
+      "id": "AML.M0006",
+      "title": "Use Ensemble Methods",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0006/"
+    },
+    {
+      "id": "AML.M0007",
+      "title": "Sanitize Training Data",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0007/"
+    },
+    {
+      "id": "AML.M0008",
+      "title": "Validate AI Model",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0008/"
+    },
+    {
+      "id": "AML.M0009",
+      "title": "Use Multi-Modal Sensors",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0009/"
+    },
+    {
+      "id": "AML.M0010",
+      "title": "Input Restoration",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0010/"
+    },
+    {
+      "id": "AML.M0011",
+      "title": "Restrict Library Loading",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0011/"
+    },
+    {
+      "id": "AML.M0012",
+      "title": "Encrypt Sensitive Information",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0012/"
+    },
+    {
+      "id": "AML.M0013",
+      "title": "Code Signing",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0013/"
+    },
+    {
+      "id": "AML.M0014",
+      "title": "Verify AI Artifacts",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0014/"
+    },
+    {
+      "id": "AML.M0015",
+      "title": "Adversarial Input Detection",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0015/"
+    },
+    {
+      "id": "AML.M0016",
+      "title": "Vulnerability Scanning",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0016/"
+    },
+    {
+      "id": "AML.M0017",
+      "title": "AI Model Distribution Methods",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0017/"
+    },
+    {
+      "id": "AML.M0018",
+      "title": "User Training",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0018/"
+    },
+    {
+      "id": "AML.M0019",
+      "title": "Control Access to AI Models and Data in Production",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0019/"
+    },
+    {
+      "id": "AML.M0020",
+      "title": "Generative AI Guardrails",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0020/"
+    },
+    {
+      "id": "AML.M0021",
+      "title": "Generative AI Guidelines",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0021/"
+    },
+    {
+      "id": "AML.M0022",
+      "title": "Generative AI Model Alignment",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0022/"
+    },
+    {
+      "id": "AML.M0023",
+      "title": "AI Bill of Materials",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0023/"
+    },
+    {
+      "id": "AML.M0024",
+      "title": "AI Telemetry Logging",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0024/"
+    },
+    {
+      "id": "AML.M0025",
+      "title": "Maintain AI Dataset Provenance",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0025/"
+    },
+    {
+      "id": "AML.M0026",
+      "title": "Privileged AI Agent Permissions Configuration",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0026/"
+    },
+    {
+      "id": "AML.M0027",
+      "title": "Single-User AI Agent Permissions Configuration",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0027/"
+    },
+    {
+      "id": "AML.M0028",
+      "title": "AI Agent Tools Permissions Configuration",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0028/"
+    },
+    {
+      "id": "AML.M0029",
+      "title": "Human In-the-Loop for AI Agent Actions",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0029/"
+    },
+    {
+      "id": "AML.M0030",
+      "title": "Restrict AI Agent Tool Invocation on Untrusted Data",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0030/"
+    },
+    {
+      "id": "AML.M0031",
+      "title": "Memory Hardening",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0031/"
+    },
+    {
+      "id": "AML.M0032",
+      "title": "Segmentation of AI Agent Components",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0032/"
+    },
+    {
+      "id": "AML.M0033",
+      "title": "Input and Output Validation for AI Agent Components",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0033/"
+    },
+    {
+      "id": "AML.M0034",
+      "title": "Deepfake Detection",
+      "type": "mitigation",
+      "source_url": "https://atlas.mitre.org/mitigations/AML.M0034/"
+    },
+    {
+      "id": "AML.T0000",
+      "title": "Search Open Technical Databases",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0000/"
+    },
+    {
+      "id": "AML.T0000.000",
+      "title": "Journals and Conference Proceedings",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0000.000/"
+    },
+    {
+      "id": "AML.T0000.001",
+      "title": "Pre-Print Repositories",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0000.001/"
+    },
+    {
+      "id": "AML.T0000.002",
+      "title": "Technical Blogs",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0000.002/"
+    },
+    {
+      "id": "AML.T0001",
+      "title": "Search Open AI Vulnerability Analysis",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0001/"
+    },
+    {
+      "id": "AML.T0002",
+      "title": "Acquire Public AI Artifacts",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0002/"
+    },
+    {
+      "id": "AML.T0002.000",
+      "title": "Datasets",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0002.000/"
+    },
+    {
+      "id": "AML.T0002.001",
+      "title": "Models",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0002.001/"
+    },
+    {
+      "id": "AML.T0002.002",
+      "title": "AI Agent Configuration",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0002.002/"
+    },
+    {
+      "id": "AML.T0003",
+      "title": "Search Victim-Owned Websites",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0003/"
+    },
+    {
+      "id": "AML.T0004",
+      "title": "Search Application Repositories",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0004/"
+    },
+    {
+      "id": "AML.T0005",
+      "title": "Create Proxy AI Model",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0005/"
+    },
+    {
+      "id": "AML.T0005.000",
+      "title": "Train Proxy via Gathered AI Artifacts",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0005.000/"
+    },
+    {
+      "id": "AML.T0005.001",
+      "title": "Train Proxy via Replication",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0005.001/"
+    },
+    {
+      "id": "AML.T0005.002",
+      "title": "Use Pre-Trained Model",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0005.002/"
+    },
+    {
+      "id": "AML.T0006",
+      "title": "Active Scanning",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0006/"
+    },
+    {
+      "id": "AML.T0007",
+      "title": "Discover AI Artifacts",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0007/"
+    },
+    {
+      "id": "AML.T0008",
+      "title": "Acquire Infrastructure",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0008/"
+    },
+    {
+      "id": "AML.T0008.000",
+      "title": "AI Development Workspaces",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0008.000/"
+    },
+    {
+      "id": "AML.T0008.001",
+      "title": "Consumer Hardware",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0008.001/"
+    },
+    {
+      "id": "AML.T0008.002",
+      "title": "Domains",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0008.002/"
+    },
+    {
+      "id": "AML.T0008.003",
+      "title": "Physical Countermeasures",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0008.003/"
+    },
+    {
+      "id": "AML.T0008.004",
+      "title": "Serverless",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0008.004/"
+    },
+    {
+      "id": "AML.T0008.005",
+      "title": "AI Service Proxies",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0008.005/"
+    },
+    {
+      "id": "AML.T0010",
+      "title": "AI Supply Chain Compromise",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0010/"
+    },
+    {
+      "id": "AML.T0010.000",
+      "title": "Hardware",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0010.000/"
+    },
+    {
+      "id": "AML.T0010.001",
+      "title": "AI Software",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0010.001/"
+    },
+    {
+      "id": "AML.T0010.002",
+      "title": "Data",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0010.002/"
+    },
+    {
+      "id": "AML.T0010.003",
+      "title": "Model",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0010.003/"
+    },
+    {
+      "id": "AML.T0010.004",
+      "title": "Container Registry",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0010.004/"
+    },
+    {
+      "id": "AML.T0010.005",
+      "title": "AI Agent Tool",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0010.005/"
+    },
+    {
+      "id": "AML.T0011",
+      "title": "User Execution",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0011/"
+    },
+    {
+      "id": "AML.T0011.000",
+      "title": "Unsafe AI Artifacts",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0011.000/"
+    },
+    {
+      "id": "AML.T0011.001",
+      "title": "Malicious Package",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0011.001/"
+    },
+    {
+      "id": "AML.T0011.002",
+      "title": "Poisoned AI Agent Tool",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0011.002/"
+    },
+    {
+      "id": "AML.T0011.003",
+      "title": "Malicious Link",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0011.003/"
+    },
+    {
+      "id": "AML.T0012",
+      "title": "Valid Accounts",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0012/"
+    },
+    {
+      "id": "AML.T0013",
+      "title": "Discover AI Model Ontology",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0013/"
+    },
+    {
+      "id": "AML.T0014",
+      "title": "Discover AI Model Family",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0014/"
+    },
+    {
+      "id": "AML.T0015",
+      "title": "Evade AI Model",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0015/"
+    },
+    {
+      "id": "AML.T0016",
+      "title": "Obtain Capabilities",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0016/"
+    },
+    {
+      "id": "AML.T0016.000",
+      "title": "Adversarial AI Attack Implementations",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0016.000/"
+    },
+    {
+      "id": "AML.T0016.001",
+      "title": "Software Tools",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0016.001/"
+    },
+    {
+      "id": "AML.T0016.002",
+      "title": "Generative AI",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0016.002/"
+    },
+    {
+      "id": "AML.T0017",
+      "title": "Develop Capabilities",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0017/"
+    },
+    {
+      "id": "AML.T0017.000",
+      "title": "Adversarial AI Attacks",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0017.000/"
+    },
+    {
+      "id": "AML.T0018",
+      "title": "Manipulate AI Model",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0018/"
+    },
+    {
+      "id": "AML.T0018.000",
+      "title": "Poison AI Model",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0018.000/"
+    },
+    {
+      "id": "AML.T0018.001",
+      "title": "Modify AI Model Architecture",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0018.001/"
+    },
+    {
+      "id": "AML.T0018.002",
+      "title": "Embed Malware",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0018.002/"
+    },
+    {
+      "id": "AML.T0019",
+      "title": "Publish Poisoned Datasets",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0019/"
+    },
+    {
+      "id": "AML.T0020",
+      "title": "Poison Training Data",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0020/"
+    },
+    {
+      "id": "AML.T0021",
+      "title": "Establish Accounts",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0021/"
+    },
+    {
+      "id": "AML.T0024",
+      "title": "Exfiltration via AI Inference API",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0024/"
+    },
+    {
+      "id": "AML.T0024.000",
+      "title": "Infer Training Data Membership",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0024.000/"
+    },
+    {
+      "id": "AML.T0024.001",
+      "title": "Invert AI Model",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0024.001/"
+    },
+    {
+      "id": "AML.T0024.002",
+      "title": "Extract AI Model",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0024.002/"
+    },
+    {
+      "id": "AML.T0025",
+      "title": "Exfiltration via Cyber Means",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0025/"
+    },
+    {
+      "id": "AML.T0029",
+      "title": "Denial of AI Service",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0029/"
+    },
+    {
+      "id": "AML.T0031",
+      "title": "Erode AI Model Integrity",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0031/"
+    },
+    {
+      "id": "AML.T0034",
+      "title": "Cost Harvesting",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0034/"
+    },
+    {
+      "id": "AML.T0034.000",
+      "title": "Excessive Queries",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0034.000/"
+    },
+    {
+      "id": "AML.T0034.001",
+      "title": "Resource-Intensive Queries",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0034.001/"
+    },
+    {
+      "id": "AML.T0034.002",
+      "title": "Agentic Resource Consumption",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0034.002/"
+    },
+    {
+      "id": "AML.T0035",
+      "title": "AI Artifact Collection",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0035/"
+    },
+    {
+      "id": "AML.T0036",
+      "title": "Data from Information Repositories",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0036/"
+    },
+    {
+      "id": "AML.T0037",
+      "title": "Data from Local System",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0037/"
+    },
+    {
+      "id": "AML.T0040",
+      "title": "AI Model Inference API Access",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0040/"
+    },
+    {
+      "id": "AML.T0041",
+      "title": "Physical Environment Access",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0041/"
+    },
+    {
+      "id": "AML.T0042",
+      "title": "Verify Attack",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0042/"
+    },
+    {
+      "id": "AML.T0043",
+      "title": "Craft Adversarial Data",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0043/"
+    },
+    {
+      "id": "AML.T0043.000",
+      "title": "White-Box Optimization",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0043.000/"
+    },
+    {
+      "id": "AML.T0043.001",
+      "title": "Black-Box Optimization",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0043.001/"
+    },
+    {
+      "id": "AML.T0043.002",
+      "title": "Black-Box Transfer",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0043.002/"
+    },
+    {
+      "id": "AML.T0043.003",
+      "title": "Manual Modification",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0043.003/"
+    },
+    {
+      "id": "AML.T0043.004",
+      "title": "Insert Backdoor Trigger",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0043.004/"
+    },
+    {
+      "id": "AML.T0044",
+      "title": "Full AI Model Access",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0044/"
+    },
+    {
+      "id": "AML.T0046",
+      "title": "Spamming AI System with Chaff Data",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0046/"
+    },
+    {
+      "id": "AML.T0047",
+      "title": "AI-Enabled Product or Service",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0047/"
+    },
+    {
+      "id": "AML.T0048",
+      "title": "External Harms",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0048/"
+    },
+    {
+      "id": "AML.T0048.000",
+      "title": "Financial Harm",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0048.000/"
+    },
+    {
+      "id": "AML.T0048.001",
+      "title": "Reputational Harm",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0048.001/"
+    },
+    {
+      "id": "AML.T0048.002",
+      "title": "Societal Harm",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0048.002/"
+    },
+    {
+      "id": "AML.T0048.003",
+      "title": "User Harm",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0048.003/"
+    },
+    {
+      "id": "AML.T0048.004",
+      "title": "AI Intellectual Property Theft",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0048.004/"
+    },
+    {
+      "id": "AML.T0049",
+      "title": "Exploit Public-Facing Application",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0049/"
+    },
+    {
+      "id": "AML.T0050",
+      "title": "Command and Scripting Interpreter",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0050/"
+    },
+    {
+      "id": "AML.T0051",
+      "title": "LLM Prompt Injection",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0051/"
+    },
+    {
+      "id": "AML.T0051.000",
+      "title": "Direct",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0051.000/"
+    },
+    {
+      "id": "AML.T0051.001",
+      "title": "Indirect",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0051.001/"
+    },
+    {
+      "id": "AML.T0051.002",
+      "title": "Triggered",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0051.002/"
+    },
+    {
+      "id": "AML.T0052",
+      "title": "Phishing",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0052/"
+    },
+    {
+      "id": "AML.T0052.000",
+      "title": "Spearphishing via Social Engineering LLM",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0052.000/"
+    },
+    {
+      "id": "AML.T0052.001",
+      "title": "Deepfake-Assisted Phishing",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0052.001/"
+    },
+    {
+      "id": "AML.T0053",
+      "title": "AI Agent Tool Invocation",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0053/"
+    },
+    {
+      "id": "AML.T0054",
+      "title": "LLM Jailbreak",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0054/"
+    },
+    {
+      "id": "AML.T0055",
+      "title": "Unsecured Credentials",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0055/"
+    },
+    {
+      "id": "AML.T0056",
+      "title": "Extract LLM System Prompt",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0056/"
+    },
+    {
+      "id": "AML.T0057",
+      "title": "LLM Data Leakage",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0057/"
+    },
+    {
+      "id": "AML.T0058",
+      "title": "Publish Poisoned Models",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0058/"
+    },
+    {
+      "id": "AML.T0059",
+      "title": "Erode Dataset Integrity",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0059/"
+    },
+    {
+      "id": "AML.T0060",
+      "title": "Publish Hallucinated Entities",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0060/"
+    },
+    {
+      "id": "AML.T0061",
+      "title": "LLM Prompt Self-Replication",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0061/"
+    },
+    {
+      "id": "AML.T0062",
+      "title": "Discover LLM Hallucinations",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0062/"
+    },
+    {
+      "id": "AML.T0063",
+      "title": "Discover AI Model Outputs",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0063/"
+    },
+    {
+      "id": "AML.T0064",
+      "title": "Gather RAG-Indexed Targets",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0064/"
+    },
+    {
+      "id": "AML.T0065",
+      "title": "LLM Prompt Crafting",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0065/"
+    },
+    {
+      "id": "AML.T0066",
+      "title": "Retrieval Content Crafting",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0066/"
+    },
+    {
+      "id": "AML.T0067",
+      "title": "LLM Trusted Output Components Manipulation",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0067/"
+    },
+    {
+      "id": "AML.T0067.000",
+      "title": "Citations",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0067.000/"
+    },
+    {
+      "id": "AML.T0068",
+      "title": "LLM Prompt Obfuscation",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0068/"
+    },
+    {
+      "id": "AML.T0069",
+      "title": "Discover LLM System Information",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0069/"
+    },
+    {
+      "id": "AML.T0069.000",
+      "title": "Special Character Sets",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0069.000/"
+    },
+    {
+      "id": "AML.T0069.001",
+      "title": "System Instruction Keywords",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0069.001/"
+    },
+    {
+      "id": "AML.T0069.002",
+      "title": "System Prompt",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0069.002/"
+    },
+    {
+      "id": "AML.T0070",
+      "title": "RAG Poisoning",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0070/"
+    },
+    {
+      "id": "AML.T0071",
+      "title": "False RAG Entry Injection",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0071/"
+    },
+    {
+      "id": "AML.T0072",
+      "title": "Reverse Shell",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0072/"
+    },
+    {
+      "id": "AML.T0073",
+      "title": "Impersonation",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0073/"
+    },
+    {
+      "id": "AML.T0074",
+      "title": "Masquerading",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0074/"
+    },
+    {
+      "id": "AML.T0075",
+      "title": "Cloud Service Discovery",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0075/"
+    },
+    {
+      "id": "AML.T0076",
+      "title": "Corrupt AI Model",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0076/"
+    },
+    {
+      "id": "AML.T0077",
+      "title": "LLM Response Rendering",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0077/"
+    },
+    {
+      "id": "AML.T0078",
+      "title": "Drive-by Compromise",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0078/"
+    },
+    {
+      "id": "AML.T0079",
+      "title": "Stage Capabilities",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0079/"
+    },
+    {
+      "id": "AML.T0080",
+      "title": "AI Agent Context Poisoning",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0080/"
+    },
+    {
+      "id": "AML.T0080.000",
+      "title": "Memory",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0080.000/"
+    },
+    {
+      "id": "AML.T0080.001",
+      "title": "Thread",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0080.001/"
+    },
+    {
+      "id": "AML.T0081",
+      "title": "Modify AI Agent Configuration",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0081/"
+    },
+    {
+      "id": "AML.T0082",
+      "title": "RAG Credential Harvesting",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0082/"
+    },
+    {
+      "id": "AML.T0083",
+      "title": "Credentials from AI Agent Configuration",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0083/"
+    },
+    {
+      "id": "AML.T0084",
+      "title": "Discover AI Agent Configuration",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0084/"
+    },
+    {
+      "id": "AML.T0084.000",
+      "title": "Embedded Knowledge",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0084.000/"
+    },
+    {
+      "id": "AML.T0084.001",
+      "title": "Tool Definitions",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0084.001/"
+    },
+    {
+      "id": "AML.T0084.002",
+      "title": "Activation Triggers",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0084.002/"
+    },
+    {
+      "id": "AML.T0084.003",
+      "title": "Call Chains",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0084.003/"
+    },
+    {
+      "id": "AML.T0085",
+      "title": "Data from AI Services",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0085/"
+    },
+    {
+      "id": "AML.T0085.000",
+      "title": "RAG Databases",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0085.000/"
+    },
+    {
+      "id": "AML.T0085.001",
+      "title": "AI Agent Tools",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0085.001/"
+    },
+    {
+      "id": "AML.T0086",
+      "title": "Exfiltration via AI Agent Tool Invocation",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0086/"
+    },
+    {
+      "id": "AML.T0087",
+      "title": "Gather Victim Identity Information",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0087/"
+    },
+    {
+      "id": "AML.T0088",
+      "title": "Generate Deepfakes",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0088/"
+    },
+    {
+      "id": "AML.T0089",
+      "title": "Process Discovery",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0089/"
+    },
+    {
+      "id": "AML.T0090",
+      "title": "OS Credential Dumping",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0090/"
+    },
+    {
+      "id": "AML.T0091",
+      "title": "Use Alternate Authentication Material",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0091/"
+    },
+    {
+      "id": "AML.T0091.000",
+      "title": "Application Access Token",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0091.000/"
+    },
+    {
+      "id": "AML.T0092",
+      "title": "Manipulate User LLM Chat History",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0092/"
+    },
+    {
+      "id": "AML.T0093",
+      "title": "Prompt Infiltration via Public-Facing Application",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0093/"
+    },
+    {
+      "id": "AML.T0094",
+      "title": "Delay Execution of LLM Instructions",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0094/"
+    },
+    {
+      "id": "AML.T0095",
+      "title": "Search Open Websites/Domains",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0095/"
+    },
+    {
+      "id": "AML.T0095.000",
+      "title": "Code Repositories",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0095.000/"
+    },
+    {
+      "id": "AML.T0096",
+      "title": "AI Service API",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0096/"
+    },
+    {
+      "id": "AML.T0097",
+      "title": "Virtualization/Sandbox Evasion",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0097/"
+    },
+    {
+      "id": "AML.T0098",
+      "title": "AI Agent Tool Credential Harvesting",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0098/"
+    },
+    {
+      "id": "AML.T0099",
+      "title": "AI Agent Tool Data Poisoning",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0099/"
+    },
+    {
+      "id": "AML.T0100",
+      "title": "AI Agent Clickbait",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0100/"
+    },
+    {
+      "id": "AML.T0101",
+      "title": "Data Destruction via AI Agent Tool Invocation",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0101/"
+    },
+    {
+      "id": "AML.T0102",
+      "title": "Generate Malicious Commands",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0102/"
+    },
+    {
+      "id": "AML.T0103",
+      "title": "Deploy AI Agent",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0103/"
+    },
+    {
+      "id": "AML.T0104",
+      "title": "Publish Poisoned AI Agent Tool",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0104/"
+    },
+    {
+      "id": "AML.T0105",
+      "title": "Escape to Host",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0105/"
+    },
+    {
+      "id": "AML.T0106",
+      "title": "Exploitation for Credential Access",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0106/"
+    },
+    {
+      "id": "AML.T0107",
+      "title": "Exploitation for Defense Evasion",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0107/"
+    },
+    {
+      "id": "AML.T0108",
+      "title": "AI Agent",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0108/"
+    },
+    {
+      "id": "AML.T0109",
+      "title": "AI Supply Chain Rug Pull",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0109/"
+    },
+    {
+      "id": "AML.T0110",
+      "title": "AI Agent Tool Poisoning",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0110/"
+    },
+    {
+      "id": "AML.T0111",
+      "title": "AI Supply Chain Reputation Inflation",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0111/"
+    },
+    {
+      "id": "AML.T0112",
+      "title": "Machine Compromise",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0112/"
+    },
+    {
+      "id": "AML.T0112.000",
+      "title": "Local AI Agent",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0112.000/"
+    },
+    {
+      "id": "AML.T0112.001",
+      "title": "AI Artifacts",
+      "type": "technique",
+      "source_url": "https://atlas.mitre.org/techniques/AML.T0112.001/"
+    },
+    {
+      "id": "AML.TA0000",
+      "title": "AI Model Access",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0000/"
+    },
+    {
+      "id": "AML.TA0001",
+      "title": "AI Attack Staging",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0001/"
+    },
+    {
+      "id": "AML.TA0002",
+      "title": "Reconnaissance",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0002/"
+    },
+    {
+      "id": "AML.TA0003",
+      "title": "Resource Development",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0003/"
+    },
+    {
+      "id": "AML.TA0004",
+      "title": "Initial Access",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0004/"
+    },
+    {
+      "id": "AML.TA0005",
+      "title": "Execution",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0005/"
+    },
+    {
+      "id": "AML.TA0006",
+      "title": "Persistence",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0006/"
+    },
+    {
+      "id": "AML.TA0007",
+      "title": "Defense Evasion",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0007/"
+    },
+    {
+      "id": "AML.TA0008",
+      "title": "Discovery",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0008/"
+    },
+    {
+      "id": "AML.TA0009",
+      "title": "Collection",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0009/"
+    },
+    {
+      "id": "AML.TA0010",
+      "title": "Exfiltration",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0010/"
+    },
+    {
+      "id": "AML.TA0011",
+      "title": "Impact",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0011/"
+    },
+    {
+      "id": "AML.TA0012",
+      "title": "Privilege Escalation",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0012/"
+    },
+    {
+      "id": "AML.TA0013",
+      "title": "Credential Access",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0013/"
+    },
+    {
+      "id": "AML.TA0014",
+      "title": "Command and Control",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0014/"
+    },
+    {
+      "id": "AML.TA0015",
+      "title": "Lateral Movement",
+      "type": "tactic",
+      "source_url": "https://atlas.mitre.org/tactics/AML.TA0015/"
+    }
+  ]
+}

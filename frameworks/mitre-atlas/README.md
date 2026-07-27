@@ -9,6 +9,8 @@ MITRE ATT&CK; it does not replace it.
 - Source: [MITRE ATLAS data](https://github.com/mitre-atlas/atlas-data)
 - Content release: `2026.05`
 - Data format: `6.0.0`
+- Source tag: `v2026.05`
+- Machine-readable registry: [`registry.json`](registry.json)
 - Identifier forms:
   - tactics: `AML.TA####`
   - techniques: `AML.T####`

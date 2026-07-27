@@ -1,0 +1,31 @@
+{
+  "name": "slsa",
+  "publisher": "Open Source Security Foundation",
+  "release": "SLSA specification v1.2",
+  "mapping_version": "1.2",
+  "review_date": "2026-07-27",
+  "source": {
+    "url": "https://github.com/slsa-framework/slsa/tree/19e4e2f005f871270c4f555fc47afecfb37f3efe",
+    "repository": "https://github.com/slsa-framework/slsa",
+    "tag": "v1.2",
+    "commit": "19e4e2f005f871270c4f555fc47afecfb37f3efe"
+  },
+  "coverage": {
+    "scope": "SLSA v1.2 build requirements currently referenced by repository controls",
+    "completeness": "reviewed-mapping-subset"
+  },
+  "entries": [
+    {
+      "id": "build-provenance",
+      "title": "Build provenance",
+      "type": "build-requirement",
+      "source_url": "https://slsa.dev/spec/v1.2/build-provenance"
+    },
+    {
+      "id": "build-track-basics#build-l3-hardened-builds",
+      "title": "Build L3: Hardened Builds",
+      "type": "build-level",
+      "source_url": "https://slsa.dev/spec/v1.2/build-track-basics#build-l3-hardened-builds"
+    }
+  ]
+}

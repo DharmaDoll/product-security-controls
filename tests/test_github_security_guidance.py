@@ -66,14 +66,14 @@ class GitHubSecurityGuidanceRegistryTest(unittest.TestCase):
         }
         self.assertEqual(collections, EXPECTED_COLLECTION_PAGES)
 
-        registered_ids = {page["id"] for page in self.registry["pages"]}
+        registered_ids = {page["id"] for page in self.registry["entries"]}
         expected_ids = set().union(*EXPECTED_COLLECTION_PAGES.values())
         self.assertEqual(registered_ids, expected_ids)
 
     def test_ids_and_urls_are_unique_and_official(self) -> None:
-        pages = self.registry["pages"]
+        pages = self.registry["entries"]
         ids = [page["id"] for page in pages]
-        urls = [page["url"] for page in pages]
+        urls = [page["source_url"] for page in pages]
         self.assertEqual(len(ids), len(set(ids)))
         self.assertEqual(len(urls), len(set(urls)))
 
@@ -90,11 +90,11 @@ class GitHubSecurityGuidanceRegistryTest(unittest.TestCase):
             self.assertFalse(parsed.fragment)
 
     def test_mapping_ids_use_stable_format(self) -> None:
-        for page in self.registry["pages"]:
+        for page in self.registry["entries"]:
             self.assertIsNotNone(re.fullmatch(r"[A-Z0-9-]+", page["id"]))
 
     def test_control_mappings_reference_registered_pages_and_version(self) -> None:
-        registered_ids = {page["id"] for page in self.registry["pages"]}
+        registered_ids = {page["id"] for page in self.registry["entries"]}
         mappings = [
             mapping
             for control in discover_controls()
