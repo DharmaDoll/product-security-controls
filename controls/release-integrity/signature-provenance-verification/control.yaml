@@ -2,6 +2,7 @@ id: PSB-REL-001
 title: release署名とProvenanceを期待値に照合する
 domain: release-integrity
 summary: Artifact署名とSLSA provenanceをconsumer-owned signer、builder、source、build expectationへ照合する。
+check_context_version: "1.0"
 security_functions:
   - prevent
   - verify
@@ -39,6 +40,10 @@ checks:
     applies_to:
       - release-artifact
       - provenance
+    context:
+      threat_actor: attacker substituting an artifact while reusing unrelated valid provenance
+      attack_or_failure_scenario: downloaded bytes differ from the subject digest authenticated by provenance
+      why_required: signature validity alone does not bind evidence to the exact artifact being consumed
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-REL-001
@@ -53,6 +58,10 @@ checks:
     applies_to:
       - release-artifact
       - provenance
+    context:
+      threat_actor: external forger or unauthorized signer creating plausible provenance
+      attack_or_failure_scenario: provenance content is modified or signed by an identity the consumer did not approve
+      why_required: consumer-owned trust roots authenticate provenance origin and integrity before field evaluation
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-REL-001
@@ -67,6 +76,10 @@ checks:
     responsible_role: release-manager
     applies_to:
       - provenance
+    context:
+      threat_actor: compromised builder producer or release channel presenting authentic but unexpected output
+      attack_or_failure_scenario: correctly signed provenance names an unapproved builder source revision ref or build type
+      why_required: authenticity does not establish policy acceptability so consumer expectations must be checked separately
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-REL-001
@@ -81,6 +94,10 @@ checks:
     responsible_role: release-manager
     applies_to:
       - release-artifact
+    context:
+      threat_actor: release operator or attacker removing verification signals to bypass a failing check
+      attack_or_failure_scenario: a previously protected artifact family is distributed without required signature or provenance
+      why_required: explicit no-downgrade rules prevent absence of evidence from silently becoming an accepted legacy path
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-REL-001
@@ -94,6 +111,10 @@ checks:
     responsible_role: release-manager
     applies_to:
       - release-verifier
+    context:
+      threat_actor: malformed input unavailable cryptographic tooling or verifier infrastructure failure
+      attack_or_failure_scenario: authenticity cannot be evaluated but the release is reported as trusted
+      why_required: a separate error state ensures operational failure never becomes a clean verification result
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-REL-001

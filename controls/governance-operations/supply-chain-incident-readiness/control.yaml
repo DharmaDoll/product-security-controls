@@ -2,6 +2,7 @@ id: PSB-GOV-001
 title: supply-chain incidentの影響範囲と対応planを即時生成する
 domain: governance-operations
 summary: SBOMとbuild evidenceから汚染packageの影響範囲を逆引きし、承認付きdry-run response planを生成する。
+check_context_version: "1.0"
 security_functions:
   - detect
   - respond
@@ -39,6 +40,10 @@ checks:
     applies_to:
       - incident-response
       - sbom-inventory
+    context:
+      threat_actor: compromised dependency maintainer or attacker introducing a malicious exact package version
+      attack_or_failure_scenario: responders know the package version but cannot identify affected repositories builds and artifacts
+      why_required: exact reverse lookup converts a dependency alert into an actionable and bounded incident scope
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-GOV-001
@@ -53,6 +58,10 @@ checks:
     applies_to:
       - sbom-inventory
       - build-evidence
+    context:
+      threat_actor: stale inventory tampering or accidental mismatch between SBOM and build records
+      attack_or_failure_scenario: response decisions use an SBOM that does not correspond to the investigated build or evidence artifact
+      why_required: integrity links establish that inventory findings refer to the actual product build under investigation
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-GOV-001
@@ -66,6 +75,10 @@ checks:
     responsible_role: incident-response
     applies_to:
       - incident-response
+    context:
+      threat_actor: rushed responder or unauthorized automation performing destructive containment
+      attack_or_failure_scenario: caches credentials or artifacts are removed before evidence capture causing investigation loss or outage
+      why_required: preservation-first owner-approved dry runs make response actions reviewable before changing production state
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-GOV-001
@@ -79,6 +92,10 @@ checks:
     responsible_role: incident-response
     applies_to:
       - incident-response
+    context:
+      threat_actor: incomplete assessment tooling or responder misinterpreting no result as no impact
+      attack_or_failure_scenario: impacted no-impact and verification-failure outcomes collapse into one ambiguous status
+      why_required: distinct states determine whether to contain close or repair the assessment rather than guess
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-GOV-001
@@ -93,6 +110,10 @@ checks:
     applies_to:
       - incident-response
       - sbom-inventory
+    context:
+      threat_actor: incomplete asset inventory unsafe runbook or unreviewed response configuration
+      attack_or_failure_scenario: response proceeds while products are missing from scope or destructive steps lack safeguards
+      why_required: validation blocks plans that could miss affected assets or damage evidence and availability
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-GOV-001

@@ -12,6 +12,7 @@
     "threats",
     "implementations",
     "verification",
+    "check_context_version",
     "checks",
     "mappings",
     "limitations",
@@ -150,7 +151,8 @@
           "responsible_role",
           "applies_to",
           "verification",
-          "mapping_status"
+          "mapping_status",
+          "context"
         ],
         "properties": {
           "id": {
@@ -274,21 +276,5 @@
     "owner": {"type": "string", "minLength": 1},
     "evidence_level": {"enum": ["E0", "E1", "E2", "E3", "E4"]}
   },
-  "allOf": [
-    {
-      "if": {
-        "required": ["check_context_version"]
-      },
-      "then": {
-        "properties": {
-          "checks": {
-            "items": {
-              "required": ["context"]
-            }
-          }
-        }
-      }
-    }
-  ],
   "additionalProperties": false
 }

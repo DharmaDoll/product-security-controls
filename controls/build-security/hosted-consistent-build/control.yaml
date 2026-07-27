@@ -2,6 +2,7 @@ id: PSB-BUILD-002
 title: 一貫したrelease buildを承認済みhosted platformで実行する
 domain: build-security
 summary: Producerが目標SLSA levelに適したhosted build platformを選定し、release artifactをversioned definitionと承認済みparameterで一貫してbuildしたことを検証する。
+check_context_version: "1.0"
 security_functions:
   - prevent
   - verify
@@ -33,6 +34,10 @@ checks:
     applies_to:
       - build-policy
       - build-platform-assessment
+    context:
+      threat_actor: producer selecting an unsuitable platform or a platform overstating guarantees
+      attack_or_failure_scenario: releases use a builder that cannot provide the hosted control and evidence required by the target level
+      why_required: platform capability must be approved before individual build records become meaningful evidence
     verification:
       type: hybrid
       method: make verify-control CONTROL=PSB-BUILD-002 and review the pinned platform capability evidence
@@ -48,6 +53,10 @@ checks:
     applies_to:
       - release-build
       - build-record
+    context:
+      threat_actor: developer or attacker substituting an unapproved local or tenant-controlled build
+      attack_or_failure_scenario: a release artifact is produced outside the approved hosted builder while retaining a plausible record
+      why_required: exact builder identity ties every release to the assessed platform rather than a preferred process
     verification:
       type: hybrid
       method: make verify-control CONTROL=PSB-BUILD-002 and compare the platform-issued build record
@@ -63,6 +72,10 @@ checks:
     applies_to:
       - build-definition
       - source-revision
+    context:
+      threat_actor: contributor or compromised pipeline changing build instructions independently of reviewed source
+      attack_or_failure_scenario: the artifact is built with mutable or untraceable instructions differing from the reviewed revision
+      why_required: binding definition path and full revision makes the build process reviewable and repeatable
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-BUILD-002
@@ -78,6 +91,10 @@ checks:
     applies_to:
       - build-invocation
       - release-trigger
+    context:
+      threat_actor: unauthorized caller or pipeline drift altering parameters entry points or triggers
+      attack_or_failure_scenario: the approved definition runs with unexpected inputs and produces a materially different artifact
+      why_required: definition identity alone does not constrain runtime invocation so parameters and trigger must also match
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-BUILD-002
@@ -92,6 +109,10 @@ checks:
     responsible_role: build-platform
     applies_to:
       - build-policy-verifier
+    context:
+      threat_actor: incomplete build records malformed policy or verification infrastructure failure
+      attack_or_failure_scenario: consistency and hosted execution cannot be established but are recorded as passing
+      why_required: fail-closed verification keeps missing evidence distinct from an approved hosted build
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-BUILD-002

@@ -2,6 +2,7 @@ id: PSB-SOURCE-002
 title: リポジトリ所有の開発者向けGit hooksセキュリティベースライン
 domain: source-protection
 summary: commit前とpushで導入される全履歴から情報漏洩の可能性を検出する。
+check_context_version: "1.0"
 security_functions:
   - prevent
   - detect
@@ -48,6 +49,10 @@ checks:
     applies_to:
       - developer-endpoint
       - source-repository
+    context:
+      threat_actor: attacker or compromised shared filesystem replacing executable Git hooks
+      attack_or_failure_scenario: a commit or push silently runs unreviewed code outside the repository security review boundary
+      why_required: repository-relative reviewed hooks make the executed prevention logic visible and governable
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-SOURCE-002
@@ -61,6 +66,10 @@ checks:
     responsible_role: developer
     applies_to:
       - developer-endpoint
+    context:
+      threat_actor: local attacker installer or stale global configuration redirecting hook execution
+      attack_or_failure_scenario: Git loads hooks from an absolute shared or globally managed path that repository reviewers cannot inspect
+      why_required: rejecting external hook paths prevents repository policy from being substituted at runtime
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-SOURCE-002
@@ -75,6 +84,10 @@ checks:
     applies_to:
       - developer-endpoint
       - source-repository
+    context:
+      threat_actor: malware local user backup process or accidental remote URL disclosure
+      attack_or_failure_scenario: Git stores reusable credentials in plaintext or embeds them in repository configuration
+      why_required: approved helpers and credential-free URLs remove persistent secrets outside content scanning coverage
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-SOURCE-002
@@ -88,6 +101,10 @@ checks:
     responsible_role: developer
     applies_to:
       - developer-endpoint
+    context:
+      threat_actor: attacker controlling a repository owned by another local account
+      attack_or_failure_scenario: wildcard safe.directory causes Git to trust ownership-unsafe worktrees and execute their configuration
+      why_required: exact trusted paths preserve Git ownership checks instead of disabling them globally
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-SOURCE-002
@@ -101,6 +118,10 @@ checks:
     responsible_role: developer
     applies_to:
       - source-repository
+    context:
+      threat_actor: impersonating contributor or user accidentally pushing more refs than intended
+      attack_or_failure_scenario: unsigned history obscures author identity or broad push defaults publish unrelated branches and tags
+      why_required: signing and narrow push behavior protect identity and publication scope beyond content scanning
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-SOURCE-002
@@ -114,6 +135,10 @@ checks:
     responsible_role: developer
     applies_to:
       - source-repository
+    context:
+      threat_actor: developer tool or malware adding binaries archives databases key stores or sensitive metadata
+      attack_or_failure_scenario: dangerous non-text content enters Git while evading ordinary secret regex review
+      why_required: explicit file-format denial covers opaque and high-risk artifacts that content patterns cannot reliably inspect
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-SOURCE-002
@@ -127,6 +152,10 @@ checks:
     responsible_role: developer
     applies_to:
       - source-repository
+    context:
+      threat_actor: accidental contributor or malware placing credential-like content in a file
+      attack_or_failure_scenario: supported secret patterns are committed and scanner output further leaks the matched value
+      why_required: detection with redacted reporting blocks representative credentials without creating a second disclosure channel
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-SOURCE-002
@@ -140,6 +169,10 @@ checks:
     responsible_role: developer
     applies_to:
       - source-repository
+    context:
+      threat_actor: user or tool adding a large opaque file that exceeds local review and scanner limits
+      attack_or_failure_scenario: sensitive content hides in an oversized file that is skipped for performance
+      why_required: rejecting rather than skipping enforces an explicit artifact-storage decision and prevents an unscanned gap
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-SOURCE-002
@@ -153,6 +186,10 @@ checks:
     responsible_role: developer
     applies_to:
       - source-repository
+    context:
+      threat_actor: contributor accidentally staging a sensitive file or credential
+      attack_or_failure_scenario: content reaches immutable local history before the developer receives feedback
+      why_required: index scanning acts at the earliest exact commit boundary and avoids scanning unrelated working-tree state
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-SOURCE-002
@@ -166,6 +203,10 @@ checks:
     responsible_role: developer
     applies_to:
       - source-repository
+    context:
+      threat_actor: contributor copying a token internal URL or sensitive text into a commit message
+      attack_or_failure_scenario: metadata becomes permanently searchable even when all committed files are clean
+      why_required: commit messages are a separate Git publication surface not inspected by staged-file scanning
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-SOURCE-002
@@ -179,6 +220,10 @@ checks:
     responsible_role: developer
     applies_to:
       - source-repository
+    context:
+      threat_actor: contributor bypassing commit hooks then deleting the secret in a later commit
+      attack_or_failure_scenario: latest tree is clean but the pushed range introduces an earlier recoverable secret
+      why_required: pre-push range scanning covers every introduced commit and closes latest-state and no-verify bypasses
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-SOURCE-002
@@ -192,6 +237,10 @@ checks:
     responsible_role: developer
     applies_to:
       - source-verifier
+    context:
+      threat_actor: missing Git scanner crash malformed input or operator treating hook failure as success
+      attack_or_failure_scenario: the operation proceeds because inspection could not run rather than because content was clean
+      why_required: distinct fail-closed errors preserve the security meaning of a zero-finding result
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-SOURCE-002
@@ -206,6 +255,10 @@ checks:
     applies_to:
       - source-repository
       - developer-endpoint
+    context:
+      threat_actor: configuration drift mutable external hook or incomplete pre-commit installation
+      attack_or_failure_scenario: framework adoption omits commit-message or push-history checks or downloads changing hook code
+      why_required: reviewed three-stage repository-owned configuration preserves native control coverage under the alternate framework
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-SOURCE-002
@@ -221,6 +274,10 @@ checks:
     applies_to:
       - source-repository
       - developer-endpoint
+    context:
+      threat_actor: credential exposure outside the repository-owned scanner rule set or compromised mutable scanner source
+      attack_or_failure_scenario: a secret pattern is missed by one engine or scanner output and installation drift weaken detection
+      why_required: an independently pinned redacted Gitleaks scan adds rule diversity while retaining controlled execution
     verification:
       type: hybrid
       method: verify the pinned pre-commit configuration then run Gitleaks on sanitized positive and negative fixtures in the adopted environment

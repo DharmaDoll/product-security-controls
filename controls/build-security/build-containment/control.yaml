@@ -2,6 +2,7 @@ id: PSB-BUILD-001
 title: dependency buildを権限・credential・networkから隔離する
 domain: build-security
 summary: Untrusted buildをdeploy権限から分離し、ephemeral sandbox、least privilege、default-deny egress、telemetryを検証する。
+check_context_version: "1.0"
 security_functions:
   - prevent
   - detect
@@ -32,6 +33,10 @@ checks:
     responsible_role: build-platform
     applies_to:
       - build-environment
+    context:
+      threat_actor: malicious or compromised dependency executing inside the build
+      attack_or_failure_scenario: dependency code reads credentials or uses control-plane write access to alter repositories releases or infrastructure
+      why_required: removing credentials and write authority limits impact even when untrusted build code executes
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-BUILD-001
@@ -46,6 +51,10 @@ checks:
     applies_to:
       - build-environment
       - deployment-pipeline
+    context:
+      threat_actor: compromised build process attempting to cross into deployment authority
+      attack_or_failure_scenario: the environment executing dependencies also holds release or production deployment credentials
+      why_required: an artifact-only handoff prevents build-time code from directly exercising deploy privileges
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-BUILD-001
@@ -60,6 +69,10 @@ checks:
     responsible_role: build-platform
     applies_to:
       - build-network
+    context:
+      threat_actor: malicious dependency or build script using outbound network access
+      attack_or_failure_scenario: build code exfiltrates source or downloads an unreviewed secondary payload from arbitrary destinations
+      why_required: default-deny egress constrains exfiltration and payload retrieval independently of filesystem controls
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-BUILD-001
@@ -74,6 +87,10 @@ checks:
     responsible_role: build-platform
     applies_to:
       - build-environment
+    context:
+      threat_actor: untrusted package build logic and compromised build tools
+      attack_or_failure_scenario: build code persists changes escalates through root privileges or writes outside the intended workspace
+      why_required: ephemeral non-root read-only isolation reduces persistence and host compromise when execution is unavoidable
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-BUILD-001
@@ -88,6 +105,10 @@ checks:
     responsible_role: security
     applies_to:
       - build-environment
+    context:
+      threat_actor: malicious build code hiding activity within otherwise successful output
+      attack_or_failure_scenario: unexpected processes or network connections occur without evidence for detection or incident reconstruction
+      why_required: containment reduces capability but telemetry is needed to detect attempts and verify boundary operation
     verification:
       type: hybrid
       method: verify the reference policy and inspect the telemetry integration
@@ -102,6 +123,10 @@ checks:
     responsible_role: build-platform
     applies_to:
       - build-verifier
+    context:
+      threat_actor: malformed evidence missing input or an operator misreading verifier failure
+      attack_or_failure_scenario: policy evaluation cannot complete but the build is reported as satisfying containment requirements
+      why_required: a distinct error state prevents unavailable verification from becoming false assurance
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-BUILD-001

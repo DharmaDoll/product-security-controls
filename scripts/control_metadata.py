@@ -271,8 +271,8 @@ def validate_controls(controls: list[dict[str, Any]]) -> list[str]:
 
         checks = control.get("checks")
         context_version = control.get("check_context_version")
-        if context_version is not None and context_version != "1.0":
-            errors.append(f"{label}: unsupported check_context_version {context_version!r}")
+        if context_version != "1.0":
+            errors.append(f"{label}: check_context_version must be '1.0'")
         check_ids: set[str] = set()
         mapping_status_by_check: dict[str, str] = {}
         if not isinstance(checks, list) or not checks:
@@ -336,28 +336,23 @@ def validate_controls(controls: list[dict[str, Any]]) -> list[str]:
                         f"{check.get('mapping_status')!r}"
                     )
                 context = check.get("context")
-                if context_version == "1.0":
-                    if not isinstance(context, dict):
-                        errors.append(
-                            f"{check_label}: context is required by "
-                            "check_context_version 1.0"
-                        )
-                    else:
-                        for field in (
-                            "threat_actor",
-                            "attack_or_failure_scenario",
-                            "why_required",
-                        ):
-                            _require_text(
-                                context,
-                                field,
-                                errors,
-                                f"{check_label}: context",
-                            )
-                elif context is not None:
+                if not isinstance(context, dict):
                     errors.append(
-                        f"{check_label}: context requires check_context_version 1.0"
+                        f"{check_label}: context is required by "
+                        "check_context_version 1.0"
                     )
+                else:
+                    for field in (
+                        "threat_actor",
+                        "attack_or_failure_scenario",
+                        "why_required",
+                    ):
+                        _require_text(
+                            context,
+                            field,
+                            errors,
+                            f"{check_label}: context",
+                        )
 
         mappings = control.get("mappings")
         mapped_check_ids: set[str] = set()

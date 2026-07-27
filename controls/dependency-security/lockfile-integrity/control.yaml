@@ -2,6 +2,7 @@ id: PSB-DEPS-003
 title: lockfileと取得artifactの完全性を強制する
 domain: dependency-security
 summary: Frozen dependency graphとmanifest、registry、exact version、artifact integrityの一致を検証する。
+check_context_version: "1.0"
 security_functions:
   - prevent
   - verify
@@ -35,6 +36,10 @@ checks:
     responsible_role: developer
     applies_to:
       - dependency-graph
+    context:
+      threat_actor: contributor or tooling changing dependencies without regenerating reviewed lock state
+      attack_or_failure_scenario: manifest intent and installed exact graph diverge so reviewers assess different dependencies than builds use
+      why_required: graph equality makes the lockfile a faithful executable representation of the reviewed manifest
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-003
@@ -48,6 +53,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - dependency-registry
+    context:
+      threat_actor: dependency-confusion publisher network attacker or credential-bearing registry misconfiguration
+      attack_or_failure_scenario: packages resolve from an unapproved origin or registry access leaks credentials
+      why_required: a credential-free HTTPS origin allowlist constrains both package source and transport trust
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-003
@@ -61,6 +70,10 @@ checks:
     responsible_role: developer
     applies_to:
       - dependency-artifact
+    context:
+      threat_actor: registry compromise cache poisoning or artifact substitution in transit
+      attack_or_failure_scenario: the resolved package name and version are correct but downloaded bytes differ from reviewed content
+      why_required: artifact digest verification protects the content boundary that version pinning alone cannot
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-003
@@ -74,6 +87,10 @@ checks:
     responsible_role: developer
     applies_to:
       - dependency-graph
+    context:
+      threat_actor: contributor introducing ranges floating selectors or implicit lockfile updates
+      attack_or_failure_scenario: future resolution changes the dependency graph without a corresponding reviewed repository diff
+      why_required: exact frozen resolution makes dependency changes explicit and reproducible
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-003
@@ -87,6 +104,10 @@ checks:
     responsible_role: developer
     applies_to:
       - dependency-verifier
+    context:
+      threat_actor: unreadable malformed or missing manifest lockfile metadata or artifact
+      attack_or_failure_scenario: integrity comparison cannot complete yet reports a clean dependency graph
+      why_required: ERROR state preserves the difference between verified equality and unavailable evidence
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-003

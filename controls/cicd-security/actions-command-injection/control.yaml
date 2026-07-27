@@ -2,6 +2,7 @@ id: PSB-CICD-002
 title: Prevent GitHub Actions command injection from direct expression interpolation
 domain: cicd-security
 summary: Keep attacker-influenced GitHub Actions expressions out of generated runner shell scripts.
+check_context_version: "1.0"
 security_functions:
   - prevent
   - verify
@@ -28,6 +29,10 @@ checks:
     responsible_role: developer
     applies_to:
       - ci-workflow
+    context:
+      threat_actor: pull-request author controlling branch issue label commit or event data
+      attack_or_failure_scenario: an Actions expression is substituted directly into a generated shell script and becomes executable syntax
+      why_required: excluding expressions from run scalars removes the code-generation boundary where data becomes commands
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-CICD-002
@@ -41,6 +46,10 @@ checks:
     responsible_role: developer
     applies_to:
       - ci-workflow
+    context:
+      threat_actor: untrusted contributor crafting shell metacharacters in workflow context values
+      attack_or_failure_scenario: attacker-controlled text crosses into shell execution without a data boundary or safe quoting
+      why_required: environment variables preserve the value as data and allow shell-specific quoting at the consumption point
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-CICD-002
@@ -54,6 +63,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - ci-verifier
+    context:
+      threat_actor: benign workflow author using expressions in declarative non-shell fields
+      attack_or_failure_scenario: context-insensitive scanning blocks safe metadata and creates noise that encourages disabling the control
+      why_required: limiting findings to executable fields preserves signal and makes enforcement operationally sustainable
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-CICD-002
@@ -67,6 +80,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - ci-verifier
+    context:
+      threat_actor: malformed or unsupported YAML hiding executable content from analysis
+      attack_or_failure_scenario: parser failure is interpreted as no direct interpolation and the workflow is accepted
+      why_required: explicit ERROR prevents syntactic ambiguity from bypassing command-injection checks
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-CICD-002

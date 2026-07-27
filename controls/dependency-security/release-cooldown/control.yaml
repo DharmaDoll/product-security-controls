@@ -2,6 +2,7 @@ id: PSB-DEPS-001
 title: 依存パッケージの公開直後採用をrelease cooldownで制御
 domain: dependency-security
 summary: 新しいdependency versionの採用を一定期間遅延し、公開直後のsupply-chain compromiseへの露出を減らす。
+check_context_version: "1.0"
 security_functions:
   - prevent
   - verify
@@ -38,6 +39,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - dependency-update
+    context:
+      threat_actor: attacker publishing a compromised package version through a maintainer account
+      attack_or_failure_scenario: automation adopts the release immediately before community detection yanking or advisory publication
+      why_required: a minimum observation window reduces exposure to attacks whose warning signals emerge shortly after release
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-001
@@ -51,6 +56,10 @@ checks:
     responsible_role: security
     applies_to:
       - dependency-update
+    context:
+      threat_actor: maintainer bypassing cooldown for urgent fixes or attacker abusing a broad exception
+      attack_or_failure_scenario: an exception covers extra packages versions or time beyond the reviewed emergency
+      why_required: exact owned expiring approval permits urgent response without permanently removing the observation window
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-001
@@ -65,6 +74,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - dependency-policy
+    context:
+      threat_actor: configuration drift or contributor reducing the waiting period for convenience
+      attack_or_failure_scenario: nominal cooldown remains enabled but its value is lowered below the reviewed baseline
+      why_required: enforcing the policy floor prevents semantic weakening that a simple enabled check would miss
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-001
@@ -78,6 +91,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - dependency-registry
+    context:
+      threat_actor: dependency-confusion publisher or registry metadata source controlled by an attacker
+      attack_or_failure_scenario: release age and version facts come from an unapproved registry origin
+      why_required: cooldown decisions are trustworthy only when metadata is bound to an approved credential-free HTTPS source
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-001
@@ -91,6 +108,10 @@ checks:
     responsible_role: developer
     applies_to:
       - dependency-artifact
+    context:
+      threat_actor: metadata tampering cache poisoning or artifact replacement after age approval
+      attack_or_failure_scenario: an old enough version passes cooldown but its metadata or downloaded bytes differ from expected content
+      why_required: integrity checks ensure cooldown applies to the exact artifact under review rather than only its version label
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-001
@@ -104,6 +125,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - dependency-verifier
+    context:
+      threat_actor: registry failure malformed metadata missing artifact or assessment tooling error
+      attack_or_failure_scenario: release age or integrity cannot be established but dependency adoption is reported clean
+      why_required: operational failure must block or escalate because no observation guarantee was verified
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-001

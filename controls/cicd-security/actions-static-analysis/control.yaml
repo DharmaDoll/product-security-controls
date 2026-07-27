@@ -2,6 +2,7 @@ id: PSB-CICD-003
 title: Statically analyze GitHub Actions workflows with a pinned scanner
 domain: cicd-security
 summary: Detect actionable workflow weaknesses with pinned zizmor checks while separating untrusted pull-request gating from privileged SARIF upload.
+check_context_version: "1.0"
 security_functions:
   - detect
   - verify
@@ -34,6 +35,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - ci-workflow
+    context:
+      threat_actor: compromised scanner publisher or mutable Action reference
+      attack_or_failure_scenario: the security job silently runs different analysis code or rules than reviewers approved
+      why_required: pinned scanner and Action identities make the verifier itself a controlled supply-chain dependency
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-CICD-003
@@ -47,6 +52,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - ci-workflow
+    context:
+      threat_actor: malicious pull-request author whose workflow content is scanned
+      attack_or_failure_scenario: untrusted PR input executes in a scanner job holding write tokens or privileged credentials
+      why_required: credential-free gating detects workflow weaknesses without turning analysis into a secret-exfiltration path
     verification:
       type: hybrid
       method: verify the workflow fixture and inspect required merge checks
@@ -61,6 +70,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - ci-workflow
+    context:
+      threat_actor: untrusted pull request attempting to misuse SARIF upload authority
+      attack_or_failure_scenario: security-events write permission is exposed to fork-controlled code or events
+      why_required: separating trusted upload from untrusted gating preserves reporting without granting PRs privileged API access
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-CICD-003
@@ -74,6 +87,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - ci-verifier
+    context:
+      threat_actor: scanner crash malformed SARIF or operator confusing execution failure with zero findings
+      attack_or_failure_scenario: analysis does not complete but the workflow receives a successful clean result
+      why_required: distinct clean finding and error states preserve fail-closed enforcement and trustworthy metrics
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-CICD-003
@@ -87,6 +104,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - ci-workflow
+    context:
+      threat_actor: contributor weakening permissions events or scanner arguments after initial adoption
+      attack_or_failure_scenario: the deployed workflow drifts from the reviewed sample while local fixtures continue to pass
+      why_required: baseline comparison verifies the actual adopted workflow rather than only the reference implementation
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-CICD-003

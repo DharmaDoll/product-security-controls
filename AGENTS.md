@@ -133,14 +133,12 @@ After implementation:
 - document residual risk and limitations;
 - provide a concise change summary.
 
-New controls MUST declare `check_context_version: "1.0"`. Every atomic check
+All controls MUST declare `check_context_version: "1.0"`. Every atomic check
 must state `context.threat_actor`, `context.attack_or_failure_scenario`, and
 `context.why_required` so that a filtered checklist row answers who or what is
 the threat, what happens, and why the check exists without requiring the reader
 to open the parent README. `applies_to` identifies the target. Do not satisfy
-this requirement by copying one generic paragraph into every row. Existing
-controls may migrate when their row context is reviewed; do not invent context
-solely to fill legacy spreadsheet cells.
+this requirement by copying one generic paragraph into every row.
 
 ## 6. Prohibited behavior
 

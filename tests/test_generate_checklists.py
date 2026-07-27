@@ -78,13 +78,10 @@ class GenerateChecklistsTest(unittest.TestCase):
             reviewed = next(row for row in rows if row["Mapping Status"] == "reviewed")
             self.assertIn(" / ", reviewed["Framework Mappings"])
 
-    def test_versioned_context_is_exported_per_checklist_row(self) -> None:
+    def test_context_is_exported_for_every_checklist_row(self) -> None:
         checklist, _, _ = generate_checklists.build_rows(self.controls)
-        source_rows = [
-            row for row in checklist if row["Control ID"] == "PSB-SOURCE-003"
-        ]
-        self.assertTrue(source_rows)
-        for row in source_rows:
+        self.assertTrue(checklist)
+        for row in checklist:
             self.assertTrue(row["Threat Actor or Source"])
             self.assertTrue(row["Row Attack or Failure Scenario"])
             self.assertTrue(row["Why This Check Is Required"])

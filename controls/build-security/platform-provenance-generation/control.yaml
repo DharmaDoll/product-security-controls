@@ -2,6 +2,7 @@ id: PSB-BUILD-003
 title: Build platformがauthentic provenanceを自動生成する
 domain: build-security
 summary: Hosted build platformがartifact digest、build process、top-level inputを含むprovenanceをcontrol planeで自動生成し、platform-owned identityで認証したことを検証する。
+check_context_version: "1.0"
 security_functions:
   - prevent
   - verify
@@ -36,6 +37,10 @@ checks:
     applies_to:
       - build-platform-control-plane
       - provenance-generation-policy
+    context:
+      threat_actor: tenant build step disabling provenance or generating evidence only for selected builds
+      attack_or_failure_scenario: a successful build completes without platform evidence or emits tenant-generated substitute metadata
+      why_required: mandatory automatic generation keeps provenance coverage outside the untrusted workload
     verification:
       type: hybrid
       method: make verify-control CONTROL=PSB-BUILD-003 and inspect the production platform generation policy
@@ -51,6 +56,10 @@ checks:
     applies_to:
       - provenance
       - release-artifact
+    context:
+      threat_actor: artifact substituter or producer presenting provenance for a different output
+      attack_or_failure_scenario: valid-looking provenance does not identify the distributed artifact source or invocation
+      why_required: subject digest and build inputs establish what the evidence actually describes
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-BUILD-003
@@ -66,6 +75,10 @@ checks:
     applies_to:
       - build-platform-control-plane
       - provenance-field-sources
+    context:
+      threat_actor: malicious tenant workload supplying false builder source or invocation fields
+      attack_or_failure_scenario: attacker-controlled build steps claim a trusted builder identity or benign parameters
+      why_required: security-relevant fields must originate from the control plane rather than the workload they attest to
     verification:
       type: hybrid
       method: make verify-control CONTROL=PSB-BUILD-003 and review the platform trust-boundary assessment
@@ -81,6 +94,10 @@ checks:
     applies_to:
       - provenance-signing
       - build-platform-identity
+    context:
+      threat_actor: tenant build step or external party forging platform provenance
+      attack_or_failure_scenario: provenance is altered or newly signed using an identity available to untrusted workload code
+      why_required: a platform-exclusive signing identity authenticates the evidence source and integrity
     verification:
       type: hybrid
       method: make verify-control CONTROL=PSB-BUILD-003 and inspect platform signer ownership
@@ -95,6 +112,10 @@ checks:
     responsible_role: build-platform
     applies_to:
       - provenance-verifier
+    context:
+      threat_actor: malformed provenance unavailable crypto tooling or operator error
+      attack_or_failure_scenario: signature or field validation does not complete but provenance is accepted
+      why_required: cryptographic assurance exists only after successful verification so tool and parse failures must block
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-BUILD-003

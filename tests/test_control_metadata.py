@@ -104,17 +104,12 @@ class ControlMetadataValidationTest(unittest.TestCase):
         errors = validate_controls([control])
         self.assertTrue(any("context is required" in error for error in errors))
 
-    def test_check_context_requires_declared_version(self) -> None:
+    def test_check_context_version_is_required(self) -> None:
         control = copy.deepcopy(self.controls[0])
         control.pop("check_context_version", None)
-        control["checks"][0]["context"] = {
-            "threat_actor": "test actor",
-            "attack_or_failure_scenario": "test scenario",
-            "why_required": "test reason",
-        }
         errors = validate_controls([control])
         self.assertTrue(
-            any("context requires check_context_version" in error for error in errors)
+            any("check_context_version must be" in error for error in errors)
         )
 
 

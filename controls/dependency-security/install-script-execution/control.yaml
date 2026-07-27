@@ -2,6 +2,7 @@ id: PSB-DEPS-002
 title: install時の任意コード実行をdefault denyにする
 domain: dependency-security
 summary: dependency install時のlifecycle scriptとsource buildを既定で拒否し、必要な実行だけを限定承認する。
+check_context_version: "1.0"
 security_functions:
   - prevent
   - verify
@@ -39,6 +40,10 @@ checks:
     responsible_role: developer
     applies_to:
       - dependency-install
+    context:
+      threat_actor: malicious npm or Bun package publishing lifecycle scripts
+      attack_or_failure_scenario: install automatically executes dependency-controlled code with developer or CI privileges
+      why_required: repository-owned default deny removes the most common implicit execution path before package use
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-002
@@ -52,6 +57,10 @@ checks:
     responsible_role: developer
     applies_to:
       - dependency-install
+    context:
+      threat_actor: compromised pnpm dependency requesting a native or lifecycle build
+      attack_or_failure_scenario: broad or permanent build approval lets unreviewed package versions execute during install
+      why_required: exact time-bound approval limits execution to the reviewed package need and forces reevaluation
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-002
@@ -66,6 +75,10 @@ checks:
     responsible_role: developer
     applies_to:
       - dependency-install
+    context:
+      threat_actor: malicious Python source distribution or compromised build backend
+      attack_or_failure_scenario: pip falls back to source build and executes backend code not represented by the expected wheel
+      why_required: binary-only exact hashes bind installation to reviewed artifacts and avoid source-build execution
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-002
@@ -79,6 +92,10 @@ checks:
     responsible_role: security
     applies_to:
       - dependency-policy
+    context:
+      threat_actor: maintainer creating an overly broad exception to resolve installation friction
+      attack_or_failure_scenario: wildcard package approval or expired justification becomes a permanent arbitrary-code path
+      why_required: narrow owned expiring exceptions preserve default deny while allowing explicitly reviewed necessity
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-002
@@ -93,6 +110,10 @@ checks:
     responsible_role: developer
     applies_to:
       - dependency-verifier
+    context:
+      threat_actor: missing malformed or unsupported package-manager configuration
+      attack_or_failure_scenario: install execution policy cannot be evaluated but is reported as safely disabled
+      why_required: a distinct error prevents configuration absence from becoming silent permission to execute
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-002

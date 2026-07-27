@@ -62,14 +62,17 @@ controls/<domain>/<control>/
 | `PSB-GOV-001` | SBOMからsupply-chain incidentの影響範囲とdry-run対応planを生成 | E3 |
 | `PSB-SOURCE-001` | Developer endpoint policy protects local development trust boundaries | E3 |
 | `PSB-SOURCE-002` | リポジトリ所有のGit hooksで開発端末からの情報漏洩を予防 | E3 |
+| `PSB-SOURCE-003` | GitHub dorking、全履歴scan、公開面reviewでpublic repository露出を検証 | E3 |
 
 Software supply-chain controlの関係は
 [`docs/SUPPLY_CHAIN_PRINCIPLES.md`](docs/SUPPLY_CHAIN_PRINCIPLES.md)を参照してください。
 
 ## Adoption checklist
 
-全controlの原子的な確認項目、担当、確認方法、必要な証跡、行単位の
-framework mappingをCSV、Markdown、Excelへ生成します。
+全controlの原子的な確認項目、想定する脅威主体、行固有の攻撃・失敗scenario、
+その確認が必要な理由、担当、対象、確認方法、必要な証跡、行単位のframework
+mappingをCSV、Markdown、Excelへ生成します。各行は親READMEを開かなくても、
+「誰または何から、何を、なぜ守るか」を判断できる構成です。
 
 ```bash
 make generate

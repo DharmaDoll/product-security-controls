@@ -2,6 +2,7 @@ id: PSB-SOURCE-001
 title: Harden developer endpoints and local trust boundaries
 domain: source-protection
 summary: Protect developer source code, credentials, and local development tools with enforceable endpoint policy requirements.
+check_context_version: "1.0"
 security_functions:
   - prevent
   - detect
@@ -51,6 +52,10 @@ checks:
     applies_to:
       - developer-endpoint
       - identity-platform
+    context:
+      threat_actor: malware credential stealer or attacker obtaining cached developer credentials
+      attack_or_failure_scenario: a long-lived token remains usable after theft and grants sustained source or service access
+      why_required: short-lived sessions reduce the exploitation window independently of endpoint detection and revocation speed
     verification:
       type: external-evidence
       method: inspect credential issuance and maximum lifetime policy
@@ -64,6 +69,10 @@ checks:
     responsible_role: developer
     applies_to:
       - developer-endpoint
+    context:
+      threat_actor: local malware another user or accidental file disclosure
+      attack_or_failure_scenario: plaintext credential files or Git helpers expose reusable secrets from developer storage
+      why_required: an approved OS-backed store adds access control and avoids recoverable plaintext persistence
     verification:
       type: hybrid
       method: run make assess-control CONTROL=PSB-SOURCE-001 and review the credential platform policy
@@ -79,6 +88,10 @@ checks:
     applies_to:
       - developer-endpoint
       - identity-platform
+    context:
+      threat_actor: malware or attacker attempting to copy a developer private key
+      attack_or_failure_scenario: an exportable key is stolen and used from another device without user verification
+      why_required: hardware-backed non-exportable keys constrain credential use even after filesystem compromise
     verification:
       type: external-evidence
       method: inspect key enrollment and authenticator policy
@@ -93,6 +106,10 @@ checks:
     applies_to:
       - developer-endpoint
       - source-repository
+    context:
+      threat_actor: developer accidentally staging a secret or malware placing one in the worktree
+      attack_or_failure_scenario: sensitive content enters a commit before repository-side controls can react
+      why_required: pre-commit scanning provides immediate prevention at the earliest source-publication boundary
     verification:
       type: hybrid
       method: run make assess-control CONTROL=PSB-SOURCE-001 and a sanitized negative hook fixture
@@ -108,6 +125,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - source-repository
+    context:
+      threat_actor: contributor bypassing local hooks Web UI user or unmanaged clone
+      attack_or_failure_scenario: a secret reaches the shared repository through a path where endpoint scanning did not run
+      why_required: mandatory server-side enforcement covers publication paths and bypasses outside local policy
     verification:
       type: external-evidence
       method: inspect repository rulesets and secret-scanning configuration
@@ -122,6 +143,10 @@ checks:
     applies_to:
       - developer-endpoint
       - dependency-install
+    context:
+      threat_actor: malicious package install script or compromised build backend
+      attack_or_failure_scenario: dependency installation reads developer files credentials sockets or modifies the host
+      why_required: disposable restricted installation isolates unavoidable package execution from endpoint assets
     verification:
       type: external-evidence
       method: inspect developer environment provisioning and sandbox policy
@@ -135,6 +160,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - dependency-update
+    context:
+      threat_actor: attacker publishing a new compromised dependency or maintainer delaying an urgent security fix
+      attack_or_failure_scenario: automation adopts a fresh malicious release or cooldown blocks necessary remediation without review
+      why_required: cooldown plus narrow security exception balances observation time with controlled urgent updates
     verification:
       type: hybrid
       method: verify PSB-DEPS-001 and inspect update automation policy
@@ -149,6 +178,10 @@ checks:
     responsible_role: security
     applies_to:
       - developer-network
+    context:
+      threat_actor: malware malicious development tool or compromised dependency using outbound connectivity
+      attack_or_failure_scenario: source credentials or prompts are exfiltrated to an arbitrary external endpoint
+      why_required: managed destination allowlisting limits exfiltration when local process controls are bypassed
     verification:
       type: external-evidence
       method: inspect SWG CASB proxy DNS or equivalent policy
@@ -163,6 +196,10 @@ checks:
     responsible_role: security
     applies_to:
       - identity-platform
+    context:
+      threat_actor: phishing adversary or attacker using an orphaned developer account
+      attack_or_failure_scenario: stolen passwords or incomplete offboarding grant repository and development-service access
+      why_required: centralized lifecycle and phishing-resistant MFA address identity compromise beyond device configuration
     verification:
       type: external-evidence
       method: inspect IdP authentication and deprovisioning policy
@@ -177,6 +214,10 @@ checks:
     applies_to:
       - developer-endpoint
       - source-repository
+    context:
+      threat_actor: developer or tool adding archives databases keys binaries or oversized sensitive files
+      attack_or_failure_scenario: high-risk file types bypass text-only secret patterns and enter source history
+      why_required: file type size and content guards cover disclosure forms that credential regex alone cannot
     verification:
       type: hybrid
       method: run make assess-control CONTROL=PSB-SOURCE-001 then inspect repository-side enforcement
@@ -192,6 +233,10 @@ checks:
     responsible_role: shared
     applies_to:
       - developer-endpoint
+    context:
+      threat_actor: thief or unauthorized person obtaining a powered-off developer device or storage media
+      attack_or_failure_scenario: source credentials caches and local artifacts are read directly from unencrypted storage
+      why_required: full-disk encryption protects data at rest when login and runtime controls are unavailable
     verification:
       type: hybrid
       method: run make assess-control CONTROL=PSB-SOURCE-001 and inspect endpoint-management compliance
@@ -206,6 +251,10 @@ checks:
     responsible_role: shared
     applies_to:
       - developer-endpoint
+    context:
+      threat_actor: nearby unauthorized person accessing an unattended unlocked workstation
+      attack_or_failure_scenario: an active developer session exposes source credentials and authenticated services without device theft
+      why_required: enforced inactivity lock shortens physical access opportunity during routine absence
     verification:
       type: hybrid
       method: run make assess-control CONTROL=PSB-SOURCE-001 and inspect endpoint-management screen-lock policy
@@ -220,6 +269,10 @@ checks:
     responsible_role: shared
     applies_to:
       - developer-endpoint
+    context:
+      threat_actor: attacker exploiting known vulnerabilities in the OS browser editor or developer tools
+      attack_or_failure_scenario: unsupported or unpatched software enables local compromise and credential theft
+      why_required: automatic enforced security updates reduce exposure time to publicly known endpoint exploits
     verification:
       type: hybrid
       method: run make assess-control CONTROL=PSB-SOURCE-001 and inspect patch compliance
@@ -234,6 +287,10 @@ checks:
     responsible_role: shared
     applies_to:
       - developer-endpoint
+    context:
+      threat_actor: malicious package tool or user mistake executing with administrator authority
+      attack_or_failure_scenario: routine development code modifies system security settings credentials or other users data
+      why_required: standard-user operation limits blast radius while controlled elevation preserves necessary administration
     verification:
       type: hybrid
       method: run make assess-control CONTROL=PSB-SOURCE-001 and inspect endpoint privilege policy
@@ -248,6 +305,10 @@ checks:
     responsible_role: developer
     applies_to:
       - developer-endpoint
+    context:
+      threat_actor: malware backup process support tool or accidental repository publication
+      attack_or_failure_scenario: credentials stored in workspaces dotfiles or shell history are copied or committed
+      why_required: absence checks address secret locations outside approved stores that secure-helper configuration does not cover
     verification:
       type: hybrid
       method: run an approved local secret scan and inspect credential practices
@@ -262,6 +323,10 @@ checks:
     applies_to:
       - developer-endpoint
       - local-container-runtime
+    context:
+      threat_actor: compromised container dependency or development tool accessing the host runtime socket
+      attack_or_failure_scenario: unrestricted Docker socket access becomes effective root-level control of the endpoint
+      why_required: removing broad socket access preserves the container boundary instead of exposing a host takeover interface
     verification:
       type: hybrid
       method: run make assess-control CONTROL=PSB-SOURCE-001 and inspect all container runtime policies
@@ -276,6 +341,10 @@ checks:
     responsible_role: developer
     applies_to:
       - developer-endpoint
+    context:
+      threat_actor: network attacker discovering an unmanaged debugger database or development service
+      attack_or_failure_scenario: a debug listener exposes code execution data or unauthenticated administration beyond loopback
+      why_required: default-disabled externally reachable services reduce attack surface not covered by repository controls
     verification:
       type: hybrid
       method: run make assess-control CONTROL=PSB-SOURCE-001 and inspect development launch configuration
@@ -291,6 +360,10 @@ checks:
     applies_to:
       - developer-endpoint
       - ai-development-tool
+    context:
+      threat_actor: compromised AI tool MCP server plugin or malicious prompt causing unauthorized network access
+      attack_or_failure_scenario: source prompts credentials or workspace data are sent to unapproved services
+      why_required: destination controls bound AI integrations whose dynamic behavior may exceed the immediate coding task
     verification:
       type: external-evidence
       method: inspect managed AI tool and developer egress policy
@@ -306,6 +379,10 @@ checks:
     applies_to:
       - developer-endpoint
       - development-sandbox
+    context:
+      threat_actor: compromised sandbox process package or AI agent with mounted host paths
+      attack_or_failure_scenario: development workload overwrites source credentials configuration or unrelated host files
+      why_required: read-only defaults make write authority explicit and narrow rather than inheriting the whole workspace
     verification:
       type: hybrid
       method: run make assess-control CONTROL=PSB-SOURCE-001 and inspect sandbox filesystem policy
@@ -321,6 +398,10 @@ checks:
     applies_to:
       - developer-endpoint
       - backup-service
+    context:
+      threat_actor: backup service compromise storage theft or unauthorized backup administrator
+      attack_or_failure_scenario: historical source credentials and local artifacts remain readable in backup copies
+      why_required: encrypted access-controlled backups extend endpoint confidentiality to retained copies and recovery media
     verification:
       type: external-evidence
       method: inspect managed backup encryption and access policy

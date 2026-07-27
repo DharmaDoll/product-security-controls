@@ -2,6 +2,7 @@ id: PSB-CICD-001
 title: Pin external GitHub Actions and reusable workflows to immutable commits
 domain: cicd-security
 summary: Prevent reviewed workflow dependencies from silently changing through mutable Git references.
+check_context_version: "1.0"
 security_functions:
   - prevent
   - verify
@@ -29,6 +30,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - ci-workflow
+    context:
+      threat_actor: compromised Action maintainer or attacker moving a mutable upstream ref
+      attack_or_failure_scenario: a reviewed workflow later executes different third-party Action code without repository change
+      why_required: a full commit SHA makes dependency updates explicit and reviewable in the consuming repository
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-CICD-001
@@ -42,6 +47,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - ci-workflow
+    context:
+      threat_actor: compromised reusable-workflow provider changing a branch or tag
+      attack_or_failure_scenario: caller jobs inherit altered commands permissions or secret handling from an external workflow
+      why_required: reusable workflows execute substantial remote policy and therefore need the same immutable binding as Actions
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-CICD-001
@@ -55,6 +64,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - ci-workflow
+    context:
+      threat_actor: container publisher or registry attacker replacing a mutable Action image tag
+      attack_or_failure_scenario: Docker-based Action pulls different bytes while its tag and workflow text remain unchanged
+      why_required: an image digest binds execution to exact container content instead of a mutable registry label
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-CICD-001
@@ -68,6 +81,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - ci-workflow
+    context:
+      threat_actor: contributor introducing a tag branch short SHA or computed external reference
+      attack_or_failure_scenario: workflow review cannot determine the exact third-party code that will execute
+      why_required: rejecting every mutable and dynamic form closes bypasses left by checking only common Action syntax
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-CICD-001
@@ -81,6 +98,10 @@ checks:
     responsible_role: repository-admin
     applies_to:
       - ci-verifier
+    context:
+      threat_actor: malformed workflow unsupported syntax or failed reference parser
+      attack_or_failure_scenario: the verifier cannot inspect a dependency reference but reports no mutable references
+      why_required: parser and execution errors must remain distinct so incomplete inspection never appears compliant
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-CICD-001
