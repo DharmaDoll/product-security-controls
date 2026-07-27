@@ -1,6 +1,7 @@
 {
   "name": "openssf-osps-baseline",
   "publisher": "Open Source Security Foundation",
+  "role": "requirement-framework",
   "release": "Open Source Project Security Baseline 2026.02.19",
   "mapping_version": "2026.02.19",
   "review_date": "2026-07-27",

@@ -1,6 +1,7 @@
 {
   "name": "slsa",
   "publisher": "Open Source Security Foundation",
+  "role": "requirement-framework",
   "release": "SLSA specification v1.2",
   "mapping_version": "1.2",
   "review_date": "2026-07-27",

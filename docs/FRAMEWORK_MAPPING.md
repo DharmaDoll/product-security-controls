@@ -8,6 +8,16 @@ It does not automatically prove compliance.
 
 ## Framework roles
 
+Registries classify their primary role as one of:
+
+- `requirement-framework`: testable or assessable security requirements;
+- `threat-taxonomy`: attacker behavior or risk classification, not compliance;
+- `implementation-guidance`: product/provider-specific implementation advice;
+- `negative-baseline`: focused practices that secure implementations avoid.
+
+This prevents a control from treating a threat taxonomy, vendor guide, and
+verification standard as interchangeable evidence.
+
 ### CISA Product Security Bad Practices
 
 Use as a focused negative baseline for exceptionally risky product properties,
@@ -165,6 +175,10 @@ Confidence levels:
 - low: conceptual relationship
 - medium: clear support but partial implementation
 - high: direct implementation or verification evidence
+
+Before adding a new framework, apply the adoption gate in
+[`frameworks/README.md`](../frameworks/README.md). Prefer one strong primary
+requirement mapping over several overlapping conceptual mappings.
 
 ## Reverse indexes
 

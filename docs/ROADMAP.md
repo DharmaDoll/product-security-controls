@@ -97,6 +97,21 @@ Add:
 - prompt/document injection fixtures;
 - sandbox and network policy.
 
+Add AI framework registries together with the first controls that can produce
+evidence for them:
+
+- NIST SP 800-218A as the AI-specific SSDF community profile;
+- NIST AI RMF 1.0 and NIST AI 600-1 for governance, measurement, and
+  generative-AI risk management;
+- OWASP Top 10 for LLM Applications 2025 as a coarse secondary risk taxonomy.
+
+Keep the roles separate: SP 800-218A supplies lifecycle practices, AI RMF and
+AI 600-1 supply risk-management outcomes, and OWASP LLM Top 10 plus MITRE
+ATLAS classify risks and attacker behavior. None of these mappings alone
+proves that an AI system is secure. Track revisions to AI RMF and emerging
+agentic-AI guidance, but do not pin drafts or unstable identifiers into
+controls.
+
 ## Phase 6 — Governance and generated views
 
 Add:
@@ -110,3 +125,26 @@ Add:
 
 SBOM impact search and evidence-first supply-chain incident response planning is
 implemented as `PSB-GOV-001`.
+
+## Planned framework adoption after Phase 5
+
+Add the following only with a concrete implementation and automated evidence:
+
+- CIS Software Supply Chain Security Benchmark controls that add unique,
+  automatable checks beyond the pinned GitHub security guidance;
+- AWS security guidance as an AWS provider profile when AWS-specific IAM,
+  CI/CD, artifact, or deployment controls exist;
+- Google Cloud software supply-chain guidance and Binary Authorization as a
+  GCP provider profile when corresponding provenance and admission controls
+  exist;
+- NIST SP 800-61 Rev. 3 when incident-response execution, evidence
+  preservation, and recovery controls extend `PSB-GOV-001`;
+- CISA SBOM consumption guidance when SBOM origin, integrity, completeness,
+  and mismatch handling are executable;
+- supplier due-diligence guidance such as NIST SP 1326 when supplier and
+  acquisition governance becomes an implemented control.
+
+NIST CSF, CIS Controls, OWASP Top 10, and cloud architecture frameworks remain
+secondary rollups. Do not add them as primary control requirements unless a
+documented gap cannot be covered by ASVS, SSDF, SLSA, OSPS, or a more specific
+control source.

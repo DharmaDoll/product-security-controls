@@ -1,6 +1,7 @@
 {
   "name": "mitre-attack",
   "publisher": "MITRE",
+  "role": "threat-taxonomy",
   "release": "Enterprise ATT&CK v19.1",
   "mapping_version": "v19.1",
   "review_date": "2026-07-27",

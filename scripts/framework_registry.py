@@ -14,6 +14,12 @@ from control_metadata import REPOSITORY_ROOT
 
 REGISTRY_GLOB = "frameworks/*/registry.json"
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+ROLES = {
+    "requirement-framework",
+    "threat-taxonomy",
+    "implementation-guidance",
+    "negative-baseline",
+}
 
 
 def discover_registries() -> dict[str, dict[str, Any]]:
@@ -59,6 +65,8 @@ def validate_registries(
         for field in ("publisher", "release", "mapping_version", "review_date"):
             if not isinstance(registry.get(field), str) or not registry[field].strip():
                 errors.append(f"{label}: {field} must be a non-empty string")
+        if registry.get("role") not in ROLES:
+            errors.append(f"{label}: unsupported role {registry.get('role')!r}")
 
         source = registry.get("source")
         if not isinstance(source, dict):

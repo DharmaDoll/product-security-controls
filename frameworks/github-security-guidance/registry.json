@@ -1,6 +1,7 @@
 {
   "name": "github-security-guidance",
   "publisher": "GitHub",
+  "role": "implementation-guidance",
   "release": "github/docs commit 2026-07-24",
   "product": "GitHub.com documentation",
   "source_repository": "https://github.com/github/docs",

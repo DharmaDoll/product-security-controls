@@ -1,6 +1,7 @@
 {
   "name": "cisa-product-security-bad-practices",
   "publisher": "Cybersecurity and Infrastructure Security Agency and Federal Bureau of Investigation",
+  "role": "negative-baseline",
   "release": "Product Security Bad Practices Version 2, January 2025",
   "mapping_version": "2 (January 2025)",
   "review_date": "2026-07-27",

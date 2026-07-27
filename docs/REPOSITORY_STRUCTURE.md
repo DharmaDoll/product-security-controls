@@ -25,8 +25,10 @@
 │   └── codeguard/
 ├── frameworks/
 │   ├── github-security-guidance/
+│   ├── cisa-product-security-bad-practices/
 │   ├── mitre-attack/
 │   ├── mitre-atlas/
+│   ├── openssf-osps-baseline/
 │   ├── owasp-top10/
 │   ├── owasp-asvs/
 │   ├── slsa/

@@ -1,6 +1,7 @@
 {
   "name": "owasp-asvs",
   "publisher": "OWASP Foundation",
+  "role": "requirement-framework",
   "release": "OWASP Application Security Verification Standard 5.0.0",
   "mapping_version": "5.0.0",
   "review_date": "2026-07-27",

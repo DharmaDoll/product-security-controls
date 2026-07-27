@@ -21,6 +21,8 @@ Framework registries currently include:
 
 Each registry has a `registry.json` containing:
 
+- a role: `requirement-framework`, `threat-taxonomy`,
+  `implementation-guidance`, or `negative-baseline`;
 - the exact mapping version;
 - a reviewed source URL and, where available, immutable commit and artifact
   SHA-256;
@@ -31,6 +33,23 @@ Each registry has a `registry.json` containing:
 whose version differs from the registry baseline, or whose identifier is not
 registered. A registry can deliberately contain a reviewed subset; its
 `coverage.completeness` must say so.
+
+## Adoption gate
+
+Do not add a registry only because a publication is well known. A new registry
+must:
+
+1. come from an authoritative source that can be versioned or integrity-pinned;
+2. add acceptance criteria, threat semantics, negative examples, or
+   implementation guidance not already represented;
+3. have stable identifiers, or a documented version-scoped local ID rule;
+4. have at least one planned or implemented control that can produce evidence;
+5. remain verifiable offline after the reviewed source is acquired;
+6. document its completeness boundary, limitations, and maintenance owner.
+
+Broad governance rollups and cloud-provider guidance should not become global
+control requirements by default. Add them only as secondary mappings or
+provider profiles when a corresponding implementation exists.
 
 For ATLAS, pin both values because the upstream data separates them:
 

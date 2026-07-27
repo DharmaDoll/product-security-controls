@@ -64,6 +64,13 @@ class FrameworkRegistryValidationTest(unittest.TestCase):
                 identifiers = [entry["id"] for entry in registry["entries"]]
                 self.assertEqual(len(identifiers), len(set(identifiers)))
 
+    def test_unknown_registry_role_is_rejected(self) -> None:
+        registries = copy.deepcopy(self.registries)
+        first = next(iter(registries.values()))
+        first["role"] = "compliance-proof"
+        errors = validate_registries(registries, self.controls)
+        self.assertTrue(any("unsupported role" in error for error in errors))
+
 
 if __name__ == "__main__":
     unittest.main()

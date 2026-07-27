@@ -88,6 +88,8 @@ OWASP ASVS     → concrete application security verification requirements
 SLSA           → source and build integrity requirements
 NIST SSDF      → secure software development practices
 MITRE ATLAS    → adversary behavior targeting AI-enabled systems
+OpenSSF OSPS   → open source project security requirements
+CISA PSBP      → focused product security bad practices to avoid
 This repository→ concrete implementation and verification examples
 ```
 
