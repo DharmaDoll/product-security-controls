@@ -4,6 +4,8 @@ Store pinned, reviewed framework identifier metadata used for mapping validation
 
 Framework registries currently include:
 
+- `cisa-product-security-bad-practices/` — CISA/FBI Product Security Bad
+  Practices Version 2 negative baseline.
 - `github-security-guidance/` — pinned GitHub security best-practice and
   GitHub Actions security guidance pages.
 - `mitre-attack/` — MITRE ATT&CK Enterprise objects.

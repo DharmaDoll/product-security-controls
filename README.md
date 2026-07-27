@@ -75,6 +75,7 @@ Each control is mapped to applicable items from:
 - MITRE ATLAS
 - GitHub security guidance
 - OpenSSF OSPS Baseline
+- CISA Product Security Bad Practices
 
 Mappings are relationships, not automatic claims of compliance.
 

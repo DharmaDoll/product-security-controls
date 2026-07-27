@@ -8,6 +8,24 @@ It does not automatically prove compliance.
 
 ## Framework roles
 
+### CISA Product Security Bad Practices
+
+Use as a focused negative baseline for exceptionally risky product properties,
+missing security features, and manufacturer processes. It is especially useful
+for defining isolated insecure examples and negative tests.
+
+Relationship examples:
+
+- mitigates
+- detects
+- supports
+
+The official Version 2 document numbers its 13 practices but does not publish
+framework-style stable identifiers. Use the registry's version-scoped local
+IDs and review meaning, not numbering alone, when the source is updated.
+Do not generalize the guidance's critical-infrastructure scope or treat a
+mapping as regulatory compliance or complete Secure by Design coverage.
+
 ### GitHub security guidance
 
 Use the pinned GitHub security guidance registry for GitHub-specific

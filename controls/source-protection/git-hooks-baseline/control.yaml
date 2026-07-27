@@ -60,6 +60,14 @@ mappings:
     rationale: Repositoryへcommitされる前にsecret patternと機密ファイルを検出・拒否し、unencrypted sensitive dataの意図しない保存防止を支援する。
     reviewer: product-security
     review_date: "2026-07-27"
+  - framework: cisa-product-security-bad-practices
+    version: "2 (January 2025)"
+    id: CISA-PSBP-PP-08
+    relationship: mitigates
+    confidence: medium
+    rationale: Commit前にhardcoded credentialとsecret patternを検出・拒否してsource codeへの混入を減らすが、pattern外のsecretやhook bypassまでは防止できない。
+    reviewer: product-security
+    review_date: "2026-07-27"
 limitations:
   - Local hooksは回避、変更、省略できるため、独立したserver-sideおよびCI enforcementが必要である。
   - Pattern matchingはすべての機密値を検出できず、非機密fixtureを拒否する可能性もある。

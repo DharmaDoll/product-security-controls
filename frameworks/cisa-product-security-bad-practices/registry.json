@@ -1,0 +1,95 @@
+{
+  "name": "cisa-product-security-bad-practices",
+  "publisher": "Cybersecurity and Infrastructure Security Agency and Federal Bureau of Investigation",
+  "release": "Product Security Bad Practices Version 2, January 2025",
+  "mapping_version": "2 (January 2025)",
+  "review_date": "2026-07-27",
+  "source": {
+    "url": "https://www.cisa.gov/sites/default/files/2025-01/joint-guidance-product-security-bad-practices-508c_0.pdf",
+    "sha256": "c0431ac502e8bcf5ae2e4f2f47249a2aae6ead00e0af6542bd29adac850a9d3e"
+  },
+  "coverage": {
+    "scope": "All 13 numbered bad practices in Version 2",
+    "completeness": "complete-guidance"
+  },
+  "entries": [
+    {
+      "id": "CISA-PSBP-PP-01",
+      "title": "Memory-unsafe new product lines or no memory-safety roadmap",
+      "type": "product-property-bad-practice",
+      "source_url": "https://www.cisa.gov/sites/default/files/2025-01/joint-guidance-product-security-bad-practices-508c_0.pdf"
+    },
+    {
+      "id": "CISA-PSBP-PP-02",
+      "title": "User input included directly in raw SQL query strings",
+      "type": "product-property-bad-practice",
+      "source_url": "https://www.cisa.gov/sites/default/files/2025-01/joint-guidance-product-security-bad-practices-508c_0.pdf"
+    },
+    {
+      "id": "CISA-PSBP-PP-03",
+      "title": "User input included directly in operating system command strings",
+      "type": "product-property-bad-practice",
+      "source_url": "https://www.cisa.gov/sites/default/files/2025-01/joint-guidance-product-security-bad-practices-508c_0.pdf"
+    },
+    {
+      "id": "CISA-PSBP-PP-04",
+      "title": "Products released with default passwords",
+      "type": "product-property-bad-practice",
+      "source_url": "https://www.cisa.gov/sites/default/files/2025-01/joint-guidance-product-security-bad-practices-508c_0.pdf"
+    },
+    {
+      "id": "CISA-PSBP-PP-05",
+      "title": "Exploitable Known Exploited Vulnerabilities at release or untimely patches",
+      "type": "product-property-bad-practice",
+      "source_url": "https://www.cisa.gov/sites/default/files/2025-01/joint-guidance-product-security-bad-practices-508c_0.pdf"
+    },
+    {
+      "id": "CISA-PSBP-PP-06",
+      "title": "Critical vulnerabilities in open source components or untimely mitigation",
+      "type": "product-property-bad-practice",
+      "source_url": "https://www.cisa.gov/sites/default/files/2025-01/joint-guidance-product-security-bad-practices-508c_0.pdf"
+    },
+    {
+      "id": "CISA-PSBP-PP-07",
+      "title": "Deprecated cryptography or missing protection for sensitive data",
+      "type": "product-property-bad-practice",
+      "source_url": "https://www.cisa.gov/sites/default/files/2025-01/joint-guidance-product-security-bad-practices-508c_0.pdf"
+    },
+    {
+      "id": "CISA-PSBP-PP-08",
+      "title": "Hardcoded credentials or secrets in source code",
+      "type": "product-property-bad-practice",
+      "source_url": "https://www.cisa.gov/sites/default/files/2025-01/joint-guidance-product-security-bad-practices-508c_0.pdf"
+    },
+    {
+      "id": "CISA-PSBP-SF-09",
+      "title": "Missing phishing-resistant MFA support or default administrator MFA",
+      "type": "security-feature-bad-practice",
+      "source_url": "https://www.cisa.gov/sites/default/files/2025-01/joint-guidance-product-security-bad-practices-508c_0.pdf"
+    },
+    {
+      "id": "CISA-PSBP-SF-10",
+      "title": "Insufficient customer-accessible evidence of common intrusions",
+      "type": "security-feature-bad-practice",
+      "source_url": "https://www.cisa.gov/sites/default/files/2025-01/joint-guidance-product-security-bad-practices-508c_0.pdf"
+    },
+    {
+      "id": "CISA-PSBP-OP-11",
+      "title": "Untimely CVE publication or missing CWE classification",
+      "type": "organizational-process-bad-practice",
+      "source_url": "https://www.cisa.gov/sites/default/files/2025-01/joint-guidance-product-security-bad-practices-508c_0.pdf"
+    },
+    {
+      "id": "CISA-PSBP-OP-12",
+      "title": "No published vulnerability disclosure policy covering the product",
+      "type": "organizational-process-bad-practice",
+      "source_url": "https://www.cisa.gov/sites/default/files/2025-01/joint-guidance-product-security-bad-practices-508c_0.pdf"
+    },
+    {
+      "id": "CISA-PSBP-OP-13",
+      "title": "Unclear support period for on-premises products",
+      "type": "organizational-process-bad-practice",
+      "source_url": "https://www.cisa.gov/sites/default/files/2025-01/joint-guidance-product-security-bad-practices-508c_0.pdf"
+    }
+  ]
+}
