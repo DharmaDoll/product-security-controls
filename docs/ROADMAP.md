@@ -77,7 +77,10 @@ Also add source-protection controls for public repository exposure, including
 GitHub dorking scenarios, secret discovery in current and historical content,
 visibility review, and remediation verification. These controls must test
 both prevention and detection, and must document the residual risk from forks,
-caches, and previously cloned repositories.
+caches, and previously cloned repositories. `PSB-SOURCE-003` implements this
+scope with repository-scoped defensive queries, an all-reachable-history
+scanner, sanitized multi-surface evidence, credential-first remediation, and
+negative tests that distinguish scanner failure from a clean result.
 
 Add developer endpoint hardening controls covering device encryption and lock
 policy, OS and tool update enforcement, least privilege, credential storage,
@@ -101,12 +104,14 @@ supporting evidence, not a claim that the level has been achieved.
 Planned control packages:
 
 1. `PSB-BUILD-002` — require a consistent build process on an approved hosted
-   build platform. This is intended to address the producer responsibilities
-   represented by `build-l1#producer-consistent-build` and
+   build platform — implemented. It provides evidence for the producer
+   responsibilities represented by
+   `build-l1#producer-appropriate-build-platform`,
+   `build-l1#producer-consistent-build`, and
    `build-l2#producer-hosted-build-platform`.
 2. `PSB-BUILD-003` — automatically generate authenticated provenance through
    the build platform itself, with build steps unable to forge the platform
-   identity. This is intended to address
+   identity — implemented. It provides evidence for
    `build-l1#platform-generates-provenance` and
    `build-l2#platform-authentic-provenance`.
 3. `PSB-REL-002` — publish and distribute provenance with each applicable
@@ -116,10 +121,11 @@ Planned control packages:
    artifact-subject validation, mapped to
    `build-l2#consumer-validates-authenticity`.
 
-The first three mappings remain provisional until their implementations,
-negative tests, platform trust boundaries, and sanitized evidence exist.
-Completion of this milestone requires all six cumulative requirements to move
-from `gap` to reviewed evidence in the generated `SLSA L2 Coverage` view,
+The planned `PSB-REL-002` mapping remains provisional until its implementation,
+negative tests, distribution trust boundaries, and sanitized evidence exist.
+Completion of this milestone requires all seven cumulative
+requirements to move from `gap` to reviewed evidence in the generated
+`SLSA L2 Coverage` view,
 followed by a separate end-to-end assessment of the producer, build platform,
 and consumer. L3 hardening is a later milestone and is not required for this
 target.
@@ -191,14 +197,16 @@ application checklist reconciliation identifies a better boundary.
    checklist as described in Phase 2. This is a generation/data-model task and
    does not become a documentation-only control.
 2. `PSB-BUILD-002` — consistent build process on an approved hosted build
-   platform.
-3. `PSB-BUILD-003` — platform-generated and platform-authenticated provenance.
+   platform — implemented.
+3. `PSB-BUILD-003` — platform-generated and platform-authenticated provenance
+   — implemented.
 4. `PSB-REL-002` — provenance publication and distribution with release
    artifacts.
 
-Items 2–4 close the five remaining generated SLSA Build L2 gaps together with
-the existing consumer verification in `PSB-REL-001`. Do not start a new SLSA
-L3 milestone until the cumulative L1+L2 assessment is complete.
+`PSB-BUILD-002` closes three producer-side gaps and `PSB-BUILD-003` closes two
+platform-side gaps. Item 4 closes the final provenance-distribution gap together
+with the existing consumer verification in `PSB-REL-001`. Do not start a new
+SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
 
 ### P1 — Foundational product-security controls
 
@@ -220,8 +228,10 @@ L3 milestone until the cumulative L1+L2 assessment is complete.
 
 1. `PSB-CODE-004` — injection prevention using parameterization and
    context-specific output handling.
-2. `PSB-SOURCE-003` — public repository exposure review, GitHub dorking
-   scenarios, current/history secret detection, and remediation evidence.
+2. `PSB-SOURCE-003` — public repository exposure review, repository-scoped
+   GitHub dorking scenarios, current/history secret detection, non-code surface
+   evidence, and credential-first remediation — implemented ahead of the
+   remaining P2 backlog.
 3. `PSB-DEPS-004` — dependency review that blocks unreviewed risk changes and
    fails closed when advisory or policy evaluation cannot run.
 4. `PSB-CICD-006` — short-lived, audience-bound OIDC federation without stored

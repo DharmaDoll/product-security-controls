@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "artifact": {
+    "name": "product-1.0.0.tar.gz",
+    "sha256": "bc3e9f3f0f4ab1a2dba9be716f73f991dc3793df68c3df57ddeb7e04c14c9f95"
+  },
+  "builder": {
+    "identity": "https://build.example.invalid/builders/release-v1",
+    "execution_environment": "hosted",
+    "executor_control": "build-platform"
+  },
+  "source": {
+    "repository": "https://github.com/example/product",
+    "revision": "7a8d19f65c9017a274e30f0ea25ba2d647eda78a"
+  },
+  "process": {
+    "definition_repository": "https://github.com/example/product",
+    "definition_revision": "7a8d19f65c9017a274e30f0ea25ba2d647eda78a",
+    "definition_path": ".github/workflows/release.yml",
+    "entry_point": "release",
+    "parameters": {
+      "locked_dependencies": true,
+      "profile": "production"
+    }
+  },
+  "trigger": "protected-release"
+}

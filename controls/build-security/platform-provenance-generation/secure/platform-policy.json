@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "target_slsa_build_level": 2,
+  "generation": {
+    "automatic_on_build_success": true,
+    "generator_trust_boundary": "control-plane",
+    "build_steps_can_disable": false,
+    "build_steps_can_modify": false
+  },
+  "authenticity": {
+    "algorithm": "ed25519",
+    "trusted_public_key": "trusted-public-key.pem",
+    "signer_trust_boundary": "control-plane",
+    "key_owner": "build-platform",
+    "tenant_signing_capability": false
+  },
+  "field_sources": {
+    "predicate.buildDefinition.buildType": "control-plane",
+    "predicate.buildDefinition.externalParameters": "control-plane",
+    "predicate.runDetails.builder.id": "control-plane",
+    "predicate.runDetails.metadata.invocationId": "control-plane"
+  },
+  "expected": {
+    "subject_name": "release.bin",
+    "builder_id": "https://builder.example.test/hosted/v1",
+    "build_type": "https://build.example.test/types/release/v1",
+    "repository": "https://github.com/example/product",
+    "ref": "refs/tags/v1.0.0",
+    "source_commit": "0123456789abcdef0123456789abcdef01234567"
+  }
+}

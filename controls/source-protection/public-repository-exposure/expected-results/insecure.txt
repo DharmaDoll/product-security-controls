@@ -1,0 +1,7 @@
+REJECTED exposure profile when searches are unscoped or public surfaces are omitted
+REJECTED exposure evidence when repository controls are disabled or a scan fails
+REJECTED historical synthetic secret even after deletion from the latest tree
+REJECTED organization domain email domain or confidentiality marker in current or historical files
+ERROR when policy evidence or Git history cannot be inspected reliably
+ERROR when organization indicator configuration is malformed unsafe or incomplete
+ERROR when a global GitHub query could be generated without an owned organization indicator

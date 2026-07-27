@@ -20,6 +20,20 @@ test "$insecure_status" -eq 1 || {
 }
 diff -u "$control/expected-results/insecure.txt" "$temporary_directory/insecure.txt"
 
+cp -R "$control/secure" "$temporary_directory/malformed-profile"
+printf '%s\n' '{"repos":' \
+  >"$temporary_directory/malformed-profile/pre-commit-framework/.pre-commit-config.yaml"
+set +e
+python3 "$control/scripts/verify.py" "$temporary_directory/malformed-profile" \
+  >"$temporary_directory/malformed-profile.txt" 2>&1
+malformed_profile_status=$?
+set -e
+test "$malformed_profile_status" -eq 2 || {
+  echo "expected malformed pre-commit config exit 2, got $malformed_profile_status" >&2
+  exit 1
+}
+grep -q '^ERROR cannot parse ' "$temporary_directory/malformed-profile.txt"
+
 repository="$temporary_directory/repository"
 mkdir "$repository"
 git -C "$repository" init -q
@@ -115,6 +129,42 @@ if grep -F "$synthetic_token" "$temporary_directory/pre-push.txt" >/dev/null; th
   echo "pre-push output exposed the matched value" >&2
   exit 1
 fi
+
+set +e
+(
+  cd "$repository"
+  PRE_COMMIT_REMOTE_NAME=origin \
+    PRE_COMMIT_LOCAL_BRANCH=refs/heads/main \
+    PRE_COMMIT_TO_REF="$head_commit" \
+    PRE_COMMIT_REMOTE_BRANCH=refs/heads/main \
+    PRE_COMMIT_FROM_REF="$baseline_commit" \
+    .githooks/pre-push-pre-commit
+) >"$temporary_directory/pre-commit-framework-pre-push.txt" 2>&1
+framework_pre_push_status=$?
+set -e
+test "$framework_pre_push_status" -eq 1 || {
+  echo "expected framework pre-push exit 1, got $framework_pre_push_status" >&2
+  exit 1
+}
+grep -F "BLOCK github-token" \
+  "$temporary_directory/pre-commit-framework-pre-push.txt" >/dev/null
+if grep -F "$synthetic_token" \
+  "$temporary_directory/pre-commit-framework-pre-push.txt" >/dev/null; then
+  echo "framework pre-push output exposed the matched value" >&2
+  exit 1
+fi
+
+set +e
+(
+  cd "$repository"
+  .githooks/pre-push-pre-commit
+) >"$temporary_directory/pre-commit-framework-context-error.txt" 2>&1
+framework_context_status=$?
+set -e
+test "$framework_context_status" -eq 2 || {
+  echo "expected missing framework context exit 2, got $framework_context_status" >&2
+  exit 1
+}
 
 forbidden_files=(
   sample.exe sample.dll sample.so sample.dylib sample.bin sample.msi
@@ -228,9 +278,11 @@ test "$scanner_error_status" -eq 2 || {
 
 echo "PASS secure Git configuration and hook bundle accepted"
 echo "PASS insecure Git configuration rejected"
+echo "PASS malformed pre-commit framework config fails closed"
 echo "PASS sensitive filename and synthetic token blocked"
 echo "PASS sensitive commit message blocked without value disclosure"
 echo "PASS pre-push found a deleted secret in introduced history"
+echo "PASS pre-commit framework sample preserves introduced-history scanning"
 echo "PASS all configured forbidden file types blocked"
 echo "PASS AWS Google JWT bearer GitHub private-key Slack and generic patterns blocked"
 echo "PASS files over 5 MiB blocked"

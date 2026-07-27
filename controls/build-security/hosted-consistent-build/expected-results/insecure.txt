@@ -1,0 +1,14 @@
+FAIL approved builder https://build.example.invalid/builders/release-v1 must be hosted
+FAIL approved builder https://build.example.invalid/builders/release-v1 assessed level must be at least 2
+FAIL approved builder https://build.example.invalid/builders/release-v1 capability evidence must use HTTPS
+FAIL approved builder https://build.example.invalid/builders/release-v1 capability evidence must be SHA-256 pinned
+FAIL build definition must be bound to the source revision
+FAIL release policy must require hosted builds
+FAIL release policy must reject developer workstation builds
+FAIL release build must run in a hosted execution environment
+FAIL release build execution must be controlled by the build platform
+FAIL build definition path does not match producer policy
+FAIL build entry point does not match producer policy
+FAIL build parameters do not exactly match producer policy
+FAIL release trigger manual is not allowed by producer policy
+RESULT rejected with 13 finding(s)

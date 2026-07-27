@@ -1,0 +1,23 @@
+{
+  "minimum_pre_commit_version": "0",
+  "default_install_hook_types": [
+    "manual"
+  ],
+  "repos": [
+    {
+      "repo": "https://github.com/gitleaks/gitleaks",
+      "rev": "main",
+      "hooks": [
+        {
+          "id": "gitleaks",
+          "args": [],
+          "pass_filenames": true,
+          "always_run": false,
+          "stages": [
+            "manual"
+          ]
+        }
+      ]
+    }
+  ]
+}

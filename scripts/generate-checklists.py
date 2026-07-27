@@ -28,6 +28,9 @@ GUIDELINE_HEADERS = [
     "Check Title",
     "Security Functions",
     "Threat Scenarios",
+    "Threat Actor or Source",
+    "Row Attack or Failure Scenario",
+    "Why This Check Is Required",
     "Secure Examples",
     "Required State",
     "Responsible Role",
@@ -149,6 +152,7 @@ def build_rows(
                 mapping_summary = "UNMAPPED — framework review required"
 
             verification = check["verification"]
+            context = check.get("context", {})
             assessment = control.get("assessment", {})
             slsa_mappings = [
                 mapping
@@ -197,6 +201,11 @@ def build_rows(
                         f"{threat['id']}: {threat['description']}"
                         for threat in control["threats"]
                     ),
+                    "Threat Actor or Source": context.get("threat_actor", ""),
+                    "Row Attack or Failure Scenario": context.get(
+                        "attack_or_failure_scenario", ""
+                    ),
+                    "Why This Check Is Required": context.get("why_required", ""),
                     "Secure Examples": _joined(
                         str(control["_directory"].relative_to(REPOSITORY_ROOT) / path)
                         for path in control["implementations"]["secure"]
@@ -388,6 +397,9 @@ def write_markdown(path: Path, rows: list[dict[str, str]]) -> None:
         "Check ID",
         "Domain",
         "Check Title",
+        "Threat Actor or Source",
+        "Row Attack or Failure Scenario",
+        "Why This Check Is Required",
         "Responsible Role",
         "Verification Type",
         "Mapping Status",

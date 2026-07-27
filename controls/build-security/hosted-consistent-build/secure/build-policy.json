@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "target_slsa_build_level": 2,
+  "source_repository": "https://github.com/example/product",
+  "approved_builders": [
+    {
+      "identity": "https://build.example.invalid/builders/release-v1",
+      "hosted": true,
+      "assessed_slsa_build_level": 2,
+      "capability_evidence": {
+        "uri": "https://security.example.invalid/assessments/release-builder-v1.json",
+        "sha256": "a7b249e2f652a9889b97b646f8439171206bd0c8d4f22097899a5ab05f51f240"
+      }
+    }
+  ],
+  "process": {
+    "definition_repository": "https://github.com/example/product",
+    "definition_path": ".github/workflows/release.yml",
+    "revision_binding": "source-revision",
+    "entry_point": "release",
+    "parameters": {
+      "locked_dependencies": true,
+      "profile": "production"
+    },
+    "allowed_triggers": [
+      "protected-release"
+    ]
+  },
+  "release_policy": {
+    "require_hosted": true,
+    "allow_developer_workstation": false
+  }
+}

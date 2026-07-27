@@ -1,0 +1,21 @@
+FAIL provenance generation must be automatic on build success
+FAIL provenance generator must run in the control plane
+FAIL tenant build steps must not disable provenance generation
+FAIL tenant build steps must not modify generated provenance
+FAIL provenance signer must run in the control plane
+FAIL provenance signing identity must be owned by the build platform
+FAIL tenant must not have platform provenance signing capability
+FAIL required provenance field must come from control plane: predicate.buildDefinition.buildType
+FAIL required provenance field must come from control plane: predicate.buildDefinition.externalParameters
+FAIL required provenance field must come from control plane: predicate.runDetails.builder.id
+FAIL required provenance field must come from control plane: predicate.runDetails.metadata.invocationId
+FAIL artifact SHA-256 does not match provenance subject
+FAIL provenance predicateType must be SLSA provenance v1
+FAIL provenance buildType does not match platform policy
+FAIL provenance repository does not match platform policy
+FAIL provenance ref does not match platform policy
+FAIL resolved source URI does not match platform policy
+FAIL provenance source commit does not match platform policy
+FAIL provenance builder identity does not match platform policy
+FAIL platform provenance signature verification failed
+RESULT rejected with 20 finding(s)

@@ -25,6 +25,16 @@
       "source_url": "https://slsa.dev/spec/v1.2/build-provenance"
     },
     {
+      "id": "build-l1#producer-appropriate-build-platform",
+      "title": "Build L1 producer chooses an appropriate build platform",
+      "type": "build-level-requirement",
+      "track": "build",
+      "minimum_level": 1,
+      "level_requirement": true,
+      "responsibility": "software-producer",
+      "source_url": "https://slsa.dev/spec/v1.2/build-requirements#choose-an-appropriate-build-platform"
+    },
+    {
       "id": "build-l1#producer-consistent-build",
       "title": "Build L1 producer follows a consistent build process",
       "type": "build-level-requirement",

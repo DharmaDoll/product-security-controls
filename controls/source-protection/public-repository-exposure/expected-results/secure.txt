@@ -1,0 +1,4 @@
+ACCEPTED public repository exposure policy and sanitized evidence
+ACCEPTED no sensitive-data findings
+ACCEPTED no organization-specific exposure findings
+WROTE access-controlled Markdown containing clickable GitHub Code Search URLs

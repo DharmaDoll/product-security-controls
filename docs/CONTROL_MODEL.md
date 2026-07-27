@@ -97,6 +97,25 @@ Framework mappings use `applies_to` to link a reviewed rationale to specific
 checks. A check with no reviewed relationship uses `mapping_status: unmapped`;
 the parent control's mappings must not be copied to it implicitly.
 
+New controls declare `check_context_version: "1.0"`. Every check in such a
+control must include:
+
+- `context.threat_actor`: who or what creates the threat, including accidental
+  actors, compromised identities, automation failures, or external attackers;
+- `context.attack_or_failure_scenario`: the concrete action or failure that
+  affects this row's target;
+- `context.why_required`: why this specific check changes the outcome and why
+  another row does not make it redundant.
+
+`applies_to` remains the machine-readable target scope. The context fields make
+each generated spreadsheet row understandable when filtered or exported
+without the parent README. They must be specific to the row and must not repeat
+the same generic control summary across every check.
+
+Existing controls without `check_context_version` are legacy rows awaiting
+reviewed migration. Do not bulk-fill them with inferred or generic text merely
+to remove blank cells.
+
 Framework-specific adoption profiles are derived from pinned framework registry
 metadata and the row-level `applies_to` links. A cumulative level profile, such
 as SLSA Build L2, includes requirements whose `minimum_level` is at or below the

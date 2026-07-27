@@ -1,0 +1,143 @@
+id: PSB-BUILD-002
+title: 一貫したrelease buildを承認済みhosted platformで実行する
+domain: build-security
+summary: Producerが目標SLSA levelに適したhosted build platformを選定し、release artifactをversioned definitionと承認済みparameterで一貫してbuildしたことを検証する。
+security_functions:
+  - prevent
+  - verify
+threats:
+  - id: BUILD-UNAPPROVED-PLATFORM
+    description: 開発者端末または未評価のbuilderで生成したartifactが正規releaseへ混入し、consumerがbuild originを信頼できなくなる。
+  - id: BUILD-PROCESS-DRIFT
+    description: Release buildが未記録のworkflow、entry point、parameter、manual triggerへ逸脱し、verifierが正しいbuild processの期待値を形成できなくなる。
+implementations:
+  insecure:
+    - insecure/build-policy.json
+    - insecure/build-record.json
+  secure:
+    - secure/build-policy.json
+    - secure/build-record.json
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-BUILD-002
+  expected:
+    - producer policyはSLSA Build L2 capability evidenceを固定したhosted builderだけを承認する
+    - release build recordのbuilder identityとhosted executionがproducer policyへ一致する
+    - source revisionとbuild definition revisionが一致し、entry point、parameter、triggerが期待値へ一致する
+    - local build、floating definition、未固定platform evidence、parse失敗をcleanな結果と区別する
+checks:
+  - id: HCB-001
+    title: Producer approves a build platform capable of the target level
+    required_state: approved builder identity with pinned capability evidence for SLSA Build L2
+    responsible_role: release-manager
+    applies_to:
+      - build-policy
+      - build-platform-assessment
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-BUILD-002 and review the pinned platform capability evidence
+      expected: only a reviewed builder assessed for at least the target level is approved
+      evidence:
+        - sanitized verifier output
+        - pinned build-platform assessment
+    mapping_status: reviewed
+  - id: HCB-002
+    title: Release artifacts are built on the approved hosted platform
+    required_state: exact approved builder identity under build-platform-controlled hosted execution
+    responsible_role: release-manager
+    applies_to:
+      - release-build
+      - build-record
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-BUILD-002 and compare the platform-issued build record
+      expected: developer workstation and producer-controlled execution are rejected
+      evidence:
+        - sanitized verifier output
+        - platform-issued build record
+    mapping_status: reviewed
+  - id: HCB-003
+    title: Build definition is versioned with the source revision
+    required_state: exact repository path and full definition revision bound to the source revision
+    responsible_role: release-manager
+    applies_to:
+      - build-definition
+      - source-revision
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-BUILD-002
+      expected: floating or mismatched build definitions are rejected
+      evidence:
+        - sanitized verifier output
+        - build policy and build record
+    mapping_status: reviewed
+  - id: HCB-004
+    title: Build invocation matches the producer expectation
+    required_state: exact entry point parameters and protected trigger recorded for every release build
+    responsible_role: release-manager
+    applies_to:
+      - build-invocation
+      - release-trigger
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-BUILD-002
+      expected: local entry points changed parameters and manual triggers are rejected
+      evidence:
+        - sanitized verifier output
+        - build policy and build record
+    mapping_status: reviewed
+  - id: HCB-005
+    title: Hosted build policy verification fails closed
+    required_state: missing malformed or incomplete policy and record input is an error
+    responsible_role: build-platform
+    applies_to:
+      - build-policy-verifier
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-BUILD-002
+      expected: unavailable verification returns a distinct error instead of a clean result
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
+mappings:
+  - framework: slsa
+    version: "1.2"
+    id: build-l1#producer-appropriate-build-platform
+    relationship: evidence-for
+    confidence: medium
+    rationale: Producer policyがtarget level、builder identity、hosted属性、version固定されたcapability evidenceを要求し、適切なbuild platform選定の証跡を提供する。ただしplatform assessmentの内容自体は外部reviewが必要である。
+    reviewer: product-security
+    review_date: "2026-07-27"
+    applies_to:
+      - HCB-001
+  - framework: slsa
+    version: "1.2"
+    id: build-l1#producer-consistent-build
+    relationship: verifies
+    confidence: high
+    rationale: Source revisionへ結び付いたversioned build definitionと、期待されたentry point、parameter、triggerの完全一致を検証し、verifierが一貫したbuild processの期待値を形成できるようにする。
+    reviewer: product-security
+    review_date: "2026-07-27"
+    applies_to:
+      - HCB-003
+      - HCB-004
+  - framework: slsa
+    version: "1.2"
+    id: build-l2#producer-hosted-build-platform
+    relationship: evidence-for
+    confidence: medium
+    rationale: Producerが承認したbuilder identityとplatform-controlled hosted executionをbuild recordへ要求し、developer workstation buildを拒否する。ただしproduction platform recordの真正性はplatform adapterで別途確認する必要がある。
+    reviewer: product-security
+    review_date: "2026-07-27"
+    applies_to:
+      - HCB-001
+      - HCB-002
+limitations:
+  - Reference JSON verifierはhosted build serviceを構築せず、production platformが発行したrecordを取得するadapterが必要である。
+  - Capability evidenceのURIとdigest固定を検証するが、assessment内容やbuild platformの主張を独立評価しない。
+  - Build record自体の署名とprovenance authenticityはPSB-BUILD-003およびPSB-REL-001の対象である。
+  - このcontrol単独ではSLSA Build Level 2達成またはcomplianceを証明しない。
+  - 承認済みplatform、producer policy、source repositoryの管理者侵害は別途対策が必要である。
+status: prototype
+owner: product-security
+evidence_level: E3

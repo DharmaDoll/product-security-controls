@@ -1,0 +1,37 @@
+{
+  "_type": "https://in-toto.io/Statement/v1",
+  "subject": [
+    {
+      "name": "release.bin",
+      "digest": {
+        "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    }
+  ],
+  "predicateType": "https://example.test/tenant-provenance/v0",
+  "predicate": {
+    "buildDefinition": {
+      "buildType": "https://build.attacker.test/untrusted",
+      "externalParameters": {
+        "repository": "https://github.com/attacker/fork",
+        "ref": "refs/heads/main"
+      },
+      "resolvedDependencies": [
+        {
+          "uri": "git+https://github.com/attacker/fork",
+          "digest": {
+            "gitCommit": "1111111111111111111111111111111111111111"
+          }
+        }
+      ]
+    },
+    "runDetails": {
+      "builder": {
+        "id": "https://builder.attacker.test/tenant-script"
+      },
+      "metadata": {
+        "invocationId": "tenant-generated-0001"
+      }
+    }
+  }
+}

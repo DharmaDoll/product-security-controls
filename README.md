@@ -57,6 +57,8 @@ controls/<domain>/<control>/
 | `PSB-DEPS-003` | frozen lockfileとartifact integrityを検証 | E3 |
 | `PSB-REL-001` | release署名とSLSA provenanceをconsumer expectationへ照合 | E3 |
 | `PSB-BUILD-001` | untrusted buildをcredential・deploy権限・broad egressから隔離 | E3 |
+| `PSB-BUILD-002` | 一貫したrelease buildを承認済みhosted platformへ限定 | E3 |
+| `PSB-BUILD-003` | platformがauthentic SLSA provenanceを自動生成 | E3 |
 | `PSB-GOV-001` | SBOMからsupply-chain incidentの影響範囲とdry-run対応planを生成 | E3 |
 | `PSB-SOURCE-001` | Developer endpoint policy protects local development trust boundaries | E3 |
 | `PSB-SOURCE-002` | リポジトリ所有のGit hooksで開発端末からの情報漏洩を予防 | E3 |

@@ -55,6 +55,11 @@ git config --local core.hooksPath .githooks
   - push対象を限定
 - `secure/.githooks/`
   - 3種類のhookと`scan-sensitive.py`を格納
+- `secure/pre-commit-framework/.pre-commit-config.yaml`
+  - pre-commit frameworkを使用する組織向けの代替activation sample
+  - `pre-commit`、`commit-msg`、`pre-push`を同じrepository-owned scannerへ接続
+- `insecure/pre-commit-framework/.pre-commit-config.yaml`
+  - floating external revisionとmanual stageだけを使用する拒否fixture
 
 安全でない設定は隔離されたテストfixtureであり、実際のGit設定には適用されません。
 
@@ -96,6 +101,98 @@ git config --local user.useConfigOnly true
 git config --local commit.gpgSign true
 git config --local tag.gpgSign true
 ```
+
+## pre-commit framework用サンプル
+
+pre-commit frameworkを標準化している組織では、次のサンプルをrepository rootの
+`.pre-commit-config.yaml`として使用できます。
+
+```text
+secure/pre-commit-framework/.pre-commit-config.yaml
+```
+
+このファイルはYAML 1.2として有効なJSON-compatible形式です。
+Repository-owned scannerはreview済みの`.githooks/`だけを`repo: local`で
+呼び出し、独立したGitleaks検査は後述のfull commit SHAへ固定します。
+`pre-commit`、`commit-msg`、`pre-push`の3 stageを既定のinstall対象にします。
+pre-push adapterはpre-commitが提供する`PRE_COMMIT_*` contextをnative scanner入力へ
+変換し、pushで導入される履歴全体を検査します。
+
+native `core.hooksPath=.githooks`方式とframework方式はactivation mechanismが
+異なります。framework方式を選ぶ場合は、tracked `.githooks/pre-commit`を
+`pre-commit install`で上書きしないよう、local `core.hooksPath`を使わず
+`.git/hooks`側へ明示的にinstallしてください。ツールを自動installしません。
+
+```bash
+pre-commit validate-config .pre-commit-config.yaml
+pre-commit install --install-hooks
+```
+
+サンプルが要求する検証済みminimum versionは`4.2.0`です。組織のpackage managerと
+lockfileでpre-commit本体もversion固定してください。外部hookを追加する場合は
+tagではなくfull commit SHAへ固定し、semantic reviewと更新手順を追加します。
+
+pre-commitの`SKIP`またはGitの`--no-verify`でlocal検査は回避できるため、
+CIとrepository-side enforcementは引き続き必要です。
+
+### Gitleaksによる多層検査
+
+サンプルは既存のrepository-owned scannerに加え、Gitleaksを独立したsecret
+detection engineとして推奨します。既存scannerは機密ファイル種別、commit
+message、導入履歴を決定的かつofflineに検査し、Gitleaksはより広いsecret ruleと
+entropy-based detectionを追加します。一方を他方の代替にはしません。
+
+Gitleaks hookは公式release `v8.30.1`に対応する次のfull commit SHAへ固定しています。
+
+```text
+83d9cd684c87d95d656c1458ef04895a7f1cbd8e
+```
+
+設定は公式`gitleaks` hookを`pre-commit` stageで実行し、`--redact`、
+`pass_filenames: false`、`always_run: true`を明示します。tag、branch、短縮SHAへ
+変更するとcontrol verifierが拒否します。初回`pre-commit install --install-hooks`
+ではsource取得とGo buildのnetwork accessが発生するため、明示的に実行し、
+失敗したinstallやscanをcleanとして扱いません。
+
+Gitleaksのexit `1`はsecret検出と実行エラーの両方で使用され得るため、commitは
+どちらの場合もblockし、ログを確認して検出とtool failureを区別します。出力は
+redactし、実際のsecretをCI logやticketへコピーしません。
+
+prebuilt binaryを別経路で導入する場合は、versionだけでなく公式release checksumを
+検証します。local hookとは別に、CIでfull historyを検査し、repository-side push
+protectionも有効にしてください。
+
+### Gitleaks以外の候補と使い分け
+
+Gitleaks以外にも有力な選択肢があります。ただし、検出エンジンをすべてのcommitで
+重ねると、待ち時間、重複finding、除外設定の不整合が増えます。名前や人気ではなく、
+不足している検査層に合わせて選択します。
+
+| 候補 | 得意な役割 | 採用に向く場面 | 主な注意点 | このサンプルでの位置付け |
+| --- | --- | --- | --- | --- |
+| TruffleHog | Git履歴、filesystemなどの広い探索とcredentialの実在性確認 | 定期full-history scan、導入時棚卸し、incident調査、検証可能なcredentialの優先順位付け | 実在性確認は外部providerへのnetwork requestを伴い得る。egress、rate limit、認証情報を含まないredacted log、scanner errorの扱いを設計する | 補完候補。local commitの既定hookには追加しない |
+| detect-secrets | baselineと対話的auditを使った既存findingの段階的管理 | secret候補が既に多いlarge/legacy repositoryで、新規混入を止めながら既存分を分類・移行する | baseline登録は安全性の証明や恒久的なallowlistではない。owner、review、rotation期限が必要で、広い除外は禁止する | 移行時の代替候補。Gitleaksと同時に必須化しない |
+| GitHub Secret Scanning / Push Protection | GitHub側でCLI push、Web UI、file upload、対応API経由のsecretをblockし、bypassを記録する | GitHubを共有repositoryとして利用する組織のserver-side enforcement | 検出対象pattern、契約、repository設定に依存する。許可されたbypassも監査・期限付き是正が必要 | local scannerとは独立して有効化する最終防波堤 |
+
+推奨する最小構成は、次の3層です。
+
+1. 開発者端末ではrepository-owned scannerと、full commit SHAへ固定したGitleaksを
+   staged contentに対して実行する
+2. CIではGitleaksまたはレビュー済みのTruffleHog構成で、push対象またはfull historyを
+   検査する。TruffleHogのcredential verificationを使う場合は、許可したegressだけを
+   使用する
+3. GitHub側ではSecret ScanningとPush Protectionを有効にし、bypassをsecurity review、
+   audit log、期限付きremediationへ接続する
+
+既存findingが多く、この構成を一度にfail-closedにできない場合だけ、
+detect-secretsのbaselineと`audit`を移行管理に使用します。baselineへ追加した
+credential候補は「対応不要」ではなく、rotate、revoke、false positive、または
+review済み例外のいずれかへ分類します。
+
+どのツールでも、検出されたcredentialはGit履歴から消すだけでは不十分です。
+最初にrotateまたはrevokeし、その後に履歴、fork、cache、artifact、logへの拡散を
+調査します。scannerが起動できない、network verificationが完了しない、対象履歴を
+取得できない場合はcleanではなく実行エラーです。
 
 追加の推奨事項は次のとおりです。
 
@@ -212,3 +309,10 @@ commit署名はidentity keyを認証しますが、commit内容の安全性を�
 - [Git configuration documentation](https://git-scm.com/docs/git-config)
 - [GitHub push protection](https://docs.github.com/en/code-security/concepts/secret-security/push-protection)
 - [GitHub email addresses reference](https://docs.github.com/en/account-and-profile/reference/email-addresses-reference)
+- [pre-commit configuration and supported Git hook stages](https://pre-commit.com/)
+- [Gitleaks official repository and pre-commit integration](https://github.com/gitleaks/gitleaks)
+- [Gitleaks v8.30.1 release](https://github.com/gitleaks/gitleaks/releases/tag/v8.30.1)
+- [TruffleHog Git source capabilities](https://trufflesecurity.com/docs/git)
+- [detect-secrets baseline, audit, and pre-commit integration](https://github.com/Yelp/detect-secrets)
+- [GitHub Secret Scanning Push Protection](https://docs.github.com/en/code-security/concepts/secret-security/push-protection)
+- [GitHub delegated bypass requests](https://docs.github.com/en/code-security/concepts/secret-security/bypass-requests)

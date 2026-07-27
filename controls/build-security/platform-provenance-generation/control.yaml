@@ -1,0 +1,136 @@
+id: PSB-BUILD-003
+title: Build platformがauthentic provenanceを自動生成する
+domain: build-security
+summary: Hosted build platformがartifact digest、build process、top-level inputを含むprovenanceをcontrol planeで自動生成し、platform-owned identityで認証したことを検証する。
+security_functions:
+  - prevent
+  - verify
+threats:
+  - id: BUILD-MISSING-PROVENANCE
+    description: Build stepがprovenance生成を省略または無効化し、artifactのbuilder、process、source inputを追跡できなくする。
+  - id: BUILD-TENANT-FORGED-PROVENANCE
+    description: Tenant-controlled build stepがbuilder identityまたはbuild parameterを偽装したprovenanceを生成・署名し、正規platform outputとして提示する。
+implementations:
+  insecure:
+    - insecure/platform-policy.json
+    - insecure/provenance.json
+    - insecure/signature.b64
+  secure:
+    - secure/platform-policy.json
+    - secure/provenance.json
+    - secure/signature.b64
+    - secure/trusted-public-key.pem
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-BUILD-003
+  expected:
+    - provenanceはbuild成功時にcontrol planeで自動生成されtenant build stepから無効化・変更できない
+    - provenanceはartifact digest、builder、build type、external parameter、top-level source input、invocation IDを記録する
+    - 必須fieldはbuild platform dataから取得されplatform-owned identityの署名を検証できる
+    - tenant-generated provenance、改変、署名失敗、tool実行失敗をcleanな結果と区別する
+checks:
+  - id: PPG-001
+    title: Platform automatically generates provenance for successful builds
+    required_state: mandatory automatic provenance generation that tenant build steps cannot disable
+    responsible_role: build-platform
+    applies_to:
+      - build-platform-control-plane
+      - provenance-generation-policy
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-BUILD-003 and inspect the production platform generation policy
+      expected: successful builds always receive platform-generated provenance
+      evidence:
+        - sanitized verifier output
+        - build-platform generation policy
+    mapping_status: reviewed
+  - id: PPG-002
+    title: Provenance identifies the artifact and how it was built
+    required_state: cryptographic artifact subject plus builder process invocation and top-level source input
+    responsible_role: build-platform
+    applies_to:
+      - provenance
+      - release-artifact
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-BUILD-003
+      expected: incomplete mismatched or non-SLSA provenance is rejected
+      evidence:
+        - sanitized verifier output
+        - SLSA provenance statement
+    mapping_status: reviewed
+  - id: PPG-003
+    title: Required provenance data comes from the build-platform control plane
+    required_state: builder build type external parameters and invocation identity sourced from control-plane data
+    responsible_role: build-platform
+    applies_to:
+      - build-platform-control-plane
+      - provenance-field-sources
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-BUILD-003 and review the platform trust-boundary assessment
+      expected: tenant-sourced required fields and tenant modification capability are rejected
+      evidence:
+        - sanitized verifier output
+        - platform trust-boundary assessment
+    mapping_status: reviewed
+  - id: PPG-004
+    title: Provenance authenticity is bound to the build platform
+    required_state: valid signature from a platform-owned identity unavailable as a tenant signing capability
+    responsible_role: build-platform
+    applies_to:
+      - provenance-signing
+      - build-platform-identity
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-BUILD-003 and inspect platform signer ownership
+      expected: invalid signatures tenant signers and non-platform identities are rejected
+      evidence:
+        - sanitized verifier output
+        - signer ownership and trust policy
+    mapping_status: reviewed
+  - id: PPG-005
+    title: Platform provenance verification fails closed
+    required_state: malformed evidence and unavailable cryptographic verification are errors
+    responsible_role: build-platform
+    applies_to:
+      - provenance-verifier
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-BUILD-003
+      expected: parse and OpenSSL execution failures use a distinct non-zero result
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
+mappings:
+  - framework: slsa
+    version: "1.2"
+    id: build-l1#platform-generates-provenance
+    relationship: verifies
+    confidence: high
+    rationale: Build成功時のautomatic generationと、artifact digest、builder、build process、top-level source inputを含むSLSA provenance v1の存在をpositive／negative fixtureで検証する。
+    reviewer: product-security
+    review_date: "2026-07-27"
+    applies_to:
+      - PPG-001
+      - PPG-002
+  - framework: slsa
+    version: "1.2"
+    id: build-l2#platform-authentic-provenance
+    relationship: evidence-for
+    confidence: medium
+    rationale: Required fieldをcontrol-plane dataへ限定し、tenant変更を拒否し、platform-owned identityによるprovenance署名を検証する。ただしproduction platform trust boundaryとsigner ownershipには外部assessmentが必要である。
+    reviewer: product-security
+    review_date: "2026-07-27"
+    applies_to:
+      - PPG-003
+      - PPG-004
+limitations:
+  - Reference fixtureはhosted build serviceまたはcontrol planeを構築せず、production platform policyと署名付きprovenanceを取得するadapterが必要である。
+  - JSON policyの主張だけではtenant isolationまたはsigning key protectionの独立証明にならない。
+  - L2 authenticityの証跡を扱うが、cross-build isolation、強いunforgeability、全fieldのcontrol-plane生成を要求するL3 assessmentではない。
+  - Transparency log、timestamp、key revocation、certificate identityはprovider-specific verifierで追加する必要がある。
+  - このcontrol単独ではSLSA Build Level 2達成またはcomplianceを証明しない。
+status: prototype
+owner: product-security
+evidence_level: E3

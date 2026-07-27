@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "repository": "{repository}",
+  "visibility": {
+    "required": "public",
+    "approval": {
+      "owner": "product-security",
+      "reviewed_on": "2026-07-28",
+      "expires_on": "2027-07-28"
+    }
+  },
+  "required_surfaces": [
+    "code",
+    "git-history",
+    "issues",
+    "pull-requests",
+    "discussions",
+    "wiki",
+    "actions-logs-artifacts",
+    "releases",
+    "pages"
+  ],
+  "queries": [
+    {
+      "id": "DORK-CODE-SENSITIVE-FILES",
+      "engine": "github-code-search",
+      "surface": "code",
+      "query": "repo:{repository} (path:.env OR path:.npmrc OR path:.netrc OR path:credentials.json)"
+    },
+    {
+      "id": "DORK-CODE-PRIVATE-KEYS",
+      "engine": "github-code-search",
+      "surface": "code",
+      "query": "repo:{repository} \"BEGIN PRIVATE KEY\""
+    },
+    {
+      "id": "DORK-CODE-CREDENTIAL-MARKERS",
+      "engine": "github-code-search",
+      "surface": "code",
+      "query": "repo:{repository} (password OR api_key OR client_secret OR bearer)"
+    },
+    {
+      "id": "DORK-ISSUES-SENSITIVE-MARKERS",
+      "engine": "github-issues-search",
+      "surface": "issues",
+      "query": "repo:{repository} is:issue (password OR token OR \"internal only\")"
+    },
+    {
+      "id": "DORK-PRS-SENSITIVE-MARKERS",
+      "engine": "github-issues-search",
+      "surface": "pull-requests",
+      "query": "repo:{repository} is:pr (password OR token OR \"internal only\")"
+    }
+  ],
+  "required_repository_controls": [
+    "secret-scanning",
+    "push-protection",
+    "delegated-bypass-review",
+    "visibility-review",
+    "all-history-scan"
+  ],
+  "remediation_sequence": [
+    "revoke-or-rotate-first",
+    "remove-current-content",
+    "review-history-rewrite",
+    "review-forks-clones-caches",
+    "contact-github-support-if-needed",
+    "rescan-all-surfaces"
+  ]
+}

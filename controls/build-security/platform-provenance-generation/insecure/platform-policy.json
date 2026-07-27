@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "target_slsa_build_level": 2,
+  "generation": {
+    "automatic_on_build_success": false,
+    "generator_trust_boundary": "tenant-build-step",
+    "build_steps_can_disable": true,
+    "build_steps_can_modify": true
+  },
+  "authenticity": {
+    "algorithm": "ed25519",
+    "trusted_public_key": "trusted-public-key.pem",
+    "signer_trust_boundary": "tenant-build-step",
+    "key_owner": "software-producer",
+    "tenant_signing_capability": true
+  },
+  "field_sources": {
+    "predicate.buildDefinition.buildType": "tenant",
+    "predicate.buildDefinition.externalParameters": "tenant",
+    "predicate.runDetails.builder.id": "tenant",
+    "predicate.runDetails.metadata.invocationId": "tenant"
+  },
+  "expected": {
+    "subject_name": "release.bin",
+    "builder_id": "https://builder.example.test/hosted/v1",
+    "build_type": "https://build.example.test/types/release/v1",
+    "repository": "https://github.com/example/product",
+    "ref": "refs/tags/v1.0.0",
+    "source_commit": "0123456789abcdef0123456789abcdef01234567"
+  }
+}

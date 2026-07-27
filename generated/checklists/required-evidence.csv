@@ -9,6 +9,24 @@ PSB-BUILD-001,PSB-BUILD-001-BLD-004,build-platform,automated,runner policy
 PSB-BUILD-001,PSB-BUILD-001-BLD-005,security,hybrid,sanitized verifier output
 PSB-BUILD-001,PSB-BUILD-001-BLD-005,security,hybrid,telemetry policy and sample event
 PSB-BUILD-001,PSB-BUILD-001-BLD-006,build-platform,automated,negative-test output
+PSB-BUILD-002,PSB-BUILD-002-HCB-001,release-manager,hybrid,sanitized verifier output
+PSB-BUILD-002,PSB-BUILD-002-HCB-001,release-manager,hybrid,pinned build-platform assessment
+PSB-BUILD-002,PSB-BUILD-002-HCB-002,release-manager,hybrid,sanitized verifier output
+PSB-BUILD-002,PSB-BUILD-002-HCB-002,release-manager,hybrid,platform-issued build record
+PSB-BUILD-002,PSB-BUILD-002-HCB-003,release-manager,automated,sanitized verifier output
+PSB-BUILD-002,PSB-BUILD-002-HCB-003,release-manager,automated,build policy and build record
+PSB-BUILD-002,PSB-BUILD-002-HCB-004,release-manager,automated,sanitized verifier output
+PSB-BUILD-002,PSB-BUILD-002-HCB-004,release-manager,automated,build policy and build record
+PSB-BUILD-002,PSB-BUILD-002-HCB-005,build-platform,automated,negative-test output
+PSB-BUILD-003,PSB-BUILD-003-PPG-001,build-platform,hybrid,sanitized verifier output
+PSB-BUILD-003,PSB-BUILD-003-PPG-001,build-platform,hybrid,build-platform generation policy
+PSB-BUILD-003,PSB-BUILD-003-PPG-002,build-platform,automated,sanitized verifier output
+PSB-BUILD-003,PSB-BUILD-003-PPG-002,build-platform,automated,SLSA provenance statement
+PSB-BUILD-003,PSB-BUILD-003-PPG-003,build-platform,hybrid,sanitized verifier output
+PSB-BUILD-003,PSB-BUILD-003-PPG-003,build-platform,hybrid,platform trust-boundary assessment
+PSB-BUILD-003,PSB-BUILD-003-PPG-004,build-platform,hybrid,sanitized verifier output
+PSB-BUILD-003,PSB-BUILD-003-PPG-004,build-platform,hybrid,signer ownership and trust policy
+PSB-BUILD-003,PSB-BUILD-003-PPG-005,build-platform,automated,negative-test output
 PSB-CICD-001,PSB-CICD-001-ACT-001,repository-admin,automated,sanitized verifier output
 PSB-CICD-001,PSB-CICD-001-ACT-002,repository-admin,automated,sanitized verifier output
 PSB-CICD-001,PSB-CICD-001-ACT-003,repository-admin,automated,sanitized verifier output
@@ -102,3 +120,36 @@ PSB-SOURCE-002,PSB-SOURCE-002-GHK-009,developer,automated,sanitized negative-tes
 PSB-SOURCE-002,PSB-SOURCE-002-GHK-010,developer,automated,sanitized negative-test output
 PSB-SOURCE-002,PSB-SOURCE-002-GHK-011,developer,automated,sanitized negative-test output
 PSB-SOURCE-002,PSB-SOURCE-002-GHK-012,developer,automated,negative-test output
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-013,developer,automated,sanitized verifier output
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-013,developer,automated,reviewed .pre-commit-config.yaml
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-014,developer,hybrid,reviewed .pre-commit-config.yaml
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-014,developer,hybrid,sanitized Gitleaks output
+PSB-SOURCE-002,PSB-SOURCE-002-GHK-014,developer,hybrid,pinned tool installation evidence
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-001,repository-admin,hybrid,reviewed exposure policy
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-001,repository-admin,hybrid,sanitized visibility evidence code
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-002,security,automated,sanitized verifier output
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-002,security,automated,reviewed query catalog
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-003,security,hybrid,query completion evidence codes
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-003,security,hybrid,sanitized finding counts
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-004,security,automated,sanitized all-history scanner output
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-004,security,automated,complete-clone acquisition evidence
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-005,security,external-evidence,sanitized surface evidence codes
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-005,security,external-evidence,sanitized open-alert count
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-006,repository-admin,external-evidence,sanitized Actions exposure evidence code
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-006,repository-admin,external-evidence,sanitized release and Pages evidence codes
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-007,repository-admin,external-evidence,sanitized security-configuration evidence
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-007,repository-admin,external-evidence,sanitized alert count
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-008,repository-admin,external-evidence,sanitized delegated-bypass configuration
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-008,repository-admin,external-evidence,sanitized bypass review record
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-009,incident-response,hybrid,sanitized provider revocation evidence
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-009,incident-response,hybrid,sanitized remediation timeline
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-010,incident-response,external-evidence,sanitized copy-disposition record
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-010,incident-response,external-evidence,sanitized GitHub Support case reference when applicable
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-010,incident-response,external-evidence,sanitized rescan evidence
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-011,security,automated,negative-test output
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-012,security,automated,reviewed organization-indicators.json
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-012,security,automated,sanitized organization exposure scanner output
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-012,security,automated,complete-clone acquisition evidence
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-013,security,hybrid,reviewed organization-indicators.json
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-013,security,hybrid,access-controlled generated dork catalog
+PSB-SOURCE-003,PSB-SOURCE-003-PRE-013,security,hybrid,sanitized search result disposition

@@ -49,8 +49,8 @@ EXPECTED_BASELINES = {
     },
     "slsa": {
         "version": "1.2",
-        "count": 8,
-        "known_id": "build-l2#consumer-validates-authenticity",
+        "count": 9,
+        "known_id": "build-l1#producer-appropriate-build-platform",
     },
 }
 
@@ -76,7 +76,7 @@ class FrameworkRegistryBaselineTest(unittest.TestCase):
             for entry in registry["entries"]
             if entry.get("level_requirement") is True
         ]
-        self.assertEqual(len(level_requirements), 7)
+        self.assertEqual(len(level_requirements), 8)
         self.assertEqual(
             {entry["minimum_level"] for entry in level_requirements},
             {1, 2, 3},

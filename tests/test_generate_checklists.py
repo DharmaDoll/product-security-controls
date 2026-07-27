@@ -78,6 +78,17 @@ class GenerateChecklistsTest(unittest.TestCase):
             reviewed = next(row for row in rows if row["Mapping Status"] == "reviewed")
             self.assertIn(" / ", reviewed["Framework Mappings"])
 
+    def test_versioned_context_is_exported_per_checklist_row(self) -> None:
+        checklist, _, _ = generate_checklists.build_rows(self.controls)
+        source_rows = [
+            row for row in checklist if row["Control ID"] == "PSB-SOURCE-003"
+        ]
+        self.assertTrue(source_rows)
+        for row in source_rows:
+            self.assertTrue(row["Threat Actor or Source"])
+            self.assertTrue(row["Row Attack or Failure Scenario"])
+            self.assertTrue(row["Why This Check Is Required"])
+
     def test_csv_formula_prefixes_are_neutralized(self) -> None:
         for value in ("=cmd()", "+SUM(A1:A2)", "-1+2", "@example"):
             with self.subTest(value=value):
@@ -92,6 +103,14 @@ class GenerateChecklistsTest(unittest.TestCase):
             registries["slsa"],
         )
         selected_ids = {row["Check ID"] for row in selected}
+        self.assertIn("PSB-BUILD-002-HCB-001", selected_ids)
+        self.assertIn("PSB-BUILD-002-HCB-002", selected_ids)
+        self.assertIn("PSB-BUILD-002-HCB-003", selected_ids)
+        self.assertIn("PSB-BUILD-002-HCB-004", selected_ids)
+        self.assertIn("PSB-BUILD-003-PPG-001", selected_ids)
+        self.assertIn("PSB-BUILD-003-PPG-002", selected_ids)
+        self.assertIn("PSB-BUILD-003-PPG-003", selected_ids)
+        self.assertIn("PSB-BUILD-003-PPG-004", selected_ids)
         self.assertIn("PSB-REL-001-REL-001", selected_ids)
         self.assertIn("PSB-REL-001-REL-002", selected_ids)
         self.assertNotIn("PSB-BUILD-001-BLD-001", selected_ids)
@@ -99,12 +118,12 @@ class GenerateChecklistsTest(unittest.TestCase):
             {row["Requirement Minimum Level"] for row in coverage},
             {"1", "2"},
         )
-        self.assertEqual(len(coverage), 6)
+        self.assertEqual(len(coverage), 7)
         self.assertEqual(
             sum(row["Status"] == "mapped-evidence" for row in coverage),
-            1,
+            6,
         )
-        self.assertEqual(sum(row["Status"] == "gap" for row in coverage), 5)
+        self.assertEqual(sum(row["Status"] == "gap" for row in coverage), 1)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "repository": "example-org/example-product",
+  "captured_at": "2026-07-28",
+  "visibility": "public",
+  "visibility_review": {
+    "status": "unreviewed",
+    "owner": "",
+    "expires_on": "2026-07-28"
+  },
+  "repository_controls": {
+    "secret-scanning": "disabled",
+    "push-protection": "disabled",
+    "delegated-bypass-review": "disabled",
+    "visibility-review": "disabled",
+    "all-history-scan": "disabled"
+  },
+  "surface_results": [
+    {"surface": "code", "status": "completed", "findings": 0, "evidence_code": "latest-tree-only"}
+  ],
+  "query_results": [
+    {"id": "DORK-UNSCOPED-SECRETS", "status": "completed", "findings": 0}
+  ],
+  "history_scan": {
+    "status": "error",
+    "findings": 0,
+    "scanner_exit_code": 0
+  },
+  "open_exposures": 0,
+  "tool_errors": ["history scanner did not execute"]
+}

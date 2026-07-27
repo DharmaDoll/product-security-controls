@@ -92,6 +92,31 @@ class ControlMetadataValidationTest(unittest.TestCase):
         errors = validate_controls([control])
         self.assertTrue(any("does not match directory" in error for error in errors))
 
+    def test_versioned_check_context_is_required_for_every_row(self) -> None:
+        control = copy.deepcopy(
+            next(
+                item
+                for item in self.controls
+                if item.get("check_context_version") == "1.0"
+            )
+        )
+        control["checks"][0].pop("context")
+        errors = validate_controls([control])
+        self.assertTrue(any("context is required" in error for error in errors))
+
+    def test_check_context_requires_declared_version(self) -> None:
+        control = copy.deepcopy(self.controls[0])
+        control.pop("check_context_version", None)
+        control["checks"][0]["context"] = {
+            "threat_actor": "test actor",
+            "attack_or_failure_scenario": "test scenario",
+            "why_required": "test reason",
+        }
+        errors = validate_controls([control])
+        self.assertTrue(
+            any("context requires check_context_version" in error for error in errors)
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

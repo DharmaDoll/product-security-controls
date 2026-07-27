@@ -1,0 +1,371 @@
+id: PSB-SOURCE-003
+title: 公開リポジトリ露出とGitHub dorking検証
+domain: source-protection
+summary: 対象限定のGitHub検索、全Git履歴scan、公開面の証跡を組み合わせて情報露出を検出・是正する。
+check_context_version: "1.0"
+security_functions:
+  - detect
+  - verify
+  - respond
+  - govern
+threats:
+  - id: SOURCE-PUBLIC-SEARCH-DISCLOSURE
+    description: 攻撃者がGitHub検索や外部indexからsecret、内部情報、個人情報、設計情報を発見する。
+  - id: SOURCE-HISTORICAL-DISCLOSURE
+    description: 最新treeから削除した機密情報が過去commit、branch、tag、fork、clone、cached viewに残る。
+  - id: SOURCE-NONCODE-SURFACE-DISCLOSURE
+    description: Issue、Pull Request、Discussion、Wiki、Actions、Release、Pagesから情報が公開される。
+  - id: SOURCE-SCANNER-FALSE-CLEAN
+    description: 未完了検索、取得不足、scanner実行失敗が0 findingsとして報告される。
+implementations:
+  insecure:
+    - insecure/exposure-policy.json
+    - insecure/evidence-snapshot.json
+    - insecure/organization-indicators.json
+  secure:
+    - secure/exposure-policy.json
+    - secure/evidence-snapshot.json
+    - secure/organization-indicators.json
+    - scripts/scan-git-history.py
+    - scripts/scan-organization-exposure.py
+    - scripts/generate-github-web-dorks.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-SOURCE-003
+  expected:
+    - public visibilityにownerと期限付きreviewが要求される
+    - GitHub dork queryが一つのowner/repositoryへ限定される
+    - code、全Git履歴、Issue、PR、Discussion、Wiki、Actions、Release、Pagesが検査される
+    - Secret Scanning、Push Protection、delegated bypass reviewが有効である
+    - 最新treeから削除済みのsynthetic secretが全履歴scanで値を表示せず検出される
+    - 自社domain、email domain、機密区分markerが全履歴から値を表示せず検出される
+    - 自社indicatorを必須とするGitHub.com全体向けの複合Web検索URLが生成される
+    - revokeまたはrotateが履歴cleanupより先に要求される
+    - fork、clone、cached view、PR referenceを含む再検査が要求される
+    - scannerや入力の失敗がcleanと区別される
+checks:
+  - id: PRE-001
+    title: Public repository visibility is explicitly approved
+    required_state: named owner and expiring review approve the repository as intentionally public
+    responsible_role: repository-admin
+    applies_to:
+      - source-repository
+      - repository-visibility
+    context:
+      threat_actor: 外部攻撃者、公開情報crawler、およびvisibilityを誤設定するrepository管理者
+      attack_or_failure_scenario: 公開する意図とdata ownerの承認がないrepositoryがpublicになり、codeとmetadataが誰でも取得できる。
+      why_required: 後続scanは検出可能なpatternしか扱えないため、公開可否そのものをownerと期限付きで判断する入口が必要である。
+    verification:
+      type: hybrid
+      method: validate the exposure policy and compare it with current repository visibility evidence
+      expected: public visibility has a current owner-approved review and expiry
+      evidence:
+        - reviewed exposure policy
+        - sanitized visibility evidence code
+    mapping_status: unmapped
+  - id: PRE-002
+    title: GitHub dork queries are scoped to the owned repository
+    required_state: every defensive search includes repo:{repository} and uses no real secret or personal-data search term
+    responsible_role: security
+    applies_to:
+      - github-search
+      - source-repository
+    context:
+      threat_actor: 自社repositoryを狙って検索queryを反復する外部攻撃者と、範囲を誤るassessment実行者
+      attack_or_failure_scenario: 対象repository内の既知riskを確認すべきbaseline検索が無関係なrepositoryへ広がるか、対象を特定できず再現不能になる。
+      why_required: repository単位の是正と証跡を作るには、global attacker-view検索とは別に一つのowner/repositoryへ固定した再現可能なqueryが必要である。
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-SOURCE-003
+      expected: unscoped queries and unstable query identifiers are rejected
+      evidence:
+        - sanitized verifier output
+        - reviewed query catalog
+    mapping_status: reviewed
+  - id: PRE-003
+    title: Current public code is searched for sensitive content
+    required_state: repository-scoped searches cover sensitive paths private keys and credential markers
+    responsible_role: security
+    applies_to:
+      - source-repository
+      - github-code-search
+    context:
+      threat_actor: GitHub Code Searchでsecretや内部endpointを探す外部攻撃者と自動収集bot
+      attack_or_failure_scenario: default branchの公開fileに機密path、private key、credential markerが残り、検索結果から直接発見される。
+      why_required: 公開中の最新codeは攻撃者が最も低コストで検索できる面であり、履歴scanだけでは現在のGitHub index上の露出状態を確認できない。
+    verification:
+      type: hybrid
+      method: execute the reviewed query catalog against the adopted repository and validate sanitized results
+      expected: every code query completes with no unresolved exposure
+      evidence:
+        - query completion evidence codes
+        - sanitized finding counts
+    mapping_status: reviewed
+  - id: PRE-004
+    title: Every reachable Git commit is scanned
+    required_state: all locally available branches and tags are scanned including content deleted from the latest tree
+    responsible_role: security
+    applies_to:
+      - git-history
+      - source-repository
+    context:
+      threat_actor: commit URL、fork、clone、Git objectをたどる外部攻撃者
+      attack_or_failure_scenario: 機密fileを後続commitで削除しても、過去commit、別branch、tagから内容を復元される。
+      why_required: latest treeとGitHub Web検索は全履歴を保証しないため、到達可能な全commitを別経路でscanしなければ削除済み露出を見逃す。
+    verification:
+      type: automated
+      method: run scripts/scan-git-history.py on a complete clone and make verify-control CONTROL=PSB-SOURCE-003
+      expected: clean history passes and a deleted synthetic credential is rejected without value disclosure
+      evidence:
+        - sanitized all-history scanner output
+        - complete-clone acquisition evidence
+    mapping_status: reviewed
+  - id: PRE-005
+    title: Issues pull requests discussions and wikis are reviewed
+    required_state: current and historical non-code collaboration surfaces are included in secret and information exposure review
+    responsible_role: security
+    applies_to:
+      - github-issues
+      - github-pull-requests
+      - github-discussions
+      - github-wiki
+    context:
+      threat_actor: code以外のcollaboration contentを検索・巡回する外部攻撃者とcrawler
+      attack_or_failure_scenario: log断片、token、内部URL、顧客情報がIssue、PR comment、Discussion、Wikiに貼られ、source scanを回避して公開される。
+      why_required: これらはGit treeに含まれずlocal history scannerでは見えないため、GitHub固有surfaceの独立した証跡が必要である。
+    verification:
+      type: external-evidence
+      method: review repository-scoped searches and GitHub Secret Scanning alerts for every collaboration surface
+      expected: every required collaboration surface completes with no unresolved exposure
+      evidence:
+        - sanitized surface evidence codes
+        - sanitized open-alert count
+    mapping_status: reviewed
+  - id: PRE-006
+    title: Actions releases and Pages public output are reviewed
+    required_state: workflow logs and artifacts release assets and published Pages contain no unapproved sensitive information
+    responsible_role: repository-admin
+    applies_to:
+      - github-actions
+      - github-releases
+      - github-pages
+    context:
+      threat_actor: 公開Actions log、artifact、release asset、Pagesをdownloadする外部攻撃者
+      attack_or_failure_scenario: build logや配布物、公開siteにsource外のcredential、内部path、debug情報、未公開artifactが残る。
+      why_required: codeとcollaboration surfaceがcleanでも生成・配布された公開物は別の保存期間とaccess pathを持つため個別確認が必要である。
+    verification:
+      type: external-evidence
+      method: enumerate retained workflow output release assets and Pages publication then record sanitized review status
+      expected: each public output surface is reviewed with no unresolved exposure
+      evidence:
+        - sanitized Actions exposure evidence code
+        - sanitized release and Pages evidence codes
+    mapping_status: reviewed
+  - id: PRE-007
+    title: Secret Scanning and Push Protection are enabled
+    required_state: GitHub scans repository history and supported collaboration surfaces and blocks supported secrets before publication
+    responsible_role: repository-admin
+    applies_to:
+      - github-secret-scanning
+      - github-push-protection
+    context:
+      threat_actor: 公開直後のcredentialを自動収集して悪用するsecret harvesting botと外部攻撃者
+      attack_or_failure_scenario: local hookを無効化したpush、Web UI、API、未対応cloneからsupported secretが公開され、人手scanより先に取得される。
+      why_required: local検査は回避可能で実行されない経路もあるため、GitHub側でpublication前後に独立検出・blockする防波堤が必要である。
+    verification:
+      type: external-evidence
+      method: inspect repository or organization security configuration and unresolved secret alerts
+      expected: both controls are enabled and unresolved alerts are zero
+      evidence:
+        - sanitized security-configuration evidence
+        - sanitized alert count
+    mapping_status: reviewed
+  - id: PRE-008
+    title: Push protection bypass requires delegated review
+    required_state: bypasses are approved by designated reviewers and enter a time-bound remediation process
+    responsible_role: repository-admin
+    applies_to:
+      - github-push-protection
+      - security-exception
+    context:
+      threat_actor: warningを誤判断するcontributor、侵害されたwrite account、または意図的にcontrolを回避するinsider
+      attack_or_failure_scenario: Push Protectionのblockが自己判断でbypassされ、owner、理由、期限、remediationなしにsecretが公開される。
+      why_required: Push Protectionを有効にするだけでは許可されたbypassを止められないため、独立reviewと追跡可能な例外管理が必要である。
+    verification:
+      type: external-evidence
+      method: inspect delegated bypass configuration audit events owners and due dates
+      expected: self-approved untracked bypass is not permitted
+      evidence:
+        - sanitized delegated-bypass configuration
+        - sanitized bypass review record
+    mapping_status: unmapped
+  - id: PRE-009
+    title: Exposed credentials are revoked or rotated before cleanup
+    required_state: credential invalidation precedes file deletion history rewrite and ticket closure
+    responsible_role: incident-response
+    applies_to:
+      - credential-response
+      - source-repository
+    context:
+      threat_actor: 既に公開credentialを取得して利用を試みる外部攻撃者
+      attack_or_failure_scenario: teamがfile削除やhistory rewriteを先に行う間もcredentialが有効で、攻撃者がserviceへaccessできる。
+      why_required: Gitから文字列を消しても取得済みcredentialは無効化されないため、revokeまたはrotateが被害を止める最優先手段である。
+    verification:
+      type: hybrid
+      method: inspect the remediation sequence and sanitized incident timeline
+      expected: revocation or rotation is recorded before repository cleanup
+      evidence:
+        - sanitized provider revocation evidence
+        - sanitized remediation timeline
+    mapping_status: reviewed
+  - id: PRE-010
+    title: Fork clone cache and pull request remnants are addressed
+    required_state: remediation reviews copies outside the latest upstream tree and rescans every public surface
+    responsible_role: incident-response
+    applies_to:
+      - repository-network
+      - cached-content
+      - incident-response
+    context:
+      threat_actor: 公開中にfork、clone、cache、screenshotへ内容を保存した外部者
+      attack_or_failure_scenario: upstreamのcurrent treeとhistoryをcleanにしても、public fork、古いclone、cached view、PR referenceから情報が取得され続ける。
+      why_required: upstreamだけの再scanでは既に複製された公開物の残存を評価できず、copyごとのdispositionと制御可能範囲の再確認が必要である。
+    verification:
+      type: external-evidence
+      method: review fork and clone coordination cache and pull-request cleanup and post-remediation rescan evidence
+      expected: known copies have a disposition and all controllable surfaces are rescanned
+      evidence:
+        - sanitized copy-disposition record
+        - sanitized GitHub Support case reference when applicable
+        - sanitized rescan evidence
+    mapping_status: reviewed
+  - id: PRE-011
+    title: Exposure assessment failures never report clean
+    required_state: query scan API and history acquisition failures are reported separately from zero findings
+    responsible_role: security
+    applies_to:
+      - source-verifier
+      - github-api
+    context:
+      threat_actor: API rate limit、search index制限、不完全clone、scanner crash、およびそれを利用する攻撃者
+      attack_or_failure_scenario: queryやhistory取得が完了していないのに0 findingsへ変換され、未検査領域がcleanとして承認される。
+      why_required: detection controlの不稼働は露出なしと同義ではないため、findingとは別のERROR stateでblockしなければ保証が逆転する。
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-SOURCE-003
+      expected: malformed evidence and non-repository scans return execution error
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
+  - id: PRE-012
+    title: Organization-specific domains email domains and confidentiality markers are scanned
+    required_state: reviewed organization indicators are applied to every reachable file version without logging matched values
+    responsible_role: security
+    applies_to:
+      - git-history
+      - public-source-code
+      - information-classification
+    context:
+      threat_actor: 自社domain、従業員email、機密headerを手掛かりに関連codeを探す外部攻撃者
+      attack_or_failure_scenario: generic secret patternには一致しない内部hostname、email domain、codename、proprietary markerが現在または過去fileから組織との関連を示す。
+      why_required: secret scannerだけでは組織固有の情報分類を知らないため、自社indicatorを全file versionへ適用する補完検査が必要である。
+    verification:
+      type: automated
+      method: run scripts/scan-organization-exposure.py on a complete public-repository clone and make verify-control CONTROL=PSB-SOURCE-003
+      expected: a deleted synthetic organization domain email and confidentiality marker are rejected while their values remain suppressed
+      evidence:
+        - reviewed organization-indicators.json
+        - sanitized organization exposure scanner output
+        - complete-clone acquisition evidence
+    mapping_status: reviewed
+  - id: PRE-013
+    title: Global GitHub Web searches use owned organization indicators
+    required_state: attacker-view code searches across GitHub require an exact owned domain email domain codename or confidentiality marker
+    responsible_role: security
+    applies_to:
+      - github-code-search
+      - public-source-code
+      - external-repository
+    context:
+      threat_actor: GitHub.com全体へ複合queryを投げ、fork、mirror、個人repositoryの自社情報を探す外部攻撃者
+      attack_or_failure_scenario: 自社inventory外のpublic repositoryにdomain、email、codename、機密markerを含むfileがあり、通常のGitHub Web検索から発見される。
+      why_required: owner/repository限定scanでは組織外forkや未知のmirrorを見つけられないため、自社indicator必須のglobal attacker-view検索が必要である。
+    verification:
+      type: hybrid
+      method: generate clickable searches with scripts/generate-github-web-dorks.py then review results through the normal GitHub.com Code Search UI
+      expected: every global query contains an approved organization indicator and generic unscoped credential-only searches are absent
+      evidence:
+        - reviewed organization-indicators.json
+        - access-controlled generated dork catalog
+        - sanitized search result disposition
+    mapping_status: reviewed
+mappings:
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1552.001
+    relationship: detects
+    confidence: medium
+    rationale: Repository-scoped search and current plus historical content scanning detect some credentials stored in publicly reachable files but do not cover every secret type or external copy.
+    reviewer: product-security
+    review_date: "2026-07-28"
+    applies_to:
+      - PRE-003
+      - PRE-004
+      - PRE-009
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: RV.1.1
+    relationship: supports
+    confidence: medium
+    rationale: Repeatable searches across code history and collaboration surfaces plus retained sanitized evidence support gathering information to identify and confirm security issues.
+    reviewer: product-security
+    review_date: "2026-07-28"
+    applies_to:
+      - PRE-002
+      - PRE-003
+      - PRE-004
+      - PRE-005
+      - PRE-006
+      - PRE-010
+      - PRE-012
+      - PRE-013
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-BR-07.01
+    relationship: supports
+    confidence: medium
+    rationale: Public-surface secret detection push protection and credential-first remediation support secure handling of project secrets without establishing full baseline conformance.
+    reviewer: product-security
+    review_date: "2026-07-28"
+    applies_to:
+      - PRE-003
+      - PRE-004
+      - PRE-005
+      - PRE-007
+      - PRE-009
+  - framework: cisa-product-security-bad-practices
+    version: "2 (January 2025)"
+    id: CISA-PSBP-PP-08
+    relationship: detects
+    confidence: medium
+    rationale: Current and historical public-source scanning can detect representative hardcoded credentials and secret patterns but does not prove their complete absence.
+    reviewer: product-security
+    review_date: "2026-07-28"
+    applies_to:
+      - PRE-003
+      - PRE-004
+      - PRE-007
+      - PRE-009
+limitations:
+  - GitHub Code Search is not an all-history scanner and search behavior can change.
+  - GitHub Code Search is non-exhaustive and limited to indexed default-branch content and at most 100 displayed results.
+  - Secret Scanning does not detect every secret type or organization-specific sensitive information.
+  - A local clone may omit remote branches refs deleted objects GitHub collaboration content and artifacts.
+  - Public forks external indexes cached views screenshots downloads and prior clones may remain outside repository-owner control.
+  - Changing public visibility to private does not make existing public forks private.
+  - History rewrite changes commit identifiers and can be recontaminated by an old clone.
+  - Zero findings are evidence of completed configured checks not proof that no sensitive information exists.
+  - Organization indicators cannot classify unregistered codenames encoded split encrypted image-based or semantically confidential code.
+status: reference
+owner: product-security
+evidence_level: E3
