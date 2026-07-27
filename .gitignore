@@ -23,6 +23,7 @@ __pycache__/
 node_modules/
 coverage/
 .coverage
+generated/assessments/
 
 # Local environment and secrets
 .env

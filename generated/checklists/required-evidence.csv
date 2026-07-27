@@ -57,9 +57,10 @@ PSB-REL-001,PSB-REL-001-REL-004,release-manager,automated,negative-test output
 PSB-REL-001,PSB-REL-001-REL-005,release-manager,automated,negative-test output
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-001,shared,external-evidence,identity or source-platform credential policy
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-002,developer,hybrid,credential helper configuration
-PSB-SOURCE-001,PSB-SOURCE-001-DEH-002,developer,hybrid,sanitized verifier output
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-002,developer,hybrid,sanitized assessment result
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-003,shared,external-evidence,key enrollment record
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-004,developer,hybrid,hook configuration
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-004,developer,hybrid,sanitized assessment result
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-004,developer,hybrid,sanitized negative-test output
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-005,repository-admin,external-evidence,repository ruleset or required-check evidence
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-006,shared,external-evidence,sandbox or managed workspace policy
@@ -68,18 +69,26 @@ PSB-SOURCE-001,PSB-SOURCE-001-DEH-007,repository-admin,hybrid,PSB-DEPS-001 verif
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-008,security,external-evidence,managed egress policy
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-008,security,external-evidence,sanitized access-control test
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-009,security,external-evidence,IdP policy and lifecycle evidence
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-010,developer,hybrid,sanitized assessment result
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-010,developer,hybrid,sanitized negative-test output
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-010,developer,hybrid,repository required-check evidence
-PSB-SOURCE-001,PSB-SOURCE-001-END-001,shared,external-evidence,MDM compliance record
-PSB-SOURCE-001,PSB-SOURCE-001-END-002,shared,external-evidence,MDM compliance record
-PSB-SOURCE-001,PSB-SOURCE-001-END-003,shared,external-evidence,patch compliance record
-PSB-SOURCE-001,PSB-SOURCE-001-END-004,shared,external-evidence,privilege-management compliance record
+PSB-SOURCE-001,PSB-SOURCE-001-END-001,shared,hybrid,sanitized assessment result
+PSB-SOURCE-001,PSB-SOURCE-001-END-001,shared,hybrid,MDM compliance record
+PSB-SOURCE-001,PSB-SOURCE-001-END-002,shared,hybrid,sanitized assessment result
+PSB-SOURCE-001,PSB-SOURCE-001-END-002,shared,hybrid,MDM compliance record
+PSB-SOURCE-001,PSB-SOURCE-001-END-003,shared,hybrid,sanitized assessment result
+PSB-SOURCE-001,PSB-SOURCE-001-END-003,shared,hybrid,patch compliance record
+PSB-SOURCE-001,PSB-SOURCE-001-END-004,shared,hybrid,sanitized assessment result
+PSB-SOURCE-001,PSB-SOURCE-001-END-004,shared,hybrid,privilege-management compliance record
 PSB-SOURCE-001,PSB-SOURCE-001-END-005,developer,hybrid,sanitized secret-scan report
-PSB-SOURCE-001,PSB-SOURCE-001-END-006,developer,manual,container runtime configuration
-PSB-SOURCE-001,PSB-SOURCE-001-END-007,developer,manual,sanitized service inventory
+PSB-SOURCE-001,PSB-SOURCE-001-END-006,developer,hybrid,sanitized assessment result
+PSB-SOURCE-001,PSB-SOURCE-001-END-006,developer,hybrid,container runtime configuration
+PSB-SOURCE-001,PSB-SOURCE-001-END-007,developer,hybrid,sanitized assessment result
+PSB-SOURCE-001,PSB-SOURCE-001-END-007,developer,hybrid,sanitized service inventory
 PSB-SOURCE-001,PSB-SOURCE-001-END-008,shared,external-evidence,AI tool allowlist
 PSB-SOURCE-001,PSB-SOURCE-001-END-008,shared,external-evidence,managed egress policy
-PSB-SOURCE-001,PSB-SOURCE-001-END-009,developer,manual,workspace mount configuration
+PSB-SOURCE-001,PSB-SOURCE-001-END-009,developer,hybrid,sanitized assessment result
+PSB-SOURCE-001,PSB-SOURCE-001-END-009,developer,hybrid,workspace mount configuration
 PSB-SOURCE-001,PSB-SOURCE-001-END-010,shared,external-evidence,backup compliance record
 PSB-SOURCE-002,PSB-SOURCE-002-GHK-001,developer,automated,sanitized verifier output
 PSB-SOURCE-002,PSB-SOURCE-002-GHK-002,developer,automated,negative-test output

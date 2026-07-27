@@ -54,6 +54,49 @@ not establish compliance; it must never be treated as a clean result.
 The tests compare complete verifier output with the sanitized expected
 evidence, so omission of an imported requirement changes the test result.
 
+## Read-only endpoint assessment
+
+The fixture verifier above proves the example policy behavior. To inspect the
+current Linux endpoint and repository without changing either, run:
+
+```bash
+make assess-control CONTROL=PSB-SOURCE-001
+```
+
+The assessment writes sanitized artifacts to:
+
+- `generated/assessments/PSB-SOURCE-001.json`
+- `generated/assessments/PSB-SOURCE-001.csv`
+
+These host-specific files are ignored by Git. Results use:
+
+- `PASS` when the supported read-only check establishes the required state;
+- `FAIL` when the supported check establishes an insecure state;
+- `NOT_CHECKED` when organization evidence or an unsupported integration is
+  required;
+- `ERROR` when the assessment operation cannot establish a result;
+- `N/A` only for an independently reviewed exception.
+
+The underlying runner uses exit codes `0` for complete PASS, `1` for a finding,
+`2` for an assessment error, and `3` for incomplete external evidence. GNU
+Make reports any failed recipe as its own non-zero status, so automation that
+needs the exact code should invoke:
+
+```bash
+python3 scripts/run-assessments.py --control PSB-SOURCE-001
+```
+
+The initial Linux adapter checks normalized signals for credential storage,
+repository-owned hooks, disk encryption, GNOME screen lock, automatic updates,
+routine administrator access, common container sockets, known debug listeners,
+and container workspace mount mode.
+
+The output deliberately excludes usernames, home paths, IP addresses, raw
+listener details, credential-helper paths, and matched secret values. Local
+signals do not replace MDM, IdP, repository, network, or backup evidence.
+When run inside a container, cloud workspace, or agent sandbox, results describe
+that execution environment and may not observe the underlying physical host.
+
 ## Adoption guidance
 
 Map each assertion to the organization's endpoint control plane. Examples:

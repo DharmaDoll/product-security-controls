@@ -28,6 +28,13 @@ class ControlMetadataValidationTest(unittest.TestCase):
             schema = json.load(handle)
         self.assertEqual(schema["$schema"], "https://json-schema.org/draft/2020-12/schema")
 
+    def test_assessment_schema_is_valid_json(self) -> None:
+        with (REPOSITORY_ROOT / "schemas" / "assessment-result.schema.json").open(
+            "r", encoding="utf-8"
+        ) as handle:
+            schema = json.load(handle)
+        self.assertEqual(schema["$schema"], "https://json-schema.org/draft/2020-12/schema")
+
     def test_duplicate_control_id_is_rejected(self) -> None:
         duplicate = copy.deepcopy(self.controls[0])
         errors = validate_controls([self.controls[0], duplicate])
@@ -62,6 +69,22 @@ class ControlMetadataValidationTest(unittest.TestCase):
                 mapping["applies_to"] = [control["checks"][1]["id"]]
         errors = validate_controls([control])
         self.assertTrue(any("has no mapping" in error for error in errors))
+
+    def test_unknown_assessment_platform_is_rejected(self) -> None:
+        control = copy.deepcopy(
+            next(item for item in self.controls if item.get("assessment"))
+        )
+        control["assessment"]["platforms"] = ["plan9"]
+        errors = validate_controls([control])
+        self.assertTrue(any("unsupported platforms" in error for error in errors))
+
+    def test_missing_assessment_command_is_rejected(self) -> None:
+        control = copy.deepcopy(
+            next(item for item in self.controls if item.get("assessment"))
+        )
+        control["assessment"]["command"] = "assessment/missing.py"
+        errors = validate_controls([control])
+        self.assertTrue(any("missing assessment command" in error for error in errors))
 
     def test_metadata_domain_must_match_directory(self) -> None:
         control = copy.deepcopy(self.controls[0])

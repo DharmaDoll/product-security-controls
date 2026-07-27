@@ -51,6 +51,16 @@ evidence should include, as applicable:
 - managed egress policy and access logs;
 - negative test fixtures for secret and sensitive-data detection.
 
+The separate read-only Linux assessment can collect a limited set of sanitized
+local signals with:
+
+```bash
+make assess-control CONTROL=PSB-SOURCE-001
+```
+
+It does not replace the organization evidence above. Unsupported or ambiguous
+local state remains `NOT_CHECKED`; an assessment execution failure is `ERROR`.
+
 ## Residual risk
 
 Local hooks can be bypassed, scanners can miss unknown or encoded data, and

@@ -28,6 +28,21 @@ verification:
     - insecure endpoint policy is rejected with a non-zero result and 20 failed checks
     - complete verifier output matches the sanitized expected evidence
     - policy validation failure is distinct from a clean result
+    - read-only Linux assessment emits all 20 check states without host identifiers or matched secret values
+    - FAIL NOT_CHECKED and assessment execution ERROR use distinct exit states
+assessment:
+  command: assessment/assess.py
+  platforms:
+    - linux
+  output_formats:
+    - json
+    - csv
+  result_statuses:
+    - PASS
+    - FAIL
+    - NOT_CHECKED
+    - ERROR
+    - N/A
 checks:
   - id: DEH-001
     title: Credentials are short lived
@@ -51,11 +66,11 @@ checks:
       - developer-endpoint
     verification:
       type: hybrid
-      method: inspect the credential helper and run the declarative policy fixture
+      method: run make assess-control CONTROL=PSB-SOURCE-001 and review the credential platform policy
       expected: plaintext workspace shell-history and dotfile storage is prohibited
       evidence:
         - credential helper configuration
-        - sanitized verifier output
+        - sanitized assessment result
     mapping_status: reviewed
   - id: DEH-003
     title: Developer keys are hardware backed
@@ -80,10 +95,11 @@ checks:
       - source-repository
     verification:
       type: hybrid
-      method: verify hook configuration and run a sanitized negative fixture
+      method: run make assess-control CONTROL=PSB-SOURCE-001 and a sanitized negative hook fixture
       expected: a representative fake secret is rejected before commit
       evidence:
         - hook configuration
+        - sanitized assessment result
         - sanitized negative-test output
     mapping_status: reviewed
   - id: DEH-005
@@ -163,9 +179,10 @@ checks:
       - source-repository
     verification:
       type: hybrid
-      method: run sanitized sensitive-file fixtures and inspect repository-side enforcement
+      method: run make assess-control CONTROL=PSB-SOURCE-001 then inspect repository-side enforcement
       expected: representative sensitive data files are rejected without exposing their contents
       evidence:
+        - sanitized assessment result
         - sanitized negative-test output
         - repository required-check evidence
     mapping_status: reviewed
@@ -176,10 +193,11 @@ checks:
     applies_to:
       - developer-endpoint
     verification:
-      type: external-evidence
-      method: inspect endpoint-management compliance
+      type: hybrid
+      method: run make assess-control CONTROL=PSB-SOURCE-001 and inspect endpoint-management compliance
       expected: the managed endpoint reports full-disk encryption enabled
       evidence:
+        - sanitized assessment result
         - MDM compliance record
     mapping_status: reviewed
   - id: END-002
@@ -189,10 +207,11 @@ checks:
     applies_to:
       - developer-endpoint
     verification:
-      type: external-evidence
-      method: inspect endpoint-management screen-lock policy
+      type: hybrid
+      method: run make assess-control CONTROL=PSB-SOURCE-001 and inspect endpoint-management screen-lock policy
       expected: unattended access requires reauthentication
       evidence:
+        - sanitized assessment result
         - MDM compliance record
     mapping_status: reviewed
   - id: END-003
@@ -202,10 +221,11 @@ checks:
     applies_to:
       - developer-endpoint
     verification:
-      type: external-evidence
-      method: inspect OS and developer-tool patch compliance
+      type: hybrid
+      method: run make assess-control CONTROL=PSB-SOURCE-001 and inspect patch compliance
       expected: unsupported or overdue endpoints are reported noncompliant
       evidence:
+        - sanitized assessment result
         - patch compliance record
     mapping_status: reviewed
   - id: END-004
@@ -215,10 +235,11 @@ checks:
     applies_to:
       - developer-endpoint
     verification:
-      type: external-evidence
-      method: inspect endpoint privilege policy and local group membership
+      type: hybrid
+      method: run make assess-control CONTROL=PSB-SOURCE-001 and inspect endpoint privilege policy
       expected: routine developer sessions are not permanent local administrators
       evidence:
+        - sanitized assessment result
         - privilege-management compliance record
     mapping_status: reviewed
   - id: END-005
@@ -242,10 +263,11 @@ checks:
       - developer-endpoint
       - local-container-runtime
     verification:
-      type: manual
-      method: inspect workspace mounts and container runtime access
+      type: hybrid
+      method: run make assess-control CONTROL=PSB-SOURCE-001 and inspect all container runtime policies
       expected: untrusted development workloads cannot control the host container daemon
       evidence:
+        - sanitized assessment result
         - container runtime configuration
     mapping_status: reviewed
   - id: END-007
@@ -255,10 +277,11 @@ checks:
     applies_to:
       - developer-endpoint
     verification:
-      type: manual
-      method: inspect listening services and development launch configuration
+      type: hybrid
+      method: run make assess-control CONTROL=PSB-SOURCE-001 and inspect development launch configuration
       expected: debug services are disabled or bound to an approved local interface
       evidence:
+        - sanitized assessment result
         - sanitized service inventory
     mapping_status: reviewed
   - id: END-008
@@ -284,10 +307,11 @@ checks:
       - developer-endpoint
       - development-sandbox
     verification:
-      type: manual
-      method: inspect container cloud-workspace or agent filesystem mounts
+      type: hybrid
+      method: run make assess-control CONTROL=PSB-SOURCE-001 and inspect sandbox filesystem policy
       expected: broad host and shared workspace write access is absent
       evidence:
+        - sanitized assessment result
         - workspace mount configuration
     mapping_status: reviewed
   - id: END-010
@@ -362,6 +386,9 @@ limitations:
   - The supplied operational baseline cites source 1 without bibliographic details, so its provenance cannot be independently verified.
   - A hardened endpoint cannot compensate for a malicious repository, dependency, Skill, MCP server, or editor extension.
   - Endpoint policy values are examples and must be adapted to the operating system and organization.
+  - The read-only adapter initially supports Linux; unsupported desktops and ambiguous host state remain NOT_CHECKED or ERROR.
+  - Local detection covers known configuration forms and debug ports only; MDM IdP network repository and backup evidence remains authoritative.
+  - Assessment inside a container cloud workspace or agent sandbox may not observe the underlying physical host.
 status: prototype
 owner: product-security
 evidence_level: E3

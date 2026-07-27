@@ -79,6 +79,22 @@ checklistだけを更新する場合は`make generate-checklists`を使用でき
 生成されたspreadsheetは直接編集しません。組織固有の担当、判定、証跡URL、
 期限、例外IDは`product-security-assessment-template.xlsx`へ記録します。
 
+SLSA Build Level 2を目標にする場合は
+`profiles/slsa-build-l2.csv`でL1とL2に直接対応する確認項目だけを確認できます。
+`profiles/slsa-build-l2-coverage.csv`には未マッピング要件も`gap`として残るため、
+対象行があることをLevel 2達成と解釈しません。Excel版では
+`SLSA Build L2`と`SLSA L2 Coverage`シートをフィルタできます。
+
+Linux開発端末上で読み取り専用assessmentを実行する場合:
+
+```bash
+make assess-control CONTROL=PSB-SOURCE-001
+```
+
+結果はGit管理対象外の`generated/assessments/`へJSONとCSVで保存されます。
+`NOT_CHECKED`は外部証跡待ち、`ERROR`は検査不能であり、どちらもPASSでは
+ありません。
+
 ## Framework mapping
 
 Each control is mapped to applicable items from:
@@ -111,18 +127,10 @@ This repository→ concrete implementation and verification examples
 
 ## First implementation candidates
 
-1. GitHub Actions full SHA pinning
-2. Minimal workflow permissions
-3. Dependency cooldown and lockfile integrity
-4. Trivy filesystem, container, IaC, secret, and SBOM examples
-5. Secure authorization sample
-6. Secure secret handling sample
-7. SBOM and artifact attestation
-8. CodeGuard and AGENTS.md comparative validation
-9. Third-party Skill pinning and review
-10. Time-bound vulnerability exceptions
-11. GitHub dorking and public repository information exposure
-12. Developer endpoint hardening and local trust-boundary protection
+Completed and planned controls are ordered in the
+[`Prioritized control backlog`](docs/ROADMAP.md#prioritized-control-backlog).
+That backlog is the source of truth for implementation priority; this README
+does not maintain a second list.
 
 ## Codex usage
 

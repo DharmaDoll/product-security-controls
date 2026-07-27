@@ -97,6 +97,26 @@ Framework mappings use `applies_to` to link a reviewed rationale to specific
 checks. A check with no reviewed relationship uses `mapping_status: unmapped`;
 the parent control's mappings must not be copied to it implicitly.
 
+Framework-specific adoption profiles are derived from pinned framework registry
+metadata and the row-level `applies_to` links. A cumulative level profile, such
+as SLSA Build L2, includes requirements whose `minimum_level` is at or below the
+target and excludes higher-level requirements. Its coverage view must retain
+unmapped requirements as explicit gaps. A mapped row is evidence relevant to a
+requirement; it is not by itself a framework level or compliance claim.
+
+## Read-only assessments
+
+A control may expose an `assessment` command when it can inspect an adopted
+target without changing it. Assessment output uses `PASS`, `FAIL`,
+`NOT_CHECKED`, `ERROR`, and reviewed `N/A` as distinct states. An execution or
+input failure must be `ERROR`, never a clean result.
+
+Host-specific output follows `schemas/assessment-result.schema.json`, excludes
+secrets and unnecessary host identifiers, and is written below the ignored
+`generated/assessments/` directory. Fixture verification and live assessment
+remain separate: a passing secure fixture is not evidence that a live endpoint
+meets the requirement.
+
 ## Control maturity
 
 - `idea`

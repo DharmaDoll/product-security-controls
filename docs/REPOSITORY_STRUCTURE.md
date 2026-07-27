@@ -44,7 +44,8 @@
 ├── generated/
 │   ├── CONTROL_INDEX.md
 │   ├── mappings/
-│   └── checklists/
+│   ├── checklists/
+│   └── assessments/          # ignored host-specific output
 ├── docs/
 │   ├── PROJECT_CHARTER.md
 │   ├── ARCHITECTURE.md

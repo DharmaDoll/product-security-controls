@@ -104,6 +104,17 @@ checks:
 mappings:
   - framework: slsa
     version: "1.2"
+    id: build-l2#consumer-validates-authenticity
+    relationship: verifies
+    confidence: high
+    rationale: Consumer-owned trusted keyでprovenance署名とartifact subject bindingを検証し、Build L2のconsumer authenticity validationを直接実装するが、hosted platformとprovenance生成要件は評価しない。
+    reviewer: product-security
+    review_date: "2026-07-27"
+    applies_to:
+      - REL-001
+      - REL-002
+  - framework: slsa
+    version: "1.2"
     id: build-provenance
     relationship: verifies
     confidence: high

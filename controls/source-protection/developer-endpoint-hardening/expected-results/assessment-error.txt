@@ -1,0 +1,22 @@
+ASSESSMENT PSB-SOURCE-001 source=test-fixture platform=linux
+NOT_CHECKED PSB-SOURCE-001-DEH-001 external-identity-evidence: credential lifetime requires identity or source-platform evidence
+PASS PSB-SOURCE-001-DEH-002 credential-helper-approved: an approved credential helper was detected
+NOT_CHECKED PSB-SOURCE-001-DEH-003 external-key-enrollment-evidence: hardware-backed key enrollment requires identity-platform evidence
+PASS PSB-SOURCE-001-DEH-004 repository-hook-enabled: a repository-owned pre-commit hook was detected
+NOT_CHECKED PSB-SOURCE-001-DEH-005 external-repository-evidence: repository-side scanning requires ruleset or platform evidence
+NOT_CHECKED PSB-SOURCE-001-DEH-006 external-sandbox-evidence: package-install isolation requires managed workspace or sandbox evidence
+NOT_CHECKED PSB-SOURCE-001-DEH-007 external-dependency-evidence: dependency update enforcement requires repository automation evidence
+NOT_CHECKED PSB-SOURCE-001-DEH-008 external-egress-evidence: developer egress enforcement requires managed network evidence
+NOT_CHECKED PSB-SOURCE-001-DEH-009 external-idp-evidence: phishing-resistant authentication requires IdP policy evidence
+PASS PSB-SOURCE-001-DEH-010 sensitive-file-guard-enabled: the repository-owned pre-commit hook invokes the sensitive-data guard
+ERROR PSB-SOURCE-001-END-001 disk-encryption-error: the read-only assessment operation failed
+PASS PSB-SOURCE-001-END-002 screen-lock-enabled: GNOME screen locking and a nonzero idle delay are enabled
+PASS PSB-SOURCE-001-END-003 automatic-updates-enabled: a supported automatic security-update policy was detected
+PASS PSB-SOURCE-001-END-004 routine-admin-not-detected: the current process is not root and has no recognized admin group
+NOT_CHECKED PSB-SOURCE-001-END-005 approved-scanner-evidence: workspace secret absence requires an approved complete scan
+PASS PSB-SOURCE-001-END-006 container-socket-not-exposed: no writable common container socket or remote Docker endpoint was detected
+PASS PSB-SOURCE-001-END-007 known-debug-listener-not-detected: no known debug port was detected on a non-loopback listener
+NOT_CHECKED PSB-SOURCE-001-END-008 external-ai-egress-evidence: AI tool network enforcement requires managed allowlist evidence
+PASS PSB-SOURCE-001-END-009 workspace-mount-read-only: the current workspace mount is read only
+NOT_CHECKED PSB-SOURCE-001-END-010 external-backup-evidence: backup encryption requires managed backup evidence
+SUMMARY PASS=9 FAIL=0 NOT_CHECKED=10 ERROR=1 N/A=0

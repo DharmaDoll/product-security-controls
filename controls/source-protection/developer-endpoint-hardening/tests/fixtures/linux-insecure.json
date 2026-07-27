@@ -1,0 +1,12 @@
+{
+  "credential_storage": "plaintext",
+  "pre_commit_secret_scan": "disabled",
+  "sensitive_data_file_guard": "disabled",
+  "disk_encryption": "disabled",
+  "screen_lock": "disabled",
+  "automatic_updates": "disabled",
+  "local_admin": "true",
+  "docker_socket_exposed": "true",
+  "local_debug_services": "enabled",
+  "workspace_mount": "read-write"
+}

@@ -20,12 +20,78 @@
       "id": "build-provenance",
       "title": "Build provenance",
       "type": "build-requirement",
+      "track": "build",
+      "level_requirement": false,
       "source_url": "https://slsa.dev/spec/v1.2/build-provenance"
+    },
+    {
+      "id": "build-l1#producer-consistent-build",
+      "title": "Build L1 producer follows a consistent build process",
+      "type": "build-level-requirement",
+      "track": "build",
+      "minimum_level": 1,
+      "level_requirement": true,
+      "responsibility": "software-producer",
+      "source_url": "https://slsa.dev/spec/v1.2/build-track-basics#build-l1-provenance-exists"
+    },
+    {
+      "id": "build-l1#platform-generates-provenance",
+      "title": "Build L1 platform automatically generates provenance",
+      "type": "build-level-requirement",
+      "track": "build",
+      "minimum_level": 1,
+      "level_requirement": true,
+      "responsibility": "build-platform",
+      "source_url": "https://slsa.dev/spec/v1.2/build-track-basics#build-l1-provenance-exists"
+    },
+    {
+      "id": "build-l1#producer-distributes-provenance",
+      "title": "Build L1 producer distributes provenance",
+      "type": "build-level-requirement",
+      "track": "build",
+      "minimum_level": 1,
+      "level_requirement": true,
+      "responsibility": "software-producer",
+      "source_url": "https://slsa.dev/spec/v1.2/build-track-basics#build-l1-provenance-exists"
+    },
+    {
+      "id": "build-l2#producer-hosted-build-platform",
+      "title": "Build L2 producer uses a hosted build platform",
+      "type": "build-level-requirement",
+      "track": "build",
+      "minimum_level": 2,
+      "level_requirement": true,
+      "responsibility": "software-producer",
+      "source_url": "https://slsa.dev/spec/v1.2/build-track-basics#build-l2-hosted-build-platform"
+    },
+    {
+      "id": "build-l2#platform-authentic-provenance",
+      "title": "Build L2 platform generates and authenticates provenance itself",
+      "type": "build-level-requirement",
+      "track": "build",
+      "minimum_level": 2,
+      "level_requirement": true,
+      "responsibility": "build-platform",
+      "source_url": "https://slsa.dev/spec/v1.2/build-track-basics#build-l2-hosted-build-platform"
+    },
+    {
+      "id": "build-l2#consumer-validates-authenticity",
+      "title": "Build L2 consumer validates provenance authenticity",
+      "type": "build-level-requirement",
+      "track": "build",
+      "minimum_level": 2,
+      "level_requirement": true,
+      "responsibility": "consumer",
+      "source_url": "https://slsa.dev/spec/v1.2/build-track-basics#build-l2-hosted-build-platform"
     },
     {
       "id": "build-track-basics#build-l3-hardened-builds",
       "title": "Build L3: Hardened Builds",
       "type": "build-level",
+      "track": "build",
+      "minimum_level": 3,
+      "level_requirement": true,
+      "responsibility": "build-platform",
       "source_url": "https://slsa.dev/spec/v1.2/build-track-basics#build-l3-hardened-builds"
     }
   ]

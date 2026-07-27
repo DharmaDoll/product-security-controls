@@ -49,8 +49,8 @@ EXPECTED_BASELINES = {
     },
     "slsa": {
         "version": "1.2",
-        "count": 2,
-        "known_id": "build-provenance",
+        "count": 8,
+        "known_id": "build-l2#consumer-validates-authenticity",
     },
 }
 
@@ -68,6 +68,25 @@ class FrameworkRegistryBaselineTest(unittest.TestCase):
                     expected["known_id"],
                     {entry["id"] for entry in registry["entries"]},
                 )
+
+    def test_slsa_level_requirements_have_filter_metadata(self) -> None:
+        registry = discover_registries()["slsa"]
+        level_requirements = [
+            entry
+            for entry in registry["entries"]
+            if entry.get("level_requirement") is True
+        ]
+        self.assertEqual(len(level_requirements), 7)
+        self.assertEqual(
+            {entry["minimum_level"] for entry in level_requirements},
+            {1, 2, 3},
+        )
+        for entry in level_requirements:
+            self.assertEqual(entry["track"], "build")
+            self.assertIn(
+                entry["responsibility"],
+                {"software-producer", "build-platform", "consumer"},
+            )
 
 
 if __name__ == "__main__":

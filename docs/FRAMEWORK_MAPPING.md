@@ -130,6 +130,17 @@ Relationship examples:
 
 Keep source and build requirements distinct.
 
+For SLSA Build level filtering, the pinned registry records `track`,
+`minimum_level`, `responsibility`, and whether an entry is a level requirement.
+Level profiles are cumulative: Build L2 includes L1 and L2 requirements and
+excludes L3 requirements. Generated checklist rows expose this metadata, while
+the coverage view retains requirements with no mapped control as `gap`.
+
+`mapped-evidence` means that a control check has a reviewed relationship to the
+requirement. It does not mean the producer, build platform, or consumer has
+passed a complete SLSA assessment, and it must not be presented as achievement
+of a SLSA level.
+
 ### NIST SSDF
 
 Use for secure software development lifecycle practices.

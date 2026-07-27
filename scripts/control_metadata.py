@@ -49,6 +49,9 @@ CHECK_ROLES = {
 }
 VERIFICATION_TYPES = {"automated", "manual", "external-evidence", "hybrid"}
 MAPPING_STATUSES = {"reviewed", "provisional", "unmapped"}
+ASSESSMENT_PLATFORMS = {"linux", "macos", "windows"}
+ASSESSMENT_FORMATS = {"json", "csv"}
+ASSESSMENT_RESULTS = {"PASS", "FAIL", "NOT_CHECKED", "ERROR", "N/A"}
 CONTROL_ID_RE = re.compile(r"^PSB-[A-Z]+-[0-9]{3}$")
 CHECK_ID_RE = re.compile(r"^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$")
 _INTEGER_RE = re.compile(r"^-?\d+$")
@@ -237,6 +240,34 @@ def validate_controls(controls: list[dict[str, Any]]) -> list[str]:
             for field in ("commands", "expected"):
                 if not isinstance(verification.get(field), list) or not verification[field]:
                     errors.append(f"{label}: verification.{field} must be a non-empty list")
+
+        assessment = control.get("assessment")
+        if assessment is not None:
+            assessment_label = f"{label}: assessment"
+            if not isinstance(assessment, dict):
+                errors.append(f"{assessment_label} must be a mapping")
+            else:
+                _require_text(assessment, "command", errors, assessment_label)
+                command = assessment.get("command")
+                if isinstance(command, str) and not (directory / command).is_file():
+                    errors.append(
+                        f"{assessment_label}: missing assessment command {command!r}"
+                    )
+                for field, allowed in (
+                    ("platforms", ASSESSMENT_PLATFORMS),
+                    ("output_formats", ASSESSMENT_FORMATS),
+                    ("result_statuses", ASSESSMENT_RESULTS),
+                ):
+                    values = assessment.get(field)
+                    if not isinstance(values, list) or not values:
+                        errors.append(
+                            f"{assessment_label}: {field} must be a non-empty list"
+                        )
+                    elif invalid := sorted(set(values) - allowed):
+                        errors.append(
+                            f"{assessment_label}: unsupported {field}: "
+                            f"{', '.join(invalid)}"
+                        )
 
         checks = control.get("checks")
         check_ids: set[str] = set()

@@ -1,0 +1,22 @@
+ASSESSMENT PSB-SOURCE-001 source=test-fixture platform=linux
+NOT_CHECKED PSB-SOURCE-001-DEH-001 external-identity-evidence: credential lifetime requires identity or source-platform evidence
+FAIL PSB-SOURCE-001-DEH-002 credential-helper-plaintext: Git credential storage is configured for plaintext persistence
+NOT_CHECKED PSB-SOURCE-001-DEH-003 external-key-enrollment-evidence: hardware-backed key enrollment requires identity-platform evidence
+FAIL PSB-SOURCE-001-DEH-004 repository-hook-disabled: the current repository has no active repository-owned pre-commit hook
+NOT_CHECKED PSB-SOURCE-001-DEH-005 external-repository-evidence: repository-side scanning requires ruleset or platform evidence
+NOT_CHECKED PSB-SOURCE-001-DEH-006 external-sandbox-evidence: package-install isolation requires managed workspace or sandbox evidence
+NOT_CHECKED PSB-SOURCE-001-DEH-007 external-dependency-evidence: dependency update enforcement requires repository automation evidence
+NOT_CHECKED PSB-SOURCE-001-DEH-008 external-egress-evidence: developer egress enforcement requires managed network evidence
+NOT_CHECKED PSB-SOURCE-001-DEH-009 external-idp-evidence: phishing-resistant authentication requires IdP policy evidence
+FAIL PSB-SOURCE-001-DEH-010 sensitive-file-guard-disabled: the active pre-commit path does not establish the sensitive-data guard
+FAIL PSB-SOURCE-001-END-001 disk-encryption-not-detected: the workspace block-device chain does not include encryption
+FAIL PSB-SOURCE-001-END-002 screen-lock-disabled: GNOME screen locking or its idle delay is disabled
+FAIL PSB-SOURCE-001-END-003 automatic-updates-disabled: the detected automatic-update policy is disabled
+FAIL PSB-SOURCE-001-END-004 routine-admin-detected: the current process is root or belongs to a recognized admin group
+NOT_CHECKED PSB-SOURCE-001-END-005 approved-scanner-evidence: workspace secret absence requires an approved complete scan
+FAIL PSB-SOURCE-001-END-006 container-socket-exposed: a writable container socket or remote Docker endpoint is available
+FAIL PSB-SOURCE-001-END-007 known-debug-listener-detected: a known debug port is listening beyond the loopback interface
+NOT_CHECKED PSB-SOURCE-001-END-008 external-ai-egress-evidence: AI tool network enforcement requires managed allowlist evidence
+FAIL PSB-SOURCE-001-END-009 workspace-mount-read-write: the current workspace mount is writable
+NOT_CHECKED PSB-SOURCE-001-END-010 external-backup-evidence: backup encryption requires managed backup evidence
+SUMMARY PASS=0 FAIL=10 NOT_CHECKED=10 ERROR=0 N/A=0

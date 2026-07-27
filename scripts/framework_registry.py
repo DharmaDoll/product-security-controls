@@ -20,6 +20,11 @@ ROLES = {
     "implementation-guidance",
     "negative-baseline",
 }
+SLSA_BUILD_RESPONSIBILITIES = {
+    "software-producer",
+    "build-platform",
+    "consumer",
+}
 
 
 def discover_registries() -> dict[str, dict[str, Any]]:
@@ -123,6 +128,27 @@ def validate_registries(
                 indexed[entry_id] = entry
             if not _valid_https_url(entry.get("source_url")):
                 errors.append(f"{entry_label}: source_url must be an HTTPS URL")
+            if name == "slsa":
+                if entry.get("track") != "build":
+                    errors.append(f"{entry_label}: SLSA track must be 'build'")
+                level_requirement = entry.get("level_requirement")
+                if not isinstance(level_requirement, bool):
+                    errors.append(
+                        f"{entry_label}: SLSA level_requirement must be a boolean"
+                    )
+                elif level_requirement:
+                    if entry.get("minimum_level") not in {1, 2, 3}:
+                        errors.append(
+                            f"{entry_label}: SLSA minimum_level must be 1, 2, or 3"
+                        )
+                    if (
+                        entry.get("responsibility")
+                        not in SLSA_BUILD_RESPONSIBILITIES
+                    ):
+                        errors.append(
+                            f"{entry_label}: unsupported SLSA responsibility "
+                            f"{entry.get('responsibility')!r}"
+                        )
         entries_by_framework[name] = indexed
 
     for control in controls:

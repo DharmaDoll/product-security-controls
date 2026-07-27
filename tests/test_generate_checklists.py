@@ -83,6 +83,29 @@ class GenerateChecklistsTest(unittest.TestCase):
             with self.subTest(value=value):
                 self.assertEqual(generate_checklists._csv_safe_text(value), "'" + value)
 
+    def test_slsa_build_l2_profile_is_cumulative_and_excludes_l3(self) -> None:
+        checklist, _, _ = generate_checklists.build_rows(self.controls)
+        registries = generate_checklists.discover_registries()
+        selected, coverage = generate_checklists.build_slsa_l2_profile(
+            self.controls,
+            checklist,
+            registries["slsa"],
+        )
+        selected_ids = {row["Check ID"] for row in selected}
+        self.assertIn("PSB-REL-001-REL-001", selected_ids)
+        self.assertIn("PSB-REL-001-REL-002", selected_ids)
+        self.assertNotIn("PSB-BUILD-001-BLD-001", selected_ids)
+        self.assertEqual(
+            {row["Requirement Minimum Level"] for row in coverage},
+            {"1", "2"},
+        )
+        self.assertEqual(len(coverage), 6)
+        self.assertEqual(
+            sum(row["Status"] == "mapped-evidence" for row in coverage),
+            1,
+        )
+        self.assertEqual(sum(row["Status"] == "gap" for row in coverage), 5)
+
 
 if __name__ == "__main__":
     unittest.main()

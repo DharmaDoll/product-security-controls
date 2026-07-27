@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DharmaDoll/product-security-controls/schemas/assessment-result.schema.json",
+  "title": "Product Security Blueprint assessment result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "control_id",
+    "assessment_kind",
+    "source",
+    "platform",
+    "generated_at",
+    "scope",
+    "summary",
+    "results"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "control_id": {
+      "type": "string",
+      "pattern": "^PSB-[A-Z]+-[0-9]{3}$"
+    },
+    "assessment_kind": {"const": "read-only-developer-endpoint"},
+    "source": {"enum": ["live", "test-fixture"]},
+    "platform": {"enum": ["linux", "macos", "windows", "unsupported"]},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "scope": {
+      "enum": [
+        "current execution environment and repository; sanitized",
+        "isolated test fixture; no host claim"
+      ]
+    },
+    "summary": {
+      "type": "object",
+      "required": ["PASS", "FAIL", "NOT_CHECKED", "ERROR", "N/A"],
+      "properties": {
+        "PASS": {"type": "integer", "minimum": 0},
+        "FAIL": {"type": "integer", "minimum": 0},
+        "NOT_CHECKED": {"type": "integer", "minimum": 0},
+        "ERROR": {"type": "integer", "minimum": 0},
+        "N/A": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "check_id",
+          "title",
+          "status",
+          "evidence_code",
+          "detail"
+        ],
+        "properties": {
+          "check_id": {
+            "type": "string",
+            "pattern": "^PSB-[A-Z]+-[0-9]{3}-[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$"
+          },
+          "title": {"type": "string", "minLength": 1},
+          "status": {
+            "enum": ["PASS", "FAIL", "NOT_CHECKED", "ERROR", "N/A"]
+          },
+          "evidence_code": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "detail": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

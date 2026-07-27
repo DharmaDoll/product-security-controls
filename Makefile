@@ -1,4 +1,4 @@
-.PHONY: bootstrap lint verify verify-control test generate generate-index generate-mappings generate-checklists validate-controls clean
+.PHONY: bootstrap lint verify verify-control assess-control test generate generate-index generate-mappings generate-checklists validate-controls clean
 
 bootstrap:
 	@echo "No external bootstrap required."
@@ -16,6 +16,10 @@ test:
 verify-control:
 	@test -n "$(CONTROL)" || (echo "CONTROL is required" >&2; exit 2)
 	@python3 scripts/run-controls.py --control "$(CONTROL)"
+
+assess-control:
+	@test -n "$(CONTROL)" || (echo "CONTROL is required" >&2; exit 2)
+	@python3 scripts/run-assessments.py --control "$(CONTROL)"
 
 generate: generate-index generate-mappings generate-checklists
 
@@ -35,3 +39,4 @@ clean:
 	@rm -f generated/CONTROL_INDEX.md
 	@rm -rf generated/mappings
 	@rm -rf generated/checklists
+	@rm -rf generated/assessments

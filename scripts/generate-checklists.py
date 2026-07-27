@@ -36,6 +36,13 @@ GUIDELINE_HEADERS = [
     "Verification Method",
     "Expected Result",
     "Required Evidence",
+    "Assessment Command",
+    "Assessment Platforms",
+    "SLSA Track",
+    "SLSA Requirement Levels",
+    "SLSA Minimum Level",
+    "SLSA Responsibility",
+    "SLSA Build L2 Scope",
     "Framework Mappings",
     "Mapping Status",
     "Limitations",
@@ -60,6 +67,10 @@ MAPPING_HEADERS = [
     "Rationale",
     "Reviewer",
     "Review Date",
+    "SLSA Track",
+    "SLSA Minimum Level",
+    "SLSA Responsibility",
+    "SLSA Level Requirement",
 ]
 EVIDENCE_HEADERS = [
     "Control ID",
@@ -79,6 +90,19 @@ EXCEPTION_HEADERS = [
     "Expiry Date",
     "Status",
 ]
+SLSA_COVERAGE_HEADERS = [
+    "Profile",
+    "Framework Version",
+    "Track",
+    "Target Level",
+    "Requirement ID",
+    "Requirement Minimum Level",
+    "Responsibility",
+    "Requirement",
+    "Status",
+    "Mapped Checks",
+    "Mapping Rationale",
+]
 FIXED_ZIP_TIME = (2026, 7, 27, 0, 0, 0)
 
 
@@ -95,7 +119,14 @@ def _mapping_summary(mapping: dict[str, Any]) -> str:
 
 def build_rows(
     controls: list[dict[str, Any]],
+    registries: dict[str, dict[str, Any]] | None = None,
 ) -> tuple[list[dict[str, str]], list[dict[str, str]], list[dict[str, str]]]:
+    if registries is None:
+        registries = discover_registries()
+    slsa_entries = {
+        entry["id"]: entry
+        for entry in registries.get("slsa", {}).get("entries", [])
+    }
     checklist_rows: list[dict[str, str]] = []
     mapping_rows: list[dict[str, str]] = []
     evidence_rows: list[dict[str, str]] = []
@@ -118,6 +149,38 @@ def build_rows(
                 mapping_summary = "UNMAPPED — framework review required"
 
             verification = check["verification"]
+            assessment = control.get("assessment", {})
+            slsa_mappings = [
+                mapping
+                for mapping in check_mappings
+                if mapping["framework"] == "slsa"
+            ]
+            slsa_check_entries = [
+                slsa_entries[mapping["id"]]
+                for mapping in slsa_mappings
+                if mapping["id"] in slsa_entries
+            ]
+            slsa_level_entries = [
+                entry
+                for entry in slsa_check_entries
+                if entry.get("level_requirement") is True
+            ]
+            slsa_levels = sorted(
+                {
+                    int(entry["minimum_level"])
+                    for entry in slsa_level_entries
+                }
+            )
+            if slsa_levels:
+                slsa_l2_scope = (
+                    "included"
+                    if any(level <= 2 for level in slsa_levels)
+                    else "excluded-higher-level"
+                )
+            elif slsa_check_entries:
+                slsa_l2_scope = "related-no-level"
+            else:
+                slsa_l2_scope = ""
             checklist_rows.append(
                 {
                     "Control ID": control["id"],
@@ -145,6 +208,41 @@ def build_rows(
                     "Verification Method": verification["method"],
                     "Expected Result": verification["expected"],
                     "Required Evidence": _joined(verification["evidence"]),
+                    "Assessment Command": (
+                        f"make assess-control CONTROL={control['id']}"
+                        if assessment
+                        else ""
+                    ),
+                    "Assessment Platforms": _joined(
+                        assessment.get("platforms", [])
+                        if isinstance(assessment, dict)
+                        else []
+                    ),
+                    "SLSA Track": _joined(
+                        sorted(
+                            {
+                                entry["track"]
+                                for entry in slsa_check_entries
+                                if entry.get("track")
+                            }
+                        )
+                    ),
+                    "SLSA Requirement Levels": _joined(
+                        f"L{level}" for level in slsa_levels
+                    ),
+                    "SLSA Minimum Level": (
+                        str(min(slsa_levels)) if slsa_levels else ""
+                    ),
+                    "SLSA Responsibility": _joined(
+                        sorted(
+                            {
+                                entry["responsibility"]
+                                for entry in slsa_level_entries
+                                if entry.get("responsibility")
+                            }
+                        )
+                    ),
+                    "SLSA Build L2 Scope": slsa_l2_scope,
                     "Framework Mappings": mapping_summary,
                     "Mapping Status": check["mapping_status"],
                     "Limitations": _joined(control["limitations"]),
@@ -161,6 +259,11 @@ def build_rows(
                     }
                 )
             for mapping in check_mappings:
+                slsa_entry = (
+                    slsa_entries.get(mapping["id"], {})
+                    if mapping["framework"] == "slsa"
+                    else {}
+                )
                 mapping_rows.append(
                     {
                         "Control ID": control["id"],
@@ -173,10 +276,78 @@ def build_rows(
                         "Rationale": mapping["rationale"],
                         "Reviewer": mapping["reviewer"],
                         "Review Date": mapping["review_date"],
+                        "SLSA Track": str(slsa_entry.get("track", "")),
+                        "SLSA Minimum Level": str(
+                            slsa_entry.get("minimum_level", "")
+                        ),
+                        "SLSA Responsibility": str(
+                            slsa_entry.get("responsibility", "")
+                        ),
+                        "SLSA Level Requirement": (
+                            "true"
+                            if slsa_entry.get("level_requirement") is True
+                            else "false"
+                            if slsa_entry
+                            else ""
+                        ),
                     }
                 )
 
     return checklist_rows, mapping_rows, evidence_rows
+
+
+def build_slsa_l2_profile(
+    controls: list[dict[str, Any]],
+    checklist_rows: list[dict[str, str]],
+    slsa_registry: dict[str, Any],
+) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
+    selected_checks = [
+        row for row in checklist_rows if row["SLSA Build L2 Scope"] == "included"
+    ]
+    mappings_by_requirement: dict[str, list[tuple[str, dict[str, Any]]]] = defaultdict(
+        list
+    )
+    for control in controls:
+        for mapping in control["mappings"]:
+            if mapping["framework"] != "slsa":
+                continue
+            for check_id in mapping["applies_to"]:
+                mappings_by_requirement[mapping["id"]].append(
+                    (f"{control['id']}-{check_id}", mapping)
+                )
+
+    coverage_rows: list[dict[str, str]] = []
+    for entry in sorted(
+        slsa_registry["entries"],
+        key=lambda item: (item.get("minimum_level", 99), item["id"]),
+    ):
+        if (
+            entry.get("track") != "build"
+            or entry.get("level_requirement") is not True
+            or int(entry["minimum_level"]) > 2
+        ):
+            continue
+        mapped = mappings_by_requirement.get(entry["id"], [])
+        coverage_rows.append(
+            {
+                "Profile": "slsa-build-l2",
+                "Framework Version": slsa_registry["mapping_version"],
+                "Track": "build",
+                "Target Level": "2",
+                "Requirement ID": entry["id"],
+                "Requirement Minimum Level": str(entry["minimum_level"]),
+                "Responsibility": entry["responsibility"],
+                "Requirement": entry["title"],
+                "Status": "mapped-evidence" if mapped else "gap",
+                "Mapped Checks": _joined(
+                    sorted({check_id for check_id, _ in mapped})
+                ),
+                "Mapping Rationale": _joined(
+                    sorted({mapping["rationale"] for _, mapping in mapped})
+                ),
+            }
+        )
+    return selected_checks, coverage_rows
 
 
 def write_csv(path: Path, headers: list[str], rows: list[dict[str, str]]) -> None:
@@ -386,17 +557,34 @@ def _readme_rows() -> list[list[str]]:
         ["ERROR", "Verification failed to execute or could not establish a result; never treat as clean."],
         ["N/A", "A reviewed, owned, justified, and time-bound exception establishes non-applicability."],
         ["Mappings", "Relationships support traceability and are not automatic compliance claims."],
+        ["Assessment", "A listed assessment command is read only; NOT_CHECKED and ERROR are not PASS."],
     ]
 
 
 def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
-    checklist_rows, mapping_rows, evidence_rows = build_rows(controls)
+    registries = discover_registries()
+    checklist_rows, mapping_rows, evidence_rows = build_rows(controls, registries)
+    slsa_l2_rows, slsa_l2_coverage = build_slsa_l2_profile(
+        controls,
+        checklist_rows,
+        registries["slsa"],
+    )
     output.mkdir(parents=True, exist_ok=True)
 
     write_csv(output / "product-security-checklist.csv", ASSESSMENT_HEADERS, checklist_rows)
     write_csv(output / "framework-mappings.csv", MAPPING_HEADERS, mapping_rows)
     write_csv(output / "required-evidence.csv", EVIDENCE_HEADERS, evidence_rows)
     write_markdown(output / "product-security-checklist.md", checklist_rows)
+    write_csv(
+        output / "profiles" / "slsa-build-l2.csv",
+        ASSESSMENT_HEADERS,
+        slsa_l2_rows,
+    )
+    write_csv(
+        output / "profiles" / "slsa-build-l2-coverage.csv",
+        SLSA_COVERAGE_HEADERS,
+        slsa_l2_coverage,
+    )
 
     domains: dict[str, list[dict[str, str]]] = defaultdict(list)
     for row in checklist_rows:
@@ -415,6 +603,16 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
         ("Checklist", GUIDELINE_HEADERS, _dict_rows(checklist_rows, GUIDELINE_HEADERS)),
         ("Framework Mappings", MAPPING_HEADERS, mapping_table),
         ("Evidence", EVIDENCE_HEADERS, evidence_table),
+        (
+            "SLSA Build L2",
+            GUIDELINE_HEADERS,
+            _dict_rows(slsa_l2_rows, GUIDELINE_HEADERS),
+        ),
+        (
+            "SLSA L2 Coverage",
+            SLSA_COVERAGE_HEADERS,
+            _dict_rows(slsa_l2_coverage, SLSA_COVERAGE_HEADERS),
+        ),
         *domain_sheets,
     ]
     assessment_sheets = [
@@ -422,6 +620,16 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
         ("Checklist", ASSESSMENT_HEADERS, _dict_rows(checklist_rows, ASSESSMENT_HEADERS)),
         ("Framework Mappings", MAPPING_HEADERS, mapping_table),
         ("Evidence", EVIDENCE_HEADERS, evidence_table),
+        (
+            "SLSA Build L2",
+            ASSESSMENT_HEADERS,
+            _dict_rows(slsa_l2_rows, ASSESSMENT_HEADERS),
+        ),
+        (
+            "SLSA L2 Coverage",
+            SLSA_COVERAGE_HEADERS,
+            _dict_rows(slsa_l2_coverage, SLSA_COVERAGE_HEADERS),
+        ),
         ("Exceptions", EXCEPTION_HEADERS, []),
     ]
     write_xlsx(output / "product-security-guideline.xlsx", guideline_sheets)
@@ -435,7 +643,10 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
         "```bash\nmake generate-checklists\n```\n\n"
         "Copy `product-security-assessment-template.xlsx` outside this generated "
         "directory before recording organization-owned results. Regeneration "
-        "replaces the blank template.\n"
+        "replaces the blank template.\n\n"
+        "`profiles/slsa-build-l2.csv` is the cumulative L1+L2 check view. "
+        "`profiles/slsa-build-l2-coverage.csv` keeps unmapped requirements "
+        "visible as gaps; mapped evidence is not a SLSA level claim.\n"
     )
     (output / "README.md").write_text(readme, encoding="utf-8")
 

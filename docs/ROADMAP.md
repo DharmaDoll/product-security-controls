@@ -42,6 +42,21 @@ Add:
 
 Prioritize ASVS mappings.
 
+Before implementing the individual controls, import the existing application
+vulnerability assessment checklist into the generated checklist model. Preserve
+the source identifier and wording, record its source/version, split compound
+questions into atomic checks where necessary, and review duplicates before
+merging. Each resulting row must identify the responsible role, verification
+method, expected evidence, and reviewed row-level framework mappings. The
+application assessment workbook/CSV is the required input; do not infer missing
+checks or claim ASVS coverage before that source is available and reviewed.
+
+Generate an application vulnerability assessment profile in CSV and as a
+filterable worksheet. Completion means every imported source row is either
+mapped to an implemented/planned control or recorded in a reconciliation report
+with an explicit disposition such as duplicate, out of scope, or mapping
+review required.
+
 ## Phase 3 — CI/CD and supply chain
 
 Add:
@@ -70,8 +85,44 @@ local service exposure, endpoint detection, backup handling, and isolation of
 AI development tools. Controls should distinguish device-management policy
 from developer-local configuration and should not assume that endpoint
 hardening protects a compromised repository or malicious dependency.
+`PSB-SOURCE-001` now includes a sanitized read-only Linux assessment for
+locally observable signals while leaving organization-owned evidence
+`NOT_CHECKED`.
 
 Prioritize ATT&CK, SSDF, and SLSA mappings.
+
+### SLSA Build Level 2 target
+
+Implement only the cumulative SLSA Build L1 and L2 requirements for the first
+SLSA milestone. Keep L3 controls out of the Level 2 adoption profile even when
+they already exist elsewhere in the repository. A row-level mapping is
+supporting evidence, not a claim that the level has been achieved.
+
+Planned control packages:
+
+1. `PSB-BUILD-002` — require a consistent build process on an approved hosted
+   build platform. This is intended to address the producer responsibilities
+   represented by `build-l1#producer-consistent-build` and
+   `build-l2#producer-hosted-build-platform`.
+2. `PSB-BUILD-003` — automatically generate authenticated provenance through
+   the build platform itself, with build steps unable to forge the platform
+   identity. This is intended to address
+   `build-l1#platform-generates-provenance` and
+   `build-l2#platform-authentic-provenance`.
+3. `PSB-REL-002` — publish and distribute provenance with each applicable
+   release artifact. This is intended to address
+   `build-l1#producer-distributes-provenance`.
+4. Continue using `PSB-REL-001` for consumer-side provenance authenticity and
+   artifact-subject validation, mapped to
+   `build-l2#consumer-validates-authenticity`.
+
+The first three mappings remain provisional until their implementations,
+negative tests, platform trust boundaries, and sanitized evidence exist.
+Completion of this milestone requires all six cumulative requirements to move
+from `gap` to reviewed evidence in the generated `SLSA L2 Coverage` view,
+followed by a separate end-to-end assessment of the producer, build platform,
+and consumer. L3 hardening is a later milestone and is not required for this
+target.
 
 ## Phase 4 — Release integrity
 
@@ -126,6 +177,79 @@ Add:
 
 SBOM impact search and evidence-first supply-chain incident response planning is
 implemented as `PSB-GOV-001`.
+
+## Prioritized control backlog
+
+This section is the ordering source for new control packages. Phase sections
+describe scope; this backlog describes implementation priority. Proposed IDs
+are reserved for planning and may be adjusted before implementation if the
+application checklist reconciliation identifies a better boundary.
+
+### P0 — Current milestones
+
+1. Import and reconcile the existing application vulnerability assessment
+   checklist as described in Phase 2. This is a generation/data-model task and
+   does not become a documentation-only control.
+2. `PSB-BUILD-002` — consistent build process on an approved hosted build
+   platform.
+3. `PSB-BUILD-003` — platform-generated and platform-authenticated provenance.
+4. `PSB-REL-002` — provenance publication and distribution with release
+   artifacts.
+
+Items 2–4 close the five remaining generated SLSA Build L2 gaps together with
+the existing consumer verification in `PSB-REL-001`. Do not start a new SLSA
+L3 milestone until the cumulative L1+L2 assessment is complete.
+
+### P1 — Foundational product-security controls
+
+1. `PSB-CICD-004` — explicit least-privilege workflow and job permissions,
+   rejecting broad write scopes.
+2. `PSB-CICD-005` — fork-safe and untrusted-PR-safe workflows with no privileged
+   credential exposure or execution through `pull_request_target`.
+3. `PSB-CODE-001` — application secret handling with externalized secrets,
+   rotation-safe configuration, and negative leakage tests.
+4. `PSB-CODE-002` — authentication and session lifecycle, including secure
+   recovery and invalidation behavior.
+5. `PSB-CODE-003` — object- and function-level authorization with IDOR negative
+   tests.
+6. `PSB-DETECT-001` — pinned, integrity-verified Trivy verification for
+   filesystem, container, IaC, secret, and SBOM fixtures, with scanner errors
+   distinct from clean results.
+
+### P2 — Exposure reduction and release completeness
+
+1. `PSB-CODE-004` — injection prevention using parameterization and
+   context-specific output handling.
+2. `PSB-SOURCE-003` — public repository exposure review, GitHub dorking
+   scenarios, current/history secret detection, and remediation evidence.
+3. `PSB-DEPS-004` — dependency review that blocks unreviewed risk changes and
+   fails closed when advisory or policy evaluation cannot run.
+4. `PSB-CICD-006` — short-lived, audience-bound OIDC federation without stored
+   cloud credentials.
+5. `PSB-REL-003` — SBOM generation, artifact binding, publication,
+   completeness checks, and consumer-side mismatch handling.
+6. `PSB-CONTAINER-001` — immutable image digests, non-root execution, minimal
+   capabilities, and admission-policy verification.
+7. `PSB-GOV-002` — narrow, owned, justified, and time-bound security exceptions
+   with expiry enforcement.
+
+### P3 — Extended application and AI development security
+
+1. Split the reviewed application checklist remainder into executable controls
+   for cryptography, file upload, SSRF, logging, and error handling. Assign IDs
+   only after source-row reconciliation to avoid premature or duplicate control
+   boundaries.
+2. `PSB-AI-001` — repository-owned AGENTS and Project CodeGuard guidance pinned
+   to a canonical source and benchmarked against a no-guidance baseline.
+3. `PSB-AI-002` — Agent Skill, MCP server, and plugin pinning, integrity
+   verification, semantic review, and least-privilege enforcement.
+4. `PSB-AI-003` — prompt/document injection fixtures with sandbox, network, and
+   security-invariant tests.
+
+Within a priority, implement one reviewable vertical slice at a time. Every new
+control must meet the repository definition of done, including insecure and
+secure behavior where applicable, automated negative tests, sanitized evidence,
+limitations, and reviewed row-level mappings.
 
 ## Planned framework adoption after Phase 5
 
