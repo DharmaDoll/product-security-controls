@@ -1,0 +1,50 @@
+{
+  "default_permissions": {
+    "contents": "write",
+    "packages": "write"
+  },
+  "jobs": [
+    {
+      "id": "build-and-deploy",
+      "trigger_trust": "untrusted",
+      "executes_source": true,
+      "needs": [],
+      "environment": "production",
+      "permissions": {
+        "contents": "write",
+        "packages": "write",
+        "id-token": "write"
+      },
+      "credentials": [
+        {
+          "type": "static-secret",
+          "ttl_minutes": 525600,
+          "audience": "*"
+        }
+      ],
+      "network": {
+        "default": "allow",
+        "allow": [
+          "*",
+          "http://upload.attacker.test/path"
+        ]
+      },
+      "sandbox": {
+        "ephemeral": false,
+        "read_only_root": false,
+        "run_as_root": true,
+        "docker_socket": true
+      },
+      "telemetry": {
+        "process": false,
+        "network": false
+      },
+      "inputs": [
+        "source:branch"
+      ],
+      "outputs": [
+        "artifact"
+      ]
+    }
+  ]
+}

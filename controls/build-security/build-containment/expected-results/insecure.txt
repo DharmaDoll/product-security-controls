@@ -1,0 +1,23 @@
+FAIL default permissions must not grant write or id-token
+FAIL job build-and-deploy network default must be deny
+FAIL job build-and-deploy has unsafe egress endpoint: *
+FAIL job build-and-deploy has unsafe egress endpoint: http://upload.attacker.test/path
+FAIL job build-and-deploy sandbox.ephemeral must be true
+FAIL job build-and-deploy sandbox.read_only_root must be true
+FAIL job build-and-deploy sandbox.run_as_root must be false
+FAIL job build-and-deploy sandbox.docker_socket must be false
+FAIL job build-and-deploy telemetry.process must be true
+FAIL job build-and-deploy telemetry.network must be true
+FAIL job build-and-deploy has write permissions: contents, packages
+FAIL job build-and-deploy must not have id-token write
+FAIL job build-and-deploy must not receive credentials
+FAIL job build-and-deploy must not target an environment
+FAIL job build-and-deploy must not execute source code
+FAIL job build-and-deploy must use protected-release trigger
+FAIL job build-and-deploy must depend on a build job
+FAIL job build-and-deploy must consume only the verified build artifact
+FAIL job build-and-deploy credential must be OIDC
+FAIL job build-and-deploy OIDC TTL must be at most 15 minutes
+FAIL job build-and-deploy OIDC audience must be exact
+FAIL source-executing build and production deploy must be separate jobs
+RESULT rejected with 22 finding(s)

@@ -1,0 +1,52 @@
+id: PSB-BUILD-001
+title: dependency buildを権限・credential・networkから隔離する
+domain: build-security
+summary: Untrusted buildをdeploy権限から分離し、ephemeral sandbox、least privilege、default-deny egress、telemetryを検証する。
+security_functions:
+  - prevent
+  - detect
+  - verify
+threats:
+  - id: BUILD-DEPENDENCY-CREDENTIAL-EXFILTRATION
+    description: Compromised dependencyまたはbuild scriptがCI credential、source、artifactを外部へ送信する。
+  - id: BUILD-TO-DEPLOY-PRIVILEGE-ESCALATION
+    description: Untrusted sourceを実行するjobがdeploy権限またはproduction environmentへ到達する。
+implementations:
+  insecure:
+    - insecure/build-plan.json
+  secure:
+    - secure/build-plan.json
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-BUILD-001
+  expected:
+    - untrusted buildにcredentialとwrite permissionが存在しない
+    - buildとdeployが別trust boundaryでartifactだけを受け渡す
+    - egressがcredentialなしHTTPS origin allowlistでdefault denyになる
+    - ephemeral non-root read-only sandboxとprocess network telemetryが必須になる
+    - input欠落またはparse失敗がcleanな結果と区別される
+mappings:
+  - framework: slsa
+    version: "1.2"
+    id: Build-L3-Hardened-Builds
+    relationship: supports
+    confidence: medium
+    rationale: Build間の影響を抑えるephemeral isolationとprovenance signing secretをuser-defined buildから分離するSLSA Build L3の方向性を支援するが、platform assessmentは行わない。
+    reviewer: product-security
+    review_date: "2026-07-27"
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PW.6.1
+    relationship: supports
+    confidence: high
+    rationale: Build processをleast privilegeと分離された環境で実行し、softwareをsecureにcompile packageするpracticeを支援する。
+    reviewer: product-security
+    review_date: "2026-07-27"
+limitations:
+  - Reference JSONはrunner sandboxまたはnetwork firewall自体を構築しない。
+  - SLSA Build levelの正式assessmentやcomplianceを証明しない。
+  - 許可endpoint、runner control plane、telemetry backendの侵害は別途対策が必要である。
+  - Policy verifierまたはtelemetry失敗をcleanな結果として扱ってはいけない。
+status: prototype
+owner: product-security
+evidence_level: E3

@@ -1,0 +1,81 @@
+{
+  "default_permissions": {
+    "contents": "read"
+  },
+  "jobs": [
+    {
+      "id": "build",
+      "trigger_trust": "untrusted",
+      "executes_source": true,
+      "needs": [],
+      "permissions": {
+        "contents": "read"
+      },
+      "credentials": [],
+      "network": {
+        "default": "deny",
+        "allow": [
+          "https://registry.npmjs.org",
+          "https://pypi.org"
+        ]
+      },
+      "sandbox": {
+        "ephemeral": true,
+        "read_only_root": true,
+        "run_as_root": false,
+        "docker_socket": false
+      },
+      "telemetry": {
+        "process": true,
+        "network": true
+      },
+      "inputs": [
+        "source:full-commit-sha",
+        "lockfile:verified"
+      ],
+      "outputs": [
+        "artifact"
+      ]
+    },
+    {
+      "id": "deploy",
+      "trigger_trust": "protected-release",
+      "executes_source": false,
+      "needs": [
+        "build"
+      ],
+      "environment": "production",
+      "permissions": {
+        "contents": "read",
+        "id-token": "write"
+      },
+      "credentials": [
+        {
+          "type": "oidc",
+          "ttl_minutes": 10,
+          "audience": "deploy.example.test"
+        }
+      ],
+      "network": {
+        "default": "deny",
+        "allow": [
+          "https://deploy.example.test"
+        ]
+      },
+      "sandbox": {
+        "ephemeral": true,
+        "read_only_root": true,
+        "run_as_root": false,
+        "docker_socket": false
+      },
+      "telemetry": {
+        "process": true,
+        "network": true
+      },
+      "inputs": [
+        "build:artifact"
+      ],
+      "outputs": []
+    }
+  ]
+}
