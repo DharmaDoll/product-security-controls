@@ -1,0 +1,66 @@
+id: PSB-GOV-001
+title: supply-chain incidentの影響範囲と対応planを即時生成する
+domain: governance-operations
+summary: SBOMとbuild evidenceから汚染packageの影響範囲を逆引きし、承認付きdry-run response planを生成する。
+security_functions:
+  - detect
+  - respond
+  - verify
+  - govern
+threats:
+  - id: SUPPLY-CHAIN-INCIDENT-UNKNOWN-BLAST-RADIUS
+    description: 汚染dependency発覚時に使用repository、build、artifact、credentialを特定できず、containmentと復旧が遅延する。
+  - id: SUPPLY-CHAIN-RESPONSE-EVIDENCE-LOSS
+    description: 証跡保全前のcache削除やcredential失効、未承認の破壊的対応により調査可能性または可用性が損なわれる。
+implementations:
+  insecure:
+    - insecure/inventory/incomplete.cdx.json
+    - insecure/build-records.json
+    - insecure/runbook.json
+  secure:
+    - secure/inventory/application-a.cdx.json
+    - secure/inventory/application-b.cdx.json
+    - secure/build-records.json
+    - secure/runbook.json
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-GOV-001
+  expected:
+    - package名とexact versionからrepository build artifactを逆引きできる
+    - CycloneDX serialとbuild recordおよびevidence digestが対応する
+    - 証跡保全を先頭にしたowner approval付きdry-run planを生成する
+    - 影響検出、該当なし、検証不能が異なる終了コードになる
+    - 不完全inventoryとunsafe runbookが拒否される
+mappings:
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: RV.1.1
+    relationship: supports
+    confidence: high
+    rationale: Releaseに含まれるcomponentをSBOM inventoryで継続的に識別し、報告された汚染versionとの影響照合を支援する。
+    reviewer: product-security
+    review_date: "2026-07-27"
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: RV.2.1
+    relationship: supports
+    confidence: high
+    rationale: 影響artifactとbuild evidenceを特定し、containment、credential失効、safe rebuildのrisk response planを生成する。
+    reviewer: product-security
+    review_date: "2026-07-27"
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1195.001
+    relationship: detects
+    confidence: medium
+    rationale: 既知のcompromised dependency versionをSBOM inventoryへ照合して影響するsoftware dependency usageを検出する。
+    reviewer: product-security
+    review_date: "2026-07-27"
+limitations:
+  - SBOMの完全性と鮮度が不足するとfalse negativeが生じる。
+  - Exact package version照合は侵害の事実を証明しない。
+  - Reference runbookはdry-runのみで外部systemを変更しない。
+  - Scanner inventoryまたはrecord読取失敗をcleanな結果として扱ってはいけない。
+status: prototype
+owner: product-security
+evidence_level: E3

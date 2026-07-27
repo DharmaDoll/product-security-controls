@@ -1,0 +1,13 @@
+FAIL runbook.dry_run_default must be true
+FAIL runbook actions must use the required evidence-first order
+FAIL runbook action revoke-credentials must not embed a command
+FAIL runbook action revoke-credentials requires approval
+FAIL runbook action revoke-credentials requires an owner
+FAIL runbook action preserve-evidence requires approval
+FAIL incomplete.cdx.json specVersion must be 1.7
+FAIL incomplete.cdx.json requires a valid unique serialNumber
+FAIL incomplete.cdx.json version must be a positive integer
+FAIL incomplete.cdx.json metadata.component requires name and version
+FAIL incomplete.cdx.json component inventory must be marked complete
+FAIL incomplete.cdx.json component 0 requires exact name version and purl
+RESULT rejected with 12 finding(s)

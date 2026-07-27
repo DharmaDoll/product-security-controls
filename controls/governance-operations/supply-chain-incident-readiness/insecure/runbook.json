@@ -1,0 +1,16 @@
+{
+  "dry_run_default": false,
+  "actions": [
+    {
+      "id": "revoke-credentials",
+      "owner": "",
+      "requires_approval": false,
+      "command": "delete everything"
+    },
+    {
+      "id": "preserve-evidence",
+      "owner": "nobody",
+      "requires_approval": false
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "dry_run_default": true,
+  "actions": [
+    {
+      "id": "preserve-evidence",
+      "owner": "incident-response",
+      "requires_approval": true
+    },
+    {
+      "id": "suspend-workflows",
+      "owner": "build-platform",
+      "requires_approval": true
+    },
+    {
+      "id": "revoke-credentials",
+      "owner": "identity-security",
+      "requires_approval": true
+    },
+    {
+      "id": "quarantine-artifacts",
+      "owner": "release-engineering",
+      "requires_approval": true
+    },
+    {
+      "id": "pin-safe-version",
+      "owner": "dependency-owner",
+      "requires_approval": true
+    },
+    {
+      "id": "clean-rebuild",
+      "owner": "build-platform",
+      "requires_approval": true
+    },
+    {
+      "id": "notify-stakeholders",
+      "owner": "incident-commander",
+      "requires_approval": true
+    }
+  ]
+}
