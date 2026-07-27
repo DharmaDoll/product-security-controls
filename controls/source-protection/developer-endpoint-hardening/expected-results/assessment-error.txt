@@ -19,4 +19,12 @@ PASS PSB-SOURCE-001-END-007 known-debug-listener-not-detected: no known debug po
 NOT_CHECKED PSB-SOURCE-001-END-008 external-ai-egress-evidence: AI tool network enforcement requires managed allowlist evidence
 PASS PSB-SOURCE-001-END-009 workspace-mount-read-only: the current workspace mount is read only
 NOT_CHECKED PSB-SOURCE-001-END-010 external-backup-evidence: backup encryption requires managed backup evidence
-SUMMARY PASS=9 FAIL=0 NOT_CHECKED=10 ERROR=1 N/A=0
+NOT_CHECKED PSB-SOURCE-001-END-011 external-application-control-evidence: application allowlisting requires managed inventory and enforcement evidence
+NOT_CHECKED PSB-SOURCE-001-END-012 external-edr-xdr-evidence: EDR or XDR coverage requires managed platform health and response evidence
+NOT_CHECKED PSB-SOURCE-001-END-013 external-commit-signing-evidence: commit signing requires managed Git and repository ruleset evidence
+NOT_CHECKED PSB-SOURCE-001-END-014 external-ide-security-evidence: IDE SAST and SCA feedback requires managed editor evidence
+NOT_CHECKED PSB-SOURCE-001-END-015 external-managed-environment-evidence: high-risk workload isolation requires managed development environment evidence
+NOT_CHECKED PSB-SOURCE-001-END-016 external-runtime-monitoring-evidence: sandbox restrictions and telemetry require runtime control evidence
+NOT_CHECKED PSB-SOURCE-001-END-017 external-mdm-evidence: central endpoint enforcement requires MDM or equivalent evidence
+NOT_CHECKED PSB-SOURCE-001-END-018 external-physical-protection-evidence: physical device protection requires organization policy and response evidence
+SUMMARY PASS=9 FAIL=0 NOT_CHECKED=18 ERROR=1 N/A=0

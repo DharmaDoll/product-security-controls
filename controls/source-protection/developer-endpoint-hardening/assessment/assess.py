@@ -171,6 +171,38 @@ EXTERNAL_CHECKS = {
         "external-backup-evidence",
         "backup encryption requires managed backup evidence",
     ),
+    "END-011": (
+        "external-application-control-evidence",
+        "application allowlisting requires managed inventory and enforcement evidence",
+    ),
+    "END-012": (
+        "external-edr-xdr-evidence",
+        "EDR or XDR coverage requires managed platform health and response evidence",
+    ),
+    "END-013": (
+        "external-commit-signing-evidence",
+        "commit signing requires managed Git and repository ruleset evidence",
+    ),
+    "END-014": (
+        "external-ide-security-evidence",
+        "IDE SAST and SCA feedback requires managed editor evidence",
+    ),
+    "END-015": (
+        "external-managed-environment-evidence",
+        "high-risk workload isolation requires managed development environment evidence",
+    ),
+    "END-016": (
+        "external-runtime-monitoring-evidence",
+        "sandbox restrictions and telemetry require runtime control evidence",
+    ),
+    "END-017": (
+        "external-mdm-evidence",
+        "central endpoint enforcement requires MDM or equivalent evidence",
+    ),
+    "END-018": (
+        "external-physical-protection-evidence",
+        "physical device protection requires organization policy and response evidence",
+    ),
 }
 
 

@@ -53,6 +53,11 @@
 
 - stolen or unattended developer devices exposing source code, tokens, SSH
   keys, cached credentials, or local build artifacts;
+- phishing, infostealers, malicious extensions, or local compromise obtaining
+  broad GitHub OAuth tokens, classic or fine-grained PATs, cloud credentials,
+  SSH keys, or source-platform application grants;
+- unbounded, unowned, or unreviewed source credentials preserving access after
+  task completion, role change, offboarding, device loss, or known exposure;
 - malware, malicious browser extensions, or untrusted packages executing with
   developer privileges;
 - missing OS and tool security updates enabling local privilege escalation or
@@ -62,6 +67,12 @@
   protected backups crossing the development trust boundary;
 - AI agents, Skills, MCP servers, or editor integrations accessing credentials
   and files beyond the task's intended scope.
+
+Developer awareness is not a sufficient trust boundary. Endpoint and credential
+controls should use centrally enforced engineering guardrails such as MDM,
+phishing-resistant authentication, protected credential storage, automatic
+blocking, managed isolation, EDR or XDR telemetry, revocation, and auditable
+evidence.
 
 ### CI/CD and release threats
 

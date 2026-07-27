@@ -2,6 +2,7 @@
 
 | Control | Checks | Framework version | Identifier | Relationship | Confidence | Rationale |
 | --- | --- | --- | --- | --- | --- | --- |
+| PSB-SOURCE-004 - Govern source access credential lifecycle | PSB-SOURCE-004-SCL-007 | 2026.02.19 | OSPS-AC-01.01 | supports | high | Phishing-resistant MFA and centralized source-platform authentication directly support use of MFA for sensitive project actions. |
 | PSB-CICD-002 - Prevent GitHub Actions command injection from direct expression interpolation | PSB-CICD-002-INJ-001, PSB-CICD-002-INJ-002 | 2026.02.19 | OSPS-BR-01.01 | verifies | high | CI/CD pipelineのuntrusted metadataをshell sourceへ直接展開せず、境界を越える前に安全な値として扱う要件をpositive/negative testで検証する。 |
 | PSB-BUILD-001 - dependency buildを権限・credential・networkから隔離する | PSB-BUILD-001-BLD-001, PSB-BUILD-001-BLD-002, PSB-BUILD-001-BLD-006 | 2026.02.19 | OSPS-BR-01.03 | verifies | high | Untrusted code snapshotを扱うbuildからprivileged CI/CD credentialとdeploy assetを分離する要件をfail-closed policy testで検証する。 |
 | PSB-REL-001 - release署名とProvenanceを期待値に照合する | PSB-REL-001-REL-001, PSB-REL-001-REL-002, PSB-REL-001-REL-004 | 2026.02.19 | OSPS-BR-06.01 | verifies | high | Release artifactのcryptographic digestを含むsigned provenanceをconsumer expectationへ照合し、署名またはsigned manifest要件を検証する。 |

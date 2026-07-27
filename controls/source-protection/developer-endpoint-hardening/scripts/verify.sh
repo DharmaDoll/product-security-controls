@@ -51,6 +51,14 @@ check_value sensitive_data_file_guard required
 check_value ai_tools_network allowlist
 check_value workspace_mount read-only-by-default
 check_value backup_encryption required
+check_value approved_applications allowlist-enforced
+check_value edr_xdr required
+check_value commit_signing required
+check_value ide_security_feedback sast-and-sca
+check_value managed_development_environment required-for-high-risk
+check_value sandbox_runtime_monitoring required
+check_value endpoint_configuration_management mdm-enforced
+check_value physical_device_protection required
 
 if (( failures > 0 )); then
   echo "REJECTED $mode policy: $failures control checks failed"

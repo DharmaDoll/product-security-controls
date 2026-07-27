@@ -1,0 +1,13 @@
+PASS automation_authentication=github-app-or-short-lived-workload-identity
+PASS classic_pat=exception-only
+PASS pat_profile=fine-grained-owner-repository-permission-restricted
+PASS broad_scopes=exception-only
+PASS credential_storage=os-keychain-or-approved-secret-manager
+PASS interactive_authentication=phishing-resistant-mfa-and-sso
+PASS ssh_private_keys=hardware-backed-non-exportable
+PASS revocation_triggers=offboarding-role-change-device-loss-exposure-unused
+PASS audit_events=creation-authorization-use-change-revocation
+PASS exceptions=owned-approved-justified-expiring
+PASS user_credential_max_days=90
+PASS inventory_review_days=90
+ACCEPTED credential policy

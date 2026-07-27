@@ -60,9 +60,10 @@ controls/<domain>/<control>/
 | `PSB-BUILD-002` | 一貫したrelease buildを承認済みhosted platformへ限定 | E3 |
 | `PSB-BUILD-003` | platformがauthentic SLSA provenanceを自動生成 | E3 |
 | `PSB-GOV-001` | SBOMからsupply-chain incidentの影響範囲とdry-run対応planを生成 | E3 |
-| `PSB-SOURCE-001` | Developer endpoint policy protects local development trust boundaries | E3 |
+| `PSB-SOURCE-001` | MDM、EDR/XDR、strong authentication、secret guard、IDE feedback、sandboxを含む28のdeveloper endpoint guardrail | E3 |
 | `PSB-SOURCE-002` | リポジトリ所有のGit hooksで開発端末からの情報漏洩を予防 | E3 |
 | `PSB-SOURCE-003` | GitHub dorking、全履歴scan、公開面reviewでpublic repository露出を検証 | E3 |
+| `PSB-SOURCE-004` | GitHub OAuth token、PAT、SSH key、App credentialの最小権限・期限・保管・棚卸し・失効を統制 | E3 |
 
 Software supply-chain controlの関係は
 [`docs/SUPPLY_CHAIN_PRINCIPLES.md`](docs/SUPPLY_CHAIN_PRINCIPLES.md)を参照してください。

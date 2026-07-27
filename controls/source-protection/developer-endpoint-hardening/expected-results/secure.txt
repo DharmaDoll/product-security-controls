@@ -18,4 +18,12 @@ PASS sensitive_data_file_guard=required
 PASS ai_tools_network=allowlist
 PASS workspace_mount=read-only-by-default
 PASS backup_encryption=required
+PASS approved_applications=allowlist-enforced
+PASS edr_xdr=required
+PASS commit_signing=required
+PASS ide_security_feedback=sast-and-sca
+PASS managed_development_environment=required-for-high-risk
+PASS sandbox_runtime_monitoring=required
+PASS endpoint_configuration_management=mdm-enforced
+PASS physical_device_protection=required
 ACCEPTED secure policy

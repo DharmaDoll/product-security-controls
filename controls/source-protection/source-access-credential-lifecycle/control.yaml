@@ -1,0 +1,352 @@
+id: PSB-SOURCE-004
+title: Govern source access credential lifecycle
+domain: source-protection
+summary: Limit the privilege persistence exposure and misuse of OAuth tokens PATs SSH keys and source-platform automation credentials.
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - verify
+  - respond
+  - govern
+threats:
+  - id: SOURCE-CREDENTIAL-THEFT
+    description: Phishing malware malicious tooling or local access steals a reusable developer source-platform credential.
+  - id: SOURCE-CREDENTIAL-OVERPRIVILEGE
+    description: A token key or application grant authorizes more repositories organizations or operations than its task requires.
+  - id: SOURCE-CREDENTIAL-PERSISTENCE
+    description: Unexpired unowned or unreviewed credentials remain usable after role change offboarding device loss or exposure.
+  - id: SOURCE-CREDENTIAL-AUDIT-GAP
+    description: Missing inventory and audit evidence prevent timely containment and determination of credential impact.
+implementations:
+  insecure:
+    - insecure/credential-policy.json
+  secure:
+    - secure/credential-policy.json
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-SOURCE-004
+  expected:
+    - secure metadata passes all 12 lifecycle checks without containing a credential value
+    - insecure metadata is rejected with 12 findings and exit code 1
+    - malformed input is reported as ERROR with exit code 2 rather than a clean result
+checks:
+  - id: SCL-001
+    title: Automation avoids developer user tokens
+    required_state: GitHub App installation token or short-lived workload identity for automation
+    responsible_role: repository-admin
+    applies_to:
+      - source-platform-automation
+      - source-platform-identity
+    context:
+      threat_actor: attacker compromising automation or a developer whose token was reused by automation
+      attack_or_failure_scenario: a long-lived user credential stored for automation grants durable access tied to a person and survives beyond the task
+      why_required: installation-scoped or workload credentials separate automation identity from developer identity and bound privilege and lifetime to the workload
+    verification:
+      type: hybrid
+      method: run make verify-control CONTROL=PSB-SOURCE-004 and inspect automation credential inventory
+      expected: automation uses approved non-user short-lived credentials and no developer PAT or OAuth token
+      evidence:
+        - sanitized policy verifier output
+        - automation identity inventory
+    mapping_status: reviewed
+  - id: SCL-002
+    title: Classic PAT use is exception only
+    required_state: classic PAT prohibited unless a narrow approved expiring exception documents an unsupported need
+    responsible_role: security
+    applies_to:
+      - source-platform-identity
+    context:
+      threat_actor: attacker stealing a broadly authorized classic PAT or user creating one for convenience
+      attack_or_failure_scenario: a classic PAT carries broad account-level scopes without repository-specific resource restriction and remains a reusable bearer credential
+      why_required: default prohibition makes broad legacy tokens visible as exceptional risk instead of a routine authentication path
+    verification:
+      type: external-evidence
+      method: inspect organization PAT policy token inventory and approved exceptions
+      expected: no active classic PAT lacks a current narrow approved exception
+      evidence:
+        - sanitized PAT policy and inventory
+        - exception record when applicable
+    mapping_status: reviewed
+  - id: SCL-003
+    title: Required PATs are fine grained and resource restricted
+    required_state: exact owner repositories permissions and expiration selected for every required PAT
+    responsible_role: shared
+    applies_to:
+      - source-platform-identity
+      - source-repository
+    context:
+      threat_actor: token thief or developer accidentally authorizing unrelated repositories
+      attack_or_failure_scenario: a token required for one task can read or modify other repositories organization resources workflows or releases
+      why_required: fine-grained resource and permission selection reduces blast radius only when every authorization dimension is explicitly narrowed
+    verification:
+      type: external-evidence
+      method: inspect sanitized fine-grained PAT grants and organization approval records
+      expected: each PAT names one required owner an explicit repository set minimal permissions and an expiration
+      evidence:
+        - sanitized PAT grant review
+        - organization approval record
+    mapping_status: reviewed
+  - id: SCL-004
+    title: Broad token scopes require a time-bound exception
+    required_state: broad scopes such as repo or workflow are denied by default and independently approved when unavoidable
+    responsible_role: security
+    applies_to:
+      - source-platform-identity
+      - source-repository
+      - ci-workflow
+    context:
+      threat_actor: attacker obtaining a token with broad repo workflow or organization authorization
+      attack_or_failure_scenario: compromise permits cross-repository source access workflow modification or credential-bearing pipeline execution beyond the original task
+      why_required: scope review and expiring exceptions expose high-impact authority that a valid login and secure local storage do not reduce
+    verification:
+      type: external-evidence
+      method: compare active token grants with the broad-scope exception register
+      expected: every broad grant has a named owner business need approval and near-term expiration
+      evidence:
+        - sanitized token grant inventory
+        - approved exception record
+    mapping_status: reviewed
+  - id: SCL-005
+    title: User credentials have a bounded lifetime
+    required_state: organization maximum lifetime of 90 days or less with shorter task-specific duration
+    responsible_role: security
+    applies_to:
+      - source-platform-identity
+    context:
+      threat_actor: credential thief retaining an undiscovered token or key
+      attack_or_failure_scenario: a stolen user credential remains usable indefinitely after the original task or device session ends
+      why_required: enforced expiration bounds persistence even when detection review and manual revocation are delayed
+    verification:
+      type: external-evidence
+      method: inspect token expiration organization policy and active credential inventory
+      expected: every reusable user credential expires within policy and shorter duration is selected when supported
+      evidence:
+        - credential lifetime policy
+        - sanitized expiration inventory
+    mapping_status: reviewed
+  - id: SCL-006
+    title: Credentials use an approved protected store
+    required_state: OS keychain hardware agent or approved secret manager with credential-free remote URLs
+    responsible_role: developer
+    applies_to:
+      - developer-endpoint
+      - source-repository
+    context:
+      threat_actor: infostealer local user backup process or accidental configuration disclosure
+      attack_or_failure_scenario: OAuth tokens PATs or private keys persist in plaintext files shell history environment files or Git remote URLs
+      why_required: protected storage and credential-free configuration remove common recoverable copies outside platform access policy
+    verification:
+      type: hybrid
+      method: inspect sanitized credential helper SSH agent and remote URL configuration and verify PSB-SOURCE-002
+      expected: plaintext credential stores embedded credentials and unprotected private key files are absent
+      evidence:
+        - sanitized credential storage assessment
+        - PSB-SOURCE-002 verifier output
+    mapping_status: reviewed
+  - id: SCL-007
+    title: Interactive source access is phishing resistant
+    required_state: organization SSO and FIDO2 passkey or equivalent phishing-resistant MFA for sensitive access
+    responsible_role: security
+    applies_to:
+      - source-platform-identity
+    context:
+      threat_actor: phishing adversary session thief or attacker using a stolen password
+      attack_or_failure_scenario: weak authentication authorizes token creation OAuth grants SSH key changes or sensitive repository operations
+      why_required: phishing-resistant authentication protects credential issuance and account changes that token scope alone cannot secure
+    verification:
+      type: external-evidence
+      method: inspect organization authentication SSO and sensitive-action policy
+      expected: SMS or password-only authentication cannot authorize in-scope source access or credential changes
+      evidence:
+        - identity policy
+        - sanitized authentication compliance record
+    mapping_status: reviewed
+  - id: SCL-008
+    title: SSH private keys are hardware protected
+    required_state: non-exportable hardware-backed SSH authentication with user verification
+    responsible_role: shared
+    applies_to:
+      - developer-endpoint
+      - source-platform-identity
+    context:
+      threat_actor: malware or attacker copying a file-based SSH private key
+      attack_or_failure_scenario: an exportable key is replayed from another device without possession or touch of the enrolled authenticator
+      why_required: hardware binding and user verification prevent filesystem theft from becoming a portable source-platform credential
+    verification:
+      type: external-evidence
+      method: inspect sanitized SSH key type enrollment and organization key policy
+      expected: in-scope SSH authentication uses approved non-exportable keys such as supported sk types
+      evidence:
+        - sanitized SSH key enrollment record
+        - source-platform SSH key policy
+    mapping_status: reviewed
+  - id: SCL-009
+    title: Credential inventory is reviewed at least quarterly
+    required_state: owner purpose resources permissions last use and expiration reviewed every 90 days or less
+    responsible_role: shared
+    applies_to:
+      - source-platform-identity
+      - governance-evidence
+    context:
+      threat_actor: former contributor forgotten integration or attacker preserving an abandoned credential
+      attack_or_failure_scenario: an unused unowned or excessive OAuth grant PAT SSH key or App authorization remains active because nobody evaluates it
+      why_required: recurring inventory review finds lifecycle drift that creation-time approval and automatic expiration may not cover
+    verification:
+      type: external-evidence
+      method: inspect dated access review and remediation records
+      expected: every active credential has a current owner purpose authorization review and disposition
+      evidence:
+        - sanitized quarterly credential review
+        - remediation record
+    mapping_status: reviewed
+  - id: SCL-010
+    title: Revocation triggers are automated and tested
+    required_state: offboarding role change device loss exposure and prolonged nonuse trigger prompt revocation
+    responsible_role: security
+    applies_to:
+      - source-platform-identity
+      - incident-response
+    context:
+      threat_actor: credential thief former developer or attacker using access after a device or identity event
+      attack_or_failure_scenario: known lifecycle and incident signals occur but related tokens sessions OAuth grants and SSH keys remain usable
+      why_required: event-driven revocation closes the access window faster than periodic review and prevents cleanup from being mistaken for invalidation
+    verification:
+      type: external-evidence
+      method: inspect lifecycle integration and execute a sanitized revocation exercise
+      expected: all related source credentials are disabled within the defined response objective
+      evidence:
+        - identity lifecycle integration
+        - sanitized revocation exercise
+    mapping_status: reviewed
+  - id: SCL-011
+    title: Credential lifecycle events are auditable
+    required_state: creation authorization use change and revocation events retained and monitored
+    responsible_role: security
+    applies_to:
+      - source-platform-identity
+      - security-monitoring
+    context:
+      threat_actor: attacker creating or using a credential while hiding impact or an administrator making an unauthorized grant
+      attack_or_failure_scenario: the organization cannot determine when a credential was issued changed used or revoked and cannot scope affected repositories
+      why_required: retained monitored events support detection investigation and proof of containment after prevention fails
+    verification:
+      type: external-evidence
+      method: inspect audit event coverage retention alerting and a representative investigation
+      expected: lifecycle and use events can be correlated to credential owner resources and response
+      evidence:
+        - sanitized audit event coverage
+        - alert or investigation record
+    mapping_status: reviewed
+  - id: SCL-012
+    title: Credential exceptions are narrow and expire
+    required_state: exact owner need scope resources controls and expiration for every exception
+    responsible_role: security
+    applies_to:
+      - governance-evidence
+      - source-platform-identity
+    context:
+      threat_actor: maintainer normalizing a temporary workaround or attacker benefiting from permanent excessive access
+      attack_or_failure_scenario: a broad long-lived or weakly stored credential remains active under an undocumented or non-expiring exception
+      why_required: narrow ownership approval compensating controls and expiry prevent exception paths from silently replacing the baseline
+    verification:
+      type: external-evidence
+      method: inspect active credential exceptions and test expiry enforcement
+      expected: expired unowned wildcard or unjustified exceptions are rejected and removed
+      evidence:
+        - credential exception register
+        - sanitized expiry negative test
+    mapping_status: reviewed
+mappings:
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHSC-SECURE-ACCOUNTS
+    relationship: supports
+    confidence: medium
+    rationale: Credential selection phishing-resistant authentication protected storage review and revocation support secure GitHub account use without proving account security.
+    reviewer: product-security
+    review_date: "2026-07-28"
+    applies_to:
+      - SCL-001
+      - SCL-002
+      - SCL-003
+      - SCL-004
+      - SCL-005
+      - SCL-006
+      - SCL-007
+      - SCL-008
+      - SCL-009
+      - SCL-010
+      - SCL-011
+      - SCL-012
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1078
+    relationship: mitigates
+    confidence: medium
+    rationale: Least privilege bounded lifetime recurring review and prompt revocation reduce persistence and impact from stolen valid source-platform credentials.
+    reviewer: product-security
+    review_date: "2026-07-28"
+    applies_to:
+      - SCL-001
+      - SCL-002
+      - SCL-003
+      - SCL-004
+      - SCL-005
+      - SCL-007
+      - SCL-008
+      - SCL-009
+      - SCL-010
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1552.001
+    relationship: mitigates
+    confidence: medium
+    rationale: Approved credential helpers hardware protection and credential-free configuration reduce tokens and private keys exposed in files.
+    reviewer: product-security
+    review_date: "2026-07-28"
+    applies_to:
+      - SCL-006
+      - SCL-008
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PS.3.1
+    relationship: supports
+    confidence: medium
+    rationale: Controlled development credentials and protected access to repositories support protection of code from unauthorized access and modification.
+    reviewer: product-security
+    review_date: "2026-07-28"
+    applies_to:
+      - SCL-001
+      - SCL-002
+      - SCL-003
+      - SCL-004
+      - SCL-005
+      - SCL-006
+      - SCL-007
+      - SCL-008
+      - SCL-009
+      - SCL-010
+      - SCL-011
+      - SCL-012
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-AC-01.01
+    relationship: supports
+    confidence: high
+    rationale: Phishing-resistant MFA and centralized source-platform authentication directly support use of MFA for sensitive project actions.
+    reviewer: product-security
+    review_date: "2026-07-28"
+    applies_to:
+      - SCL-007
+limitations:
+  - The verifier checks policy metadata and fixtures but does not enumerate revoke or test live GitHub credentials.
+  - OAuth PAT SSH and GitHub App capabilities differ and must be evaluated against the actual actor resource and operation.
+  - Fine-grained PATs still become excessive when owner repository permissions or duration are broader than the task.
+  - Hardware-backed SSH keys can be misused from a compromised authenticated endpoint session.
+  - Organization SSO PAT approval audit retention and token lifetime controls depend on source-platform plan and configuration.
+  - Revocation must include related sessions and downstream credentials and cannot be replaced by deleting source history.
+  - The 90-day maximum is a reference upper bound and organizations should require shorter task-specific lifetimes where supported.
+status: prototype
+owner: product-security
+evidence_level: E3

@@ -92,6 +92,13 @@ hardening protects a compromised repository or malicious dependency.
 locally observable signals while leaving organization-owned evidence
 `NOT_CHECKED`.
 
+Source-platform access credential lifecycle is implemented as
+`PSB-SOURCE-004`. It distinguishes GitHub CLI OAuth tokens, classic and
+fine-grained PATs, SSH keys, and GitHub App or workload identities; requires
+least privilege, bounded lifetime, protected storage, recurring review,
+event-driven revocation, audit evidence, and expiring exceptions; and keeps
+actual credential values out of fixtures and generated evidence.
+
 Prioritize ATT&CK, SSDF, and SLSA mappings.
 
 ### SLSA Build Level 2 target
@@ -210,17 +217,20 @@ SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
 
 ### P1 — Foundational product-security controls
 
-1. `PSB-CICD-004` — explicit least-privilege workflow and job permissions,
+1. `PSB-SOURCE-004` — source-platform OAuth, PAT, SSH, and App credential
+   lifecycle with least privilege, expiration, protected storage, inventory,
+   revocation, and audit evidence — implemented.
+2. `PSB-CICD-004` — explicit least-privilege workflow and job permissions,
    rejecting broad write scopes.
-2. `PSB-CICD-005` — fork-safe and untrusted-PR-safe workflows with no privileged
+3. `PSB-CICD-005` — fork-safe and untrusted-PR-safe workflows with no privileged
    credential exposure or execution through `pull_request_target`.
-3. `PSB-CODE-001` — application secret handling with externalized secrets,
+4. `PSB-CODE-001` — application secret handling with externalized secrets,
    rotation-safe configuration, and negative leakage tests.
-4. `PSB-CODE-002` — authentication and session lifecycle, including secure
+5. `PSB-CODE-002` — authentication and session lifecycle, including secure
    recovery and invalidation behavior.
-5. `PSB-CODE-003` — object- and function-level authorization with IDOR negative
+6. `PSB-CODE-003` — object- and function-level authorization with IDOR negative
    tests.
-6. `PSB-DETECT-001` — pinned, integrity-verified Trivy verification for
+7. `PSB-DETECT-001` — pinned, integrity-verified Trivy verification for
    filesystem, container, IaC, secret, and SBOM fixtures, with scanner errors
    distinct from clean results.
 

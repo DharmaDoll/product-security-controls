@@ -1,0 +1,13 @@
+FAIL automation_authentication: expected=github-app-or-short-lived-workload-identity actual=user-token
+FAIL classic_pat: expected=exception-only actual=allowed
+FAIL pat_profile: expected=fine-grained-owner-repository-permission-restricted actual=all-repositories-broad-permissions
+FAIL broad_scopes: expected=exception-only actual=allowed
+FAIL credential_storage: expected=os-keychain-or-approved-secret-manager actual=plaintext-file
+FAIL interactive_authentication: expected=phishing-resistant-mfa-and-sso actual=password-or-sms
+FAIL ssh_private_keys: expected=hardware-backed-non-exportable actual=exportable-files
+FAIL revocation_triggers: expected=offboarding-role-change-device-loss-exposure-unused actual=manual-request-only
+FAIL audit_events: expected=creation-authorization-use-change-revocation actual=disabled
+FAIL exceptions: expected=owned-approved-justified-expiring actual=permanent-unowned
+FAIL user_credential_max_days: expected=integer-between-1-and-90 actual=0
+FAIL inventory_review_days: expected=integer-between-1-and-90 actual=0
+REJECTED credential policy: 12 control checks failed

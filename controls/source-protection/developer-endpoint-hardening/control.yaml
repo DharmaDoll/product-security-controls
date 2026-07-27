@@ -25,8 +25,8 @@ verification:
   commands:
     - make verify-control CONTROL=PSB-SOURCE-001
   expected:
-    - secure endpoint policy passes all 20 required checks, including all ten imported operational requirements
-    - insecure endpoint policy is rejected with a non-zero result and 20 failed checks
+    - secure endpoint policy passes all 28 required checks, including all ten imported operational requirements
+    - insecure endpoint policy is rejected with a non-zero result and 28 failed checks
     - complete verifier output matches the sanitized expected evidence
     - policy validation failure is distinct from a clean result
     - read-only Linux assessment emits all 20 check states without host identifiers or matched secret values
@@ -409,6 +409,157 @@ checks:
       evidence:
         - backup compliance record
     mapping_status: reviewed
+  - id: END-011
+    title: Only approved applications are installed
+    required_state: centrally enforced application allowlist and removal of unnecessary software
+    responsible_role: shared
+    applies_to:
+      - developer-endpoint
+    context:
+      threat_actor: malicious publisher compromised updater or developer installing unnecessary software
+      attack_or_failure_scenario: an unapproved application extension or background service expands the endpoint attack surface and gains access to source or credentials
+      why_required: an enforced inventory and allowlist removes avoidable execution paths instead of depending on each developer to identify unsafe software
+    verification:
+      type: external-evidence
+      method: inspect managed application inventory allowlist and removal policy
+      expected: unauthorized and unsupported applications are blocked or automatically removed
+      evidence:
+        - endpoint application compliance record
+        - approved software catalog
+    mapping_status: reviewed
+  - id: END-012
+    title: EDR or XDR protection is enforced
+    required_state: centrally managed endpoint detection prevention and response coverage
+    responsible_role: security
+    applies_to:
+      - developer-endpoint
+      - endpoint-management
+    context:
+      threat_actor: malware credential stealer or hands-on-keyboard attacker operating on a developer endpoint
+      attack_or_failure_scenario: malicious execution credential access or persistence continues without timely detection containment or investigation evidence
+      why_required: managed behavioral telemetry and response provide a control after preventive hardening is bypassed and cannot be replaced by developer vigilance
+    verification:
+      type: external-evidence
+      method: inspect EDR or XDR enrollment health prevention mode telemetry and response policy
+      expected: every in-scope endpoint reports healthy enforced coverage and stale agents are noncompliant
+      evidence:
+        - sanitized EDR or XDR coverage report
+        - endpoint response policy
+    mapping_status: reviewed
+  - id: END-013
+    title: Commit signing is enforced
+    required_state: signed commits with repository-side verification and protected signing keys
+    responsible_role: shared
+    applies_to:
+      - developer-endpoint
+      - source-repository
+    context:
+      threat_actor: attacker with repository credentials or contributor attempting to impersonate another author
+      attack_or_failure_scenario: unsigned or unverified commits enter protected history without a cryptographic binding to an approved developer identity
+      why_required: local signing plus repository-side enforcement provides reviewable authorship evidence beyond the mutable commit author fields
+    verification:
+      type: hybrid
+      method: inspect Git signing configuration and repository rules then test rejection of an unsigned fixture commit
+      expected: protected branches reject unsigned or unverified commits and signing is enabled by managed developer configuration
+      evidence:
+        - sanitized Git signing configuration
+        - repository ruleset evidence
+        - unsigned-commit negative test
+    mapping_status: reviewed
+  - id: END-014
+    title: IDE security feedback is enabled
+    required_state: approved SAST and SCA feedback integrated into supported editors
+    responsible_role: shared
+    applies_to:
+      - developer-endpoint
+      - source-code
+    context:
+      threat_actor: developer mistake insecure generated code or vulnerable dependency introduced during editing
+      attack_or_failure_scenario: a detectable code or dependency weakness remains invisible until a later pipeline stage or production release
+      why_required: immediate IDE feedback shortens remediation time while mandatory server-side checks retain enforcement when the editor integration is bypassed
+    verification:
+      type: external-evidence
+      method: inspect managed editor extension policy and a representative SAST and SCA finding
+      expected: supported editors provide approved real-time findings without replacing mandatory repository checks
+      evidence:
+        - managed editor policy
+        - sanitized representative finding
+    mapping_status: reviewed
+  - id: END-015
+    title: High-risk development uses a managed environment
+    required_state: organization-controlled disposable cloud workspace container or VM for high-risk code execution
+    responsible_role: shared
+    applies_to:
+      - development-sandbox
+      - managed-development-environment
+    context:
+      threat_actor: malicious dependency external code sample or AI-generated code executed during development
+      attack_or_failure_scenario: untrusted code executes directly on the endpoint and reads persistent source credentials or unrelated host data
+      why_required: managed disposable environments reduce persistent local data and apply centrally reviewed isolation to operations with elevated execution risk
+    verification:
+      type: external-evidence
+      method: inspect development environment provisioning data retention and high-risk workload routing policy
+      expected: defined high-risk operations run only in approved disposable environments with no routine local credentials
+      evidence:
+        - managed environment policy
+        - sanitized workspace configuration
+    mapping_status: reviewed
+  - id: END-016
+    title: Sandbox behavior is monitored and restricted
+    required_state: file network process privilege and socket activity constrained and observable
+    responsible_role: security
+    applies_to:
+      - development-sandbox
+      - local-container-runtime
+    context:
+      threat_actor: compromised installer build script dependency or AI-generated program executing inside the sandbox
+      attack_or_failure_scenario: sandboxed code accesses unexpected files credentials network destinations or host interfaces without detection
+      why_required: runtime policy and behavior telemetry verify that the isolation boundary actually constrains execution instead of relying on container placement alone
+    verification:
+      type: external-evidence
+      method: inspect sandbox policy and sanitized runtime telemetry such as eBPF audit or equivalent controls
+      expected: prohibited filesystem network privilege and socket operations are blocked and generate reviewable events
+      evidence:
+        - sandbox enforcement policy
+        - sanitized negative execution trace
+    mapping_status: reviewed
+  - id: END-017
+    title: Endpoint configuration is centrally enforced
+    required_state: MDM or equivalent continuously deploys and evaluates the security baseline
+    responsible_role: security
+    applies_to:
+      - developer-endpoint
+      - endpoint-management
+    context:
+      threat_actor: developer mistake local attacker configuration drift or unmanaged device enrollment
+      attack_or_failure_scenario: a required hardening setting is disabled or never installed while the endpoint retains access to source and product systems
+      why_required: centralized enforcement converts guidance into a measurable guardrail and detects drift that voluntary setup cannot reliably prevent
+    verification:
+      type: external-evidence
+      method: inspect MDM enrollment configuration deployment and compliance enforcement
+      expected: noncompliant or unenrolled endpoints lose access or enter a time-bound remediation workflow
+      evidence:
+        - sanitized MDM compliance report
+        - conditional-access or remediation policy
+    mapping_status: reviewed
+  - id: END-018
+    title: Physical device protection is required
+    required_state: controlled storage transport and hardware locking appropriate to endpoint risk
+    responsible_role: shared
+    applies_to:
+      - developer-endpoint
+    context:
+      threat_actor: thief visitor or unauthorized person obtaining physical access to a developer device
+      attack_or_failure_scenario: an unattended or transported endpoint is stolen tampered with or used before logical controls can respond
+      why_required: physical custody and locking reduce opportunities that disk encryption and screen lock address only after the device has already been accessed or removed
+    verification:
+      type: external-evidence
+      method: inspect endpoint physical security remote response and travel handling policy
+      expected: in-scope devices follow controlled storage transport and loss reporting requirements
+      evidence:
+        - endpoint physical security policy
+        - sanitized loss response exercise or record
+    mapping_status: reviewed
 mappings:
   - framework: mitre-attack
     version: "v19.1"
@@ -460,6 +611,14 @@ mappings:
       - END-008
       - END-009
       - END-010
+      - END-011
+      - END-012
+      - END-013
+      - END-014
+      - END-015
+      - END-016
+      - END-017
+      - END-018
 limitations:
   - This control validates a declared policy; it does not prove that an unmanaged endpoint actually enforces every setting.
   - MDM, EDR, IdP, SWG or CASB, CI scanning, disk encryption, patch compliance, and remote-wipe evidence require organization-specific integrations.
@@ -470,6 +629,8 @@ limitations:
   - The read-only adapter initially supports Linux; unsupported desktops and ambiguous host state remain NOT_CHECKED or ERROR.
   - Local detection covers known configuration forms and debug ports only; MDM IdP network repository and backup evidence remains authoritative.
   - Assessment inside a container cloud workspace or agent sandbox may not observe the underlying physical host.
+  - Commit signatures provide identity evidence but do not prove that signed code is secure or that the signing session was uncompromised.
+  - EDR XDR MDM application allowlisting IDE integrations managed workspaces and runtime telemetry require organization-owned policy and cannot be proven by the fixture verifier.
 status: prototype
 owner: product-security
 evidence_level: E3

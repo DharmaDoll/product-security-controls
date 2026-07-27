@@ -31,10 +31,30 @@ All requirements are assigned the input phase label "Phase 2: common
 guardrails." Prioritization must still be risk-based when an organization
 adopts the baseline.
 
+## Extended engineering guardrails
+
+The following requirements capture the additional endpoint-hardening guidance.
+They supplement the ten imported rows without changing the provenance of the
+control-local source CSV. The user-supplied Japanese text is preserved in
+[`user-supplied-endpoint-hardening-guideline-ja.md`](user-supplied-endpoint-hardening-guideline-ja.md);
+this table records how that narrative was translated into assessable policy
+assertions.
+
+| ID | Category | Requirement | Policy assertion | Enforcement boundary and examples |
+|---|---|---|---|---|
+| END-011 | Attack-surface reduction | Allow only approved necessary applications | `approved_applications=allowlist-enforced` | MDM, application control, managed extension catalog, and software inventory |
+| END-012 | Detection and response | Enforce healthy EDR or XDR coverage | `edr_xdr=required` | Endpoint prevention, behavioral telemetry, isolation, and incident evidence |
+| END-013 | Source identity | Sign commits and verify them at the repository boundary | `commit_signing=required` | Managed Git configuration, hardware-protected signing key, and protected-branch rules |
+| END-014 | Shift-left feedback | Provide approved SAST and SCA feedback in the IDE | `ide_security_feedback=sast-and-sca` | Managed editor configuration backed by mandatory repository checks |
+| END-015 | Execution isolation | Use managed disposable environments for high-risk development | `managed_development_environment=required-for-high-risk` | Cloud workstation, Codespace, restricted container, or VM |
+| END-016 | Runtime containment | Restrict and observe sandbox behavior | `sandbox_runtime_monitoring=required` | File, network, process, privilege, and socket policy with eBPF or equivalent telemetry |
+| END-017 | Configuration enforcement | Deploy and continuously evaluate the baseline centrally | `endpoint_configuration_management=mdm-enforced` | MDM or equivalent endpoint control plane and conditional access |
+| END-018 | Physical protection | Protect device custody, storage, and transport | `physical_device_protection=required` | Hardware lock, controlled storage, travel policy, loss reporting, and remote response |
+
 ## Verification and evidence
 
 `scripts/verify.sh` validates the policy values for both fixtures. The secure
-fixture must produce 20 passing checks. The insecure fixture must produce 20
+fixture must produce 28 passing checks. The insecure fixture must produce 28
 failed checks and exit non-zero. `tests/test.sh` compares both complete outputs
 with `expected-results/`.
 
@@ -50,6 +70,10 @@ evidence should include, as applicable:
 - dependency update policy, cooldown, and vulnerability exception records;
 - managed egress policy and access logs;
 - negative test fixtures for secret and sensitive-data detection.
+- approved application inventory and EDR or XDR coverage;
+- commit-signing configuration and repository-side rejection evidence;
+- managed IDE, cloud workspace, sandbox runtime, and MDM compliance evidence;
+- physical device and loss-response policy.
 
 The separate read-only Linux assessment can collect a limited set of sanitized
 local signals with:

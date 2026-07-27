@@ -108,6 +108,23 @@ PSB-SOURCE-001,PSB-SOURCE-001-END-008,shared,external-evidence,managed egress po
 PSB-SOURCE-001,PSB-SOURCE-001-END-009,developer,hybrid,sanitized assessment result
 PSB-SOURCE-001,PSB-SOURCE-001-END-009,developer,hybrid,workspace mount configuration
 PSB-SOURCE-001,PSB-SOURCE-001-END-010,shared,external-evidence,backup compliance record
+PSB-SOURCE-001,PSB-SOURCE-001-END-011,shared,external-evidence,endpoint application compliance record
+PSB-SOURCE-001,PSB-SOURCE-001-END-011,shared,external-evidence,approved software catalog
+PSB-SOURCE-001,PSB-SOURCE-001-END-012,security,external-evidence,sanitized EDR or XDR coverage report
+PSB-SOURCE-001,PSB-SOURCE-001-END-012,security,external-evidence,endpoint response policy
+PSB-SOURCE-001,PSB-SOURCE-001-END-013,shared,hybrid,sanitized Git signing configuration
+PSB-SOURCE-001,PSB-SOURCE-001-END-013,shared,hybrid,repository ruleset evidence
+PSB-SOURCE-001,PSB-SOURCE-001-END-013,shared,hybrid,unsigned-commit negative test
+PSB-SOURCE-001,PSB-SOURCE-001-END-014,shared,external-evidence,managed editor policy
+PSB-SOURCE-001,PSB-SOURCE-001-END-014,shared,external-evidence,sanitized representative finding
+PSB-SOURCE-001,PSB-SOURCE-001-END-015,shared,external-evidence,managed environment policy
+PSB-SOURCE-001,PSB-SOURCE-001-END-015,shared,external-evidence,sanitized workspace configuration
+PSB-SOURCE-001,PSB-SOURCE-001-END-016,security,external-evidence,sandbox enforcement policy
+PSB-SOURCE-001,PSB-SOURCE-001-END-016,security,external-evidence,sanitized negative execution trace
+PSB-SOURCE-001,PSB-SOURCE-001-END-017,security,external-evidence,sanitized MDM compliance report
+PSB-SOURCE-001,PSB-SOURCE-001-END-017,security,external-evidence,conditional-access or remediation policy
+PSB-SOURCE-001,PSB-SOURCE-001-END-018,shared,external-evidence,endpoint physical security policy
+PSB-SOURCE-001,PSB-SOURCE-001-END-018,shared,external-evidence,sanitized loss response exercise or record
 PSB-SOURCE-002,PSB-SOURCE-002-GHK-001,developer,automated,sanitized verifier output
 PSB-SOURCE-002,PSB-SOURCE-002-GHK-002,developer,automated,negative-test output
 PSB-SOURCE-002,PSB-SOURCE-002-GHK-003,developer,automated,sanitized verifier output
@@ -153,3 +170,27 @@ PSB-SOURCE-003,PSB-SOURCE-003-PRE-012,security,automated,complete-clone acquisit
 PSB-SOURCE-003,PSB-SOURCE-003-PRE-013,security,hybrid,reviewed organization-indicators.json
 PSB-SOURCE-003,PSB-SOURCE-003-PRE-013,security,hybrid,access-controlled generated dork catalog
 PSB-SOURCE-003,PSB-SOURCE-003-PRE-013,security,hybrid,sanitized search result disposition
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-001,repository-admin,hybrid,sanitized policy verifier output
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-001,repository-admin,hybrid,automation identity inventory
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-002,security,external-evidence,sanitized PAT policy and inventory
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-002,security,external-evidence,exception record when applicable
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-003,shared,external-evidence,sanitized PAT grant review
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-003,shared,external-evidence,organization approval record
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-004,security,external-evidence,sanitized token grant inventory
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-004,security,external-evidence,approved exception record
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-005,security,external-evidence,credential lifetime policy
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-005,security,external-evidence,sanitized expiration inventory
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-006,developer,hybrid,sanitized credential storage assessment
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-006,developer,hybrid,PSB-SOURCE-002 verifier output
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-007,security,external-evidence,identity policy
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-007,security,external-evidence,sanitized authentication compliance record
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-008,shared,external-evidence,sanitized SSH key enrollment record
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-008,shared,external-evidence,source-platform SSH key policy
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-009,shared,external-evidence,sanitized quarterly credential review
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-009,shared,external-evidence,remediation record
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-010,security,external-evidence,identity lifecycle integration
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-010,security,external-evidence,sanitized revocation exercise
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-011,security,external-evidence,sanitized audit event coverage
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-011,security,external-evidence,alert or investigation record
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-012,security,external-evidence,credential exception register
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-012,security,external-evidence,sanitized expiry negative test
