@@ -45,6 +45,19 @@ class FrameworkRegistryValidationTest(unittest.TestCase):
         errors = validate_registries(self.registries, controls)
         self.assertTrue(any("does not match registry" in error for error in errors))
 
+    def test_retired_mapping_identifier_is_rejected(self) -> None:
+        framework = "openssf-osps-baseline"
+        controls = copy.deepcopy(self.controls)
+        controls[0]["mappings"][0].update(
+            {
+                "framework": framework,
+                "version": self.registries[framework]["mapping_version"],
+                "id": "OSPS-BR-01.02",
+            }
+        )
+        errors = validate_registries(self.registries, controls)
+        self.assertTrue(any("is not active" in error for error in errors))
+
     def test_registry_entries_are_unique(self) -> None:
         for name, registry in self.registries.items():
             with self.subTest(framework=name):

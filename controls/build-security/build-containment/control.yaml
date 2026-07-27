@@ -42,6 +42,14 @@ mappings:
     rationale: Build processをleast privilegeと分離された環境で実行し、softwareをsecureにcompile packageするpracticeを支援する。
     reviewer: product-security
     review_date: "2026-07-27"
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-BR-01.03
+    relationship: verifies
+    confidence: high
+    rationale: Untrusted code snapshotを扱うbuildからprivileged CI/CD credentialとdeploy assetを分離する要件をfail-closed policy testで検証する。
+    reviewer: product-security
+    review_date: "2026-07-27"
 limitations:
   - Reference JSONはrunner sandboxまたはnetwork firewall自体を構築しない。
   - SLSA Build levelの正式assessmentやcomplianceを証明しない。

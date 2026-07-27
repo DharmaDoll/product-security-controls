@@ -113,6 +113,23 @@ Relationship examples:
 
 Pin the exact publication/version and do not mix final and draft identifiers.
 
+### OpenSSF OSPS Baseline
+
+Use for provider-independent open source project security requirements across
+repository access, CI/CD, build and release, documentation, governance,
+security assessment, and vulnerability management.
+
+Relationship examples:
+
+- supports
+- verifies
+- evidence-for
+
+Map only requirements directly implemented or verified by a control. A mapping
+does not establish project-wide OSPS conformance or achievement of a maturity
+level. Use OpenSSF Scorecard as one possible evidence source, not as a
+framework substitute or proof of security.
+
 ## Mapping quality
 
 Every mapping records:

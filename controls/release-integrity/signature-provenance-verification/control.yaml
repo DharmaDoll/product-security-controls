@@ -48,6 +48,14 @@ mappings:
     rationale: Software releaseの完全性を暗号署名とprovenance expectationで検証し、改ざん検知を支援する。
     reviewer: product-security
     review_date: "2026-07-27"
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-BR-06.01
+    relationship: verifies
+    confidence: high
+    rationale: Release artifactのcryptographic digestを含むsigned provenanceをconsumer expectationへ照合し、署名またはsigned manifest要件を検証する。
+    reviewer: product-security
+    review_date: "2026-07-27"
 limitations:
   - このfixtureはSLSA Build levelの正式assessmentまたはcomplianceを証明しない。
   - Keyless certificate、transparency log、revocation、timestamp検証は実環境adapterが必要である。

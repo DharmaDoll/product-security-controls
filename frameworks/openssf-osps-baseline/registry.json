@@ -1,0 +1,411 @@
+{
+  "name": "openssf-osps-baseline",
+  "publisher": "Open Source Security Foundation",
+  "release": "Open Source Project Security Baseline 2026.02.19",
+  "mapping_version": "2026.02.19",
+  "review_date": "2026-07-27",
+  "source": {
+    "url": "https://baseline.openssf.org/versions/2026-02-19",
+    "repository": "https://github.com/ossf/security-baseline",
+    "tag": "v2026.02.19",
+    "commit": "e67ae247ebfb2fd758c9d186335e60cad0a74e78",
+    "sha256": "54d13befdb1ae4c63b8612acabc1f0d716874be4187d25801d6ba2d6eee98271"
+  },
+  "coverage": {
+    "scope": "All assessment requirements in OSPS Baseline 2026.02.19",
+    "completeness": "complete-release"
+  },
+  "entries": [
+    {
+      "id": "OSPS-AC-01.01",
+      "title": "Use MFA for Sensitive Actions",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-ac-0101"
+    },
+    {
+      "id": "OSPS-AC-02.01",
+      "title": "Restrict Collaborator Permissions",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-ac-0201"
+    },
+    {
+      "id": "OSPS-AC-03.01",
+      "title": "Protect the Primary Branch from Accidental Modification",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-ac-0301"
+    },
+    {
+      "id": "OSPS-AC-03.02",
+      "title": "Protect the Primary Branch from Accidental Modification",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-ac-0302"
+    },
+    {
+      "id": "OSPS-AC-04.01",
+      "title": "Enforce Least Privilege on CI/CD Pipelines",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-ac-0401"
+    },
+    {
+      "id": "OSPS-AC-04.02",
+      "title": "Enforce Least Privilege on CI/CD Pipelines",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-ac-0402"
+    },
+    {
+      "id": "OSPS-BR-01.01",
+      "title": "Prevent Untrusted Input When Building & Releasing",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-br-0101"
+    },
+    {
+      "id": "OSPS-BR-01.02",
+      "title": "Prevent Untrusted Input When Building & Releasing",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-br-0102",
+      "status": "retired"
+    },
+    {
+      "id": "OSPS-BR-01.03",
+      "title": "Prevent Untrusted Input When Building & Releasing",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-br-0103"
+    },
+    {
+      "id": "OSPS-BR-01.04",
+      "title": "Prevent Untrusted Input When Building & Releasing",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-br-0104"
+    },
+    {
+      "id": "OSPS-BR-02.01",
+      "title": "Assign Unique Version Identifiers",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-br-0201"
+    },
+    {
+      "id": "OSPS-BR-02.02",
+      "title": "Assign Unique Version Identifiers",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-br-0202"
+    },
+    {
+      "id": "OSPS-BR-03.01",
+      "title": "Use Encrypted Channels for Development & Release Activity",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-br-0301"
+    },
+    {
+      "id": "OSPS-BR-03.02",
+      "title": "Use Encrypted Channels for Development & Release Activity",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-br-0302"
+    },
+    {
+      "id": "OSPS-BR-04.01",
+      "title": "Publish Change Log With Release",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-br-0401"
+    },
+    {
+      "id": "OSPS-BR-05.01",
+      "title": "Use Standardized Dependency Management Tools",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-br-0501"
+    },
+    {
+      "id": "OSPS-BR-06.01",
+      "title": "Include Signatures and Hashes With Release",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-br-0601"
+    },
+    {
+      "id": "OSPS-BR-07.01",
+      "title": "Secure Secrets and Credentials",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-br-0701"
+    },
+    {
+      "id": "OSPS-BR-07.02",
+      "title": "Secure Secrets and Credentials",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-br-0702"
+    },
+    {
+      "id": "OSPS-DO-01.01",
+      "title": "Publish User Guides for Basic Functionality",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-do-0101"
+    },
+    {
+      "id": "OSPS-DO-02.01",
+      "title": "Provide Mechanisms for Reporting Defects",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-do-0201"
+    },
+    {
+      "id": "OSPS-DO-03.01",
+      "title": "Publish Provenance Verification Instructions",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-do-0301"
+    },
+    {
+      "id": "OSPS-DO-03.02",
+      "title": "Publish Provenance Verification Instructions",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-do-0302"
+    },
+    {
+      "id": "OSPS-DO-04.01",
+      "title": "Publish Support Scope and Duration",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-do-0401"
+    },
+    {
+      "id": "OSPS-DO-05.01",
+      "title": "Document Security Update Scope and Duration",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-do-0501"
+    },
+    {
+      "id": "OSPS-DO-06.01",
+      "title": "Publish Dependency Management Policy",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-do-0601"
+    },
+    {
+      "id": "OSPS-DO-07.01",
+      "title": "Provide Instructions on How to Build From Source",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-do-0701"
+    },
+    {
+      "id": "OSPS-GV-01.01",
+      "title": "Publish Project Roles and Responsibilities",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-gv-0101"
+    },
+    {
+      "id": "OSPS-GV-01.02",
+      "title": "Publish Project Roles and Responsibilities",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-gv-0102"
+    },
+    {
+      "id": "OSPS-GV-02.01",
+      "title": "Provide Public Discussion Mechanisms",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-gv-0201"
+    },
+    {
+      "id": "OSPS-GV-03.01",
+      "title": "Publish Contribution Guide",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-gv-0301"
+    },
+    {
+      "id": "OSPS-GV-03.02",
+      "title": "Publish Contribution Guide",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-gv-0302"
+    },
+    {
+      "id": "OSPS-GV-04.01",
+      "title": "Require Formal Review of Permission Grants",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-gv-0401"
+    },
+    {
+      "id": "OSPS-LE-01.01",
+      "title": "Require Code Contributors to Assert Right to Commit",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-le-0101"
+    },
+    {
+      "id": "OSPS-LE-02.01",
+      "title": "Ensure Project Licenses are Fully Open Source",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-le-0201"
+    },
+    {
+      "id": "OSPS-LE-02.02",
+      "title": "Ensure Project Licenses are Fully Open Source",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-le-0202"
+    },
+    {
+      "id": "OSPS-LE-03.01",
+      "title": "Maintain and Release Licenses in a Well Known Location",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-le-0301"
+    },
+    {
+      "id": "OSPS-LE-03.02",
+      "title": "Maintain and Release Licenses in a Well Known Location",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-le-0302"
+    },
+    {
+      "id": "OSPS-QA-01.01",
+      "title": "Publish Source Code and Change History",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-qa-0101"
+    },
+    {
+      "id": "OSPS-QA-01.02",
+      "title": "Publish Source Code and Change History",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-qa-0102"
+    },
+    {
+      "id": "OSPS-QA-02.01",
+      "title": "Publish Software Dependencies",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-qa-0201"
+    },
+    {
+      "id": "OSPS-QA-02.02",
+      "title": "Publish Software Dependencies",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-qa-0202"
+    },
+    {
+      "id": "OSPS-QA-03.01",
+      "title": "Address Pass/Fail Checks Before Accepting Changes",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-qa-0301"
+    },
+    {
+      "id": "OSPS-QA-04.01",
+      "title": "Enforce Security Requirements on All Codebases",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-qa-0401"
+    },
+    {
+      "id": "OSPS-QA-04.02",
+      "title": "Enforce Security Requirements on All Codebases",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-qa-0402"
+    },
+    {
+      "id": "OSPS-QA-05.01",
+      "title": "Prevent Executables in the Codebase",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-qa-0501"
+    },
+    {
+      "id": "OSPS-QA-05.02",
+      "title": "Prevent Executables in the Codebase",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-qa-0502"
+    },
+    {
+      "id": "OSPS-QA-06.01",
+      "title": "Use Automated Testing in CI/CD Pipelines",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-qa-0601"
+    },
+    {
+      "id": "OSPS-QA-06.02",
+      "title": "Use Automated Testing in CI/CD Pipelines",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-qa-0602"
+    },
+    {
+      "id": "OSPS-QA-06.03",
+      "title": "Use Automated Testing in CI/CD Pipelines",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-qa-0603"
+    },
+    {
+      "id": "OSPS-QA-07.01",
+      "title": "Require Merge Approvals",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-qa-0701"
+    },
+    {
+      "id": "OSPS-SA-01.01",
+      "title": "Publish Design Descriptions of System Actors and Actions",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-sa-0101"
+    },
+    {
+      "id": "OSPS-SA-02.01",
+      "title": "Publish External Interface Descriptions",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-sa-0201"
+    },
+    {
+      "id": "OSPS-SA-03.01",
+      "title": "Maintain a Project Security Assessment",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-sa-0301"
+    },
+    {
+      "id": "OSPS-SA-03.02",
+      "title": "Maintain a Project Security Assessment",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-sa-0302"
+    },
+    {
+      "id": "OSPS-VM-01.01",
+      "title": "Publish Coordinated Vulnerability Disclosure Policy",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-vm-0101"
+    },
+    {
+      "id": "OSPS-VM-02.01",
+      "title": "Publish Contacts and Process for Reporting Vulnerabilities.",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-vm-0201"
+    },
+    {
+      "id": "OSPS-VM-03.01",
+      "title": "Maintain Private Vulnerability Reporting Process",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-vm-0301"
+    },
+    {
+      "id": "OSPS-VM-04.01",
+      "title": "Publish Discovered Vulnerabilities",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-vm-0401"
+    },
+    {
+      "id": "OSPS-VM-04.02",
+      "title": "Publish Discovered Vulnerabilities",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-vm-0402"
+    },
+    {
+      "id": "OSPS-VM-05.01",
+      "title": "Publish and Enforce a Dependency Remediation Policy",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-vm-0501"
+    },
+    {
+      "id": "OSPS-VM-05.02",
+      "title": "Publish and Enforce a Dependency Remediation Policy",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-vm-0502"
+    },
+    {
+      "id": "OSPS-VM-05.03",
+      "title": "Publish and Enforce a Dependency Remediation Policy",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-vm-0503"
+    },
+    {
+      "id": "OSPS-VM-06.01",
+      "title": "Publish and Enforce an Application Security Testing Policy",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-vm-0601"
+    },
+    {
+      "id": "OSPS-VM-06.02",
+      "title": "Publish and Enforce an Application Security Testing Policy",
+      "type": "assessment-requirement",
+      "source_url": "https://baseline.openssf.org/versions/2026-02-19#osps-vm-0602"
+    }
+  ]
+}

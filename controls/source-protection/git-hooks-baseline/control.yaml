@@ -52,6 +52,14 @@ mappings:
     rationale: レビューで保護されたrepository-owned hooksとローカルのcredentialおよびidentity保護は、source codeと開発環境の保護を支援する。
     reviewer: product-security
     review_date: "2026-07-27"
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-BR-07.01
+    relationship: supports
+    confidence: high
+    rationale: Repositoryへcommitされる前にsecret patternと機密ファイルを検出・拒否し、unencrypted sensitive dataの意図しない保存防止を支援する。
+    reviewer: product-security
+    review_date: "2026-07-27"
 limitations:
   - Local hooksは回避、変更、省略できるため、独立したserver-sideおよびCI enforcementが必要である。
   - Pattern matchingはすべての機密値を検出できず、非機密fixtureを拒否する可能性もある。

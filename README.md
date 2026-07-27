@@ -74,6 +74,7 @@ Each control is mapped to applicable items from:
 - NIST SSDF
 - MITRE ATLAS
 - GitHub security guidance
+- OpenSSF OSPS Baseline
 
 Mappings are relationships, not automatic claims of compliance.
 

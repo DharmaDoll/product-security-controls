@@ -38,6 +38,14 @@ mappings:
     rationale: The secure example implements GitHub's recommendation to pass context values through an intermediate environment variable instead of generating shell source from them.
     reviewer: product-security
     review_date: "2026-07-27"
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-BR-01.01
+    relationship: verifies
+    confidence: high
+    rationale: CI/CD pipelineのuntrusted metadataをshell sourceへ直接展開せず、境界を越える前に安全な値として扱う要件をpositive/negative testで検証する。
+    reviewer: product-security
+    review_date: "2026-07-27"
 limitations:
   - The verifier prohibits all direct expressions in run scalars and therefore rejects some constrained values that may not be attacker-controlled.
   - Passing data through env is insufficient if shell variables are unquoted or later evaluated as code.

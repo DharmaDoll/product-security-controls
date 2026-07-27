@@ -130,6 +130,7 @@ class OSPSParser(HTMLParser):
         self.buffer: list[str] = []
         self.control_title = ""
         self.entries: list[dict[str, Any]] = []
+        self.last_entry: dict[str, Any] | None = None
 
     def handle_starttag(
         self, tag: str, attrs: list[tuple[str, str | None]]
@@ -141,6 +142,8 @@ class OSPSParser(HTMLParser):
     def handle_data(self, data: str) -> None:
         if self.heading:
             self.buffer.append(data)
+        elif self.last_entry is not None and "Retired in " in data:
+            self.last_entry["status"] = "retired"
 
     def handle_endtag(self, tag: str) -> None:
         if tag != self.heading:
@@ -150,14 +153,13 @@ class OSPSParser(HTMLParser):
             self.control_title = text
         elif tag == "h4" and re.fullmatch(r"OSPS-[A-Z]{2}-\d{2}\.\d{2}", text):
             title = re.sub(r"^OSPS-[A-Z]{2}-\d{2}\s*-\s*", "", self.control_title)
-            self.entries.append(
-                {
-                    "id": text,
-                    "title": title,
-                    "type": "assessment-requirement",
-                    "source_url": f"{self.source_url}#{text.lower().replace('.', '')}",
-                }
-            )
+            self.last_entry = {
+                "id": text,
+                "title": title,
+                "type": "assessment-requirement",
+                "source_url": f"{self.source_url}#{text.lower().replace('.', '')}",
+            }
+            self.entries.append(self.last_entry)
         self.heading = None
         self.buffer = []
 
