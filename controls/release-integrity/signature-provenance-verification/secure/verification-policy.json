@@ -1,0 +1,14 @@
+{
+  "minimum_trust_level": "signed-provenance",
+  "previous_trust_level": "signed-provenance",
+  "signature_algorithm": "ed25519",
+  "trusted_public_key": "trusted-public-key.pem",
+  "expected_subject_name": "release.bin",
+  "expected_predicate_type": "https://slsa.dev/provenance/v1",
+  "expected_builder_id": "https://builder.example.test/hosted/v1",
+  "expected_build_type": "https://build.example.test/types/release/v1",
+  "expected_repository": "https://github.com/example/product",
+  "expected_source_commit": "0123456789abcdef0123456789abcdef01234567",
+  "expected_ref": "refs/tags/v1.0.0",
+  "allowed_external_parameters": ["repository", "ref"]
+}

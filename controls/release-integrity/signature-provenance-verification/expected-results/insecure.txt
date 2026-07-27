@@ -1,0 +1,13 @@
+FAIL trust level downgrade: signed-provenance to unsigned
+FAIL minimum_trust_level must be signed-provenance
+FAIL artifact SHA-256 does not match provenance subject
+FAIL provenance signature verification failed
+FAIL provenance predicateType does not match expectation
+FAIL provenance buildType does not match expectation
+FAIL provenance builder.id does not match trusted signer-builder pair
+FAIL provenance has unknown external parameters: shell
+FAIL provenance source repository does not match expectation
+FAIL provenance source ref does not match expectation
+FAIL provenance source commit must be a full immutable SHA
+FAIL provenance source commit does not match expectation
+RESULT rejected with 12 finding(s)

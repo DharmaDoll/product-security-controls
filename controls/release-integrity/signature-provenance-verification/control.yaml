@@ -1,0 +1,58 @@
+id: PSB-REL-001
+title: release署名とProvenanceを期待値に照合する
+domain: release-integrity
+summary: Artifact署名とSLSA provenanceをconsumer-owned signer、builder、source、build expectationへ照合する。
+security_functions:
+  - prevent
+  - verify
+threats:
+  - id: RELEASE-FORGED-PROVENANCE
+    description: 攻撃者がartifactまたはprovenanceを差し替え、誤ったbuilderやsourceから生成されたreleaseを正規品として配布する。
+  - id: RELEASE-TRUST-DOWNGRADE
+    description: 過去に署名・provenanceが存在したartifact familyで信頼signalが欠落または低下する。
+implementations:
+  insecure:
+    - insecure/artifact/release.bin
+    - insecure/provenance.json
+    - insecure/signature.b64
+    - insecure/verification-policy.json
+  secure:
+    - secure/artifact/release.bin
+    - secure/provenance.json
+    - secure/signature.b64
+    - secure/trusted-public-key.pem
+    - secure/verification-policy.json
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-REL-001
+  expected:
+    - artifact digestとprovenance subjectが一致する
+    - provenance署名がtrusted public keyで検証される
+    - signer-builder pair、build type、source repository、full commit、refが期待値に一致する
+    - trust signalの欠落または低下が拒否される
+    - crypto toolまたはparser失敗がcleanな結果と区別される
+mappings:
+  - framework: slsa
+    version: "1.2"
+    id: Build-Provenance
+    relationship: verifies
+    confidence: high
+    rationale: SLSA provenance statementのsubject digest、predicate type、builder、build inputを署名とともにconsumer expectationへ照合する。
+    reviewer: product-security
+    review_date: "2026-07-27"
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PS.2.1
+    relationship: supports
+    confidence: high
+    rationale: Software releaseの完全性を暗号署名とprovenance expectationで検証し、改ざん検知を支援する。
+    reviewer: product-security
+    review_date: "2026-07-27"
+limitations:
+  - このfixtureはSLSA Build levelの正式assessmentまたはcomplianceを証明しない。
+  - Keyless certificate、transparency log、revocation、timestamp検証は実環境adapterが必要である。
+  - Trusted builderまたはsigning key自体の侵害は検出できない。
+  - Crypto verifierの実行失敗をcleanな結果として扱ってはいけない。
+status: prototype
+owner: product-security
+evidence_level: E3
