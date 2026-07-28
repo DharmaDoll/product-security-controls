@@ -167,8 +167,21 @@ Add:
 - Skill pinning;
 - Skill semantic review;
 - MCP allowlist;
+- vendor-neutral AI coding agent runtime hardening profiles for Claude Code,
+  Codex, and later adapters;
+- managed sandbox, approval, filesystem, credential, network, and side-effect
+  policies that repository-local content cannot weaken;
 - prompt/document injection fixtures;
-- sandbox and network policy.
+- sandbox and network policy;
+- agent memory, context isolation, retention, integrity, and sensitive-data
+  handling;
+- parameter-bound approval and independent authorization for high-impact
+  actions;
+- structured output and tool-call validation before execution;
+- agent security telemetry, anomaly detection, and token, cost, retry, and
+  recursion limits;
+- multi-agent delegation, communication, privilege-ceiling, replay, and
+  cascading-failure controls.
 
 Add AI framework registries together with the first controls that can produce
 evidence for them:
@@ -205,6 +218,9 @@ This section is the ordering source for new control packages. Phase sections
 describe scope; this backlog describes implementation priority. Proposed IDs
 are reserved for planning and may be adjusted before implementation if the
 application checklist reconciliation identifies a better boundary.
+Detailed goals, control boundaries, implementation slices, dependencies, and
+acceptance criteria are maintained in
+[`PLANNED_CONTROLS.md`](PLANNED_CONTROLS.md).
 
 ### P0 — Current milestones
 
@@ -273,8 +289,17 @@ SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    to a canonical source and benchmarked against a no-guidance baseline.
 3. `PSB-AI-002` — Agent Skill, MCP server, and plugin pinning, integrity
    verification, semantic review, and least-privilege enforcement.
-4. `PSB-AI-003` — prompt/document injection fixtures with sandbox, network, and
-   security-invariant tests.
+4. `PSB-AI-004` — vendor-neutral AI coding agent runtime hardening with
+   Claude Code and Codex adapters for sandbox, approval, filesystem,
+   credential, network, MCP, side-effect, bypass, and audit policy.
+5. `PSB-AI-003` — prompt/document injection fixtures that verify the
+   `PSB-AI-004` runtime boundary and repository security invariants.
+6. Reconcile the remaining OWASP AI Agent Security Cheat Sheet outcomes into
+   separate executable controls for memory/context/data lifecycle,
+   high-impact action integrity and output validation, monitoring and
+   denial-of-wallet limits, and multi-agent trust boundaries. Assign IDs only
+   after reviewing overlap with `PSB-AI-002..004`, `PSB-SOURCE-001`, and the
+   repository-wide E3 testing requirement.
 
 Within a priority, implement one reviewable vertical slice at a time. Every new
 control must meet the repository definition of done, including insecure and

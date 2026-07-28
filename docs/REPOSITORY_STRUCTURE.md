@@ -54,6 +54,8 @@
 │   ├── THREAT_MODEL.md
 │   ├── FRAMEWORK_MAPPING.md
 │   ├── CODEX_WORKFLOW.md
+│   ├── PLANNED_CONTROLS.md
+│   ├── SECURITY_GUIDANCE_SOURCES.md
 │   ├── ROADMAP.md
 │   └── adr/
 └── policies/

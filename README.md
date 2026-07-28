@@ -68,6 +68,13 @@ controls/<domain>/<control>/
 
 Software supply-chain controlの関係は
 [`docs/SUPPLY_CHAIN_PRINCIPLES.md`](docs/SUPPLY_CHAIN_PRINCIPLES.md)を参照してください。
+今後実装するcontrolのgoal、既存controlとの境界、実装slice、依存関係、完了条件は
+[`docs/PLANNED_CONTROLS.md`](docs/PLANNED_CONTROLS.md)に整理しています。
+frameworkではないcheat sheet、vendor hardening guide、ユーザー提供原文などの
+設計上の参考情報は、固定source commitまたは保存済み原文、確認日、関連control、
+採用範囲とともに
+[`docs/SECURITY_GUIDANCE_SOURCES.md`](docs/SECURITY_GUIDANCE_SOURCES.md)へ
+記録します。
 
 ## Adoption checklist
 
