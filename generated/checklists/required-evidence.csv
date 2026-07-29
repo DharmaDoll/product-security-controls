@@ -91,6 +91,9 @@ PSB-CICD-001,PSB-CICD-001-ACT-002,repository-admin,automated,sanitized verifier 
 PSB-CICD-001,PSB-CICD-001-ACT-003,repository-admin,automated,sanitized verifier output
 PSB-CICD-001,PSB-CICD-001-ACT-004,repository-admin,automated,negative-test output
 PSB-CICD-001,PSB-CICD-001-ACT-005,repository-admin,automated,negative-test output
+PSB-CICD-001,PSB-CICD-001-ACT-006,repository-admin,automated,sanitized advisory verifier output
+PSB-CICD-001,PSB-CICD-001-ACT-006,repository-admin,automated,reviewed Action release inventory
+PSB-CICD-001,PSB-CICD-001-ACT-006,repository-admin,automated,timestamped complete advisory snapshot
 PSB-CICD-002,PSB-CICD-002-INJ-001,developer,automated,sanitized verifier output
 PSB-CICD-002,PSB-CICD-002-INJ-002,developer,automated,sanitized verifier output
 PSB-CICD-002,PSB-CICD-002-INJ-003,repository-admin,automated,positive-test output
@@ -112,6 +115,15 @@ PSB-CICD-004,PSB-CICD-004-PERM-004,repository-admin,hybrid,GitHub Environment pr
 PSB-CICD-004,PSB-CICD-004-PERM-005,repository-admin,automated,negative-test output
 PSB-CICD-004,PSB-CICD-004-PERM-005,repository-admin,automated,reviewed caller policy
 PSB-CICD-004,PSB-CICD-004-PERM-006,ci-platform,automated,negative-test output
+PSB-CICD-005,PSB-CICD-005-PRB-001,repository-admin,automated,sanitized verifier output
+PSB-CICD-005,PSB-CICD-005-PRB-001,repository-admin,automated,reviewed workflow trust policy
+PSB-CICD-005,PSB-CICD-005-PRB-002,ci-platform,hybrid,sanitized verifier output
+PSB-CICD-005,PSB-CICD-005-PRB-002,ci-platform,hybrid,runner-group access evidence
+PSB-CICD-005,PSB-CICD-005-PRB-003,repository-admin,automated,negative-test output
+PSB-CICD-005,PSB-CICD-005-PRB-004,repository-admin,automated,negative-test output
+PSB-CICD-005,PSB-CICD-005-PRB-005,repository-admin,automated,sanitized verifier output
+PSB-CICD-005,PSB-CICD-005-PRB-005,repository-admin,automated,branch protection evidence
+PSB-CICD-005,PSB-CICD-005-PRB-006,ci-platform,automated,negative-test output
 PSB-DEPS-001,PSB-DEPS-001-COOL-001,repository-admin,automated,sanitized verifier output
 PSB-DEPS-001,PSB-DEPS-001-COOL-002,security,automated,sanitized verifier output
 PSB-DEPS-001,PSB-DEPS-001-COOL-002,security,automated,exception approval

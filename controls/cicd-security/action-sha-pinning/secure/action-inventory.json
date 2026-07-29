@@ -1,0 +1,17 @@
+{
+  "schema_version": "psb-github-action-inventory/v1",
+  "actions": [
+    {
+      "package": "actions/checkout",
+      "version": "6.0.2",
+      "commit_sha": "de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "release_url": "https://github.com/actions/checkout/releases/tag/v6.0.2"
+    },
+    {
+      "package": "zizmorcore/zizmor-action",
+      "version": "0.6.1",
+      "commit_sha": "6fc4b006235f201fdab3722e17240ab420d580e5",
+      "release_url": "https://github.com/zizmorcore/zizmor-action/releases/tag/v0.6.1"
+    }
+  ]
+}

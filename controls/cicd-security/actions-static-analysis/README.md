@@ -122,6 +122,30 @@ findingは、該当workflowが実際に到達可能か、attacker-controlled inp
 認めません。false positiveを抑制する場合も、rule、対象path、owner、理由、
 期限を限定したsecurity exceptionとして別途管理します。
 
+## 補完ツールの採用境界
+
+このcontrolの採用済みscannerは`zizmor`です。複数scannerを無条件に重ねず、
+同じsecure/insecure fixtureを候補ツールでも評価し、現在の検証経路が見逃す
+必須の問題を再現できた場合だけ補完します。
+
+| ツール | 想定する補完範囲 | 現在の扱い |
+| --- | --- | --- |
+| `zizmor` | GitHub Actionsのsecurity-focused static analysis | 採用済み。Action commit、scanner version、OCI digestを固定して実行 |
+| `actionlint` | syntax、expression type、Action input/output、reusable workflow interface、埋め込みshell/Pythonの検証 | 評価候補。security findingと一般lintを区別し、固有の失敗fixtureが確認できるまで追加しない |
+| `poutine` | pipeline定義にまたがるsupply-chain vulnerabilityやrepository／organization inventory | 評価候補。`PSB-CICD-001..005`と重複しないcontrol gapが確認できるまで追加しない |
+
+候補を採用するときは、少なくとも次を満たします。
+
+1. 既存経路では検出できず、候補だけが検出するnegative fixtureを追加する
+2. executable versionと配布artifactのchecksumまたは署名を固定する
+3. `clean`、`finding`、tool/input failureの終了状態を分離する
+4. untrusted pull requestへtokenやwrite権限を渡さない
+5. 重複findingのowner、抑制単位、更新手順、CI時間を文書化する
+
+この比較判断は
+[`SECURITY_GUIDANCE_SOURCES.md`](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-cicd-002)
+に固定sourceとともに記録します。
+
 ## 限界と運用コスト
 
 静的ruleで検出しやすいのは、template injection、危険なtrigger、mutable参照、
@@ -143,5 +167,9 @@ job failureとして扱います。
 - [zizmor audit rules](https://docs.zizmor.sh/audits/)
 - [zizmor exit status and SARIF behavior](https://docs.zizmor.sh/usage/)
 - [zizmor-action v0.6.1 source](https://github.com/zizmorcore/zizmor-action/tree/6fc4b006235f201fdab3722e17240ab420d580e5)
+- [zizmor reviewed source snapshot](https://github.com/zizmorcore/zizmor/tree/6ea55f583ef6681a59b1c180950e47861a3c0293)
+- [actionlint reviewed source snapshot](https://github.com/rhysd/actionlint/tree/011a6d15e749bb3f2d771eed9c7aa0e7e3e10ee7)
+- [poutine reviewed source snapshot](https://github.com/boostsecurityio/poutine/tree/bd4c1f86fe8cfe61b456f1ea2b2106ce0cac51d6)
 - [GitHub: secure use reference](https://docs.github.com/en/actions/reference/security/secure-use)
 - [Flatt Security: GitHub Actionsのセキュリティ対策 第4回](https://blog.flatt.tech/entry/2026-github-actions-security-part4)
+- [Flatt Security tool-comparison source record](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-cicd-008)

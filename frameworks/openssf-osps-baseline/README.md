@@ -26,7 +26,12 @@ conformanceを意味しません。
 GitHub固有の設定根拠には`github-security-guidance`を優先し、OSPSは
 provider-independentなsecurity outcomeが直接一致するときだけ併記します。
 OpenSSF Scorecardの結果はverification evidenceになり得ますが、score自体を
-security postureやOSPS達成の証明として扱いません。
+security postureやOSPS達成の証明として扱いません。参照source、license、
+採用境界は
+[`REF-GOV-001`](../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-gov-001)
+に固定しています。将来adapterを追加する場合も、aggregate scoreではなく、
+対象repository、収集時刻、freshness、個別check、実行状態を特定のcontrol evidenceへ
+結び付けます。
 
 ## 更新
 

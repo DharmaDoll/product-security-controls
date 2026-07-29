@@ -1,0 +1,28 @@
+{
+  "schema_version": "psb-github-actions-advisory-snapshot/v1",
+  "source": {
+    "api_url": "https://api.github.com/advisories",
+    "api_version": "2022-11-28",
+    "ecosystem": "actions",
+    "type": "reviewed",
+    "retrieved_at": "2026-07-30T00:00:00Z",
+    "complete": true
+  },
+  "advisories": [
+    {
+      "ghsa_id": "GHSA-2345-6789-cfgh",
+      "html_url": "https://github.com/advisories/GHSA-2345-6789-cfgh",
+      "severity": "high",
+      "updated_at": "2026-07-29T00:00:00Z",
+      "withdrawn_at": null,
+      "vulnerabilities": [
+        {
+          "ecosystem": "actions",
+          "package": "example/vulnerable-action",
+          "vulnerable_version_range": ">= 1.0.0, < 1.2.0",
+          "patched_versions": ">= 1.2.0"
+        }
+      ]
+    }
+  ]
+}

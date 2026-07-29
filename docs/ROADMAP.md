@@ -269,7 +269,10 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    purpose-bound exact job policies, OIDC scoping, trusted-ref conditions,
    protected-environment requirements, and repository-wide verification.
 4. `PSB-CICD-005` — fork-safe and untrusted-PR-safe workflows with no privileged
-   credential exposure or execution through `pull_request_target`.
+   credential exposure or execution through `pull_request_target` — implemented
+   with credential-free hosted PR jobs, safe checkout, conservative cache and
+   cross-run rejection, new trusted-run separation, repository-wide policy
+   coverage, and fail-closed negative tests.
 5. `PSB-CODE-001` — application secret handling with externalized secrets,
    rotation-safe configuration, and negative leakage tests.
 6. `PSB-CODE-002` — authentication and session lifecycle, including secure

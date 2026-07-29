@@ -167,7 +167,10 @@ Relationship examples:
 Map only requirements directly implemented or verified by a control. A mapping
 does not establish project-wide OSPS conformance or achievement of a maturity
 level. Use OpenSSF Scorecard as one possible evidence source, not as a
-framework substitute or proof of security.
+framework substitute or proof of security. The reviewed reference and
+executable-adoption boundary are recorded as
+[`REF-GOV-001`](SECURITY_GUIDANCE_SOURCES.md#ref-gov-001); an aggregate score
+must never be converted directly into a control pass or OSPS mapping.
 
 ## Mapping quality
 

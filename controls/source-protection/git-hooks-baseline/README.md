@@ -170,17 +170,18 @@ Gitleaks以外にも有力な選択肢があります。ただし、検出エン
 
 | 候補 | 得意な役割 | 採用に向く場面 | 主な注意点 | このサンプルでの位置付け |
 | --- | --- | --- | --- | --- |
-| TruffleHog | Git履歴、filesystemなどの広い探索とcredentialの実在性確認 | 定期full-history scan、導入時棚卸し、incident調査、検証可能なcredentialの優先順位付け | 実在性確認は外部providerへのnetwork requestを伴い得る。egress、rate limit、認証情報を含まないredacted log、scanner errorの扱いを設計する | 補完候補。local commitの既定hookには追加しない |
 | detect-secrets | baselineと対話的auditを使った既存findingの段階的管理 | secret候補が既に多いlarge/legacy repositoryで、新規混入を止めながら既存分を分類・移行する | baseline登録は安全性の証明や恒久的なallowlistではない。owner、review、rotation期限が必要で、広い除外は禁止する | 移行時の代替候補。Gitleaksと同時に必須化しない |
 | GitHub Secret Scanning / Push Protection | GitHub側でCLI push、Web UI、file upload、対応API経由のsecretをblockし、bypassを記録する | GitHubを共有repositoryとして利用する組織のserver-side enforcement | 検出対象pattern、契約、repository設定に依存する。許可されたbypassも監査・期限付き是正が必要 | local scannerとは独立して有効化する最終防波堤 |
+
+TruffleHogはdeveloper-local hookとして推奨しません。導入時棚卸し、定期的な
+full-history scan、incident調査、credential verificationのためにSecurity／AppSecが
+管理する候補として、`PSB-SOURCE-003`でのみ紹介します。
 
 推奨する最小構成は、次の3層です。
 
 1. 開発者端末ではrepository-owned scannerと、full commit SHAへ固定したGitleaksを
    staged contentに対して実行する
-2. CIではGitleaksまたはレビュー済みのTruffleHog構成で、push対象またはfull historyを
-   検査する。TruffleHogのcredential verificationを使う場合は、許可したegressだけを
-   使用する
+2. 通常CIではGitleaksでpush対象またはfull historyを検査する
 3. GitHub側ではSecret ScanningとPush Protectionを有効にし、bypassをsecurity review、
    audit log、期限付きremediationへ接続する
 
@@ -312,7 +313,6 @@ commit署名はidentity keyを認証しますが、commit内容の安全性を�
 - [pre-commit configuration and supported Git hook stages](https://pre-commit.com/)
 - [Gitleaks official repository and pre-commit integration](https://github.com/gitleaks/gitleaks)
 - [Gitleaks v8.30.1 release](https://github.com/gitleaks/gitleaks/releases/tag/v8.30.1)
-- [TruffleHog Git source capabilities](https://trufflesecurity.com/docs/git)
 - [detect-secrets baseline, audit, and pre-commit integration](https://github.com/Yelp/detect-secrets)
 - [GitHub Secret Scanning Push Protection](https://docs.github.com/en/code-security/concepts/secret-security/push-protection)
 - [GitHub delegated bypass requests](https://docs.github.com/en/code-security/concepts/secret-security/bypass-requests)

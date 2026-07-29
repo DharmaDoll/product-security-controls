@@ -1,0 +1,2 @@
+FAIL example/vulnerable-action@1.1.0 sha=111111111111 affected_by=GHSA-2345-6789-cfgh
+REJECTED 1 vulnerable Action release(s) from 1 inventory item(s)

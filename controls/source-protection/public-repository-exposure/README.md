@@ -154,6 +154,33 @@ identifier、個人情報をquery catalogへ記録してはいけません。
 python3 controls/source-protection/public-repository-exposure/scripts/scan-git-history.py .
 ```
 
+### 組織運用向け補完ツール: TruffleHog
+
+TruffleHogは開発者のpre-commitや端末baselineとしては推奨せず、Security／AppSecが
+管理する次の用途の紹介ツールとして位置付けます。
+
+- repository導入時の全Git履歴棚卸し
+- scheduled full-history scan
+- secret漏洩incidentの追加調査
+- 検出したcredentialが現在も有効かを確認し、対応優先度を判断する補助
+- GitHub organization配下など複数repositoryの横断調査
+
+Git履歴を対象にするときは、current worktreeだけを見るfilesystem scanと区別し、
+complete cloneのGit historyを検査します。ただし、本controlの採用実装とテストは
+repository-owned `scan-git-history.py`を使用しており、TruffleHogをdownloadまたは
+実行しません。
+
+将来、組織運用adapterとして採用する場合は、repository-owned scannerでは再現できない
+full-historyまたはcredential verificationのgapをfixtureで示し、versionとartifact
+integrity、AGPL-3.0の利用・配布条件、provider別egress、rate limit、redaction、
+`clean`／`finding`／`ERROR`の分離をレビューします。credential verificationは
+外部providerへ通信し得るため、developer hookやuntrusted pull requestから暗黙に
+実行しません。
+
+固定した参照sourceと採用境界は
+[`REF-SOURCE-001`](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-source-001)
+に記録しています。
+
 ### 自社domain・email・機密markerの検査
 
 `secure/organization-indicators.json`をrepository外のaccess-controlledな場所へ複製し、
@@ -289,3 +316,6 @@ mappingは、このcontrolが該当する攻撃行動、secret保護、情報収
 - [Filtering and searching issues and pull requests](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/filtering-and-searching-issues-and-pull-requests)
 - [GitHub Code Search syntax](https://docs.github.com/en/search-github/github-code-search/understanding-github-code-search-syntax)
 - [GitHub Code Search limitations](https://docs.github.com/en/search-github/github-code-search/about-github-code-search)
+- [TruffleHog Git and filesystem scan distinction](https://trufflesecurity.com/blog/trufflehog-commands-git-vs-filesystem)
+- [TruffleHog GitHub source capabilities](https://trufflesecurity.com/docs/github)
+- [TruffleHog reviewed source snapshot](https://github.com/trufflesecurity/trufflehog/tree/ac39a5653be27b1a6613d75e18535764cc7a11cf)

@@ -145,6 +145,20 @@ checks:
 mappings:
   - framework: github-security-guidance
     version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHAS-CONCEPT-GITHUB-TOKEN
+    relationship: verifies
+    confidence: high
+    rationale: The control directly verifies that each job-visible GITHUB_TOKEN capability is explicit and purpose-bound while separately constraining OIDC issuance and reusable-workflow callers.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - PERM-001
+      - PERM-002
+      - PERM-003
+      - PERM-004
+      - PERM-005
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
     id: GHAS-REF-SECURE-USE
     relationship: verifies
     confidence: high

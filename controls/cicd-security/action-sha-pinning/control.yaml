@@ -9,12 +9,18 @@ security_functions:
 threats:
   - id: SUPPLY-CHAIN-MUTABLE-ACTION
     description: A mutable Action or reusable workflow reference is moved or compromised and executes code that was not reviewed.
+  - id: SUPPLY-CHAIN-VULNERABLE-ACTION
+    description: A full-SHA-pinned Action release remains immutable but is affected by a subsequently published reviewed security advisory.
 implementations:
   insecure:
     - insecure/workflow.yml
+    - insecure/action-inventory.json
+    - insecure/advisories.json
   secure:
     - secure/workflow.yml
     - secure/local-action/action.yml
+    - secure/action-inventory.json
+    - secure/advisories.json
 verification:
   commands:
     - make verify-control CONTROL=PSB-CICD-001
@@ -22,6 +28,8 @@ verification:
     - external GitHub Actions and reusable workflows use full 40-character commit SHAs
     - Docker-based actions use immutable sha256 image digests
     - mutable tags branches short SHAs and dynamic references are rejected
+    - reviewed Action advisories are matched against the exact release inventory and vulnerable releases are rejected
+    - stale incomplete malformed or unavailable advisory snapshots fail closed
     - policy violations and verifier execution errors have distinct exit codes
 checks:
   - id: ACT-001
@@ -109,6 +117,26 @@ checks:
       evidence:
         - negative-test output
     mapping_status: unmapped
+  - id: ACT-006
+    title: Pinned Action releases are checked for reviewed vulnerabilities
+    required_state: exact Action name release version and commit SHA checked against a fresh complete GitHub-reviewed Actions advisory snapshot
+    responsible_role: repository-admin
+    applies_to:
+      - github-action-dependency
+      - github-advisory-database
+    context:
+      threat_actor: vulnerable Action implementation or attacker exploiting a publicly disclosed flaw in an immutable pinned release
+      attack_or_failure_scenario: workflow continues executing a known-vulnerable Action because full-SHA pinning is mistaken for a security update mechanism
+      why_required: immutability prevents silent replacement but cannot make already pinned code non-vulnerable or notify maintainers that a fixed release is required
+    verification:
+      type: automated
+      method: collect a current reviewed Actions advisory snapshot then run make verify-github-action-advisories with the reviewed release inventory
+      expected: affected Action versions are rejected while stale incomplete malformed and unavailable advisory evidence returns an error
+      evidence:
+        - sanitized advisory verifier output
+        - reviewed Action release inventory
+        - timestamped complete advisory snapshot
+    mapping_status: reviewed
 mappings:
   - framework: github-security-guidance
     version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
@@ -140,17 +168,30 @@ mappings:
     id: PW.4.1
     relationship: supports
     confidence: medium
-    rationale: Pinning reviewed third-party workflow components supports controlled acquisition and maintenance but does not establish that the component is secure.
+    rationale: Pinning reviewed third-party workflow components and checking the bound release version against fresh reviewed advisories supports controlled acquisition and maintenance but does not establish that the component is secure.
     reviewer: product-security
-    review_date: "2026-07-25"
+    review_date: "2026-07-30"
     applies_to:
       - ACT-001
       - ACT-002
       - ACT-003
       - ACT-004
+      - ACT-006
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-VM-05.03
+    relationship: supports
+    confidence: medium
+    rationale: The Action-specific inventory and reviewed advisory gate automatically blocks known-vulnerable CI dependencies, while the requirement's broader malicious-dependency and exception scope remains outside this control.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - ACT-006
 limitations:
-  - A pinned commit can already contain malicious or vulnerable code and must still be reviewed.
+  - A pinned commit can already contain malicious or undisclosed vulnerable code and must still be reviewed.
   - The verifier checks immutable reference syntax but does not prove that a SHA belongs to the named upstream repository.
+  - The advisory verifier relies on a human-reviewed Action release version to commit SHA binding because advisory ranges are version-based rather than commit-based.
+  - GitHub Advisory Database coverage publication timing and version ranges may be incomplete and do not replace upstream release review.
   - Nested dependencies inside an Action or reusable workflow are outside this local verifier's scope.
   - Pinning prevents automatic security updates so controlled update automation and review remain necessary.
   - Repository organization or enterprise enforcement must be configured separately and may apply different rules to reusable workflows.

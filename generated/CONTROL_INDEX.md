@@ -8,10 +8,11 @@ Generated control catalog. Do not edit manually.
 | PSB-BUILD-001 | build-security | dependency buildを権限・credential・networkから隔離する | 6 | prototype | E3 |
 | PSB-BUILD-002 | build-security | 一貫したrelease buildを承認済みhosted platformで実行する | 5 | prototype | E3 |
 | PSB-BUILD-003 | build-security | Build platformがauthentic provenanceを自動生成する | 5 | prototype | E3 |
-| PSB-CICD-001 | cicd-security | Pin external GitHub Actions and reusable workflows to immutable commits | 5 | prototype | E3 |
+| PSB-CICD-001 | cicd-security | Pin external GitHub Actions and reusable workflows to immutable commits | 6 | prototype | E3 |
 | PSB-CICD-002 | cicd-security | Prevent GitHub Actions command injection from direct expression interpolation | 4 | prototype | E3 |
 | PSB-CICD-003 | cicd-security | Statically analyze GitHub Actions workflows with a pinned scanner | 5 | adopted | E3 |
 | PSB-CICD-004 | cicd-security | Enforce explicit least-privilege GitHub Actions permissions | 6 | prototype | E3 |
+| PSB-CICD-005 | cicd-security | Isolate fork and untrusted pull-request workflows from privileged CI | 6 | prototype | E3 |
 | PSB-DEPS-001 | dependency-security | 依存パッケージの公開直後採用をrelease cooldownで制御 | 6 | prototype | E3 |
 | PSB-DEPS-002 | dependency-security | install時の任意コード実行をdefault denyにする | 5 | prototype | E3 |
 | PSB-DEPS-003 | dependency-security | lockfileと取得artifactの完全性を強制する | 5 | prototype | E3 |

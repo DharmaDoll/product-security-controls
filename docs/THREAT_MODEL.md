@@ -85,6 +85,13 @@ evidence.
 - missing provenance;
 - mutable container tags.
 
+The
+[CI/CD threat-matrix reconciliation](CICD_THREAT_MATRIX_RECONCILIATION.md)
+expands this category with 28 unique attacker-behavior labels from a pinned
+community source and classifies each as partially addressed, planned, or an
+explicit gap. It is a design-time threat inventory, not a formal framework
+mapping or a claim of complete coverage.
+
 ### Cloud and IaC golden-path threats
 
 - application teams bypassing approved modules and creating unencrypted,

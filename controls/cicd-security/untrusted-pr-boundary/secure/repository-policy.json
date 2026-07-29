@@ -1,0 +1,39 @@
+{
+  "schema_version": "psb-github-actions-untrusted-boundary-policy/v1",
+  "workflow_roots": [
+    ".github/workflows"
+  ],
+  "workflows": [
+    {
+      "path": ".github/workflows/actions-security.yml",
+      "events": [
+        "push",
+        "pull_request"
+      ],
+      "jobs": {
+        "gate": {
+          "trust": "untrusted",
+          "runner": "ubuntu-latest"
+        },
+        "report": {
+          "trust": "trusted",
+          "runner": "ubuntu-latest",
+          "required_if": "github.event_name == 'push' && github.ref == 'refs/heads/main'"
+        }
+      }
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "events": [
+        "pull_request",
+        "push"
+      ],
+      "jobs": {
+        "verify": {
+          "trust": "untrusted",
+          "runner": "ubuntu-latest"
+        }
+      }
+    }
+  ]
+}

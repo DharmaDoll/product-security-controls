@@ -90,3 +90,5 @@ python3 controls/cicd-security/actions-least-privilege/scripts/verify.py \
 - [GitHub reusable workflow permissions](https://docs.github.com/en/actions/reference/workflows-and-actions/reusing-workflow-configurations)
 - [GitHub OpenID Connect reference](https://docs.github.com/en/actions/reference/security/oidc)
 - [OpenSSF OSPS Baseline 2026.02.19](https://baseline.openssf.org/versions/2026-02-19#osps-ac-04)
+- [GitHub Actions Best Practice 2025 source record](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-cicd-005)
+- [OIDC and Trusted Publishing residual-risk source record](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-cicd-009)

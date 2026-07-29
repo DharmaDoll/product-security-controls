@@ -170,9 +170,11 @@ Cloud workload federation in CI/CD remains a separate boundary planned as
   them through the reviewed developer environment or repository onboarding
   process.
 
-Trivy, TruffleHog, detect-secrets, Gitleaks, and similar products are possible
-implementations, not the control itself. A scanner execution failure is an
-error and never a clean result.
+Trivy, detect-secrets, Gitleaks, and similar developer-local products are
+possible implementations, not the control itself. Organization-operated
+full-history and incident-response scanning is owned by `PSB-SOURCE-003`, not
+the developer endpoint baseline. A scanner execution failure is an error and
+never a clean result.
 
 ### 5. Isolation and managed execution
 

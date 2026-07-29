@@ -1,0 +1,3 @@
+PASS actions/checkout@6.0.2 sha=de0fac2e4500 no reviewed advisory match
+PASS zizmorcore/zizmor-action@0.6.1 sha=6fc4b006235f no reviewed advisory match
+ACCEPTED 2 Action release(s) checked against 1 active reviewed advisory record(s)

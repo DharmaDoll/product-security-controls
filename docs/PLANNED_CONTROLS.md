@@ -47,8 +47,9 @@ PSB-AI-004 ──────────────────┘
 
 Within one priority, complete one E3 vertical slice before starting the next.
 The application-checklist import still requires its organization-owned source.
-The next independently executable control after `PSB-CICD-004` is
-`PSB-CICD-005`.
+`PSB-CICD-005` is implemented. The next independently executable P1 control is
+`PSB-DETECT-001`; implementing it also unblocks the planned SBOM and container
+profiles. `PSB-CICD-006` is now ready because both CI/CD dependencies exist.
 
 ## Prerequisite: application checklist reconciliation
 
@@ -228,7 +229,7 @@ Implemented slice:
 
 ### PSB-CICD-005 — Fork-safe and untrusted-PR-safe workflows
 
-Status: `ready` — `PSB-CICD-004` dependency implemented
+Status: `prototype` — first E3 vertical slice implemented
 Domain: `cicd-security`
 
 #### Goal
@@ -256,6 +257,20 @@ organization-controlled runner trust.
    workflows, cache poisoning, and self-hosted runner selection.
 6. Require manual approval and a new trusted run rather than elevating the
    original untrusted run.
+
+Implemented slice:
+
+- policy-reviewed event and job trust classification with exact repository
+  workflow coverage;
+- credential-free read-only pull-request jobs on reviewed GitHub-hosted
+  runners;
+- checkout merge-revision and `persist-credentials: false` enforcement;
+- conservative rejection of `pull_request_target`, `workflow_run`, shared PR
+  caches, and untrusted reusable-workflow callers;
+- separate trusted-branch jobs that cannot depend on an untrusted job in the
+  original run;
+- fail-closed missing policy, unreviewed workflow, event drift, and unsupported
+  YAML behavior.
 
 #### Acceptance criteria
 
@@ -475,7 +490,7 @@ and license risk. Treat advisory or policy-engine unavailability as error.
 
 ### PSB-CICD-006 — Audience-bound cloud OIDC federation
 
-Status: `dependency-required` on `PSB-CICD-004` and `PSB-CICD-005`  
+Status: `ready` — `PSB-CICD-004` and `PSB-CICD-005` implemented
 Domain: `cicd-security`
 
 #### Goal
@@ -496,6 +511,13 @@ audience, wrong repository, mutable ref, expired token, and replay cases.
 - cloud trust conditions are exact rather than organization-wide wildcards;
 - no static cloud credential is present in workflow or repository secrets;
 - exchange failure is not interpreted as a skipped clean deployment check.
+
+Planning source:
+
+- [`REF-CICD-009`](SECURITY_GUIDANCE_SOURCES.md#ref-cicd-009) informs the
+  remaining credential-exposure, exact-claim, job-separation, and
+  provider-side authorization requirements. Package-registry Trusted
+  Publishing remains a separate future profile.
 
 ### PSB-REL-003 — SBOM generation, binding, and publication
 
@@ -1055,6 +1077,29 @@ or approval prompts as complete authorization boundaries. Enforcement must
 remain outside model output, and failure of schema validation, policy lookup,
 approval verification, audit logging, or a circuit breaker must not become an
 allow decision.
+
+## Cross-control tool evaluation register
+
+Tools remain implementation mechanisms rather than control boundaries. The
+following candidates are tied to an existing outcome and may advance only when
+an isolated fixture demonstrates a required gap. Fixed review sources,
+licenses, and detailed limitations are recorded in
+[`SECURITY_GUIDANCE_SOURCES.md`](SECURITY_GUIDANCE_SOURCES.md).
+
+| Tool | Outcome owner | Current disposition | Next executable decision |
+| --- | --- | --- | --- |
+| zizmor | `PSB-CICD-003` | adopted | Maintain the separately pinned Action, scanner version, OCI digest, SARIF states, and unprivileged PR gate |
+| actionlint | `PSB-CICD-003` | identified comparison candidate | Add only if syntax, expression, reusable-workflow, or embedded-script fixtures expose a required gap not detected by zizmor |
+| poutine | `PSB-CICD-003` and the `PSB-CICD-001..005` boundary | identified comparison candidate | Add only for a unique pipeline supply-chain finding; do not duplicate existing SHA, injection, privilege, or untrusted-PR controls |
+| cicd-sensor | `PSB-BUILD-001` telemetry adapter | identified pre-release candidate | Prototype only after privilege, kernel support, event schema, redaction, health failure, and integrity requirements are testable |
+| OpenSSF Scorecard | governance or supplier-assessment evidence | adopted as guidance only | Implement an adapter only for individually mapped checks with freshness and error semantics; never use the aggregate score as compliance evidence |
+| TruffleHog | `PSB-SOURCE-003` organization-operated assessment | introduced as a complementary candidate; not recommended for developer-local hooks | Add only for a demonstrated onboarding, scheduled full-history, incident-response, or credential-verification gap, with controlled egress and distinct scanner-error evidence |
+
+For every candidate, the executable adoption slice must pin the version and
+artifact integrity, keep network access explicit, distinguish `clean`,
+`finding`, `NOT_CHECKED`, and `ERROR` as applicable, and document update and
+exception ownership. Merely cataloguing a tool does not change a control's
+maturity or generated checklist rows.
 
 ## Cross-control implementation rules
 

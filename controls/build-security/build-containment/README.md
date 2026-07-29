@@ -46,6 +46,28 @@ wildcard egress、root実行、Docker socket、telemetry欠落、untrusted trigg
 - job間は署名・digest検証済みartifactだけを渡す
 - runner egress enforcementはworkflow記述だけでなくrunner／network control planeで行う
 
+## Runtime sensor adapterの評価
+
+このcontrolはprocess／network telemetryを必須にしますが、現在のJSON fixtureは
+telemetry backend自体を実装しません。`cicd-sensor`は、CI jobのprocess、file、
+network activityをeBPFで観測するprovider adapter候補として記録しています。
+
+ただし、upstreamがpre-releaseかつactive developmentと明記しているため、現時点では
+採用workflowへ追加しません。採用判断には次の証跡が必要です。
+
+1. immutable releaseまたはcommitと、取得artifactのchecksumまたは署名
+2. eBPF loadingに必要なkernel capabilityとprivilegeの最小化レビュー
+3. synthetic process、file、network eventのpositive／negative fixture
+4. credential、path、network destinationを必要以上に残さないredactionとretention
+5. sensorまたはbackend停止を`clean`ではなく`ERROR`にするhealth evidence
+6. GitHub-hosted／self-hosted runnerごとの対応範囲と、未対応環境の`NOT_CHECKED`
+
+Runtime sensorは検知と調査証跡を補完します。ephemeral sandbox、credential分離、
+read-only root、non-root、default-deny egressの代替にはしません。固定sourceと
+採用保留理由は
+[`REF-BUILD-001`](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-build-001)
+に記録します。
+
 ## 制限事項
 
 - JSON fixtureはOS sandboxやfirewallそのものではなく、platform adapterが必要
@@ -58,3 +80,4 @@ wildcard egress、root実行、Docker socket、telemetry欠落、untrusted trigg
 
 - [GitHub: GITHUB_TOKENの最小権限](https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication)
 - [SLSA v1.2 Build Track Basics](https://slsa.dev/spec/v1.2/build-track-basics)
+- [cicd-sensor reviewed source snapshot](https://github.com/cicd-sensor/cicd-sensor/tree/6e08deb2221c19a854d8d3be7ce37c659c15bce9)
