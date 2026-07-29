@@ -1,0 +1,227 @@
+{
+  "schema_version": "psb-ai-runtime-policy/v1",
+  "policy_id": "PSB-AI-004-FIRST-SLICE",
+  "policy_revision": "2026-07-29.1",
+  "supported_adapters": {
+    "claude-code": {
+      "configuration_baseline": "official-docs-reviewed-2026-07-29",
+      "minimum_product_version": "2.1.219"
+    },
+    "codex": {
+      "configuration_baseline": "official-docs-reviewed-2026-07-29",
+      "minimum_product_version": "0.138.0"
+    }
+  },
+  "required_outcomes": {
+    "sandbox": "enforced-fail-closed",
+    "write_scope": "workspace-only",
+    "protected_write_paths": [
+      ".git",
+      ".agents",
+      ".codex"
+    ],
+    "synthetic_credential_path": ".psb-fixtures/credentials",
+    "network": "default-deny",
+    "source_publication": "human-approval",
+    "dangerous_bypass": "prohibited",
+    "configuration_precedence": "managed-policy-cannot-be-broadened"
+  },
+  "high_impact_approval": {
+    "schema_version": "psb-ai-high-impact-policy/v1",
+    "policy_id": "PSB-AI-004-HIGH-IMPACT",
+    "policy_revision": "2026-07-29.1",
+    "default_action": "deny-unclassified",
+    "maximum_ttl_seconds": 300,
+    "require_independent_approver": true,
+    "required_binding_fields": [
+      "actor_id",
+      "agent_id",
+      "action_class",
+      "tool",
+      "operation",
+      "target",
+      "parameters",
+      "policy_id",
+      "policy_revision",
+      "request_digest",
+      "issued_at",
+      "expires_at"
+    ],
+    "action_classes": {
+      "dependency-installation": [
+        {
+          "tool": "package-manager",
+          "operations": [
+            "install",
+            "add"
+          ]
+        }
+      ],
+      "source-commit": [
+        {
+          "tool": "git",
+          "operations": [
+            "commit"
+          ]
+        }
+      ],
+      "source-publication": [
+        {
+          "tool": "git",
+          "operations": [
+            "push"
+          ]
+        },
+        {
+          "tool": "mcp:source_manager",
+          "operations": [
+            "create-pull-request"
+          ]
+        }
+      ],
+      "source-history-rewrite": [
+        {
+          "tool": "git",
+          "operations": [
+            "force-push",
+            "rebase",
+            "reset-hard"
+          ]
+        }
+      ],
+      "package-publication": [
+        {
+          "tool": "package-registry",
+          "operations": [
+            "publish"
+          ]
+        }
+      ],
+      "database-mutation": [
+        {
+          "tool": "database",
+          "operations": [
+            "execute-write",
+            "migrate"
+          ]
+        }
+      ],
+      "infrastructure-change": [
+        {
+          "tool": "infrastructure",
+          "operations": [
+            "apply",
+            "destroy"
+          ]
+        }
+      ],
+      "cloud-administration": [
+        {
+          "tool": "cloud",
+          "operations": [
+            "admin-change",
+            "iam-change"
+          ]
+        }
+      ],
+      "deployment": [
+        {
+          "tool": "deployment",
+          "operations": [
+            "release",
+            "rollback"
+          ]
+        }
+      ]
+    }
+  },
+  "extension_capabilities": {
+    "schema_version": "psb-ai-extension-capabilities/v1",
+    "policy_id": "PSB-AI-004-EXTENSIONS",
+    "policy_revision": "2026-07-29.1",
+    "default_decision": "deny",
+    "hitl_strategy": {
+      "read-only": "none",
+      "bounded-reversible-write": "none",
+      "high-impact": "one-bound-approval",
+      "prohibited-or-unknown": "deny-without-prompt"
+    },
+    "extensions": {
+      "docs_reader": {
+        "kind": "mcp",
+        "dependency_record_id": "EXT-FIXTURE-DOCS-001",
+        "identity": {
+          "transport": "streamable-http",
+          "url": "https://docs.example.invalid/mcp/v1"
+        },
+        "tools": {
+          "search": {
+            "effect": "read-only",
+            "decision": "allow",
+            "hitl": "none"
+          },
+          "read": {
+            "effect": "read-only",
+            "decision": "allow",
+            "hitl": "none"
+          }
+        }
+      },
+      "source_manager": {
+        "kind": "mcp",
+        "dependency_record_id": "EXT-FIXTURE-SOURCE-001",
+        "identity": {
+          "transport": "streamable-http",
+          "url": "https://source.example.invalid/mcp/v1"
+        },
+        "tools": {
+          "list_pull_requests": {
+            "effect": "read-only",
+            "decision": "allow",
+            "hitl": "none"
+          },
+          "update_issue": {
+            "effect": "bounded-reversible-write",
+            "decision": "allow",
+            "hitl": "none",
+            "constraints": {
+              "allowed_resource": "fixture-org/fixture-repo",
+              "maximum_body_bytes": 1024,
+              "require_idempotency_key": true
+            }
+          },
+          "create_pull_request": {
+            "effect": "high-impact",
+            "decision": "require-bound-approval",
+            "hitl": "one-bound-approval",
+            "action_class": "source-publication",
+            "constraints": {
+              "maximum_title_bytes": 256,
+              "maximum_body_bytes": 4096,
+              "maximum_idempotency_key_characters": 128,
+              "require_idempotency_key": true
+            }
+          },
+          "delete_repository": {
+            "effect": "prohibited",
+            "decision": "deny",
+            "hitl": "none"
+          }
+        }
+      },
+      "secure_review_skill": {
+        "kind": "skill",
+        "dependency_record_id": "EXT-FIXTURE-SKILL-001",
+        "direct_tool_authority": false,
+        "capabilities": [
+          "instruction"
+        ]
+      }
+    },
+    "disabled_capability_families": [
+      "unreviewed-plugin-installation",
+      "browser-control",
+      "computer-use"
+    ]
+  }
+}

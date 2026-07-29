@@ -1,0 +1,18 @@
+{
+  "session_id": "session-fixture",
+  "transcript_path": null,
+  "cwd": "/workspace",
+  "permission_mode": "default",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "mcp__source_manager__create_pull_request",
+  "tool_input": {
+    "resource": "fixture-org/fixture-repo",
+    "base": "main",
+    "head": "fixture-change",
+    "title": "Synthetic change",
+    "body": "Synthetic approval-bound pull request.",
+    "idempotency_key": "idempotency-fixture-high-impact-001",
+    "unreviewed_side_effect": "synthetic-extra-parameter"
+  },
+  "tool_use_id": "tool-fixture-high-impact-unknown-argument"
+}

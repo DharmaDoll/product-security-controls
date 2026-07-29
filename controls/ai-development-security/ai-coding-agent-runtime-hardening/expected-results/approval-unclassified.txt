@@ -1,0 +1,5 @@
+FAIL PSB-AI-004/AAR-008 operation is unclassified or its declared action class is incorrect
+PASS PSB-AI-004/AAR-009 approval is independently issued and bound to the exact request
+PASS PSB-AI-004/AAR-010 approval is current and within the maximum lifetime
+PASS PSB-AI-004/AAR-011 approval is unused and its issuer is trusted
+RESULT FAIL request_id=REQ-FIXTURE-UNCLASSIFIED approval_id=APR-FIXTURE-UNCLASSIFIED checks=4 failures=1

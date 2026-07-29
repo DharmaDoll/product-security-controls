@@ -1,0 +1,14 @@
+{
+  "session_id": "session-fixture-codex",
+  "turn_id": "turn-fixture-codex",
+  "transcript_path": null,
+  "cwd": "/workspace",
+  "permission_mode": "default",
+  "hook_event_name": "PreToolUse",
+  "model": "model-fixture",
+  "tool_name": "mcp__docs_reader__search",
+  "tool_input": {
+    "query": "synthetic documentation query"
+  },
+  "tool_use_id": "tool-fixture-codex-read"
+}

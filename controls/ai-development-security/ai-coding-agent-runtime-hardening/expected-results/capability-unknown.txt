@@ -1,0 +1,4 @@
+FAIL PSB-AI-004/AAR-012 extension or tool is unknown and defaults to deny
+FAIL PSB-AI-004/AAR-013 effect constraints or policy decision deny the invocation
+PASS PSB-AI-004/AAR-014 HITL count matches the risk-based minimum
+RESULT FAIL invocation=INV-FIXTURE-UNKNOWN extension=source_manager tool=admin_everything expected_hitl=0 checks=3 failures=2

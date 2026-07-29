@@ -1,0 +1,7 @@
+PASS PSB-AI-004/AAR-012 provider=claude-code managed MCP identities and repository extension sources are exact
+PASS PSB-AI-004/AAR-014 provider=claude-code routine tools avoid HITL and signed high-impact approval is not prompted twice
+PASS PSB-AI-004/AAR-015 provider=claude-code managed-only PreToolUse gate covers every MCP tool
+PASS PSB-AI-004/AAR-012 provider=codex managed MCP identities and disabled capability families are exact
+PASS PSB-AI-004/AAR-014 provider=codex reads avoid HITL and native high-impact writes remain prompt-protected
+PASS PSB-AI-004/AAR-015 provider=codex managed-only PreToolUse gate covers every MCP tool
+RESULT PASS profile=secure checks=6 failures=0

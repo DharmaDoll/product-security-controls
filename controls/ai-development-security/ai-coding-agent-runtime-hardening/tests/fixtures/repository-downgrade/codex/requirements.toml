@@ -1,0 +1,26 @@
+allowed_approval_policies = ["untrusted", "on-request"]
+default_permissions = "psb_workspace"
+
+[allowed_permission_profiles]
+psb_workspace = true
+
+[permissions.psb_workspace]
+description = "Workspace editing with policy and synthetic credential paths protected."
+extends = ":workspace"
+
+[permissions.psb_workspace.filesystem.":workspace_roots"]
+"." = "write"
+".git" = "read"
+".agents" = "read"
+".codex" = "read"
+".psb-fixtures/credentials" = "deny"
+
+[permissions.psb_workspace.network]
+enabled = false
+allow_local_binding = false
+dangerously_allow_all_unix_sockets = false
+
+[rules]
+prefix_rules = [
+  { pattern = ["git", "push"], decision = "prompt", justification = "Publishing source requires explicit human approval." },
+]

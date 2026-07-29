@@ -1,0 +1,7 @@
+{
+  "schema_version": "psb-ai-approval-validation-state/v1",
+  "available": false,
+  "trusted_issuers": [
+    "fixture-approval-service"
+  ]
+}

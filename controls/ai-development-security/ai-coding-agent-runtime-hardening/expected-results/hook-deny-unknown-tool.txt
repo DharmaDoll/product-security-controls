@@ -1,0 +1,1 @@
+{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"PSB-AI-004 denied an MCP invocation outside the reviewed tool set."}}

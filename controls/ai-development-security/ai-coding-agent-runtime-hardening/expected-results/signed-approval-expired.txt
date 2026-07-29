@@ -1,0 +1,4 @@
+PASS PSB-AI-004/AAR-016 issuer signature and exact approval binding are valid
+FAIL PSB-AI-004/AAR-016 approval policy lifetime or request binding is invalid
+FAIL PSB-AI-004/AAR-017 approval was already consumed or was not eligible
+RESULT FAIL request_id=REQ-50DFE3528A5C5D626F16 approval_id=APR-FIXTURE-CLAUDE-001 key_id=fixture-approval-key-2026-07 checks=3 failures=2

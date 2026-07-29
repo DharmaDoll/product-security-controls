@@ -1,0 +1,88 @@
+{
+  "schema_version": "psb-ai-runtime-assessment-policy/v1",
+  "policy_id": "PSB-AI-004-RUNTIME-EVIDENCE",
+  "policy_revision": "2026-07-29.1",
+  "inventory": {
+    "schema_version": "psb-ai-runtime-inventory-policy/v1",
+    "maximum_age_seconds": 3600,
+    "required_collection_status": "complete",
+    "allow_unknown_extensions": false,
+    "require_exact_dependency_record": true,
+    "allowed_inventory_fields": [
+      "schema_version",
+      "provider",
+      "product_version",
+      "captured_at",
+      "collection_status",
+      "collection_source",
+      "plugin_installation_enabled",
+      "extensions"
+    ]
+  },
+  "audit": {
+    "schema_version": "psb-ai-runtime-audit-policy/v1",
+    "event_schema_version": "psb-ai-runtime-audit-event/v1",
+    "policy_revision": "2026-07-29.1",
+    "required_decisions": [
+      "allow",
+      "deny",
+      "error"
+    ],
+    "allowed_reason_codes": [
+      "reviewed_capability",
+      "unreviewed_extension",
+      "unreviewed_tool",
+      "bounded_write_mismatch",
+      "high_impact_approval_missing",
+      "signed_approval_consumed",
+      "signed_approval_invalid",
+      "prohibited_capability",
+      "evaluation_error"
+    ],
+    "allowed_event_fields": [
+      "schema_version",
+      "timestamp",
+      "control_id",
+      "policy_revision",
+      "provider",
+      "session_ref",
+      "event_ref",
+      "tool_ref",
+      "decision",
+      "reason_code",
+      "request_ref",
+      "approval_ref"
+    ],
+    "forbidden_content_fields": [
+      "prompt",
+      "transcript",
+      "tool_input",
+      "arguments",
+      "parameters",
+      "target",
+      "body",
+      "tool_output",
+      "signature",
+      "credential",
+      "authorization"
+    ],
+    "directory_mode": "0700",
+    "file_mode": "0600",
+    "maximum_file_bytes": 1048576,
+    "maximum_event_age_seconds": 3600,
+    "maximum_retention_days": 30,
+    "require_managed_owner": true,
+    "require_export": true,
+    "allowed_state_fields": [
+      "schema_version",
+      "available",
+      "managed_owner",
+      "owner",
+      "directory_mode",
+      "file_mode",
+      "retention_days",
+      "export_enabled",
+      "export_destination_class"
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": "psb-ai-runtime-inventory/v1",
+  "provider": "claude-code",
+  "captured_at": "2026-07-29T12:01:00Z",
+  "collection_status": "complete",
+  "collection_source": "repository-script",
+  "plugin_installation_enabled": true,
+  "extensions": [
+    {
+      "id": "shadow-publisher",
+      "kind": "plugin",
+      "dependency_record_id": "UNREVIEWED-FIXTURE-001",
+      "source": "mutable-marketplace-entry"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "schema_version": "psb-ai-approval-replay-state/v1",
+  "used_approval_ids": [
+    "APR-FIXTURE-001"
+  ],
+  "used_request_digests": []
+}

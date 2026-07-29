@@ -1,0 +1,1 @@
+{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"PSB-AI-004 denied invalid expired or previously consumed approval evidence."}}

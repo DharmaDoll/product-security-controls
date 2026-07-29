@@ -1,0 +1,24 @@
+{
+  "schema_version": "psb-ai-action-approval/v1",
+  "approval_id": "APR-FIXTURE-INSECURE",
+  "decision": "approved",
+  "approver_id": "developer-fixture-001",
+  "issuer": "untrusted-local-file",
+  "actor_id": "*",
+  "agent_id": "*",
+  "action_class": "*",
+  "tool": "*",
+  "operation": "*",
+  "target": {
+    "repository": "*",
+    "ref": "*"
+  },
+  "parameters": {
+    "force": true
+  },
+  "policy_id": "PSB-AI-004-HIGH-IMPACT",
+  "policy_revision": "2026-07-29.1",
+  "request_digest": "unbound",
+  "issued_at": "2026-07-29T00:00:00Z",
+  "expires_at": "2026-07-30T00:00:00Z"
+}

@@ -1,0 +1,10 @@
+{
+  "schema_version": "psb-ai-runtime-inventory/v1",
+  "provider": "claude-code",
+  "product_version": "2.1.219",
+  "captured_at": "2026-07-29T10:00:00Z",
+  "collection_status": "complete",
+  "collection_source": "managed-endpoint-assessment",
+  "plugin_installation_enabled": false,
+  "extensions": []
+}

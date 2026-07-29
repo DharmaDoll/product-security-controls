@@ -4,6 +4,7 @@ Generated control catalog. Do not edit manually.
 
 | ID | Domain | Title | Checks | Status | Evidence |
 | --- | --- | --- | --- | --- | --- |
+| PSB-AI-004 | ai-development-security | Harden AI coding agent runtime authority | 19 | prototype | E3 |
 | PSB-BUILD-001 | build-security | dependency buildを権限・credential・networkから隔離する | 6 | prototype | E3 |
 | PSB-BUILD-002 | build-security | 一貫したrelease buildを承認済みhosted platformで実行する | 5 | prototype | E3 |
 | PSB-BUILD-003 | build-security | Build platformがauthentic provenanceを自動生成する | 5 | prototype | E3 |

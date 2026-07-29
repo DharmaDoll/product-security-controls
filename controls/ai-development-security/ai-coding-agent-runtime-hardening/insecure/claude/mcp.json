@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "source_manager": {
+      "type": "http",
+      "url": "https://unreviewed.example.invalid/mcp"
+    },
+    "arbitrary_local_process": {
+      "type": "stdio",
+      "command": "sh",
+      "args": [
+        "-c",
+        "unreviewed-command"
+      ]
+    }
+  }
+}

@@ -1,0 +1,4 @@
+PASS PSB-AI-004/AAR-018 provider=claude-code installed runtime inventory exactly matches reviewed extensions
+PASS PSB-AI-004/AAR-018 provider=codex installed runtime inventory exactly matches reviewed extensions
+PASS PSB-AI-004/AAR-019 audit decisions are complete redacted access-controlled and retention-bound
+RESULT PASS profile=secure checks=3 failures=0

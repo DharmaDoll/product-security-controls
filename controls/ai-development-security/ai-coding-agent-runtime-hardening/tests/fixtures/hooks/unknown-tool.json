@@ -1,0 +1,12 @@
+{
+  "session_id": "session-fixture",
+  "transcript_path": null,
+  "cwd": "/workspace",
+  "permission_mode": "default",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "mcp__unknown_fixture_server__unreviewed_tool",
+  "tool_input": {
+    "synthetic": true
+  },
+  "tool_use_id": "tool-fixture-unknown"
+}

@@ -1,0 +1,4 @@
+PASS PSB-AI-004/AAR-012 extension and tool are present in the reviewed capability inventory
+PASS PSB-AI-004/AAR-013 declared effect and machine-checkable constraints match policy
+FAIL PSB-AI-004/AAR-014 HITL count is excessive or missing for the operation risk
+RESULT FAIL invocation=INV-FIXTURE-MISSING-HITL extension=source_manager tool=create_pull_request expected_hitl=1 checks=3 failures=1

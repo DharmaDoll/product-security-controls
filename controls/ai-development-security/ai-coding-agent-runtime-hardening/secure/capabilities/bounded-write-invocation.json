@@ -1,0 +1,11 @@
+{
+  "schema_version": "psb-ai-extension-invocation/v1",
+  "invocation_id": "INV-FIXTURE-BOUNDED-WRITE",
+  "extension_id": "source_manager",
+  "tool": "update_issue",
+  "declared_effect": "bounded-reversible-write",
+  "resource": "fixture-org/fixture-repo",
+  "body_bytes": 128,
+  "idempotency_key": "fixture-idempotency-001",
+  "human_confirmations": 0
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": "psb-ai-runtime-inventory/v1",
+  "provider": "codex",
+  "captured_at": "2026-07-29T12:01:00Z",
+  "collection_status": "complete",
+  "collection_source": "managed-endpoint-assessment",
+  "plugin_installation_enabled": false,
+  "extensions": [
+    {
+      "id": "docs_reader",
+      "kind": "plugin",
+      "dependency_record_id": "EXT-FIXTURE-DOCS-001",
+      "source": "kind-confused-fixture"
+    },
+    {
+      "id": "source_manager",
+      "kind": "mcp",
+      "dependency_record_id": "EXT-FIXTURE-DOCS-001",
+      "identity": {
+        "transport": "streamable-http",
+        "url": "https://source.example.invalid/mcp/v1"
+      }
+    }
+  ]
+}

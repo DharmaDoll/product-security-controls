@@ -1,0 +1,1 @@
+{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"PSB-AI-004 denied an invocation whose bounded-write constraints did not match."}}

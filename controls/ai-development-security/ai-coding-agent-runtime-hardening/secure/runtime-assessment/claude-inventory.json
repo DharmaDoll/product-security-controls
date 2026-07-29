@@ -1,0 +1,35 @@
+{
+  "schema_version": "psb-ai-runtime-inventory/v1",
+  "provider": "claude-code",
+  "product_version": "2.1.219",
+  "captured_at": "2026-07-29T12:01:00Z",
+  "collection_status": "complete",
+  "collection_source": "managed-endpoint-assessment",
+  "plugin_installation_enabled": false,
+  "extensions": [
+    {
+      "id": "docs_reader",
+      "kind": "mcp",
+      "dependency_record_id": "EXT-FIXTURE-DOCS-001",
+      "identity": {
+        "transport": "streamable-http",
+        "url": "https://docs.example.invalid/mcp/v1"
+      }
+    },
+    {
+      "id": "secure_review_skill",
+      "kind": "skill",
+      "dependency_record_id": "EXT-FIXTURE-SKILL-001",
+      "direct_tool_authority": false
+    },
+    {
+      "id": "source_manager",
+      "kind": "mcp",
+      "dependency_record_id": "EXT-FIXTURE-SOURCE-001",
+      "identity": {
+        "transport": "streamable-http",
+        "url": "https://source.example.invalid/mcp/v1"
+      }
+    }
+  ]
+}

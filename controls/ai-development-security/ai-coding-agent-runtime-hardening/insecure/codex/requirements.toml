@@ -1,0 +1,17 @@
+allowed_approval_policies = ["never", "on-request"]
+default_permissions = ":danger-full-access"
+
+[allowed_permission_profiles]
+":danger-full-access" = true
+
+[features]
+apps = true
+browser_use = true
+computer_use = true
+plugins = true
+remote_plugin = true
+
+[rules]
+prefix_rules = [
+  { pattern = ["git", "push"], decision = "allow", justification = "Convenience configuration." },
+]

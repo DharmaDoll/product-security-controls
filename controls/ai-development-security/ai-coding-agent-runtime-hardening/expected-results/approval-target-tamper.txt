@@ -1,0 +1,5 @@
+PASS PSB-AI-004/AAR-008 operation is classified as a high-impact action
+FAIL PSB-AI-004/AAR-009 approval binding approver or request digest does not match
+PASS PSB-AI-004/AAR-010 approval is current and within the maximum lifetime
+PASS PSB-AI-004/AAR-011 approval is unused and its issuer is trusted
+RESULT FAIL request_id=REQ-FIXTURE-TARGET-TAMPER approval_id=APR-FIXTURE-001 checks=4 failures=1

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "docs_reader": {
+      "type": "http",
+      "url": "https://docs.example.invalid/mcp/v1"
+    },
+    "source_manager": {
+      "type": "http",
+      "url": "https://source.example.invalid/mcp/v1"
+    }
+  }
+}

@@ -11,6 +11,8 @@ completion evidence for each planned control.
 Planning status:
 
 - `ready`: scope and prerequisite inputs are available;
+- `prototype`: the first executable vertical slice exists while explicitly
+  listed expansion work remains;
 - `input-required`: an organization-owned source or decision is required before
   implementation;
 - `dependency-required`: another planned control must land first;
@@ -577,9 +579,9 @@ over-privileged, or unreviewed dependencies.
 
 ### PSB-AI-004 — AI coding agent runtime hardening
 
-Status: `ready`  
+Status: `prototype` — sixth runnable slice implemented
 Domain: `ai-development-security`  
-Primary security functions: `prevent`, `verify`
+Primary security functions: `prevent`, `detect`, `verify`, `govern`
 
 #### Threat actor or failure source
 
@@ -706,6 +708,8 @@ repository-local configuration file.
   deployment require an explicit human approval policy;
 - high-impact approval is short-lived and bound to the exact actor, tool,
   target, normalized parameters, and policy version, with replay protection;
+- high-impact approval issuer is authenticated and one exact approval can be
+  consumed by only one concurrent action;
 - MCP, plugin, Skill, app, and browser capabilities are least-privileged, with
   side-effecting actions distinguished from reads;
 - managed policy has precedence over repository and user convenience settings;
@@ -726,6 +730,98 @@ credential-path denial, network default-deny, explicit approval for source
 publication, and rejection of dangerous bypass modes. Verify secure, insecure,
 malformed, and repository-downgrade fixtures offline through
 `make verify-control CONTROL=PSB-AI-004`.
+
+Implementation: complete in
+[`controls/ai-development-security/ai-coding-agent-runtime-hardening/`](../controls/ai-development-security/ai-coding-agent-runtime-hardening/).
+The durable phase and remaining-scope record is
+[`docs/IMPLEMENTATION_STATUS.md`](../controls/ai-development-security/ai-coding-agent-runtime-hardening/docs/IMPLEMENTATION_STATUS.md).
+
+#### Second runnable slice
+
+Implementation: complete.
+
+The provider-neutral policy now classifies dependency installation, source
+commit/publication/history rewrite, package publication, database mutation,
+infrastructure and cloud changes, and deployment. A read-only execution gate
+binds approval to actor, agent, tool, operation, target, normalized parameters,
+policy identity/revision, request digest, issue time, and expiry. Secure,
+broad, expired, replayed, target-tampered, parameter-tampered, unclassified,
+unavailable-validator, and malformed fixtures verify fail-closed behavior.
+
+At this historical slice boundary, production issuer authentication and atomic
+approval consumption remained explicit limitations. The fifth slice closes
+those two gaps for the local executable prototype; production key custody and
+atomicity with an external side effect remain limitations.
+
+#### Third runnable slice
+
+Implementation: complete.
+
+Claude Code and Codex adapters now require exact synthetic MCP identities and
+exact tool sets. The provider-neutral dispatcher verifies declared effects,
+target, payload size, and idempotency requirements. Reviewed reads and one
+bounded reversible update require no human confirmation, high-impact actions
+require exactly one bound approval, and destructive, unknown, ambiguous, or
+policy-invalid calls are denied without prompting for an override.
+
+Unreviewed plugin installation, browser control, and computer use are disabled
+where the current adapter exposes managed controls. Skill fixtures retain
+instruction-only authority. Previously installed plugin inventory, production
+MCP behavior, private network controls, and approval-service production
+integration remain explicit follow-up work.
+
+#### Fourth runnable slice
+
+Implementation: complete.
+
+Managed-only Claude Code and Codex `PreToolUse` definitions invoke one
+provider-neutral gate for all MCP tools. The gate normalizes provider-shaped
+input and enforces exact resource, UTF-8 payload size, and idempotency
+constraints immediately before execution. Explicit parser, policy, or engine
+failure exits `2`; routine writes keep a native prompt fallback for hook
+process startup or timeout faults that this static fixture cannot prove block.
+
+#### Fifth runnable slice
+
+Implementation: complete.
+
+Both providers now normalize the exact high-impact request, select only the
+digest-named approval envelope, authenticate an active issuer-bound key and
+pinned public-key digest with OpenSSL 3, recheck actor, agent, target,
+parameters, policy identity, and TTL, and commit approval ID and request digest
+uniqueness in a SQLite immediate transaction before returning `allow`.
+Malformed, untrusted-key, forged, expired, target-changed, unknown-parameter,
+unavailable-verifier, unavailable-actor, corrupt-ledger, sequential replay,
+and concurrent-consumer cases fail closed.
+
+The fixture includes only a synthetic public key and precomputed signatures.
+Production still requires independent approver authentication, protected
+private-key custody, rotation and revocation, managed trust delivery, and
+idempotent reconciliation because SQLite cannot be atomic with an external MCP
+side effect.
+
+#### Sixth runnable slice
+
+Implementation: complete.
+
+Provider-specific managed endpoint snapshots now reconcile the complete active
+MCP and Skill set with exact kind, dependency record, identity, authority,
+collection source, and one-hour freshness requirements. Previously installed
+or unknown plugins, missing extensions, kind or dependency confusion, stale
+snapshots, unavailable collection, and malformed inventory do not pass.
+
+The managed `PreToolUse` gate appends a fixed-schema JSON Lines event before
+returning provider output. Events cover allow, deny, and error decisions using
+hashed session, request, and approval references without prompt, transcript,
+argument, target, body, output, credential, or signature content. Absolute
+non-symlink storage, `0700` directory and `0600` file modes, append locking,
+size bounds, `fsync`, retention, and export state are verified. Missing or
+symlinked audit sinks block with exit `2`.
+
+This is local reference evidence. Production still requires a trustworthy
+fleet collector, PSB-AI-002 dependency provenance, managed ownership, rotation,
+export ingestion, alerting, and separate review of native OTel, workspace, and
+server-side audit coverage.
 
 #### Acceptance criteria
 
@@ -781,7 +877,7 @@ not an immutable dependency.
 | Memory & Context Security | Not owned by an existing planned control. | Define isolation, provenance, validation, sensitive-data exclusion, expiry, size limits, integrity, deletion, and poisoning tests. |
 | Human-in-the-Loop Controls | `PSB-AI-004` owns coding-agent action classification and approval enforcement. | Verify independent authorization, exact parameter binding, expiry, replay prevention, step-up requirements, idempotency, interruption, and bounded rollback. |
 | Output Validation & Guardrails | `PSB-AI-004` denies unauthorized actions and `PSB-AI-003` tests malicious influence. | Add structured tool-call schemas, parameter validation, sensitive-output handling, scope/rate limits, and fail-closed execution gates. |
-| Monitoring & Observability | `PSB-AI-004` requires redacted runtime audit evidence. | Add anomaly detection, approval-drift signals, cost/token/tool-call metrics, alert tests, evidence retention, and audit-pipeline failure behavior. |
+| Monitoring & Observability | `PSB-AI-004` now writes and verifies fixed-schema redacted allow, deny, and error hook evidence with local retention, export state, and fail-closed sink tests. | Add anomaly detection, approval-drift signals, cost/token/tool-call metrics, adopted export-ingestion evidence, and alert-delivery tests. |
 | Multi-Agent Security | Not owned by an existing planned control. | Define authenticated delegation, sender/recipient authorization, message validation, privilege ceilings, isolation, freshness/replay checks, and circuit breakers. |
 | Data Protection & Privacy | Credential paths and audit redaction are partial requirements in `PSB-AI-004`; endpoint and credential lifecycle remain `PSB-SOURCE-001` and `PSB-SOURCE-004`. | Define agent-context classification, minimization, encryption, residency where applicable, retention, deletion, and cross-user isolation. |
 | Secure Agent Testing & Adversarial Validation | `PSB-AI-001` owns baseline benchmarking, `PSB-AI-003` owns injection scenarios, and every control must reach E3 with negative tests. | Maintain an abuse-case reconciliation view covering tool misuse, privilege escalation, memory poisoning, exfiltration, approval bypass, runaway loops, and multi-agent chaining without duplicating control-local tests. |
@@ -894,11 +990,11 @@ Goal: detect security-relevant agent behavior and stop excessive token, cost,
 retry, recursion, duration, and tool-call consumption without logging
 credentials or sensitive context.
 
-Disposition: keep basic redacted audit enablement in `PSB-AI-004`; reserve a
-separate control boundary for anomaly rules, denial-of-wallet limits, alert
-delivery, evidence retention, and telemetry-pipeline error handling. Assign an
-ID after deterministic event fixtures and organization-owned alert evidence
-are separated.
+Disposition: keep fixed-schema redacted hook audit, local retention/export
+state, and sink-failure behavior in `PSB-AI-004`; reserve a separate control
+boundary for anomaly rules, denial-of-wallet limits, organization-owned export
+ingestion, and alert delivery. Assign an ID after resource-abuse fixtures and
+organization-owned alert evidence are separated.
 
 ### Multi-agent trust and delegation
 

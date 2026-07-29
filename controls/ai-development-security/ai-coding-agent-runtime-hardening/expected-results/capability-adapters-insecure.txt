@@ -1,0 +1,7 @@
+FAIL PSB-AI-004/AAR-012 provider=claude-code MCP identity allowlist or repository extension source is broad
+FAIL PSB-AI-004/AAR-014 provider=claude-code tool approval rules are excessive missing or allow a prohibited tool
+FAIL PSB-AI-004/AAR-015 provider=claude-code managed PreToolUse gate is absent broad or replaceable
+FAIL PSB-AI-004/AAR-012 provider=codex MCP identity or plugin browser and computer-use boundary is broad
+FAIL PSB-AI-004/AAR-014 provider=codex tool set or approval mode is excessive missing or broad
+FAIL PSB-AI-004/AAR-015 provider=codex managed PreToolUse gate is absent broad or replaceable
+RESULT FAIL profile=insecure checks=6 failures=6

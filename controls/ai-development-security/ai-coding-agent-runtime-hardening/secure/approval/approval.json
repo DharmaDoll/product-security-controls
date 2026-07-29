@@ -1,0 +1,25 @@
+{
+  "schema_version": "psb-ai-action-approval/v1",
+  "approval_id": "APR-FIXTURE-001",
+  "decision": "approved",
+  "approver_id": "reviewer-fixture-001",
+  "issuer": "fixture-approval-service",
+  "actor_id": "developer-fixture-001",
+  "agent_id": "coding-agent-fixture-001",
+  "action_class": "source-publication",
+  "tool": "git",
+  "operation": "push",
+  "target": {
+    "repository": "example.invalid/acme/widget",
+    "ref": "refs/heads/feature"
+  },
+  "parameters": {
+    "force": false,
+    "set_upstream": false
+  },
+  "policy_id": "PSB-AI-004-HIGH-IMPACT",
+  "policy_revision": "2026-07-29.1",
+  "request_digest": "400df52df087d17f6715fb9fbb28abddf3c7acf9fb42b4806fe76b7cb4f799b2",
+  "issued_at": "2026-07-29T12:00:00Z",
+  "expires_at": "2026-07-29T12:05:00Z"
+}

@@ -1,0 +1,97 @@
+{
+  "allowManagedPermissionRulesOnly": true,
+  "allowManagedMcpServersOnly": true,
+  "allowManagedHooksOnly": true,
+  "allowedMcpServers": [
+    {
+      "serverUrl": "https://docs.example.invalid/mcp/v1"
+    },
+    {
+      "serverUrl": "https://source.example.invalid/mcp/v1"
+    }
+  ],
+  "strictKnownMarketplaces": [],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^mcp__.*$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3",
+            "args": [
+              "/opt/psb-ai-004/hooks/pretool-gate.py",
+              "--provider",
+              "claude-code",
+              "--policy",
+              "/opt/psb-ai-004/policy/runtime-policy.json",
+              "--engine-state",
+              "/var/lib/psb-ai-004/capability-engine-state.json",
+              "--actor-state",
+              "/var/lib/psb-ai-004/actor-state.json",
+              "--approval-dir",
+              "/var/lib/psb-ai-004/approvals",
+              "--approval-trust",
+              "/opt/psb-ai-004/trust/approval-trust.json",
+            "--approval-ledger",
+            "/var/lib/psb-ai-004/approval-consumption.sqlite3",
+            "--openssl",
+            "/usr/bin/openssl",
+            "--audit-policy",
+            "/opt/psb-ai-004/policy/runtime-assessment-policy.json",
+            "--audit-log",
+            "/var/log/psb-ai-004/pretool-audit.jsonl"
+            ],
+            "timeout": 5,
+            "statusMessage": "Checking managed MCP capability"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "defaultMode": "default",
+    "disableBypassPermissionsMode": "disable",
+    "ask": [
+      "Bash(git push *)"
+    ],
+    "deny": [
+      "Read(./.psb-fixtures/credentials/**)",
+      "Edit(./.git/**)",
+      "Edit(./.agents/**)",
+      "Edit(./.codex/**)",
+      "mcp__source_manager__delete_repository"
+    ],
+    "allow": [
+      "mcp__docs_reader__search",
+      "mcp__docs_reader__read",
+      "mcp__source_manager__list_pull_requests"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "autoAllowBashIfSandboxed": false,
+    "excludedCommands": [],
+    "allowUnsandboxedCommands": false,
+    "filesystem": {
+      "disabled": false,
+      "allowWrite": [],
+      "denyWrite": [
+        "./.git",
+        "./.agents",
+        "./.codex"
+      ],
+      "denyRead": [
+        "./.psb-fixtures/credentials"
+      ]
+    },
+    "network": {
+      "allowedDomains": [],
+      "strictAllowlist": true,
+      "allowManagedDomainsOnly": true,
+      "allowAllUnixSockets": false,
+      "allowLocalBinding": false
+    }
+  }
+}

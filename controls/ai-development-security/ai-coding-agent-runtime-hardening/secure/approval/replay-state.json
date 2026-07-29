@@ -1,0 +1,5 @@
+{
+  "schema_version": "psb-ai-approval-replay-state/v1",
+  "used_approval_ids": [],
+  "used_request_digests": []
+}

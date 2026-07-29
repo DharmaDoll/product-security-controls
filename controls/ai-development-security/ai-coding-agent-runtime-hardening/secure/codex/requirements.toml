@@ -1,0 +1,60 @@
+allowed_approval_policies = ["untrusted", "on-request"]
+default_permissions = "psb_workspace"
+allow_remote_control = false
+allow_managed_hooks_only = true
+
+[allowed_permission_profiles]
+psb_workspace = true
+
+[features]
+apps = false
+browser_use = false
+browser_use_external = false
+browser_use_full_cdp_access = false
+computer_use = false
+plugins = false
+remote_plugin = false
+plugin_sharing = false
+hooks = true
+
+[hooks]
+managed_dir = "/opt/psb-ai-004/hooks"
+
+[[hooks.PreToolUse]]
+matcher = "^mcp__.*$"
+
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "/usr/bin/python3 /opt/psb-ai-004/hooks/pretool-gate.py --provider codex --policy /opt/psb-ai-004/policy/runtime-policy.json --engine-state /var/lib/psb-ai-004/capability-engine-state.json --actor-state /var/lib/psb-ai-004/actor-state.json --approval-dir /var/lib/psb-ai-004/approvals --approval-trust /opt/psb-ai-004/trust/approval-trust.json --approval-ledger /var/lib/psb-ai-004/approval-consumption.sqlite3 --openssl /usr/bin/openssl --audit-policy /opt/psb-ai-004/policy/runtime-assessment-policy.json --audit-log /var/log/psb-ai-004/pretool-audit.jsonl"
+timeout = 5
+statusMessage = "Checking managed MCP capability"
+
+[mcp_servers.docs_reader.identity]
+url = "https://docs.example.invalid/mcp/v1"
+
+[mcp_servers.source_manager.identity]
+url = "https://source.example.invalid/mcp/v1"
+
+[permissions.psb_workspace]
+description = "Workspace editing with policy and synthetic credential paths protected."
+extends = ":workspace"
+
+[permissions.psb_workspace.filesystem]
+glob_scan_max_depth = 4
+
+[permissions.psb_workspace.filesystem.":workspace_roots"]
+"." = "write"
+".git" = "read"
+".agents" = "read"
+".codex" = "read"
+".psb-fixtures/credentials" = "deny"
+
+[permissions.psb_workspace.network]
+enabled = false
+allow_local_binding = false
+dangerously_allow_all_unix_sockets = false
+
+[rules]
+prefix_rules = [
+  { pattern = ["git", "push"], decision = "prompt", justification = "Publishing source requires explicit human approval." },
+]

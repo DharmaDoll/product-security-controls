@@ -1,0 +1,19 @@
+{
+  "profile_schema": "psb-ai-runtime-profile/v1",
+  "name": "repository-downgrade",
+  "policy_schema": "psb-ai-runtime-policy/v1",
+  "providers": {
+    "claude-code": {
+      "configuration_baseline": "official-docs-reviewed-2026-07-29",
+      "minimum_product_version": "2.1.219",
+      "managed_settings": "claude/managed-settings.json",
+      "repository_settings": "claude/repository-settings.json"
+    },
+    "codex": {
+      "configuration_baseline": "official-docs-reviewed-2026-07-29",
+      "minimum_product_version": "0.138.0",
+      "managed_requirements": "codex/requirements.toml",
+      "repository_config": "codex/config.toml"
+    }
+  }
+}

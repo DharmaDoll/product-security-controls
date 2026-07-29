@@ -289,9 +289,21 @@ SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    to a canonical source and benchmarked against a no-guidance baseline.
 3. `PSB-AI-002` — Agent Skill, MCP server, and plugin pinning, integrity
    verification, semantic review, and least-privilege enforcement.
-4. `PSB-AI-004` — vendor-neutral AI coding agent runtime hardening with
-   Claude Code and Codex adapters for sandbox, approval, filesystem,
-   credential, network, MCP, side-effect, bypass, and audit policy.
+4. `PSB-AI-004` — prototype first slice implemented for Claude Code and Codex
+   sandbox, workspace, synthetic credential, network-off, source-publication
+   approval, bypass, and managed-precedence outcomes. The second slice adds
+   classified high-impact actions plus actor, agent, target, parameter,
+   policy-version, TTL, and replay-bound approval verification. The third slice
+   adds exact managed MCP identities and tools, constrained automatic
+   reversible writes, zero-HITL reads, and one-HITL high-impact routing. The
+   fourth slice connects managed `PreToolUse` gates. The fifth authenticates
+   digest-selected approvals with a pinned issuer key and atomically limits
+   local consumption to one hook allow. The sixth reconciles recent complete
+   installed runtime inventories and writes fixed-schema redacted allow, deny,
+   and error audit events before provider output. Continue with private-network,
+   socket, proxy, metadata-service, product hook startup/timeout assessment,
+   external-side-effect reconciliation, command-indirection, adopted fleet
+   collector, export ingestion, and alert tests.
 5. `PSB-AI-003` — prompt/document injection fixtures that verify the
    `PSB-AI-004` runtime boundary and repository security invariants.
 6. Reconcile the remaining OWASP AI Agent Security Cheat Sheet outcomes into

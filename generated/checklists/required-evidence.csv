@@ -1,4 +1,44 @@
 ﻿Control ID,Check ID,Responsible Role,Verification Type,Required Evidence
+PSB-AI-004,PSB-AI-004-AAR-001,shared,automated,sanitized verifier result for AAR-001
+PSB-AI-004,PSB-AI-004-AAR-001,shared,automated,immutable secure and insecure fixtures
+PSB-AI-004,PSB-AI-004-AAR-002,shared,automated,sanitized verifier result for AAR-002
+PSB-AI-004,PSB-AI-004-AAR-002,shared,automated,provider adapter filesystem policy
+PSB-AI-004,PSB-AI-004-AAR-003,security,automated,sanitized verifier result for AAR-003
+PSB-AI-004,PSB-AI-004-AAR-003,security,automated,synthetic path policy with no credential value
+PSB-AI-004,PSB-AI-004-AAR-004,security,automated,sanitized verifier result for AAR-004
+PSB-AI-004,PSB-AI-004-AAR-004,security,automated,provider adapter network policy
+PSB-AI-004,PSB-AI-004-AAR-005,developer,automated,sanitized verifier result for AAR-005
+PSB-AI-004,PSB-AI-004-AAR-005,developer,automated,managed publication approval rule
+PSB-AI-004,PSB-AI-004-AAR-006,security,automated,sanitized verifier result for AAR-006
+PSB-AI-004,PSB-AI-004-AAR-006,security,automated,managed mode allowlist
+PSB-AI-004,PSB-AI-004-AAR-007,shared,automated,sanitized verifier result for AAR-007
+PSB-AI-004,PSB-AI-004-AAR-007,shared,automated,repository-downgrade negative fixture
+PSB-AI-004,PSB-AI-004-AAR-008,security,automated,sanitized verifier result for AAR-008
+PSB-AI-004,PSB-AI-004-AAR-008,security,automated,versioned high-impact action-class policy
+PSB-AI-004,PSB-AI-004-AAR-009,shared,automated,sanitized verifier result for AAR-009
+PSB-AI-004,PSB-AI-004-AAR-009,shared,automated,target and parameter tamper negative fixtures
+PSB-AI-004,PSB-AI-004-AAR-010,security,automated,sanitized verifier result for AAR-010
+PSB-AI-004,PSB-AI-004-AAR-010,security,automated,expired and overlong approval negative evidence
+PSB-AI-004,PSB-AI-004-AAR-011,security,automated,sanitized verifier result for AAR-011
+PSB-AI-004,PSB-AI-004-AAR-011,security,automated,replay and unavailable-validator negative fixtures
+PSB-AI-004,PSB-AI-004-AAR-012,security,automated,sanitized verifier result for AAR-012
+PSB-AI-004,PSB-AI-004-AAR-012,security,automated,exact Claude Code and Codex MCP adapter fixtures
+PSB-AI-004,PSB-AI-004-AAR-013,shared,automated,sanitized verifier result for AAR-013
+PSB-AI-004,PSB-AI-004-AAR-013,shared,automated,effect mismatch and target broadening negative fixtures
+PSB-AI-004,PSB-AI-004-AAR-014,shared,automated,sanitized verifier result for AAR-014
+PSB-AI-004,PSB-AI-004-AAR-014,shared,automated,excessive and missing HITL negative fixtures
+PSB-AI-004,PSB-AI-004-AAR-015,shared,automated,sanitized provider-specific hook decisions
+PSB-AI-004,PSB-AI-004-AAR-015,shared,automated,managed hook configuration and fail-closed negative fixtures
+PSB-AI-004,PSB-AI-004-AAR-016,security,automated,sanitized AAR-016 signature and binding result
+PSB-AI-004,PSB-AI-004-AAR-016,security,automated,public trust manifest with key digest and no private key
+PSB-AI-004,PSB-AI-004-AAR-017,security,automated,sanitized AAR-017 consumption result
+PSB-AI-004,PSB-AI-004-AAR-017,security,automated,concurrent one-allow one-replay test output
+PSB-AI-004,PSB-AI-004-AAR-017,security,automated,ledger-error negative fixture
+PSB-AI-004,PSB-AI-004-AAR-018,security,automated,sanitized AAR-018 result for each provider
+PSB-AI-004,PSB-AI-004-AAR-018,security,automated,provider inventory snapshot with no prompt argument output or credential content
+PSB-AI-004,PSB-AI-004-AAR-019,security,automated,sanitized AAR-019 audit verification result
+PSB-AI-004,PSB-AI-004-AAR-019,security,automated,fixed-schema synthetic audit events
+PSB-AI-004,PSB-AI-004-AAR-019,security,automated,fail-closed audit-sink negative test
 PSB-BUILD-001,PSB-BUILD-001-BLD-001,build-platform,automated,sanitized verifier output
 PSB-BUILD-001,PSB-BUILD-001-BLD-002,build-platform,automated,sanitized verifier output
 PSB-BUILD-001,PSB-BUILD-001-BLD-002,build-platform,automated,build and deploy job definition

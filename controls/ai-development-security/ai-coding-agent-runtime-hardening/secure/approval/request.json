@@ -1,0 +1,19 @@
+{
+  "schema_version": "psb-ai-action-request/v1",
+  "request_id": "REQ-FIXTURE-001",
+  "actor_id": "developer-fixture-001",
+  "agent_id": "coding-agent-fixture-001",
+  "action_class": "source-publication",
+  "tool": "git",
+  "operation": "push",
+  "target": {
+    "repository": "example.invalid/acme/widget",
+    "ref": "refs/heads/feature"
+  },
+  "parameters": {
+    "force": false,
+    "set_upstream": false
+  },
+  "policy_id": "PSB-AI-004-HIGH-IMPACT",
+  "policy_revision": "2026-07-29.1"
+}

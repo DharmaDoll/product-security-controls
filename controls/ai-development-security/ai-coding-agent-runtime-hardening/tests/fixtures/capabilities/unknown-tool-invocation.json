@@ -1,0 +1,8 @@
+{
+  "schema_version": "psb-ai-extension-invocation/v1",
+  "invocation_id": "INV-FIXTURE-UNKNOWN",
+  "extension_id": "source_manager",
+  "tool": "admin_everything",
+  "declared_effect": "high-impact",
+  "human_confirmations": 0
+}

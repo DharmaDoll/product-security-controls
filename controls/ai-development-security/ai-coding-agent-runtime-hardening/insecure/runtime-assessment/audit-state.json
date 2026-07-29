@@ -1,0 +1,11 @@
+{
+  "schema_version": "psb-ai-runtime-audit-state/v1",
+  "available": true,
+  "managed_owner": false,
+  "owner": "developer",
+  "directory_mode": "0777",
+  "file_mode": "0666",
+  "retention_days": 3650,
+  "export_enabled": false,
+  "export_destination_class": "none"
+}

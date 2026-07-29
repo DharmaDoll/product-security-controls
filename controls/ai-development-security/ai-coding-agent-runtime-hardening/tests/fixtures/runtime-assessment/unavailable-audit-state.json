@@ -1,0 +1,11 @@
+{
+  "schema_version": "psb-ai-runtime-audit-state/v1",
+  "available": false,
+  "managed_owner": true,
+  "owner": "root",
+  "directory_mode": "0700",
+  "file_mode": "0600",
+  "retention_days": 14,
+  "export_enabled": true,
+  "export_destination_class": "organization-security-log"
+}

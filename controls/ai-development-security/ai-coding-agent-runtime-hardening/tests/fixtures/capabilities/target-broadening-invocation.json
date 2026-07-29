@@ -1,0 +1,11 @@
+{
+  "schema_version": "psb-ai-extension-invocation/v1",
+  "invocation_id": "INV-FIXTURE-TARGET-BROADENING",
+  "extension_id": "source_manager",
+  "tool": "update_issue",
+  "declared_effect": "bounded-reversible-write",
+  "resource": "fixture-org/other-repo",
+  "body_bytes": 128,
+  "idempotency_key": "fixture-idempotency-002",
+  "human_confirmations": 0
+}

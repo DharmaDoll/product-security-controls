@@ -1,0 +1,4 @@
+PASS PSB-AI-004/AAR-012 extension and tool are present in the reviewed capability inventory
+PASS PSB-AI-004/AAR-013 declared effect and machine-checkable constraints match policy
+PASS PSB-AI-004/AAR-014 HITL count matches the risk-based minimum
+RESULT PASS invocation=INV-FIXTURE-HIGH-IMPACT extension=source_manager tool=create_pull_request expected_hitl=1 checks=3 failures=0

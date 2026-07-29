@@ -1,0 +1,4 @@
+FAIL PSB-AI-004/AAR-018 provider=claude-code runtime inventory is stale broad incomplete or differs from reviewed extensions
+FAIL PSB-AI-004/AAR-018 provider=codex runtime inventory is stale broad incomplete or differs from reviewed extensions
+FAIL PSB-AI-004/AAR-019 audit evidence is incomplete sensitive broadly accessible or over-retained
+RESULT FAIL profile=insecure checks=3 failures=3

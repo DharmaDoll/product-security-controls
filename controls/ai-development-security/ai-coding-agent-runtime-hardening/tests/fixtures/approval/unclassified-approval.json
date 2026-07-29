@@ -1,0 +1,23 @@
+{
+  "schema_version": "psb-ai-action-approval/v1",
+  "approval_id": "APR-FIXTURE-UNCLASSIFIED",
+  "decision": "approved",
+  "approver_id": "reviewer-fixture-001",
+  "issuer": "fixture-approval-service",
+  "actor_id": "developer-fixture-001",
+  "agent_id": "coding-agent-fixture-001",
+  "action_class": "unclassified",
+  "tool": "shell",
+  "operation": "execute",
+  "target": {
+    "resource": "synthetic"
+  },
+  "parameters": {
+    "mode": "synthetic"
+  },
+  "policy_id": "PSB-AI-004-HIGH-IMPACT",
+  "policy_revision": "2026-07-29.1",
+  "request_digest": "47050b4b6a45bacdbc9e04a996310265829008e19c1cceae383ed662be85b575",
+  "issued_at": "2026-07-29T12:00:00Z",
+  "expires_at": "2026-07-29T12:05:00Z"
+}

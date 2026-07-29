@@ -1,0 +1,569 @@
+id: PSB-AI-004
+title: Harden AI coding agent runtime authority
+domain: ai-development-security
+summary: Enforce and verify least-privilege filesystem network extension high-impact action and bypass boundaries for AI coding agents through one outcome policy and product adapters.
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - verify
+  - govern
+threats:
+  - id: AI-AGENT-TOOL-ABUSE
+    description: Malicious instructions compromised extensions or agent mistakes cause a coding agent to invoke tools with unintended authority.
+  - id: AI-AGENT-CREDENTIAL-HARVEST
+    description: Repository content or a tool attempts to read credentials available on the developer endpoint.
+  - id: AI-AGENT-EXFILTRATION
+    description: An agent or invoked process sends source credentials or host data to an unapproved destination.
+  - id: AI-AGENT-SANDBOX-BYPASS
+    description: A bypass mode configuration downgrade or unavailable sandbox causes commands to run outside the intended boundary.
+  - id: AI-AGENT-APPROVAL-CONFUSION
+    description: An agent reuses a broad stale or altered approval for a different high-impact action target or parameter set.
+  - id: AI-AGENT-EXTENSION-OVERREACH
+    description: An unapproved or identity-confused MCP plugin Skill app or browser capability exposes tools and side effects beyond the reviewed task.
+  - id: AI-AGENT-APPROVAL-FATIGUE
+    description: Excessive confirmation prompts train a developer to approve high-impact agent actions without meaningful review.
+  - id: AI-AGENT-HOOK-BYPASS
+    description: Missing replaceable malformed or failed enforcement hooks allow an MCP invocation to skip machine-checkable capability constraints.
+  - id: AI-AGENT-APPROVAL-FORGERY
+    description: A local process forges or races approval evidence so one human decision authorizes an unreviewed or repeated high-impact action.
+  - id: AI-AGENT-RUNTIME-DRIFT
+    description: A previously installed or identity-confused plugin Skill or MCP server remains active outside the reviewed runtime extension set.
+  - id: AI-AGENT-AUDIT-BLINDNESS
+    description: Missing failed over-retained or sensitive runtime logs prevent investigation or expose source prompts tool arguments and outputs.
+implementations:
+  insecure:
+    - insecure/profile.json
+    - insecure/claude/managed-settings.json
+    - insecure/claude/repository-settings.json
+    - insecure/claude/mcp.json
+    - insecure/codex/requirements.toml
+    - insecure/codex/config.toml
+    - insecure/approval/approval.json
+    - insecure/approval-runtime/forged-envelope.json
+    - insecure/runtime-assessment/claude-inventory.json
+    - insecure/runtime-assessment/codex-inventory.json
+    - insecure/runtime-assessment/audit-state.json
+    - insecure/runtime-assessment/audit-events.jsonl
+  secure:
+    - policy/runtime-policy.json
+    - policy/runtime-assessment-policy.json
+    - secure/profile.json
+    - secure/claude/managed-settings.json
+    - secure/claude/repository-settings.json
+    - secure/claude/mcp.json
+    - secure/codex/requirements.toml
+    - secure/codex/config.toml
+    - secure/approval/request.json
+    - secure/approval/approval.json
+    - secure/approval/replay-state.json
+    - secure/approval/validation-state.json
+    - secure/capabilities/engine-state.json
+    - secure/capabilities/read-invocation.json
+    - secure/capabilities/bounded-write-invocation.json
+    - secure/capabilities/high-impact-invocation.json
+    - secure/approval-runtime/actor-state.json
+    - secure/approval-runtime/approval-trust.json
+    - secure/approval-runtime/issuer-public.pem
+    - secure/approval-runtime/claude-request.json
+    - secure/approval-runtime/claude-envelope.json
+    - secure/approval-runtime/codex-request.json
+    - secure/approval-runtime/codex-envelope.json
+    - secure/runtime-assessment/claude-inventory.json
+    - secure/runtime-assessment/codex-inventory.json
+    - secure/runtime-assessment/audit-state.json
+    - secure/runtime-assessment/audit-events.jsonl
+    - scripts/approval_core.py
+    - scripts/signed_approval.py
+    - scripts/authorize-signed-approval.py
+    - scripts/runtime_audit.py
+    - scripts/verify-runtime-state.py
+    - scripts/pretool-gate.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-AI-004
+  expected:
+    - both secure provider adapters pass the same seven outcome checks
+    - both insecure provider adapters are rejected with 14 findings and exit code 1
+    - repository downgrade attempts are findings even where managed policy would reject the effective setting
+    - malformed unsupported and evaluator failure cases return ERROR with exit code 2
+    - high-impact operation classes are explicit and secure approval evidence passes four binding lifetime and replay checks
+    - broad expired replayed target-modified parameter-modified and unclassified approval cases are rejected with exit code 1
+    - unavailable approval validation and malformed approval evidence return ERROR with exit code 2
+    - exact managed MCP identities and tool sets pass for Claude Code and Codex while broad adapters are rejected
+    - routine reads and one constrained reversible write require zero HITL while a high-impact action requires exactly one bound approval
+    - unknown destructive effect-mismatched target-broadened excessive-HITL and missing-HITL invocations are rejected
+    - unavailable capability evaluation and malformed invocation evidence return ERROR with exit code 2
+    - managed-only PreToolUse definitions cover every MCP tool and invoke the same provider-neutral policy gate
+    - valid read and bounded-write hook inputs are allowed while constraint destructive unknown and malformed cases block
+    - both managed hooks allow one authenticated exact approval without a second prompt deny missing invalid expired or replayed evidence and error on unbound extra parameters
+    - the issuer public key is digest-pinned and signed evidence passes exact key issuer algorithm lifetime and request-binding checks while malformed or untrusted-key evidence returns ERROR
+    - SQLite uniqueness permits only one sequential or concurrent approval consumer while ledger and crypto failures return ERROR
+    - recent complete Claude Code and Codex runtime inventories exactly match the reviewed extension and dependency-record set while drift stale unavailable and malformed snapshots do not pass
+    - every managed hook allow deny and error decision is written with fixed redacted fields before provider output while audit sink failure blocks the invocation
+    - audit storage ownership permissions retention export state event coverage and forbidden content are verified
+    - generated evidence contains decision reasons but no credential value or private destination
+checks:
+  - id: AAR-001
+    title: Runtime isolation is enforced and fails closed
+    required_state: Claude Code sandbox or Codex managed permission-profile isolation is active and an unavailable or disallowed boundary prevents startup or execution
+    responsible_role: shared
+    applies_to:
+      - ai-coding-agent
+      - developer-endpoint
+    context:
+      threat_actor: malicious repository instruction compromised extension or coding agent selecting an unsafe execution path
+      attack_or_failure_scenario: commands execute with host authority because the sandbox is disabled unavailable or replaced by a full-access profile
+      why_required: prompt guidance cannot contain a process after tool invocation so an independently enforced runtime boundary must fail closed
+    verification:
+      type: automated
+      method: compare each adapter with the canonical sandbox outcome and execute disabled unavailable and disallowed-profile fixtures
+      expected: secure adapters pass while insecure and downgrade fixtures cannot obtain an unconfined runtime
+      evidence:
+        - sanitized verifier result for AAR-001
+        - immutable secure and insecure fixtures
+    mapping_status: reviewed
+  - id: AAR-002
+    title: Workspace writes exclude protected policy paths
+    required_state: only approved workspace content is writable while Git metadata agent policy and repository agent configuration remain read-only
+    responsible_role: shared
+    applies_to:
+      - ai-coding-agent
+      - source-repository
+    context:
+      threat_actor: prompt-injected agent malicious tool or mistaken coding action
+      attack_or_failure_scenario: the agent modifies source outside task scope or rewrites Git agent or policy files to create persistent authority
+      why_required: write confinement bounds immediate damage and prevents one task from weakening the controls used by later tasks
+    verification:
+      type: automated
+      method: inspect effective Claude filesystem deny rules and the Codex managed workspace permission profile
+      expected: no additional host write root exists and all protected paths have deny-write or read-only treatment
+      evidence:
+        - sanitized verifier result for AAR-002
+        - provider adapter filesystem policy
+    mapping_status: reviewed
+  - id: AAR-003
+    title: Synthetic credential paths are inaccessible
+    required_state: the synthetic fixture credential directory is denied for read and write by every adapter
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - developer-credentials
+    context:
+      threat_actor: prompt injection compromised MCP or agent process attempting credential discovery
+      attack_or_failure_scenario: the agent reads a token key or cloud configuration from a path available to the developer and passes it to another tool
+      why_required: coding agents inherit useful local context and therefore need an enforceable boundary between product source and reusable credentials
+    verification:
+      type: automated
+      method: verify native deny-read rules against a synthetic repository credential path without creating or reading a real credential
+      expected: the exact synthetic path is denied and no lower-precedence allow reopens it
+      evidence:
+        - sanitized verifier result for AAR-003
+        - synthetic path policy with no credential value
+    mapping_status: reviewed
+  - id: AAR-004
+    title: Network is default deny
+    required_state: outbound network local binding and unrestricted Unix socket access are disabled until a reviewed destination-specific policy is added
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - developer-network
+    context:
+      threat_actor: malicious instruction or compromised tool attempting exfiltration or access to a local privileged service
+      attack_or_failure_scenario: source host data or credentials leave through unrestricted egress localhost private network proxy metadata service or a Unix socket
+      why_required: filesystem controls cannot prevent disclosure once an invoked process can freely contact external or local privileged destinations
+    verification:
+      type: automated
+      method: verify empty allowlists strict network isolation and disabled local-binding and socket escape settings for each adapter
+      expected: the first-slice profile permits no sandboxed destination and repository settings cannot add one
+      evidence:
+        - sanitized verifier result for AAR-004
+        - provider adapter network policy
+    mapping_status: reviewed
+  - id: AAR-005
+    title: Source publication requires explicit approval
+    required_state: every git push request receives a human approval prompt and cannot be placed in an allow or sandbox-exclusion rule
+    responsible_role: developer
+    applies_to:
+      - ai-coding-agent
+      - source-repository
+    context:
+      threat_actor: coding agent acting on malicious instructions or publishing an incomplete unsafe or unintended change
+      attack_or_failure_scenario: local source or history is sent to a shared or public remote without the developer reviewing the exact publication action
+      why_required: publication crosses the local trust boundary and can expose source trigger automation or make harmful history visible to others
+    verification:
+      type: automated
+      method: inspect Claude ask rules and Codex managed restrictive prefix rules for the exact git push command prefix
+      expected: push is prompt-only and never allow-listed or excluded from the sandbox
+      evidence:
+        - sanitized verifier result for AAR-005
+        - managed publication approval rule
+    mapping_status: reviewed
+  - id: AAR-006
+    title: Dangerous bypass modes are prohibited
+    required_state: Claude bypassPermissions and unsandboxed-command escape hatches plus Codex danger-full-access yolo and never-approve combinations are unavailable
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - managed-agent-policy
+    context:
+      threat_actor: developer enabling a convenience option attacker controlling configuration or agent requesting an unrestricted retry
+      attack_or_failure_scenario: all ordinary approvals and sandbox boundaries disappear behind a supported but dangerous product mode
+      why_required: a secure default is ineffective when the same identity can select a one-flag path around every enforced decision
+    verification:
+      type: automated
+      method: reject product bypass fields and managed allowlists that include full-access or never-approve choices
+      expected: only reviewed restricted modes remain selectable
+      evidence:
+        - sanitized verifier result for AAR-006
+        - managed mode allowlist
+    mapping_status: reviewed
+  - id: AAR-007
+    title: Managed policy wins over repository configuration
+    required_state: managed settings and requirements define all authority-bearing rules and repository-local configuration can only preserve or reduce authority
+    responsible_role: shared
+    applies_to:
+      - ai-coding-agent
+      - source-repository
+      - managed-agent-policy
+    context:
+      threat_actor: malicious repository maintainer indirect prompt injection or well-meaning developer committing a convenience setting
+      attack_or_failure_scenario: cloning or trusting a repository loads local configuration that broadens filesystem network publication or bypass authority
+      why_required: repository content is part of the untrusted input boundary and cannot safely define the maximum authority used to inspect itself
+    verification:
+      type: automated
+      method: resolve managed and repository fixture layers and reject any repository-local broadening attempt
+      expected: the secure repository layer is restrictive and the downgrade fixture returns findings
+      evidence:
+        - sanitized verifier result for AAR-007
+        - repository-downgrade negative fixture
+    mapping_status: reviewed
+  - id: AAR-008
+    title: High-impact operations have an explicit action class
+    required_state: dependency installation source commit publication or history rewrite package publication database mutation infrastructure or cloud change and deployment map to a reviewed action class while unknown operations are denied
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - action-authorization-gate
+    context:
+      threat_actor: prompt-injected agent compromised tool or adapter omitting an operation from approval enforcement
+      attack_or_failure_scenario: a high-impact side effect is labeled low risk or unknown and bypasses the human authorization path
+      why_required: approval enforcement cannot be complete unless every protected side effect has a deterministic class and an unclassified default-deny outcome
+    verification:
+      type: automated
+      method: resolve normalized tool and operation pairs through the provider-neutral action-class policy and execute an unclassified negative fixture
+      expected: every listed high-impact operation resolves to one class and the unknown shell operation is rejected
+      evidence:
+        - sanitized verifier result for AAR-008
+        - versioned high-impact action-class policy
+    mapping_status: reviewed
+  - id: AAR-009
+    title: Approval is independently bound to the exact request
+    required_state: approval binds actor agent action class tool operation target normalized parameters policy identity revision and request digest and is issued by a different approver
+    responsible_role: shared
+    applies_to:
+      - ai-coding-agent
+      - action-authorization-gate
+    context:
+      threat_actor: malicious agent or user changing a reviewed target or parameter and replaying the original approval
+      attack_or_failure_scenario: an approval for one repository branch or safe option authorizes a different destination force flag infrastructure resource or deployment
+      why_required: a generic yes confirms intent only at a category level while exact binding prevents post-review substitution and self-approval
+    verification:
+      type: automated
+      method: canonicalize the request compute its digest and compare every required field while executing target and parameter tamper fixtures
+      expected: only an independently issued field-for-field and digest-matched approval passes
+      evidence:
+        - sanitized verifier result for AAR-009
+        - target and parameter tamper negative fixtures
+    mapping_status: reviewed
+  - id: AAR-010
+    title: Approval is short lived and current
+    required_state: approved evidence is valid at execution time and has a positive lifetime no longer than 300 seconds
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - action-authorization-gate
+    context:
+      threat_actor: agent attacker or automation retaining a previously granted approval for later use
+      attack_or_failure_scenario: approval survives the reviewed task session context or risk conditions and authorizes a delayed action
+      why_required: a short explicit lifetime bounds authority persistence and forces changed context to receive a new review
+    verification:
+      type: automated
+      method: compare deterministic UTC issue evaluation and expiry timestamps and execute expired and overlong approval fixtures
+      expected: only approved evidence with issue time not after evaluation expiry after evaluation and lifetime at most five minutes passes
+      evidence:
+        - sanitized verifier result for AAR-010
+        - expired and overlong approval negative evidence
+    mapping_status: reviewed
+  - id: AAR-011
+    title: Approval validation fails closed and prevents replay
+    required_state: approval ID and request digest are unused the issuer is trusted and unavailable validation returns ERROR rather than allow
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - action-authorization-gate
+      - governance-evidence
+    context:
+      threat_actor: malicious agent reusing consumed evidence untrusted local process forging an issuer or validator outage
+      attack_or_failure_scenario: the same authorization executes a side effect multiple times or an unverifiable local file is accepted when the trusted service cannot be checked
+      why_required: single-use and fail-closed validation prevent a valid decision from becoming a reusable bearer capability
+    verification:
+      type: automated
+      method: compare approval ID and request digest with replay state verify the trusted issuer list and simulate validator unavailability
+      expected: unused trusted evidence passes while replay or untrusted issuer is a finding and unavailable validation is ERROR
+      evidence:
+        - sanitized verifier result for AAR-011
+        - replay and unavailable-validator negative fixtures
+    mapping_status: reviewed
+  - id: AAR-012
+    title: Extension identities and tool sets are exact
+    required_state: managed policy permits only exact reviewed MCP identities and exact tool sets while Skills have no direct authority and unreviewed plugins browser control and computer use remain unavailable
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - mcp-server
+      - agent-extension
+    context:
+      threat_actor: malicious repository maintainer compromised marketplace identity-confused server or extension adding an unreviewed tool
+      attack_or_failure_scenario: a trusted-looking name wildcard URL arbitrary command or newly advertised tool receives agent authority outside the reviewed dependency and capability record
+      why_required: an extension allowlist is effective only when both executable or URL identity and individual runtime tools are constrained independently of repository labels
+    verification:
+      type: automated
+      method: compare the provider-neutral extension inventory with Claude managed MCP and permission rules plus Codex managed identity and exact enabled-tool settings
+      expected: only the two exact synthetic MCP identities and their reviewed tools are enabled and insecure broad identity fixtures fail
+      evidence:
+        - sanitized verifier result for AAR-012
+        - exact Claude Code and Codex MCP adapter fixtures
+    mapping_status: reviewed
+  - id: AAR-013
+    title: Tool effects and bounded-write constraints are verified
+    required_state: provider annotations cannot broaden the reviewed effect and reversible automatic writes require an exact resource size ceiling and idempotency key
+    responsible_role: shared
+    applies_to:
+      - ai-coding-agent
+      - mcp-tool
+      - action-authorization-gate
+    context:
+      threat_actor: compromised MCP server malicious tool metadata or agent relabeling a write as read-only
+      attack_or_failure_scenario: an automatically allowed tool writes a different repository sends a larger payload repeats a side effect or performs a prohibited destructive operation
+      why_required: fewer human confirmations are safe only when machine-checkable scope reversibility and idempotency prevent an automatic action from becoming broadly side-effecting
+    verification:
+      type: automated
+      method: compare declared effects with repository policy and execute bounded-write target effect destructive and unknown-tool negative fixtures
+      expected: reviewed reads and the constrained update pass while mismatched broadened destructive and unknown calls are denied
+      evidence:
+        - sanitized verifier result for AAR-013
+        - effect mismatch and target broadening negative fixtures
+    mapping_status: reviewed
+  - id: AAR-014
+    title: HITL is risk based and intentionally infrequent
+    required_state: reviewed reads and bounded reversible writes request zero confirmations high-impact actions request exactly one bound approval and denied operations never ask for an override
+    responsible_role: shared
+    applies_to:
+      - ai-coding-agent
+      - developer
+      - action-authorization-gate
+    context:
+      threat_actor: attacker benefiting from approval fatigue or workflow designer applying prompts without risk classification
+      attack_or_failure_scenario: repeated low-value prompts habituate the developer so the one consequential publication infrastructure or deployment approval receives no meaningful scrutiny
+      why_required: minimizing routine prompts preserves human attention for high-impact decisions while default deny handles requests that should not be human-overridable
+    verification:
+      type: automated
+      method: compare invocation confirmation counts with the effect policy and execute excessive-HITL and missing-HITL fixtures
+      expected: read and constrained update counts are zero high-impact count is one and prohibited or unknown counts are zero with deny
+      evidence:
+        - sanitized verifier result for AAR-014
+        - excessive and missing HITL negative fixtures
+    mapping_status: reviewed
+  - id: AAR-015
+    title: Managed PreToolUse gate enforces invocation constraints
+    required_state: administrator-managed hooks cover every MCP invocation normalize canonical server tool and argument fields enforce the provider-neutral policy before execution and never let an uncompleted hook silently fall through to automatic write execution
+    responsible_role: shared
+    applies_to:
+      - ai-coding-agent
+      - mcp-tool
+      - managed-agent-policy
+      - action-authorization-gate
+    context:
+      threat_actor: compromised MCP server malicious repository hook or configuration drift removing the runtime constraint check
+      attack_or_failure_scenario: a native auto-approved update reaches the MCP server with a broadened target oversized body or missing idempotency key because only static configuration was reviewed or a failed hook was allowed to continue
+      why_required: low-frequency HITL is safe only when the machine-checkable decision executes at the final tool-call boundary and an unavailable decision point blocks rather than silently authorizes the call
+    verification:
+      type: automated
+      method: verify managed-only Claude Code and Codex PreToolUse definitions then execute provider-shaped read bounded-write high-impact destructive unknown malformed missing-policy and unavailable-engine inputs
+      expected: reviewed routine calls allow constraint and policy violations deny signed and consumed high-impact calls allow without a second prompt missing or invalid approvals deny explicit evaluation failures exit 2 and provider hook faults retain a native prompt fallback instead of automatic execution
+      evidence:
+        - sanitized provider-specific hook decisions
+        - managed hook configuration and fail-closed negative fixtures
+    mapping_status: reviewed
+  - id: AAR-016
+    title: High-impact approvals have an authenticated issuer
+    required_state: every high-impact allow decision is backed by a signature over the canonical exact approval from an active issuer-bound algorithm-bound and digest-pinned public key
+    responsible_role: security
+    applies_to:
+      - action-authorization-gate
+      - approval-service
+      - managed-agent-policy
+    context:
+      threat_actor: malicious local process repository content or compromised agent forging a trusted-looking approval JSON without the independent approver
+      attack_or_failure_scenario: unsigned or signature-tampered evidence passes field comparison and authorizes source publication even though the configured approval service never issued it
+      why_required: exact parameter binding prevents substitution but only cryptographic issuer authentication distinguishes an independently issued decision from a locally fabricated copy
+    verification:
+      type: automated
+      method: verify the canonical approval with managed OpenSSL against an active exact key ID issuer algorithm validity window and pinned public-key digest then execute malformed untrusted-key signature target expiry verifier-failure and unbound-parameter fixtures
+      expected: only the valid signed exact approval passes while tampered expired or target-modified evidence fails and malformed untrusted-key unavailable-verifier or unbound-parameter evaluation is ERROR
+      evidence:
+        - sanitized AAR-016 signature and binding result
+        - public trust manifest with key digest and no private key
+    mapping_status: reviewed
+  - id: AAR-017
+    title: Approval consumption is atomic and single use
+    required_state: approval ID and exact request digest are committed under one SQLite immediate transaction with independent uniqueness constraints before the hook returns allow
+    responsible_role: security
+    applies_to:
+      - action-authorization-gate
+      - approval-consumption-ledger
+      - ai-coding-agent
+    context:
+      threat_actor: malicious agent automation retry or two concurrent tool invocations racing to reuse one valid approval
+      attack_or_failure_scenario: two source-publication calls both observe unused evidence before either records consumption and both execute from a single human decision
+      why_required: a pre-execution replay check without transactional uniqueness has a time-of-check to time-of-use race while a committed single-use ledger limits one approval to one hook allow
+    verification:
+      type: automated
+      method: consume one signed approval sequentially and with two concurrent authorizers then inspect exit states and simulate a corrupt ledger
+      expected: the first or one concurrent consumer passes every other consumer is replay-denied and ledger transaction failure is ERROR
+      evidence:
+        - sanitized AAR-017 consumption result
+        - concurrent one-allow one-replay test output
+        - ledger-error negative fixture
+    mapping_status: reviewed
+  - id: AAR-018
+    title: Installed runtime extensions match the reviewed inventory
+    required_state: recent complete managed snapshots for Claude Code and Codex contain exactly the reviewed MCP and Skill identities dependency records and authority modes with no installed plugin or unknown extension
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - developer-endpoint
+      - agent-extension
+      - runtime-inventory
+    context:
+      threat_actor: previously installed plugin compromised marketplace entry identity-confused MCP server or incomplete endpoint collector
+      attack_or_failure_scenario: a managed deny policy blocks new installation but an older unreviewed extension remains active or an unavailable collector reports an empty set that is mistaken for a clean endpoint
+      why_required: configuration intent cannot prove effective runtime state so a fresh complete inventory must reconcile every active extension with the dependency record governed by PSB-AI-002
+    verification:
+      type: automated
+      method: compare provider-specific managed endpoint snapshots with the exact provider-neutral extension kind dependency record MCP identity and Skill authority policy and enforce a one-hour freshness limit
+      expected: both recent complete secure snapshots match exactly while unknown missing kind-confused dependency-confused stale unavailable and malformed inventory cannot pass
+      evidence:
+        - sanitized AAR-018 result for each provider
+        - provider inventory snapshot with no prompt argument output or credential content
+    mapping_status: reviewed
+  - id: AAR-019
+    title: Runtime enforcement decisions are redacted and auditable
+    required_state: the managed hook durably records fixed-schema allow deny and error decisions before provider output in an access-controlled retention-bound export-enabled sink without prompt argument target output credential or signature content
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - managed-agent-policy
+      - security-audit-pipeline
+    context:
+      threat_actor: compromised agent malicious tool insider investigator over-collection or audit pipeline failure
+      attack_or_failure_scenario: unauthorized tool activity cannot be reconstructed because decisions are missing or the audit trail itself discloses source prompts tool arguments targets results credentials or approval signatures
+      why_required: runtime prevention needs independent investigation evidence but collecting request content would create a second high-value source and credential exposure path
+    verification:
+      type: automated
+      method: append fixed-field hashed-reference events for provider-shaped hook allow deny and error cases then verify event coverage field allowlist storage modes owner retention export state and unavailable-sink behavior
+      expected: secure evidence covers all decisions without content fields while broad permissions excessive retention missing decisions leakage malformed events and sink write failure do not pass
+      evidence:
+        - sanitized AAR-019 audit verification result
+        - fixed-schema synthetic audit events
+        - fail-closed audit-sink negative test
+    mapping_status: reviewed
+mappings:
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0053
+    relationship: mitigates
+    confidence: medium
+    rationale: Runtime confinement protected paths and publication approval reduce the authority available through AI Agent Tool Invocation without proving that all tools or invocations are safe.
+    reviewer: product-security
+    review_date: "2026-07-29"
+    applies_to:
+      - AAR-001
+      - AAR-002
+      - AAR-005
+      - AAR-007
+      - AAR-008
+      - AAR-009
+      - AAR-010
+      - AAR-011
+      - AAR-012
+      - AAR-013
+      - AAR-014
+      - AAR-015
+      - AAR-016
+      - AAR-017
+      - AAR-018
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0053
+    relationship: detects
+    confidence: medium
+    rationale: Redacted managed-hook decision events can reveal reviewed denied and failed AI Agent Tool Invocation paths but do not prove visibility into product-native actions outside the hook.
+    reviewer: product-security
+    review_date: "2026-07-29"
+    applies_to:
+      - AAR-019
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0086
+    relationship: mitigates
+    confidence: high
+    rationale: Default-deny network local binding and socket policy directly reduce exfiltration paths available through agent-invoked tools.
+    reviewer: product-security
+    review_date: "2026-07-29"
+    applies_to:
+      - AAR-004
+      - AAR-013
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0097
+    relationship: mitigates
+    confidence: medium
+    rationale: Fail-closed isolation managed precedence and bypass prohibition reduce supported configuration paths for virtualization or sandbox evasion but do not prevent exploitation of the sandbox implementation.
+    reviewer: product-security
+    review_date: "2026-07-29"
+    applies_to:
+      - AAR-001
+      - AAR-006
+      - AAR-007
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0098
+    relationship: mitigates
+    confidence: medium
+    rationale: Denying the synthetic credential path models a least-privilege boundary against credential harvesting through AI agent tools without assessing all host credential locations.
+    reviewer: product-security
+    review_date: "2026-07-29"
+    applies_to:
+      - AAR-003
+limitations:
+  - Static configuration verification does not prove that a deployed Claude Code or Codex binary loaded or enforced the reviewed settings.
+  - Claude Code arrays merge across settings scopes so managed-only permission and domain locks plus repository broadening review are both required; this slice does not assess every setting key.
+  - Codex permission-profile enforcement in this sample requires version 0.138.0 or later and product-version drift requires renewed documentation review and negative testing.
+  - Command-prefix approval is defense in depth and can miss shell indirection product parser changes or an approved malicious action; OS isolation remains required.
+  - The current profile uses network-off command execution and synthetic MCP URLs; it does not yet model production destination allowlists proxies metadata services or private networks.
+  - A compromised agent binary endpoint administrator sandbox implementation or human approving the wrong action remains outside the evidence established here.
+  - The repository contains only a synthetic public key and precomputed signatures; production requires an independently protected issuer private key approval UI approver authentication key rotation revocation and managed trust-root delivery.
+  - SQLite uniqueness makes local approval consumption atomic before allow but cannot form one transaction with an external MCP side effect; a crash can burn an approval and production adapters still require idempotency reconciliation and explicit retry approval.
+  - The executable inventory reconciliation uses synthetic managed snapshots; production still requires a trustworthy fleet collector and PSB-AI-002 source digest review and revocation evidence.
+  - Automatic bounded reversible writes still depend on correct target normalization idempotency implementation and rollback behavior; a compromised server can violate its advertised semantics.
+  - Static adapter verification does not contact MCP servers or prove runtime tool annotations startup behavior authentication or revocation.
+  - The managed PreToolUse files are reference deployment artifacts only; repository verification does not prove that fleet tooling installed the script policy and engine state at the configured absolute paths or that the active client loaded them.
+  - Managed hooks authenticate and consume the sample approval but repository verification does not prove that production approval inbox actor identity trust manifest ledger permissions or OpenSSL binary are protected on a deployed endpoint.
+  - The gate explicitly exits 2 for detected evaluation errors, but product-level command-hook startup failures and timeouts are not proven to block in this static evidence; bounded writes therefore retain native prompt fallback and production should prefer a supervised local policy service or MCP gateway when strict fail-closed behavior is required.
+  - The managed audit event records the pre-execution decision rather than the external tool result; native Codex OTel or provider audit sources and server-side outcome telemetry remain separate evidence with their own coverage and retention boundaries.
+  - The local audit writer requires administrator-managed rotation before its size ceiling and blocks when it cannot append; the reference state does not prove deployed ownership collector export immutability SIEM ingestion or alerting.
+status: prototype
+owner: product-security
+evidence_level: E3

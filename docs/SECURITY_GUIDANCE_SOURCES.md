@@ -184,7 +184,7 @@ them are implementation candidates rather than mandatory dependencies.
   - `PSB-SOURCE-001` — developer endpoint hardening;
   - `PSB-SOURCE-002` — repository-owned Git hook baseline;
   - `PSB-SOURCE-004` — source credential lifecycle;
-  - `PSB-AI-004` — planned AI coding agent runtime hardening.
+  - `PSB-AI-004` — prototype AI coding agent runtime hardening.
 
 Disposition:
 

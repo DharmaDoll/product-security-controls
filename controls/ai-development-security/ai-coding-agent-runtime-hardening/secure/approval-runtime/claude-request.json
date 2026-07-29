@@ -1,0 +1,21 @@
+{
+  "schema_version": "psb-ai-action-request/v1",
+  "request_id": "REQ-50DFE3528A5C5D626F16",
+  "actor_id": "developer-fixture-001",
+  "agent_id": "managed-claude-code:session-fixture",
+  "action_class": "source-publication",
+  "tool": "mcp:source_manager",
+  "operation": "create-pull-request",
+  "target": {
+    "repository": "fixture-org/fixture-repo",
+    "base": "main",
+    "head": "fixture-change"
+  },
+  "parameters": {
+    "title": "Synthetic change",
+    "body": "Synthetic approval-bound pull request.",
+    "idempotency_key": "idempotency-fixture-high-impact-001"
+  },
+  "policy_id": "PSB-AI-004-HIGH-IMPACT",
+  "policy_revision": "2026-07-29.1"
+}

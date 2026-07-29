@@ -1,0 +1,33 @@
+{
+  "schema_version": "psb-ai-signed-action-approval/v1",
+  "key_id": "untrusted-fixture-key",
+  "algorithm": "rsa-pkcs1v15-sha256",
+  "approval": {
+    "schema_version": "psb-ai-action-approval/v1",
+    "approval_id": "APR-FIXTURE-CLAUDE-001",
+    "decision": "approved",
+    "approver_id": "reviewer-fixture-001",
+    "issuer": "fixture-approval-service",
+    "actor_id": "developer-fixture-001",
+    "agent_id": "managed-claude-code:session-fixture",
+    "action_class": "source-publication",
+    "tool": "mcp:source_manager",
+    "operation": "create-pull-request",
+    "target": {
+      "repository": "fixture-org/fixture-repo",
+      "base": "main",
+      "head": "fixture-change"
+    },
+    "parameters": {
+      "title": "Synthetic change",
+      "body": "Synthetic approval-bound pull request.",
+      "idempotency_key": "idempotency-fixture-high-impact-001"
+    },
+    "policy_id": "PSB-AI-004-HIGH-IMPACT",
+    "policy_revision": "2026-07-29.1",
+    "request_digest": "50dfe3528a5c5d626f1672216f13e3ac1c72ad9c335f8d55ba3c03165c261b0d",
+    "issued_at": "2026-07-29T12:00:00Z",
+    "expires_at": "2026-07-29T12:05:00Z"
+  },
+  "signature_base64": "IUL8Jfx1tKorpILkakBeZjT8JlJwFIv9GqAFq0/zByFbL84lro6DeV/T1/DCe+SQV+9fQG/LE6+D1bnonjElSzahKIehaYic7pHvpvOdNSkfTWijqWl4nCB+mYY6L7bple8l4FLhJKuAv69XjK+yyspj0gJlpENlwaFbwSgZRLOVE22Qk+bMQ9VxCEW0NPbDBQ7BhGcFlGukZzNZWXN7z8VDekzAqeq88C3RsQbRRVmRoBlhl2b3qlv1I9V1O3+/Z3WUDY6XzhkV52nXnYqv+9/qFkG77yn+ch6WZgtq0XBvElV4k/Ps2ugGm6Vdh69KtxdPuMEH/w/j6p6wkfFDww=="
+}

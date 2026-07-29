@@ -1,0 +1,8 @@
+{
+  "schema_version": "psb-ai-extension-invocation/v1",
+  "invocation_id": "INV-FIXTURE-DESTRUCTIVE",
+  "extension_id": "source_manager",
+  "tool": "delete_repository",
+  "declared_effect": "prohibited",
+  "human_confirmations": 0
+}

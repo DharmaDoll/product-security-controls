@@ -1,0 +1,14 @@
+{
+  "schema_version": "psb-ai-approval-trust/v1",
+  "keys": {
+    "fixture-approval-key-2026-07": {
+      "issuer": "fixture-approval-service",
+      "algorithm": "rsa-pkcs1v15-sha256",
+      "status": "active",
+      "public_key": "issuer-public.pem",
+      "public_key_sha256": "8e326aed4079866294b21cef34eb922398e9b7e8c17902b709a37fd9dd4b5f7b",
+      "not_before": "2026-07-29T00:00:00Z",
+      "not_after": "2027-07-29T00:00:00Z"
+    }
+  }
+}

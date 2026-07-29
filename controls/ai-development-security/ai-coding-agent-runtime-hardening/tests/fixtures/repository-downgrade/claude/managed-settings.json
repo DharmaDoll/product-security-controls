@@ -1,0 +1,42 @@
+{
+  "allowManagedPermissionRulesOnly": true,
+  "permissions": {
+    "defaultMode": "default",
+    "disableBypassPermissionsMode": "disable",
+    "ask": [
+      "Bash(git push *)"
+    ],
+    "deny": [
+      "Read(./.psb-fixtures/credentials/**)",
+      "Edit(./.git/**)",
+      "Edit(./.agents/**)",
+      "Edit(./.codex/**)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "autoAllowBashIfSandboxed": false,
+    "excludedCommands": [],
+    "allowUnsandboxedCommands": false,
+    "filesystem": {
+      "disabled": false,
+      "allowWrite": [],
+      "denyWrite": [
+        "./.git",
+        "./.agents",
+        "./.codex"
+      ],
+      "denyRead": [
+        "./.psb-fixtures/credentials"
+      ]
+    },
+    "network": {
+      "allowedDomains": [],
+      "strictAllowlist": true,
+      "allowManagedDomainsOnly": true,
+      "allowAllUnixSockets": false,
+      "allowLocalBinding": false
+    }
+  }
+}

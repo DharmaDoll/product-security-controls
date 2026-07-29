@@ -1,0 +1,12 @@
+{
+  "session_id": "session-fixture-claude",
+  "transcript_path": null,
+  "cwd": "/workspace",
+  "permission_mode": "default",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "mcp__docs_reader__search",
+  "tool_input": {
+    "query": "synthetic documentation query"
+  },
+  "tool_use_id": "tool-fixture-claude-read"
+}

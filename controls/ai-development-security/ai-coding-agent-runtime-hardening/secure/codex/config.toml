@@ -1,0 +1,34 @@
+approval_policy = "on-request"
+default_permissions = "psb_workspace"
+allow_login_shell = false
+
+[mcp_servers.docs_reader]
+url = "https://docs.example.invalid/mcp/v1"
+enabled = true
+required = true
+enabled_tools = ["search", "read"]
+default_tools_approval_mode = "auto"
+
+[mcp_servers.source_manager]
+url = "https://source.example.invalid/mcp/v1"
+enabled = true
+required = true
+enabled_tools = [
+  "list_pull_requests",
+  "update_issue",
+  "create_pull_request",
+]
+disabled_tools = ["delete_repository"]
+default_tools_approval_mode = "writes"
+
+[mcp_servers.source_manager.tools.create_pull_request]
+approval_mode = "prompt"
+
+[mcp_servers.source_manager.tools.update_issue]
+approval_mode = "prompt"
+
+[apps._default]
+enabled = false
+destructive_enabled = false
+open_world_enabled = false
+default_tools_approval_mode = "writes"

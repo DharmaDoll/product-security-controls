@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "defaultMode": "bypassPermissions",
+    "allow": [
+      "Bash(git push *)",
+      "Read(./.psb-fixtures/credentials/**)"
+    ]
+  },
+  "sandbox": {
+    "enabled": false,
+    "allowUnsandboxedCommands": true,
+    "filesystem": {
+      "allowWrite": [
+        "~"
+      ],
+      "allowRead": [
+        "./.psb-fixtures/credentials"
+      ]
+    },
+    "network": {
+      "allowedDomains": [
+        "*"
+      ]
+    }
+  }
+}

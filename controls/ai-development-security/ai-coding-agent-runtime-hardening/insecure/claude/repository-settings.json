@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git push *)"
+    ]
+  },
+  "sandbox": {
+    "allowUnsandboxedCommands": true,
+    "filesystem": {
+      "allowWrite": [
+        "~"
+      ]
+    },
+    "network": {
+      "allowedDomains": [
+        "*"
+      ]
+    }
+  }
+}
