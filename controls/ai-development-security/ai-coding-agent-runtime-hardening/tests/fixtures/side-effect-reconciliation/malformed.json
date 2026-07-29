@@ -1,0 +1,10 @@
+{
+  "schema_version": "psb-ai-side-effect-reconciliation-evidence/v1",
+  "profile": "malformed",
+  "cases": [
+    {
+      "scenario_id": "malformed",
+      "request_digest": "not-a-digest"
+    }
+  ]
+}

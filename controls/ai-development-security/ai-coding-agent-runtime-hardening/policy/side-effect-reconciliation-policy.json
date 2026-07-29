@@ -1,0 +1,38 @@
+{
+  "schema_version": "psb-ai-side-effect-reconciliation-policy/v1",
+  "policy_id": "PSB-AI-004-SIDE-EFFECT-RECONCILIATION",
+  "policy_revision": "2026-07-29.1",
+  "default_decision": "block-unknown",
+  "maximum_mutations_per_request": 1,
+  "require_original_approval_consumed_before_dispatch": true,
+  "allow_original_approval_restore": false,
+  "allow_automatic_retry": false,
+  "require_backend_idempotency": true,
+  "require_stable_idempotency_key": true,
+  "require_stable_request_digest": true,
+  "require_distinct_replacement_approval": true,
+  "required_secure_scenarios": [
+    "applied-response",
+    "timeout-after-apply",
+    "timeout-before-apply",
+    "replacement-approved-retry",
+    "unknown-outcome-blocked"
+  ],
+  "allowed_dispatch_outcomes": [
+    "applied-response",
+    "not-applied-response",
+    "timeout"
+  ],
+  "allowed_backend_statuses": [
+    "applied",
+    "not-applied",
+    "unknown",
+    "conflict"
+  ],
+  "allowed_reconciliation_decisions": [
+    "complete-no-retry",
+    "require-new-approval",
+    "retry-with-replacement-approval",
+    "block-unknown"
+  ]
+}

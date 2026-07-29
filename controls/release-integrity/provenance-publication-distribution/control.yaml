@@ -1,0 +1,167 @@
+id: PSB-REL-002
+title: Release artifactとprovenanceを一対一で公開・配布する
+domain: release-integrity
+summary: Producerが各release artifactへdigest-bound provenanceをimmutableかつconsumer-accessibleな場所で同時公開し、保持とno-downgradeを検証する。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - verify
+  - govern
+threats:
+  - id: RELEASE-PROVENANCE-OMISSION
+    description: Release artifactだけが公開され、対応するprovenanceが欠落または別artifact向けのままconsumerへ配布される。
+  - id: RELEASE-PROVENANCE-DISTRIBUTION-BYPASS
+    description: Provenanceがmutable、unauthenticated、非公開、発見不能な場所へ置かれ、consumerがartifactと一緒に取得できない。
+  - id: RELEASE-PROVENANCE-DOWNGRADE
+    description: 過去にprovenanceを要求していたartifact familyで公開遅延、早期削除、または要件無効化が起きる。
+implementations:
+  insecure:
+    - insecure/publication-policy.json
+    - insecure/release-manifest.json
+  secure:
+    - secure/publication-policy.json
+    - secure/release-manifest.json
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-REL-002
+  expected:
+    - every release artifact has exactly one provenance object bound by the artifact SHA-256 and discoverable from the release manifest
+    - artifact manifest and provenance locations use exact immutable authenticated HTTPS paths accessible to the intended consumer
+    - provenance is published within five minutes and retained for at least one year
+    - protected artifact families cannot disable remove or make required provenance inaccessible
+    - unavailable publication probes and malformed evidence return ERROR rather than a clean result
+checks:
+  - id: RPD-001
+    title: Every release artifact has one digest-bound provenance object
+    required_state: one unique provenance object per artifact with exact artifact SHA-256 subject binding and release-manifest discovery
+    responsible_role: release-manager
+    applies_to:
+      - release-manifest
+      - release-artifact
+      - provenance
+    context:
+      threat_actor: release operator artifact substituter or faulty publication automation
+      attack_or_failure_scenario: an artifact is published without provenance with reused provenance or with evidence whose subject names different bytes
+      why_required: platform generation does not make evidence consumable until each distributed artifact has an unambiguous one-to-one digest-bound provenance reference
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-002
+      expected: duplicate missing orphaned mismatched and non-in-toto provenance records are rejected
+      evidence:
+        - sanitized RPD-001 verifier result
+        - release manifest with artifact and provenance digests
+    mapping_status: reviewed
+  - id: RPD-002
+    title: Provenance is immutable authenticated discoverable and consumer-accessible
+    required_state: exact versioned HTTPS locations with TLS server authentication immutability intended-consumer access and release-manifest discovery
+    responsible_role: release-manager
+    applies_to:
+      - release-storage
+      - release-manifest
+      - provenance-location
+    context:
+      threat_actor: storage administrator attacker or release automation publishing evidence to a mutable private or lookalike location
+      attack_or_failure_scenario: consumers can download an artifact but the provenance URL changes requires undisclosed access or cannot be derived from the release manifest
+      why_required: a valid provenance object that consumers cannot reliably find and retrieve alongside the artifact does not satisfy producer distribution
+    verification:
+      type: automated
+      method: evaluate secure and insecure publication manifests with make verify-control CONTROL=PSB-REL-002
+      expected: HTTP mutable query-bearing private unavailable duplicate and unversioned locations are rejected
+      evidence:
+        - sanitized RPD-002 verifier result
+        - release storage access and immutability policy
+    mapping_status: reviewed
+  - id: RPD-003
+    title: Provenance is published promptly and retained with the release
+    required_state: provenance publication no later than five minutes after its artifact and retention for at least one year from release publication
+    responsible_role: release-manager
+    applies_to:
+      - release-publication
+      - provenance-retention
+    context:
+      threat_actor: asynchronous publication failure storage lifecycle rule or operator deleting evidence early
+      attack_or_failure_scenario: consumers receive an artifact before evidence is available or later cannot verify an artifact that remains supported
+      why_required: distribution must cover the artifact consumption window rather than merely proving that provenance existed temporarily
+    verification:
+      type: automated
+      method: compare artifact publication provenance publication and retention timestamps with make verify-control CONTROL=PSB-REL-002
+      expected: negative delay excessive delay and retention shorter than policy are rejected
+      evidence:
+        - sanitized RPD-003 verifier result
+        - publication timestamps and retention policy
+    mapping_status: reviewed
+  - id: RPD-004
+    title: Protected artifact families cannot silently drop provenance
+    required_state: provenance remains mandatory present and accessible for every release in a previously protected artifact family
+    responsible_role: release-manager
+    applies_to:
+      - release-policy
+      - artifact-family
+    context:
+      threat_actor: compromised release operator policy drift or automation suppressing evidence after verification fails
+      attack_or_failure_scenario: a release family that normally carries provenance disables the requirement or publishes an inaccessible object to bypass a failed provenance check
+      why_required: explicit no-downgrade state prevents absence of evidence from being reclassified as an acceptable legacy release
+    verification:
+      type: automated
+      method: compare protected artifact families with manifest requirement and object availability using make verify-control CONTROL=PSB-REL-002
+      expected: disabled missing or inaccessible provenance in a protected family is rejected
+      evidence:
+        - sanitized RPD-004 verifier result
+        - protected artifact-family publication policy
+    mapping_status: reviewed
+  - id: RPD-005
+    title: Publication and storage verification failures are not clean
+    required_state: unavailable incomplete and malformed publication evidence returns a distinct error
+    responsible_role: release-manager
+    applies_to:
+      - release-publication-verifier
+      - release-storage-probe
+    context:
+      threat_actor: unavailable release API incomplete storage inventory malformed manifest or verifier infrastructure failure
+      attack_or_failure_scenario: provenance distribution cannot be evaluated but the release is reported as fully published
+      why_required: a distinct error prevents monitoring and parser outages from being interpreted as successful evidence distribution
+    verification:
+      type: automated
+      method: execute unavailable and malformed fixtures with make verify-control CONTROL=PSB-REL-002
+      expected: evaluation failure exits 2 and emits ERROR without exposing private locations
+      evidence:
+        - sanitized RPD-005 negative-test output
+    mapping_status: unmapped
+mappings:
+  - framework: slsa
+    version: "1.2"
+    id: build-l1#producer-distributes-provenance
+    relationship: verifies
+    confidence: high
+    rationale: 各artifactに一対一でdigest-bound provenanceを割り当て、immutableなrelease manifestからconsumerが取得できる形で同時公開・保持し、欠落とdowngradeをnegative fixtureで拒否する。ただしproducer、platform、consumerを通したSLSA Build Level 2達成は別assessmentを要する。
+    reviewer: product-security
+    review_date: "2026-07-29"
+    applies_to:
+      - RPD-001
+      - RPD-002
+      - RPD-003
+      - RPD-004
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PS.2.1
+    relationship: supports
+    confidence: high
+    rationale: Release artifactに完全性・origin検証用provenanceを結び付け、consumerが取得できる形で保持し、software releaseの完全性検証と改ざん検知を支援する。
+    reviewer: product-security
+    review_date: "2026-07-29"
+    applies_to:
+      - RPD-001
+      - RPD-002
+      - RPD-003
+      - RPD-004
+limitations:
+  - Fixtureはrelease APIとobject storageへ接続せず、production manifestとstorage inventoryを取得するread-only adapterが必要である。
+  - URI、immutability、access、availabilityはsynthetic publication evidenceであり、TLS handshake、object lock、CDN cache、authorizationを独立検証しない。
+  - Provenance content生成とplatform signer authenticityはPSB-BUILD-003、consumer側の署名・subject・builder expectation検証はPSB-REL-001が担当する。
+  - 一年間のreference retentionは全productのsupport lifecycleや法的保存要件を満たすとは限らず、組織policyで延長する必要がある。
+  - Public accessが不適切なprivate productではintended consumerのauthenticated access profileへ置き換え、credentialをmanifestへ埋め込んではならない。
+  - このcontrolとSLSA mappingはSLSA Build Level 2達成またはcomplianceを単独で証明しない。
+status: prototype
+owner: product-security
+evidence_level: E3

@@ -1,0 +1,2 @@
+ERROR PSB-REL-002/RPD-005 profile=unavailable publication verification unavailable: publication or storage probe is unavailable
+RESULT ERROR profile=unavailable checks=0 failures=1

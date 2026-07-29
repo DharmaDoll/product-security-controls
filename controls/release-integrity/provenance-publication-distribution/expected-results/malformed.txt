@@ -1,0 +1,2 @@
+ERROR PSB-REL-002/RPD-005 profile=malformed publication verification unavailable: manifest.evidence_collected_at must be a timestamp
+RESULT ERROR profile=malformed checks=0 failures=1

@@ -1,0 +1,2 @@
+ERROR PSB-AI-004/AAR-025 profile=malformed fleet telemetry evaluation failed: fleet snapshot time is malformed
+RESULT ERROR profile=malformed checks=0 failures=1

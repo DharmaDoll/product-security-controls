@@ -1,0 +1,8 @@
+{
+  "schema_version": "psb-ai-command-broker-evidence/v1",
+  "profile": "unavailable",
+  "engine_available": false,
+  "cases": [
+    {"scenario_id":"engine-unavailable","provider":"codex","command_form":"direct-argv","argv":["git","status"],"resolution_status":"unavailable","resolved_argv":[],"observed_decision":"deny","observed_action_class":null,"observed_hitl":"none"}
+  ]
+}

@@ -1,0 +1,2 @@
+ERROR PSB-AI-004/AAR-020 profile=gateway-unavailable network boundary evaluation failed: managed egress gateway is unavailable
+RESULT ERROR profile=gateway-unavailable checks=0 failures=1

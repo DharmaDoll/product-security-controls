@@ -1,0 +1,2 @@
+ERROR PSB-AI-004/AAR-026 profile=secure fleet evidence authentication failed: fleet snapshot statement is malformed
+RESULT ERROR profile=secure checks=0 failures=1

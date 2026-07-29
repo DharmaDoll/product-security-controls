@@ -1,0 +1,27 @@
+{
+  "schema_version": "psb-ai-fleet-telemetry-evidence/v1",
+  "profile": "secure",
+  "collector_available": true,
+  "captured_at": "2026-07-29T12:01:30Z",
+  "endpoints": [
+    {"provider":"claude-code","enrollment_status":"enrolled","managed":true,"export_enabled":true,"last_export_at":"2026-07-29T12:01:00Z","last_ingested_at":"2026-07-29T12:01:10Z","sequence_gap":false,"rejected_records":0,"quarantine_accounted":true},
+    {"provider":"codex","enrollment_status":"enrolled","managed":true,"export_enabled":true,"last_export_at":"2026-07-29T12:00:50Z","last_ingested_at":"2026-07-29T12:01:05Z","sequence_gap":false,"rejected_records":0,"quarantine_accounted":true}
+  ],
+  "ingestion": {
+    "available": true,
+    "immutable_to_developers": true,
+    "access_controlled": true,
+    "content_classification": "metadata-only",
+    "event_fields": ["schema_version","timestamp","control_id","policy_revision","provider","session_ref","event_ref","tool_ref","decision","reason_code","request_ref","approval_ref"],
+    "forbidden_fields_present": []
+  },
+  "alerts": [
+    {"rule_id":"unknown-extension","enabled":true,"test_status":"delivered","tested_at":"2026-07-29T11:55:00Z","delivery_latency_seconds":15,"receipt_verified":true},
+    {"rule_id":"hook-failure","enabled":true,"test_status":"delivered","tested_at":"2026-07-29T11:55:00Z","delivery_latency_seconds":18,"receipt_verified":true},
+    {"rule_id":"audit-sink-failure","enabled":true,"test_status":"delivered","tested_at":"2026-07-29T11:55:00Z","delivery_latency_seconds":20,"receipt_verified":true},
+    {"rule_id":"gateway-bypass","enabled":true,"test_status":"delivered","tested_at":"2026-07-29T11:55:00Z","delivery_latency_seconds":12,"receipt_verified":true},
+    {"rule_id":"approval-replay","enabled":true,"test_status":"delivered","tested_at":"2026-07-29T11:55:00Z","delivery_latency_seconds":16,"receipt_verified":true},
+    {"rule_id":"reconciliation-unknown","enabled":true,"test_status":"delivered","tested_at":"2026-07-29T11:55:00Z","delivery_latency_seconds":19,"receipt_verified":true},
+    {"rule_id":"command-broker-bypass","enabled":true,"test_status":"delivered","tested_at":"2026-07-29T11:55:00Z","delivery_latency_seconds":14,"receipt_verified":true}
+  ]
+}

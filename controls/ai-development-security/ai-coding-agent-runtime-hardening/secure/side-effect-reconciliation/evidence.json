@@ -1,0 +1,67 @@
+{
+  "schema_version": "psb-ai-side-effect-reconciliation-evidence/v1",
+  "profile": "secure",
+  "cases": [
+    {
+      "scenario_id": "applied-response",
+      "request_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "idempotency_key": "IDEM-FIXTURE-001",
+      "original_approval": {"approval_id":"APR-FIXTURE-001","consumed_before_dispatch":true,"restored":false},
+      "replacement_approval": null,
+      "dispatches": [
+        {"attempt_id":"ATTEMPT-001","approval_id":"APR-FIXTURE-001","request_digest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","idempotency_key":"IDEM-FIXTURE-001","outcome":"applied-response"}
+      ],
+      "backend": {"available":true,"idempotency_enforced":true,"lookup_status":"applied","recorded_request_digest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","mutation_count":1},
+      "reconciliation": {"available":true,"automatic_retry":false,"decision":"complete-no-retry","evidence_complete":true}
+    },
+    {
+      "scenario_id": "timeout-after-apply",
+      "request_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "idempotency_key": "IDEM-FIXTURE-002",
+      "original_approval": {"approval_id":"APR-FIXTURE-002","consumed_before_dispatch":true,"restored":false},
+      "replacement_approval": null,
+      "dispatches": [
+        {"attempt_id":"ATTEMPT-002","approval_id":"APR-FIXTURE-002","request_digest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","idempotency_key":"IDEM-FIXTURE-002","outcome":"timeout"}
+      ],
+      "backend": {"available":true,"idempotency_enforced":true,"lookup_status":"applied","recorded_request_digest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","mutation_count":1},
+      "reconciliation": {"available":true,"automatic_retry":false,"decision":"complete-no-retry","evidence_complete":true}
+    },
+    {
+      "scenario_id": "timeout-before-apply",
+      "request_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "idempotency_key": "IDEM-FIXTURE-003",
+      "original_approval": {"approval_id":"APR-FIXTURE-003","consumed_before_dispatch":true,"restored":false},
+      "replacement_approval": null,
+      "dispatches": [
+        {"attempt_id":"ATTEMPT-003","approval_id":"APR-FIXTURE-003","request_digest":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","idempotency_key":"IDEM-FIXTURE-003","outcome":"timeout"}
+      ],
+      "backend": {"available":true,"idempotency_enforced":true,"lookup_status":"not-applied","recorded_request_digest":null,"mutation_count":0},
+      "reconciliation": {"available":true,"automatic_retry":false,"decision":"require-new-approval","evidence_complete":true}
+    },
+    {
+      "scenario_id": "replacement-approved-retry",
+      "request_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "idempotency_key": "IDEM-FIXTURE-004",
+      "original_approval": {"approval_id":"APR-FIXTURE-004","consumed_before_dispatch":true,"restored":false},
+      "replacement_approval": {"approval_id":"APR-FIXTURE-004-REPLACEMENT","consumed_before_dispatch":true},
+      "dispatches": [
+        {"attempt_id":"ATTEMPT-004-A","approval_id":"APR-FIXTURE-004","request_digest":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","idempotency_key":"IDEM-FIXTURE-004","outcome":"timeout"},
+        {"attempt_id":"ATTEMPT-004-B","approval_id":"APR-FIXTURE-004-REPLACEMENT","request_digest":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","idempotency_key":"IDEM-FIXTURE-004","outcome":"applied-response"}
+      ],
+      "backend": {"available":true,"idempotency_enforced":true,"lookup_status":"applied","recorded_request_digest":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","mutation_count":1},
+      "reconciliation": {"available":true,"automatic_retry":false,"decision":"retry-with-replacement-approval","evidence_complete":true}
+    },
+    {
+      "scenario_id": "unknown-outcome-blocked",
+      "request_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "idempotency_key": "IDEM-FIXTURE-005",
+      "original_approval": {"approval_id":"APR-FIXTURE-005","consumed_before_dispatch":true,"restored":false},
+      "replacement_approval": null,
+      "dispatches": [
+        {"attempt_id":"ATTEMPT-005","approval_id":"APR-FIXTURE-005","request_digest":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee","idempotency_key":"IDEM-FIXTURE-005","outcome":"timeout"}
+      ],
+      "backend": {"available":true,"idempotency_enforced":true,"lookup_status":"unknown","recorded_request_digest":null,"mutation_count":null},
+      "reconciliation": {"available":true,"automatic_retry":false,"decision":"block-unknown","evidence_complete":true}
+    }
+  ]
+}

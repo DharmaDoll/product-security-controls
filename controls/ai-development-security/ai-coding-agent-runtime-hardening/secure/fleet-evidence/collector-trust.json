@@ -1,0 +1,14 @@
+{
+  "schema_version": "psb-ai-fleet-collector-trust/v1",
+  "keys": {
+    "fixture-fleet-collector-key-2026-07": {
+      "issuer": "fixture-fleet-collector",
+      "algorithm": "rsa-pkcs1v15-sha256",
+      "status": "active",
+      "public_key": "collector-public.pem",
+      "public_key_sha256": "92ff49b1cfb7da2170362bf6d46c2da028e1da062774231ca23b32267ae6f0bb",
+      "not_before": "2026-07-29T00:00:00Z",
+      "not_after": "2027-07-29T00:00:00Z"
+    }
+  }
+}

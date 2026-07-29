@@ -110,6 +110,10 @@ class GenerateChecklistsTest(unittest.TestCase):
         self.assertIn("PSB-BUILD-003-PPG-004", selected_ids)
         self.assertIn("PSB-REL-001-REL-001", selected_ids)
         self.assertIn("PSB-REL-001-REL-002", selected_ids)
+        self.assertIn("PSB-REL-002-RPD-001", selected_ids)
+        self.assertIn("PSB-REL-002-RPD-002", selected_ids)
+        self.assertIn("PSB-REL-002-RPD-003", selected_ids)
+        self.assertIn("PSB-REL-002-RPD-004", selected_ids)
         self.assertNotIn("PSB-BUILD-001-BLD-001", selected_ids)
         self.assertEqual(
             {row["Requirement Minimum Level"] for row in coverage},
@@ -118,9 +122,9 @@ class GenerateChecklistsTest(unittest.TestCase):
         self.assertEqual(len(coverage), 7)
         self.assertEqual(
             sum(row["Status"] == "mapped-evidence" for row in coverage),
-            6,
+            7,
         )
-        self.assertEqual(sum(row["Status"] == "gap" for row in coverage), 1)
+        self.assertEqual(sum(row["Status"] == "gap" for row in coverage), 0)
 
 
 if __name__ == "__main__":

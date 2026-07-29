@@ -1,0 +1,18 @@
+{
+  "schema_version": "psb-ai-side-effect-reconciliation-evidence/v1",
+  "profile": "unavailable",
+  "cases": [
+    {
+      "scenario_id": "outcome-unavailable",
+      "request_digest": "3333333333333333333333333333333333333333333333333333333333333333",
+      "idempotency_key": "IDEM-FIXTURE-008",
+      "original_approval": {"approval_id":"APR-FIXTURE-008","consumed_before_dispatch":true,"restored":false},
+      "replacement_approval": null,
+      "dispatches": [
+        {"attempt_id":"ATTEMPT-008","approval_id":"APR-FIXTURE-008","request_digest":"3333333333333333333333333333333333333333333333333333333333333333","idempotency_key":"IDEM-FIXTURE-008","outcome":"timeout"}
+      ],
+      "backend": {"available":false,"idempotency_enforced":true,"lookup_status":"unknown","recorded_request_digest":null,"mutation_count":null},
+      "reconciliation": {"available":false,"automatic_retry":false,"decision":"block-unknown","evidence_complete":false}
+    }
+  ]
+}

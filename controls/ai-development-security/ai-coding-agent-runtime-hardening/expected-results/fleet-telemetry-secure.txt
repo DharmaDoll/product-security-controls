@@ -1,0 +1,5 @@
+PASS PSB-AI-004/AAR-025 surface=claude-code managed endpoint export is enrolled fresh complete and gap-free
+PASS PSB-AI-004/AAR-025 surface=codex managed endpoint export is enrolled fresh complete and gap-free
+PASS PSB-AI-004/AAR-025 surface=central-ingestion central evidence is immutable access-controlled and metadata-only
+PASS PSB-AI-004/AAR-025 surface=alert-pipeline all required synthetic alerts delivered within the reviewed window
+RESULT PASS profile=secure checks=4 failures=0

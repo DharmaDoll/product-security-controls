@@ -1,0 +1,47 @@
+{
+  "schema_version": "psb-ai-network-boundary-policy/v1",
+  "policy_id": "PSB-AI-004-NETWORK-BOUNDARY",
+  "policy_revision": "2026-07-29.1",
+  "default_network": "deny",
+  "enforcement_point": "managed-egress-gateway",
+  "require_managed_policy": true,
+  "allowed_schemes": [
+    "https"
+  ],
+  "allowed_destinations": [
+    {
+      "destination_id": "docs-reader-mcp",
+      "host": "docs.example.invalid",
+      "port": 443,
+      "path_prefix": "/mcp/v1"
+    },
+    {
+      "destination_id": "source-manager-mcp",
+      "host": "source.example.invalid",
+      "port": 443,
+      "path_prefix": "/mcp/v1"
+    }
+  ],
+  "allow_wildcard_hosts": false,
+  "allow_ip_literal_urls": false,
+  "allow_local_binding": false,
+  "allow_upstream_proxy": false,
+  "allow_socks": false,
+  "allow_unix_sockets": [],
+  "dns": {
+    "required_status": "complete",
+    "maximum_age_seconds": 300,
+    "require_all_addresses_global": true,
+    "require_connected_address_in_resolution": true,
+    "require_transport_address_binding": true
+  },
+  "metadata_hostnames": [
+    "metadata.google.internal",
+    "instance-data.ec2.internal"
+  ],
+  "metadata_addresses": [
+    "169.254.169.254",
+    "100.100.100.200",
+    "fd00:ec2::254"
+  ]
+}

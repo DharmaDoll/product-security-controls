@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "profile": "unavailable",
+  "evidence_collected_at": "2026-07-29T12:06:00Z",
+  "publication_probe": {
+    "status": "unavailable",
+    "source": "release-api"
+  },
+  "release": {},
+  "artifacts": []
+}

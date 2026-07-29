@@ -1,0 +1,3 @@
+FAIL PSB-AI-004/AAR-023 scenario=restored-approval-auto-retry approval idempotency or outcome state permits unsafe replay
+FAIL PSB-AI-004/AAR-023 scenario=same-key-different-request approval idempotency or outcome state permits unsafe replay
+RESULT FAIL profile=insecure checks=2 failures=2

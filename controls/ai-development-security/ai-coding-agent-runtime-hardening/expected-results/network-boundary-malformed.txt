@@ -1,0 +1,2 @@
+ERROR PSB-AI-004/AAR-020 profile=malformed network boundary evaluation failed: network address evidence is malformed
+RESULT ERROR profile=malformed checks=0 failures=1

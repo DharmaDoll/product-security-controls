@@ -1,0 +1,7 @@
+{
+  "schema_version": "psb-ai-fleet-checkpoint/v1",
+  "collector_issuer": "fixture-fleet-collector",
+  "last_sequence": 1041,
+  "last_snapshot_sha256": "022bc4d12fafd4555146064c3fad099aeb3de789bc32384db6bfd435fdde9ee2",
+  "updated_at": "2026-07-29T11:01:30Z"
+}

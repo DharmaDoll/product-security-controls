@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "policy_id": "PSB-REL-002-PUBLICATION",
+  "policy_revision": "2026-07-29.1",
+  "release_id_pattern": "^product-v[0-9]+\\.[0-9]+\\.[0-9]+$",
+  "allowed_host": "releases.example.invalid",
+  "required_path_prefix": "/downloads/product/",
+  "required_access": "public",
+  "required_authentication": "tls-server-authenticated",
+  "required_provenance_media_type": "application/vnd.in-toto+json",
+  "maximum_publication_delay_seconds": 300,
+  "minimum_retention_days": 365,
+  "protected_artifact_families": [
+    "example/product"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "policy_id": "PSB-REL-002-PUBLICATION",
+  "policy_revision": "2026-07-29.1",
+  "release_id_pattern": ".*",
+  "allowed_host": "releases.example.invalid",
+  "required_path_prefix": "/downloads/product/",
+  "required_access": "private",
+  "required_authentication": "none",
+  "required_provenance_media_type": "application/json",
+  "maximum_publication_delay_seconds": 86400,
+  "minimum_retention_days": 7,
+  "protected_artifact_families": []
+}

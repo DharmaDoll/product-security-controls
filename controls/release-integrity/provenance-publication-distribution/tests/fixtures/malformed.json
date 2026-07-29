@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "profile": "malformed",
+  "evidence_collected_at": "not-a-time",
+  "publication_probe": [],
+  "release": {},
+  "artifacts": "not-a-list"
+}

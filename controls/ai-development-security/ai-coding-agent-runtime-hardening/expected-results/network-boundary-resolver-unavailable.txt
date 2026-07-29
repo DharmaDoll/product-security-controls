@@ -1,0 +1,2 @@
+ERROR PSB-AI-004/AAR-020 profile=resolver-unavailable network boundary evaluation failed: resolver evidence is unavailable
+RESULT ERROR profile=resolver-unavailable checks=0 failures=1

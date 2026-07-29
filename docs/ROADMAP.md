@@ -130,20 +130,21 @@ Planned control packages:
    `build-l1#platform-generates-provenance` and
    `build-l2#platform-authentic-provenance`.
 3. `PSB-REL-002` — publish and distribute provenance with each applicable
-   release artifact. This is intended to address
+   release artifact — implemented with one-to-one digest binding, immutable
+   authenticated discovery, intended-consumer access, publication timing,
+   retention, and no-downgrade verification. It provides evidence for
    `build-l1#producer-distributes-provenance`.
 4. Continue using `PSB-REL-001` for consumer-side provenance authenticity and
    artifact-subject validation, mapped to
    `build-l2#consumer-validates-authenticity`.
 
-The planned `PSB-REL-002` mapping remains provisional until its implementation,
-negative tests, distribution trust boundaries, and sanitized evidence exist.
-Completion of this milestone requires all seven cumulative
-requirements to move from `gap` to reviewed evidence in the generated
-`SLSA L2 Coverage` view,
-followed by a separate end-to-end assessment of the producer, build platform,
-and consumer. L3 hardening is a later milestone and is not required for this
-target.
+The `PSB-REL-002` mapping is reviewed against its implementation, negative
+tests, distribution trust boundary, and sanitized evidence.
+All seven cumulative requirements now have reviewed `mapped-evidence` rows in
+the generated `SLSA L2 Coverage` view. Milestone completion still requires a
+separate end-to-end assessment of the producer, build platform, and consumer;
+the mapping status alone is not a level claim. L3 hardening is a later
+milestone and is not required for this target.
 
 ## Phase 4 — Release integrity
 
@@ -232,12 +233,12 @@ acceptance criteria are maintained in
 3. `PSB-BUILD-003` — platform-generated and platform-authenticated provenance
    — implemented.
 4. `PSB-REL-002` — provenance publication and distribution with release
-   artifacts.
+   artifacts — implemented.
 
 `PSB-BUILD-002` closes three producer-side gaps and `PSB-BUILD-003` closes two
-platform-side gaps. Item 4 closes the final provenance-distribution gap together
-with the existing consumer verification in `PSB-REL-001`. Do not start a new
-SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
+platform-side gaps. Item 4 closes the final provenance-distribution mapping gap
+together with the existing consumer verification in `PSB-REL-001`. Do not
+start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
 
 ### P1 — Foundational product-security controls
 
@@ -300,10 +301,25 @@ SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    digest-selected approvals with a pinned issuer key and atomically limits
    local consumption to one hook allow. The sixth reconciles recent complete
    installed runtime inventories and writes fixed-schema redacted allow, deny,
-   and error audit events before provider output. Continue with private-network,
-   socket, proxy, metadata-service, product hook startup/timeout assessment,
-   external-side-effect reconciliation, command-indirection, adopted fleet
-   collector, export ingestion, and alert tests.
+   and error audit events before provider output. The seventh keeps network-off
+   as the default and adds exact managed HTTPS destinations, public-address
+   classification, connected-address binding, and private/local/metadata,
+   proxy, socket, stale-DNS, and DNS-rebinding negative tests. Continue with
+   an eighth synthetic slice that requires a downstream request-bound permit
+   so hook startup, timeout, abnormal-exit, invalid-output, and invalid-permit
+   cases cannot reach a side effect. The ninth reconciles uncertain external
+   outcomes with stable request identity, backend idempotency, no approval
+   restoration, distinct retry approval, and an unknown-outcome block.
+   The tenth adds typed direct-argv classification and denies shell, script,
+   task-runner, interpreter, unresolved-alias, and unknown indirection without
+   increasing HITL prompts. The eleventh adds both-provider managed fleet
+   enrollment, fresh gap-free export ingestion, centralized metadata-only
+   storage, and synthetic delivery tests for required runtime alerts. The
+   twelfth authenticates the exact fleet snapshot and monotonic sequence with
+   a dedicated digest-pinned collector key and rejects payload/signature
+   tampering and replay. Continue with live product, gateway,
+   delayed-delivery, backend, command-broker, collector, key-custody, SIEM,
+   checkpoint, and receiver evidence.
 5. `PSB-AI-003` — prompt/document injection fixtures that verify the
    `PSB-AI-004` runtime boundary and repository security invariants.
 6. Reconcile the remaining OWASP AI Agent Security Cheat Sheet outcomes into

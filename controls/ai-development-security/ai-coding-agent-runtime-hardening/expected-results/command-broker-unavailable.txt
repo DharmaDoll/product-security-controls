@@ -1,0 +1,2 @@
+ERROR PSB-AI-004/AAR-024 profile=unavailable command broker evaluation failed: command resolution engine is unavailable
+RESULT ERROR profile=unavailable checks=0 failures=1

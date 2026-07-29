@@ -1,0 +1,12 @@
+{
+  "schema_version": "psb-ai-command-broker-evidence/v1",
+  "profile": "malformed",
+  "engine_available": true,
+  "cases": [
+    {
+      "scenario_id": "malformed",
+      "provider": "codex",
+      "argv": "git push"
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+ERROR PSB-AI-004/AAR-022 profile=gateway-unavailable hook failure boundary evaluation failed: downstream side-effect gateway is unavailable
+RESULT ERROR profile=gateway-unavailable checks=0 failures=1

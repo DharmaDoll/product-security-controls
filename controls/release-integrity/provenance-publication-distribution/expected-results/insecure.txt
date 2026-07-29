@@ -1,0 +1,5 @@
+FAIL PSB-REL-002/RPD-001 artifact and provenance one-to-one digest binding is incomplete
+FAIL PSB-REL-002/RPD-002 publication location discoverability or consumer access is unsafe
+FAIL PSB-REL-002/RPD-003 provenance publication is late or retention is insufficient
+FAIL PSB-REL-002/RPD-004 protected artifact family silently downgraded provenance
+RESULT FAIL profile=insecure checks=4 failures=4

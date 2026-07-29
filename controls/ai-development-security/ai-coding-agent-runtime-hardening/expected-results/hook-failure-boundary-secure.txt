@@ -1,0 +1,15 @@
+PASS PSB-AI-004/AAR-022 provider=claude-code scenario=claude-completed-allow gateway allowed one completed audited request-bound hook permit
+PASS PSB-AI-004/AAR-022 provider=claude-code scenario=claude-explicit-deny gateway denied missing or invalid hook permit before side effect
+PASS PSB-AI-004/AAR-022 provider=claude-code scenario=claude-not-started gateway denied missing or invalid hook permit before side effect
+PASS PSB-AI-004/AAR-022 provider=claude-code scenario=claude-timed-out gateway denied missing or invalid hook permit before side effect
+PASS PSB-AI-004/AAR-022 provider=claude-code scenario=claude-abnormal-exit gateway denied missing or invalid hook permit before side effect
+PASS PSB-AI-004/AAR-022 provider=claude-code scenario=claude-invalid-output gateway denied missing or invalid hook permit before side effect
+PASS PSB-AI-004/AAR-022 provider=claude-code scenario=claude-invalid-permit gateway denied missing or invalid hook permit before side effect
+PASS PSB-AI-004/AAR-022 provider=codex scenario=codex-completed-allow gateway allowed one completed audited request-bound hook permit
+PASS PSB-AI-004/AAR-022 provider=codex scenario=codex-explicit-deny gateway denied missing or invalid hook permit before side effect
+PASS PSB-AI-004/AAR-022 provider=codex scenario=codex-not-started gateway denied missing or invalid hook permit before side effect
+PASS PSB-AI-004/AAR-022 provider=codex scenario=codex-timed-out gateway denied missing or invalid hook permit before side effect
+PASS PSB-AI-004/AAR-022 provider=codex scenario=codex-abnormal-exit gateway denied missing or invalid hook permit before side effect
+PASS PSB-AI-004/AAR-022 provider=codex scenario=codex-invalid-output gateway denied missing or invalid hook permit before side effect
+PASS PSB-AI-004/AAR-022 provider=codex scenario=codex-invalid-permit gateway denied missing or invalid hook permit before side effect
+RESULT PASS profile=secure checks=14 failures=0

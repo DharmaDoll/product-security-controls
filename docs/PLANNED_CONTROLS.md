@@ -97,7 +97,7 @@ the missing checklist from ASVS or from generic vulnerability lists.
 
 ### PSB-REL-002 — Provenance publication and distribution
 
-Status: `ready`  
+Status: `prototype` — first runnable slice implemented
 Domain: `release-integrity`
 
 #### Goal
@@ -133,12 +133,24 @@ by `PSB-BUILD-003` and validate it with `PSB-REL-001`.
 - `make verify-control CONTROL=PSB-REL-002` runs offline fixtures;
 - missing, mismatched, mutable, inaccessible, and malformed evidence fails
   closed;
-- sanitized output contains digests and evidence codes, not credentials or
-  private release URLs;
+- sanitized output contains check IDs and reason classes while the manifest
+  retains reviewed digests; neither contains credentials or real private
+  release URLs;
 - the generated SLSA L2 coverage view moves
   `build-l1#producer-distributes-provenance` from `gap` only on reviewed
   evidence;
 - no SLSA level achievement claim is made.
+
+#### Implementation result
+
+Implemented in
+[`controls/release-integrity/provenance-publication-distribution/`](../controls/release-integrity/provenance-publication-distribution/).
+The E3 slice verifies one-to-one artifact/provenance digest binding, immutable
+authenticated release-manifest discovery, intended-consumer access, bounded
+publication delay, retention, protected-family no-downgrade, and distinct
+publication/storage `ERROR` states. The reviewed SLSA mapping supplies evidence
+for the distribution requirement but does not claim cumulative level
+achievement.
 
 ## P1: foundational controls
 
@@ -579,7 +591,7 @@ over-privileged, or unreviewed dependencies.
 
 ### PSB-AI-004 — AI coding agent runtime hardening
 
-Status: `prototype` — sixth runnable slice implemented
+Status: `prototype` — twelfth runnable slice implemented
 Domain: `ai-development-security`  
 Primary security functions: `prevent`, `detect`, `verify`, `govern`
 
@@ -766,9 +778,11 @@ policy-invalid calls are denied without prompting for an override.
 
 Unreviewed plugin installation, browser control, and computer use are disabled
 where the current adapter exposes managed controls. Skill fixtures retain
-instruction-only authority. Previously installed plugin inventory, production
-MCP behavior, private network controls, and approval-service production
-integration remain explicit follow-up work.
+instruction-only authority. At this historical slice boundary, previously
+installed plugin inventory, production MCP behavior, private network controls,
+and approval-service production integration remained follow-up work; later
+slices add synthetic inventory, approval, and network-boundary evidence while
+live production evidence remains incomplete.
 
 #### Fourth runnable slice
 
@@ -822,6 +836,119 @@ This is local reference evidence. Production still requires a trustworthy
 fleet collector, PSB-AI-002 dependency provenance, managed ownership, rotation,
 export ingestion, alerting, and separate review of native OTel, workspace, and
 server-side audit coverage.
+
+#### Seventh runnable slice
+
+Implementation: complete.
+
+Network-off remains the ordinary profile. A separate destination-specific
+policy and offline verifier now require an exact HTTPS host, port and path
+prefix, a managed egress gateway, recent complete DNS evidence containing only
+public unicast addresses, and transport binding to one classified connection
+address. Cleartext, lookalike, userinfo, fragment, unreviewed port or path,
+path traversal, proxy, SOCKS, non-loopback listener, Unix socket, loopback, private,
+link-local, multicast, reserved, unspecified, metadata, stale, mismatched, and
+DNS-rebinding fixtures do not pass. Gateway, resolver, and malformed evidence
+fail as `ERROR`.
+
+The verifier performs no DNS lookup or connection. Production still requires
+managed resolver provenance, TLS validation, lower-layer gateway enforcement,
+TTL-aware refresh, and live proof that the active product cannot bypass or
+fall back around the gateway. Browser, connector, web-search, provider
+control-plane, and MCP server-side egress remain separate surfaces.
+
+#### Eighth runnable slice
+
+Implementation: complete.
+
+Synthetic lifecycle assessment now covers managed hook completion, explicit
+deny, process not started, timeout, abnormal exit, invalid output, and invalid
+permit for both Claude Code and Codex. A provider-neutral downstream policy
+allows a side effect only when managed matching, exit zero, valid allow output,
+pre-output audit commit, exact request binding, trusted permit state, mandatory
+gateway enforcement, gateway audit, and the observed outcome all agree.
+Native product continuation after a hook failure remains untrusted; a missing
+or invalid permit is denied before the remote side effect. Optional gateway
+bypass is a finding, and unavailable or malformed evaluation is `ERROR`.
+
+This is synthetic reference evidence rather than a deployed gateway. Production
+still requires issuer authentication, short lifetime, exact audience and
+request binding, replay prevention, backend network isolation, live product
+failure injection, and observed zero mutations for startup, timeout, exit, and
+output faults.
+
+#### Ninth runnable slice
+
+Implementation: complete.
+
+The provider-neutral reconciliation policy now models the transaction boundary
+between committed local approval consumption and a remote MCP mutation. Normal
+application, timeout-after-apply, timeout-before-apply, retry with a distinct
+replacement approval, and unknown outcome are reconciled against one stable
+request digest and idempotency key with at most one backend mutation. The
+original approval is never restored, automatic retry is disabled, and unknown
+or unavailable outcomes block.
+
+Negative fixtures restore and reuse approval, change idempotency identity,
+change request content under one key, disable backend idempotency, and report
+duplicate mutation. This remains synthetic state evidence. Production requires
+durable authenticated backend idempotency records, serialized lookup and
+mutation, delayed-delivery tests, network-partition tests, and live mutation
+count evidence.
+
+#### Tenth runnable slice
+
+Implementation: complete.
+
+A managed typed-command classifier now keeps reviewed read-only direct argv at
+zero HITL, maps direct high-impact operations and completely resolved Git
+aliases to one bound approval, and preserves classification through
+environment-assignment wrappers. Force push maps to history rewrite rather
+than ordinary publication. Shell strings, scripts, task runners, interpreter
+code, unknown wrappers, unresolved aliases, and unknown operations are denied
+without an override prompt.
+
+Negative fixtures model substring-only automatic allow for shell, Make, and an
+unresolved alias. The sample does not claim to parse arbitrary shell languages
+or inspect script contents. Production still requires argv-preserving provider
+adapters, managed executable and alias resolution, PATH and symlink race
+handling, a reviewed typed-operation catalog, and live command-execution
+evidence.
+
+#### Eleventh runnable slice
+
+Implementation: complete.
+
+An adopted-fleet telemetry policy and offline verifier now require managed
+enrollment and export for both Claude Code and Codex endpoint classes, recent
+gap-free ingestion, explicit reject or quarantine accounting, and centralized
+metadata-only storage that is immutable to developers and agents. The
+centralized field set must exactly match the fixed redacted `AAR-019` audit
+schema.
+
+Synthetic delivery tests cover unknown extension, hook failure, audit sink
+failure, gateway bypass, approval replay, reconciliation unknown, and command
+broker bypass alerts. Missing providers, stale or gap-bearing ingestion, raw
+content collection, and incomplete or failed alerts are findings; unavailable
+or malformed evaluation is `ERROR`. This is deterministic adoption evidence,
+not proof of a deployed collector, authenticated transport, SIEM durability,
+live receiver, or operator response.
+
+#### Twelfth runnable slice
+
+Implementation: complete.
+
+A dedicated synthetic collector trust root now authenticates a signed statement
+that binds the exact canonical fleet snapshot digest, policy identity,
+collection time, monotonic sequence, and previous accepted snapshot digest.
+The verifier pins the public-key digest, validates the active issuer and
+OpenSSL 3 signature, and compares the statement with a managed checkpoint.
+
+Payload and signature tampering and replay are findings. Unknown keys,
+malformed trust, statement, checkpoint, or snapshot state, and unavailable
+cryptographic verification are `ERROR`. No private key is committed. Production
+still requires protected collector key custody, rotation, revocation,
+checkpoint atomicity and rollback protection, and independent trust delivery.
 
 #### Acceptance criteria
 

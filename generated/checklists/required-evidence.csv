@@ -39,6 +39,25 @@ PSB-AI-004,PSB-AI-004-AAR-018,security,automated,provider inventory snapshot wit
 PSB-AI-004,PSB-AI-004-AAR-019,security,automated,sanitized AAR-019 audit verification result
 PSB-AI-004,PSB-AI-004-AAR-019,security,automated,fixed-schema synthetic audit events
 PSB-AI-004,PSB-AI-004-AAR-019,security,automated,fail-closed audit-sink negative test
+PSB-AI-004,PSB-AI-004-AAR-020,security,automated,sanitized AAR-020 exact-route result
+PSB-AI-004,PSB-AI-004-AAR-020,security,automated,immutable destination policy and negative scenario set
+PSB-AI-004,PSB-AI-004-AAR-021,security,automated,sanitized AAR-021 DNS and connection-binding result
+PSB-AI-004,PSB-AI-004-AAR-021,security,automated,resolver unavailable and malformed negative fixtures
+PSB-AI-004,PSB-AI-004-AAR-022,security,automated,sanitized AAR-022 result for each provider and lifecycle class
+PSB-AI-004,PSB-AI-004-AAR-022,security,automated,timeout and startup-bypass negative fixtures
+PSB-AI-004,PSB-AI-004-AAR-022,security,automated,gateway-unavailable and malformed evidence fixtures
+PSB-AI-004,PSB-AI-004-AAR-023,security,automated,sanitized AAR-023 result for five safe outcome classes
+PSB-AI-004,PSB-AI-004-AAR-023,security,automated,restored-approval and changed-request negative fixtures
+PSB-AI-004,PSB-AI-004-AAR-023,security,automated,reconciliation-unavailable and malformed evidence fixtures
+PSB-AI-004,PSB-AI-004-AAR-024,security,automated,sanitized AAR-024 typed decision for eleven secure scenarios
+PSB-AI-004,PSB-AI-004-AAR-024,security,automated,shell task-runner and unresolved-alias auto-allow negative fixtures
+PSB-AI-004,PSB-AI-004-AAR-024,security,automated,command-engine-unavailable and malformed evidence fixtures
+PSB-AI-004,PSB-AI-004-AAR-025,security,automated,sanitized AAR-025 provider enrollment and ingestion result
+PSB-AI-004,PSB-AI-004-AAR-025,security,automated,metadata-only centralized field classification
+PSB-AI-004,PSB-AI-004-AAR-025,security,automated,synthetic alert delivery receipts without payload or destination content
+PSB-AI-004,PSB-AI-004-AAR-026,security,automated,sanitized AAR-026 issuer authentication result
+PSB-AI-004,PSB-AI-004-AAR-026,security,automated,exact snapshot digest and policy binding result
+PSB-AI-004,PSB-AI-004-AAR-026,security,automated,monotonic sequence and previous-digest checkpoint result
 PSB-BUILD-001,PSB-BUILD-001-BLD-001,build-platform,automated,sanitized verifier output
 PSB-BUILD-001,PSB-BUILD-001-BLD-002,build-platform,automated,sanitized verifier output
 PSB-BUILD-001,PSB-BUILD-001-BLD-002,build-platform,automated,build and deploy job definition
@@ -135,6 +154,15 @@ PSB-REL-001,PSB-REL-001-REL-003,release-manager,automated,sanitized verifier out
 PSB-REL-001,PSB-REL-001-REL-003,release-manager,automated,verification policy
 PSB-REL-001,PSB-REL-001-REL-004,release-manager,automated,negative-test output
 PSB-REL-001,PSB-REL-001-REL-005,release-manager,automated,negative-test output
+PSB-REL-002,PSB-REL-002-RPD-001,release-manager,automated,sanitized RPD-001 verifier result
+PSB-REL-002,PSB-REL-002-RPD-001,release-manager,automated,release manifest with artifact and provenance digests
+PSB-REL-002,PSB-REL-002-RPD-002,release-manager,automated,sanitized RPD-002 verifier result
+PSB-REL-002,PSB-REL-002-RPD-002,release-manager,automated,release storage access and immutability policy
+PSB-REL-002,PSB-REL-002-RPD-003,release-manager,automated,sanitized RPD-003 verifier result
+PSB-REL-002,PSB-REL-002-RPD-003,release-manager,automated,publication timestamps and retention policy
+PSB-REL-002,PSB-REL-002-RPD-004,release-manager,automated,sanitized RPD-004 verifier result
+PSB-REL-002,PSB-REL-002-RPD-004,release-manager,automated,protected artifact-family publication policy
+PSB-REL-002,PSB-REL-002-RPD-005,release-manager,automated,sanitized RPD-005 negative-test output
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-001,shared,external-evidence,identity or source-platform credential policy
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-002,developer,hybrid,credential helper configuration
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-002,developer,hybrid,sanitized assessment result

@@ -1,0 +1,32 @@
+{
+  "schema_version": "psb-ai-side-effect-reconciliation-evidence/v1",
+  "profile": "insecure",
+  "cases": [
+    {
+      "scenario_id": "restored-approval-auto-retry",
+      "request_digest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "idempotency_key": "IDEM-FIXTURE-006",
+      "original_approval": {"approval_id":"APR-FIXTURE-006","consumed_before_dispatch":true,"restored":true},
+      "replacement_approval": null,
+      "dispatches": [
+        {"attempt_id":"ATTEMPT-006-A","approval_id":"APR-FIXTURE-006","request_digest":"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","idempotency_key":"IDEM-FIXTURE-006","outcome":"timeout"},
+        {"attempt_id":"ATTEMPT-006-B","approval_id":"APR-FIXTURE-006","request_digest":"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","idempotency_key":"IDEM-FIXTURE-006-RETRY","outcome":"applied-response"}
+      ],
+      "backend": {"available":true,"idempotency_enforced":false,"lookup_status":"applied","recorded_request_digest":"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","mutation_count":2},
+      "reconciliation": {"available":true,"automatic_retry":true,"decision":"complete-no-retry","evidence_complete":false}
+    },
+    {
+      "scenario_id": "same-key-different-request",
+      "request_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+      "idempotency_key": "IDEM-FIXTURE-007",
+      "original_approval": {"approval_id":"APR-FIXTURE-007","consumed_before_dispatch":true,"restored":false},
+      "replacement_approval": {"approval_id":"APR-FIXTURE-007-REPLACEMENT","consumed_before_dispatch":true},
+      "dispatches": [
+        {"attempt_id":"ATTEMPT-007-A","approval_id":"APR-FIXTURE-007","request_digest":"1111111111111111111111111111111111111111111111111111111111111111","idempotency_key":"IDEM-FIXTURE-007","outcome":"timeout"},
+        {"attempt_id":"ATTEMPT-007-B","approval_id":"APR-FIXTURE-007-REPLACEMENT","request_digest":"2222222222222222222222222222222222222222222222222222222222222222","idempotency_key":"IDEM-FIXTURE-007","outcome":"applied-response"}
+      ],
+      "backend": {"available":true,"idempotency_enforced":true,"lookup_status":"conflict","recorded_request_digest":"1111111111111111111111111111111111111111111111111111111111111111","mutation_count":1},
+      "reconciliation": {"available":true,"automatic_retry":false,"decision":"retry-with-replacement-approval","evidence_complete":false}
+    }
+  ]
+}

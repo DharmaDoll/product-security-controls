@@ -31,6 +31,18 @@ threats:
     description: A previously installed or identity-confused plugin Skill or MCP server remains active outside the reviewed runtime extension set.
   - id: AI-AGENT-AUDIT-BLINDNESS
     description: Missing failed over-retained or sensitive runtime logs prevent investigation or expose source prompts tool arguments and outputs.
+  - id: AI-AGENT-NETWORK-PIVOT
+    description: Temporarily enabled agent networking reaches an unreviewed external destination local daemon private network cloud metadata endpoint proxy or rebound DNS address.
+  - id: AI-AGENT-HOOK-FAIL-OPEN
+    description: A managed enforcement hook cannot start times out exits abnormally or returns invalid output and the product continues a remote side effect without an independent permit check.
+  - id: AI-AGENT-SIDE-EFFECT-REPLAY
+    description: An uncertain remote outcome causes a consumed approval to be restored or retried with changed request identity and executes one logical side effect more than once.
+  - id: AI-AGENT-COMMAND-INDIRECTION
+    description: A protected command is hidden behind environment shell script task-runner interpreter or alias indirection and bypasses direct command classification.
+  - id: AI-AGENT-TELEMETRY-PIPELINE-BLINDNESS
+    description: Missing fleet enrollment stalled or incomplete export unsafe centralized collection or untested alert delivery hides runtime drift and fail-open agent activity or exposes sensitive request content.
+  - id: AI-AGENT-TELEMETRY-EVIDENCE-FORGERY
+    description: An agent endpoint process or pipeline intermediary fabricates modifies or replays a clean fleet snapshot so security evaluation trusts attacker-controlled telemetry state.
 implementations:
   insecure:
     - insecure/profile.json
@@ -45,9 +57,20 @@ implementations:
     - insecure/runtime-assessment/codex-inventory.json
     - insecure/runtime-assessment/audit-state.json
     - insecure/runtime-assessment/audit-events.jsonl
+    - insecure/network-boundary/evidence.json
+    - insecure/hook-failure-boundary/evidence.json
+    - insecure/side-effect-reconciliation/evidence.json
+    - insecure/command-broker/evidence.json
+    - insecure/fleet-telemetry/evidence.json
   secure:
     - policy/runtime-policy.json
     - policy/runtime-assessment-policy.json
+    - policy/network-boundary-policy.json
+    - policy/hook-failure-boundary-policy.json
+    - policy/side-effect-reconciliation-policy.json
+    - policy/command-broker-policy.json
+    - policy/fleet-telemetry-policy.json
+    - policy/fleet-evidence-trust-policy.json
     - secure/profile.json
     - secure/claude/managed-settings.json
     - secure/claude/repository-settings.json
@@ -73,11 +96,26 @@ implementations:
     - secure/runtime-assessment/codex-inventory.json
     - secure/runtime-assessment/audit-state.json
     - secure/runtime-assessment/audit-events.jsonl
+    - secure/network-boundary/evidence.json
+    - secure/hook-failure-boundary/evidence.json
+    - secure/side-effect-reconciliation/evidence.json
+    - secure/command-broker/evidence.json
+    - secure/fleet-telemetry/evidence.json
+    - secure/fleet-evidence/collector-public.pem
+    - secure/fleet-evidence/collector-trust.json
+    - secure/fleet-evidence/checkpoint.json
+    - secure/fleet-evidence/envelope.json
     - scripts/approval_core.py
     - scripts/signed_approval.py
     - scripts/authorize-signed-approval.py
     - scripts/runtime_audit.py
     - scripts/verify-runtime-state.py
+    - scripts/verify-network-boundary.py
+    - scripts/verify-hook-failure-boundary.py
+    - scripts/verify-side-effect-reconciliation.py
+    - scripts/verify-command-broker.py
+    - scripts/verify-fleet-telemetry.py
+    - scripts/verify-fleet-evidence.py
     - scripts/pretool-gate.py
 verification:
   commands:
@@ -102,6 +140,23 @@ verification:
     - recent complete Claude Code and Codex runtime inventories exactly match the reviewed extension and dependency-record set while drift stale unavailable and malformed snapshots do not pass
     - every managed hook allow deny and error decision is written with fixed redacted fields before provider output while audit sink failure blocks the invocation
     - audit storage ownership permissions retention export state event coverage and forbidden content are verified
+    - an exact HTTPS destination and path prefix with recent public DNS evidence and transport address binding passes the bounded network profile
+    - cleartext wildcard-confused unreviewed path or port proxy SOCKS local listener Unix socket private local metadata and DNS rebinding cases are rejected
+    - unavailable gateway or resolver and malformed network evidence return ERROR with exit code 2
+    - both providers allow a downstream side effect only after completed audited request-bound hook permit evidence
+    - explicit deny startup failure timeout abnormal exit invalid output and invalid permit cases produce no downstream side effect even when the native product would continue
+    - optional or unavailable gateway enforcement malformed lifecycle evidence and observed bypass do not produce a clean result
+    - applied timeout-after-apply timeout-before-apply replacement-approved retry and unknown-outcome cases preserve one exact request and at most one mutation
+    - the original approval is never restored automatic retry is disabled and any replacement approval remains distinct while using the same request digest and idempotency key
+    - approval replay idempotency or digest change duplicate mutation unavailable reconciliation and malformed evidence do not produce a clean result
+    - reviewed read-only direct argv remains zero HITL and direct or completely resolved high-impact commands require one bound approval
+    - environment assignment wrappers preserve exact classification while shell strings scripts task runners interpreter code unresolved aliases and unknown commands are denied without an override prompt
+    - substring-only auto-allow unavailable command resolution and malformed command evidence do not produce a clean result
+    - both reviewed provider endpoint classes are enrolled managed export-enabled fresh and gap-free in the adopted fleet telemetry path
+    - centralized evidence is immutable access-controlled and metadata-only while every required alert has a recent verified delivery receipt
+    - missing or stale provider evidence sequence gaps content leakage disabled or failed alerts are findings while unavailable or malformed telemetry evaluation is ERROR
+    - a dedicated active digest-pinned collector key authenticates the exact canonical fleet snapshot policy collection time sequence and previous accepted digest
+    - payload or signature tampering and replay are findings while unknown trust malformed evidence and unavailable cryptographic verification are ERROR
     - generated evidence contains decision reasons but no credential value or private destination
 checks:
   - id: AAR-001
@@ -479,13 +534,165 @@ checks:
         - fixed-schema synthetic audit events
         - fail-closed audit-sink negative test
     mapping_status: reviewed
+  - id: AAR-020
+    title: Optional network access is exact and destination specific
+    required_state: command networking remains default deny and an explicitly selected bounded profile can reach only reviewed exact HTTPS hosts port 443 and path prefixes through a managed gateway with no upstream proxy SOCKS local listener or Unix socket escape
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - developer-network
+      - managed-egress-gateway
+    context:
+      threat_actor: prompt-injected agent compromised tool malicious repository or unsafe convenience configuration
+      attack_or_failure_scenario: a task that needs one MCP endpoint receives general network access and exfiltrates source through another host port path proxy listener or local socket
+      why_required: network-off is safest but tasks with a justified remote dependency need a narrow independently enforced route rather than unrestricted egress
+    verification:
+      type: automated
+      method: evaluate exact scheme host port and canonical path rules plus userinfo fragment traversal proxy SOCKS local-listener and Unix-socket negative fixtures without making a network request
+      expected: the reviewed synthetic HTTPS route passes while cleartext lookalike userinfo fragment unreviewed port or path traversal proxy listener SOCKS and socket cases are findings
+      evidence:
+        - sanitized AAR-020 exact-route result
+        - immutable destination policy and negative scenario set
+    mapping_status: reviewed
+  - id: AAR-021
+    title: Resolved and connected addresses stay outside local private and metadata boundaries
+    required_state: recent complete managed resolver evidence contains only public unicast addresses and the transport connects to one classified address while loopback private link-local multicast reserved unspecified metadata or rebound destinations remain blocked
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - developer-network
+      - managed-egress-gateway
+      - dns-resolution-evidence
+    context:
+      threat_actor: attacker controlling DNS compromised remote service or agent attempting SSRF-style access from the developer endpoint
+      attack_or_failure_scenario: an allowlisted hostname resolves or rebinds to a local daemon private service cloud metadata address or a different connection address after the policy check
+      why_required: hostname matching alone does not contain DNS rebinding and can turn a reviewed public name into a route to privileged endpoint or cloud services
+    verification:
+      type: automated
+      method: classify every resolved and connected IP require fresh matching resolver evidence and transport address binding and simulate local private metadata stale mismatch malformed and unavailable states
+      expected: only recent complete public-unicast evidence bound to the actual connection passes while unsafe addresses are findings and missing or malformed evaluation is ERROR
+      evidence:
+        - sanitized AAR-021 DNS and connection-binding result
+        - resolver unavailable and malformed negative fixtures
+    mapping_status: reviewed
+  - id: AAR-022
+    title: Hook lifecycle failure cannot authorize a downstream side effect
+    required_state: every side-effecting MCP request reaches an independent mandatory gateway that accepts only a trusted exact-request permit created after the managed hook matches completes with exit zero returns allow and commits its audit event
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - managed-agent-policy
+      - mcp-side-effect-gateway
+      - hook-runtime-assessment
+    context:
+      threat_actor: prompt-injected agent compromised product process unsafe hook runtime or operator assuming that every hook error blocks
+      attack_or_failure_scenario: PreToolUse cannot start times out exits unexpectedly or returns invalid output but the product continues and a remote MCP mutation executes without the policy decision
+      why_required: only an explicit validated deny is a reliable product decision so a separate server-side permit boundary must make missing or failed hook execution non-authoritative without adding another human prompt
+    verification:
+      type: automated
+      method: reconcile both-provider lifecycle cases with managed matching exit decision hook audit request binding permit issuer permit status mandatory gateway decision gateway audit and observed side effect
+      expected: completed audited exact permit evidence is the only allow path while explicit deny startup timeout abnormal exit invalid output and invalid permit cases stop before the side effect and unavailable evaluation is ERROR
+      evidence:
+        - sanitized AAR-022 result for each provider and lifecycle class
+        - timeout and startup-bypass negative fixtures
+        - gateway-unavailable and malformed evidence fixtures
+    mapping_status: reviewed
+  - id: AAR-023
+    title: Uncertain external side effects are reconciled without approval replay
+    required_state: a consumed approval is never restored and every external attempt remains bound to one exact request digest and idempotency key while backend outcome lookup proves applied not-applied or unknown with at most one mutation
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - action-authorization-gate
+      - mcp-side-effect-gateway
+      - approval-consumption-ledger
+      - backend-idempotency-record
+    context:
+      threat_actor: agent automation retry operator or network failure obscuring whether a remote mutation completed
+      attack_or_failure_scenario: the endpoint consumes approval and times out after dispatch then restores it or changes the idempotency key and creates a duplicate pull request deployment database update or infrastructure mutation
+      why_required: local approval consumption cannot be atomic with a remote service so durable backend idempotency and explicit outcome reconciliation are required to distinguish safe retry from replay
+    verification:
+      type: automated
+      method: reconcile approval consumption replacement approval dispatch request digest idempotency key backend lookup mutation count and retry decision across applied timeout and unknown fixture states
+      expected: applied state completes without retry not-applied requires a distinct approval unknown blocks and no state restores approval changes request identity automatically retries or records more than one mutation
+      evidence:
+        - sanitized AAR-023 result for five safe outcome classes
+        - restored-approval and changed-request negative fixtures
+        - reconciliation-unavailable and malformed evidence fixtures
+    mapping_status: reviewed
+  - id: AAR-024
+    title: Command indirection cannot bypass high-impact action classification
+    required_state: a managed typed command broker preserves argv boundaries resolves only reviewed transparent wrappers and aliases maps every direct high-impact operation to one bound approval and denies opaque shell script task-runner interpreter or unknown forms
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - managed-command-broker
+      - action-authorization-gate
+      - developer-shell
+    context:
+      threat_actor: prompt-injected agent malicious repository script compromised task definition or operator relying on a direct-command substring rule
+      attack_or_failure_scenario: git push package publication or infrastructure mutation is invoked through env shell c script Make target interpreter or Git alias and runs automatically because only the visible launcher is classified
+      why_required: command strings are composable and mutable so high-impact policy must operate on typed resolved operations and deny ambiguity rather than treating wrappers as low-risk commands
+    verification:
+      type: automated
+      method: classify both-provider direct argv environment wrappers force push resolved and unresolved aliases shell strings scripts task runners interpreter code and unknown commands without executing them
+      expected: read-only direct argv is automatic direct or resolved high-impact operations require one bound approval and every opaque unresolved or unknown form is denied while engine failure is ERROR
+      evidence:
+        - sanitized AAR-024 typed decision for eleven secure scenarios
+        - shell task-runner and unresolved-alias auto-allow negative fixtures
+        - command-engine-unavailable and malformed evidence fixtures
+    mapping_status: reviewed
+  - id: AAR-025
+    title: Adopted fleet telemetry ingestion and alert delivery are verified
+    required_state: both reviewed provider endpoint classes are managed enrolled export-enabled fresh and gap-free while centralized evidence remains immutable access-controlled and metadata-only and every required runtime alert has a recent verified delivery receipt
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - developer-endpoint-fleet
+      - security-audit-pipeline
+      - alert-delivery
+    context:
+      threat_actor: compromised agent unmanaged endpoint collector failure telemetry pipeline operator or unsafe centralized logging configuration
+      attack_or_failure_scenario: local runtime decisions exist but one provider never exports events ingestion silently develops gaps raw request content is centralized or alert rules fail without anyone detecting the blind spot
+      why_required: local audit intent is not adopted detection until every reviewed provider exports complete sanitized events to protected storage and synthetic tests prove that required alerts reach an owned receiver
+    verification:
+      type: automated
+      method: compare a recent managed fleet snapshot with exact provider enrollment export ingestion lag sequence content-classification storage and synthetic alert-delivery requirements
+      expected: both providers and the central metadata-only ingestion path pass every required alert is recently delivered and missing stale leaky failed unavailable or malformed evidence cannot produce a clean result
+      evidence:
+        - sanitized AAR-025 provider enrollment and ingestion result
+        - metadata-only centralized field classification
+        - synthetic alert delivery receipts without payload or destination content
+    mapping_status: reviewed
+  - id: AAR-026
+    title: Fleet telemetry evidence origin integrity and sequence are authenticated
+    required_state: a dedicated active digest-pinned organization collector key signs a recent statement bound to the exact canonical fleet snapshot policy identity next monotonic sequence and previous accepted snapshot digest
+    responsible_role: security
+    applies_to:
+      - ai-coding-agent
+      - developer-endpoint-fleet
+      - security-audit-pipeline
+      - telemetry-trust-root
+    context:
+      threat_actor: compromised agent developer process endpoint administrator or telemetry pipeline intermediary able to replace unsigned assessment input
+      attack_or_failure_scenario: a failing fleet snapshot is replaced changed after collection or replayed from an earlier clean state and AAR-025 reports adopted controls that are no longer active
+      why_required: semantic telemetry checks are meaningful only when the evaluator can authenticate who produced the exact payload and can prove it advances rather than rolls back the accepted collector stream
+    verification:
+      type: automated
+      method: verify a canonical fleet statement with an active issuer-bound digest-pinned public key then compare snapshot digest policy time and exact next sequence against a managed checkpoint
+      expected: the signed current snapshot passes while payload or signature tampering and replay fail and unknown keys malformed state or unavailable cryptographic verification return ERROR
+      evidence:
+        - sanitized AAR-026 issuer authentication result
+        - exact snapshot digest and policy binding result
+        - monotonic sequence and previous-digest checkpoint result
+    mapping_status: reviewed
 mappings:
   - framework: mitre-atlas
     version: "2026.05 (format 6.0.0)"
     id: AML.T0053
     relationship: mitigates
     confidence: medium
-    rationale: Runtime confinement protected paths and publication approval reduce the authority available through AI Agent Tool Invocation without proving that all tools or invocations are safe.
+    rationale: Runtime confinement protected paths bound approvals downstream permits idempotent reconciliation and typed command classification reduce the authority fail-open replay and wrapper-evasion paths available through AI Agent Tool Invocation without proving that all tools or invocations are safe.
     reviewer: product-security
     review_date: "2026-07-29"
     applies_to:
@@ -504,27 +711,43 @@ mappings:
       - AAR-016
       - AAR-017
       - AAR-018
+      - AAR-022
+      - AAR-023
+      - AAR-024
   - framework: mitre-atlas
     version: "2026.05 (format 6.0.0)"
     id: AML.T0053
     relationship: detects
     confidence: medium
-    rationale: Redacted managed-hook decision events can reveal reviewed denied and failed AI Agent Tool Invocation paths but do not prove visibility into product-native actions outside the hook.
+    rationale: Redacted managed-hook decision events plus verified both-provider fleet ingestion and synthetic alert delivery can reveal reviewed denied failed and bypass-oriented AI Agent Tool Invocation paths but do not prove visibility into product-native actions outside the governed telemetry boundary.
     reviewer: product-security
     review_date: "2026-07-29"
     applies_to:
       - AAR-019
+      - AAR-025
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0053
+    relationship: supports
+    confidence: medium
+    rationale: Authenticating the collector origin exact telemetry payload and monotonic snapshot chain supports trustworthy detection evidence for AI Agent Tool Invocation activity but does not itself detect or prevent an invocation.
+    reviewer: product-security
+    review_date: "2026-07-29"
+    applies_to:
+      - AAR-026
   - framework: mitre-atlas
     version: "2026.05 (format 6.0.0)"
     id: AML.T0086
     relationship: mitigates
     confidence: high
-    rationale: Default-deny network local binding and socket policy directly reduce exfiltration paths available through agent-invoked tools.
+    rationale: Default-deny networking plus exact managed HTTPS destinations public-address classification and connected-address binding reduce external local private metadata proxy socket and DNS-rebinding exfiltration paths available through agent-invoked tools.
     reviewer: product-security
     review_date: "2026-07-29"
     applies_to:
       - AAR-004
       - AAR-013
+      - AAR-020
+      - AAR-021
   - framework: mitre-atlas
     version: "2026.05 (format 6.0.0)"
     id: AML.T0097
@@ -552,7 +775,7 @@ limitations:
   - Claude Code arrays merge across settings scopes so managed-only permission and domain locks plus repository broadening review are both required; this slice does not assess every setting key.
   - Codex permission-profile enforcement in this sample requires version 0.138.0 or later and product-version drift requires renewed documentation review and negative testing.
   - Command-prefix approval is defense in depth and can miss shell indirection product parser changes or an approved malicious action; OS isolation remains required.
-  - The current profile uses network-off command execution and synthetic MCP URLs; it does not yet model production destination allowlists proxies metadata services or private networks.
+  - Network-off remains the ordinary profile; the destination-specific sample uses synthetic evidence and does not prove that a deployed product gateway pinned the classified address through its actual transport.
   - A compromised agent binary endpoint administrator sandbox implementation or human approving the wrong action remains outside the evidence established here.
   - The repository contains only a synthetic public key and precomputed signatures; production requires an independently protected issuer private key approval UI approver authentication key rotation revocation and managed trust-root delivery.
   - SQLite uniqueness makes local approval consumption atomic before allow but cannot form one transaction with an external MCP side effect; a crash can burn an approval and production adapters still require idempotency reconciliation and explicit retry approval.
@@ -564,6 +787,17 @@ limitations:
   - The gate explicitly exits 2 for detected evaluation errors, but product-level command-hook startup failures and timeouts are not proven to block in this static evidence; bounded writes therefore retain native prompt fallback and production should prefer a supervised local policy service or MCP gateway when strict fail-closed behavior is required.
   - The managed audit event records the pre-execution decision rather than the external tool result; native Codex OTel or provider audit sources and server-side outcome telemetry remain separate evidence with their own coverage and retention boundaries.
   - The local audit writer requires administrator-managed rotation before its size ceiling and blocks when it cannot append; the reference state does not prove deployed ownership collector export immutability SIEM ingestion or alerting.
+  - The network verifier does not perform DNS or connect to a destination; production requires managed resolver provenance TLS validation lower-layer egress enforcement and refreshed classification that cannot be changed by repository content or the agent.
+  - Browser connector web-search product control-plane MCP server-side egress and approved sandbox escalation use separate network surfaces that this command-egress fixture does not govern.
+  - The hook-failure boundary uses synthetic lifecycle and gateway state; it does not prove that a deployed MCP service authenticates request-bound permits or that the active Claude Code and Codex versions exhibit the modeled failure behavior.
+  - Product hook timeout and failure semantics can change by version; production adoption requires version-pinned live startup timeout invalid-output and downstream side-effect tests before promptless automation.
+  - Side-effect reconciliation uses synthetic gateway and backend state; it does not prove deployed idempotency durability authenticated outcome lookup mutation atomicity or that every external tool supports a stable idempotency key.
+  - A backend can complete after an initial not-applied observation unless its idempotency protocol serializes lookup and mutation; production must define that race and never treat a point-in-time query alone as permission to change the key or restore approval.
+  - The command broker classifies a deliberately small executable and operation vocabulary; it does not parse arbitrary shell languages inspect script contents resolve every executable path or prove that the deployed provider preserves argv boundaries.
+  - Denying opaque scripts and task runners can increase workflow friction; production should expose reviewed typed broker operations instead of broadening shell auto-allow or repeatedly prompting users to override ambiguity.
+  - Fleet telemetry evidence is synthetic and does not prove deployed collector identity authenticated transport SIEM durability endpoint coverage or live alert delivery; production adoption requires organization-owned source and receiver evidence.
+  - A verified synthetic alert receipt proves rule execution and delivery latency only; it does not prove on-call acknowledgement investigation quality response time or successful containment.
+  - The collector signature fixture uses a synthetic public key and precomputed statement; production requires protected private-key custody rotation revocation managed checkpoint rollback protection and independent trust distribution.
 status: prototype
 owner: product-security
 evidence_level: E3

@@ -1,0 +1,12 @@
+PASS PSB-AI-004/AAR-024 provider=claude-code scenario=read-only-direct decision=allow action_class=read-only typed command decision matches managed policy
+PASS PSB-AI-004/AAR-024 provider=codex scenario=high-impact-direct decision=require-bound-approval action_class=source-publication typed command decision matches managed policy
+PASS PSB-AI-004/AAR-024 provider=claude-code scenario=environment-wrapper decision=require-bound-approval action_class=source-publication typed command decision matches managed policy
+PASS PSB-AI-004/AAR-024 provider=codex scenario=force-push decision=require-bound-approval action_class=source-history-rewrite typed command decision matches managed policy
+PASS PSB-AI-004/AAR-024 provider=claude-code scenario=resolved-git-alias decision=require-bound-approval action_class=source-publication typed command decision matches managed policy
+PASS PSB-AI-004/AAR-024 provider=codex scenario=unresolved-git-alias decision=deny action_class=unclassified typed command decision matches managed policy
+PASS PSB-AI-004/AAR-024 provider=claude-code scenario=shell-string decision=deny action_class=unclassified typed command decision matches managed policy
+PASS PSB-AI-004/AAR-024 provider=codex scenario=script-file decision=deny action_class=unclassified typed command decision matches managed policy
+PASS PSB-AI-004/AAR-024 provider=claude-code scenario=task-runner decision=deny action_class=unclassified typed command decision matches managed policy
+PASS PSB-AI-004/AAR-024 provider=codex scenario=interpreter-code decision=deny action_class=unclassified typed command decision matches managed policy
+PASS PSB-AI-004/AAR-024 provider=claude-code scenario=unknown-command decision=deny action_class=unclassified typed command decision matches managed policy
+RESULT PASS profile=secure checks=11 failures=0

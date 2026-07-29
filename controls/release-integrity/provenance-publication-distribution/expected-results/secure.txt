@@ -1,0 +1,5 @@
+PASS PSB-REL-002/RPD-001 every artifact has one digest-bound discoverable provenance object
+PASS PSB-REL-002/RPD-002 release evidence is immutable authenticated and consumer-accessible
+PASS PSB-REL-002/RPD-003 provenance publication delay and retention meet policy
+PASS PSB-REL-002/RPD-004 protected artifact family retains required provenance
+RESULT PASS profile=secure checks=4 failures=0

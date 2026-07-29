@@ -1,0 +1,6 @@
+PASS PSB-AI-004/AAR-023 scenario=applied-response uncertain outcome was reconciled without approval replay or duplicate mutation
+PASS PSB-AI-004/AAR-023 scenario=timeout-after-apply uncertain outcome was reconciled without approval replay or duplicate mutation
+PASS PSB-AI-004/AAR-023 scenario=timeout-before-apply uncertain outcome was reconciled without approval replay or duplicate mutation
+PASS PSB-AI-004/AAR-023 scenario=replacement-approved-retry uncertain outcome was reconciled without approval replay or duplicate mutation
+PASS PSB-AI-004/AAR-023 scenario=unknown-outcome-blocked uncertain outcome was reconciled without approval replay or duplicate mutation
+RESULT PASS profile=secure checks=5 failures=0

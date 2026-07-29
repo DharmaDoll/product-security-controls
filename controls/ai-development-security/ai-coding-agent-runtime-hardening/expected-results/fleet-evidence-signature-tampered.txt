@@ -1,0 +1,4 @@
+FAIL PSB-AI-004/AAR-026 surface=issuer-auth collector statement signature is invalid
+PASS PSB-AI-004/AAR-026 surface=payload-binding statement binds the exact recent fleet snapshot and policy
+PASS PSB-AI-004/AAR-026 surface=sequence-chain snapshot sequence advances the managed checkpoint exactly once
+RESULT FAIL profile=secure checks=3 failures=1

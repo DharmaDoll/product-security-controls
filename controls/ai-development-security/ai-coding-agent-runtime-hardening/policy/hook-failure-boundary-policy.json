@@ -1,0 +1,41 @@
+{
+  "schema_version": "psb-ai-hook-failure-boundary-policy/v1",
+  "policy_id": "PSB-AI-004-HOOK-FAILURE-BOUNDARY",
+  "policy_revision": "2026-07-29.1",
+  "default_decision": "deny",
+  "supported_providers": {
+    "claude-code": {
+      "minimum_product_version": "2.1.219"
+    },
+    "codex": {
+      "minimum_product_version": "0.138.0"
+    }
+  },
+  "required_scenario_classes": [
+    "completed-allow",
+    "explicit-deny",
+    "not-started",
+    "timed-out",
+    "abnormal-exit",
+    "invalid-output",
+    "invalid-permit"
+  ],
+  "native_failure_states": [
+    "not-started",
+    "timed-out",
+    "abnormal-exit",
+    "invalid-output"
+  ],
+  "gateway": {
+    "enforcement_point": "mcp-side-effect-gateway",
+    "required_enforcement": "mandatory",
+    "require_managed_hook_match": true,
+    "require_hook_exit_zero": true,
+    "require_hook_allow_decision": true,
+    "require_hook_audit_commit": true,
+    "require_request_binding": "matched",
+    "require_permit_issuer": "trusted",
+    "require_permit_status": "valid",
+    "require_gateway_audit_commit": true
+  }
+}

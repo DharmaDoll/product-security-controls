@@ -1,0 +1,2 @@
+ERROR PSB-AI-004/AAR-023 profile=malformed side-effect reconciliation failed: side-effect reconciliation case is malformed
+RESULT ERROR profile=malformed checks=0 failures=1

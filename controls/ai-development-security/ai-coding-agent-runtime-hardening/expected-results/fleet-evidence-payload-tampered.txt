@@ -1,0 +1,4 @@
+PASS PSB-AI-004/AAR-026 surface=issuer-auth collector statement is authenticated by the active pinned key
+FAIL PSB-AI-004/AAR-026 surface=payload-binding snapshot digest policy or collection-time binding is invalid
+PASS PSB-AI-004/AAR-026 surface=sequence-chain snapshot sequence advances the managed checkpoint exactly once
+RESULT FAIL profile=insecure checks=3 failures=1

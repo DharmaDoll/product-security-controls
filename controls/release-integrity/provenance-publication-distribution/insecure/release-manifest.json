@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "profile": "insecure",
+  "evidence_collected_at": "2026-07-29T15:00:00Z",
+  "publication_probe": {
+    "status": "complete",
+    "source": "release-api"
+  },
+  "release": {
+    "id": "latest",
+    "artifact_family": "example/product",
+    "published_at": "2026-07-29T12:00:00Z",
+    "provenance_required": false,
+    "manifest_location": {
+      "uri": "http://releases.example.invalid/downloads/product/latest/release-manifest.json?current=true",
+      "immutable": false,
+      "authentication": "none",
+      "access": "private",
+      "available": true
+    }
+  },
+  "artifacts": [
+    {
+      "name": "product-linux-amd64",
+      "sha256": "9c8f10fd1da5d3db9b1afa8bb65fb320ce2ca3f5978551f489d4ac4ff52e3437",
+      "media_type": "application/octet-stream",
+      "published_at": "2026-07-29T12:00:00Z",
+      "location": {
+        "uri": "https://releases.example.invalid/downloads/product/latest/product-linux-amd64",
+        "immutable": false,
+        "authentication": "tls-server-authenticated",
+        "access": "public",
+        "available": true
+      },
+      "provenance": {
+        "sha256": "d81eaf1b725c7fcb06f962c8f082ff4404631898ee647c958b15a379f3423e16",
+        "subject_sha256": "dc4b5a3dc88ef510623e6e807b7f9e8e2b9888164668ff0b2e369eb6a71244fc",
+        "media_type": "application/json",
+        "published_at": "2026-07-29T14:00:00Z",
+        "retention_until": "2026-08-05T12:00:00Z",
+        "discovery": {
+          "method": "manual-ticket",
+          "artifact_sha256": "dc4b5a3dc88ef510623e6e807b7f9e8e2b9888164668ff0b2e369eb6a71244fc"
+        },
+        "location": {
+          "uri": "http://private.example.invalid/latest/provenance.json?current=true",
+          "immutable": false,
+          "authentication": "none",
+          "access": "private",
+          "available": false
+        }
+      }
+    },
+    {
+      "name": "product-darwin-arm64",
+      "sha256": "a0e8603c77ba4dee6c47a846153877ab05befdeecca5567f8e2b21bc032b946b",
+      "media_type": "application/octet-stream",
+      "published_at": "2026-07-29T12:00:00Z",
+      "location": {
+        "uri": "https://releases.example.invalid/downloads/product/latest/product-darwin-arm64",
+        "immutable": false,
+        "authentication": "tls-server-authenticated",
+        "access": "public",
+        "available": true
+      },
+      "provenance": {
+        "sha256": "d81eaf1b725c7fcb06f962c8f082ff4404631898ee647c958b15a379f3423e16",
+        "subject_sha256": "a0e8603c77ba4dee6c47a846153877ab05befdeecca5567f8e2b21bc032b946b",
+        "media_type": "application/json",
+        "published_at": "2026-07-29T14:00:00Z",
+        "retention_until": "2026-08-05T12:00:00Z",
+        "discovery": {
+          "method": "manual-ticket",
+          "artifact_sha256": "a0e8603c77ba4dee6c47a846153877ab05befdeecca5567f8e2b21bc032b946b"
+        },
+        "location": {
+          "uri": "http://private.example.invalid/latest/provenance.json?current=true",
+          "immutable": false,
+          "authentication": "none",
+          "access": "private",
+          "available": false
+        }
+      }
+    },
+    {
+      "name": "product-windows-amd64",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "media_type": "application/octet-stream",
+      "published_at": "2026-07-29T12:00:00Z",
+      "location": {
+        "uri": "https://releases.example.invalid/downloads/product/latest/product-windows-amd64",
+        "immutable": false,
+        "authentication": "tls-server-authenticated",
+        "access": "public",
+        "available": true
+      },
+      "provenance": null
+    }
+  ]
+}

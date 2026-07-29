@@ -1,0 +1,8 @@
+{
+  "schema_version": "psb-ai-hook-failure-boundary-evidence/v1",
+  "profile": "gateway-unavailable",
+  "assessment_scope": "negative",
+  "cases": [
+    {"scenario_id":"gateway-unavailable","scenario_class":"timed-out","provider":"claude-code","product_version":"2.1.219","managed_hook_matched":true,"hook_state":"timed-out","exit_code":null,"hook_decision":null,"hook_audit_committed":false,"request_binding_status":"unavailable","permit_issuer_status":"unavailable","permit_status":"missing","gateway_available":false,"gateway_enforcement":"mandatory","gateway_decision":"error","gateway_audit_committed":false,"native_product_would_continue":true,"external_side_effect_observed":false}
+  ]
+}

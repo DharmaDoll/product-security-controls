@@ -1,0 +1,16 @@
+{
+  "schema_version": "psb-ai-fleet-telemetry-evidence/v1",
+  "profile": "unavailable",
+  "collector_available": false,
+  "captured_at": "2026-07-29T12:01:30Z",
+  "endpoints": [],
+  "ingestion": {
+    "available": false,
+    "immutable_to_developers": false,
+    "access_controlled": false,
+    "content_classification": "unknown",
+    "event_fields": [],
+    "forbidden_fields_present": []
+  },
+  "alerts": []
+}

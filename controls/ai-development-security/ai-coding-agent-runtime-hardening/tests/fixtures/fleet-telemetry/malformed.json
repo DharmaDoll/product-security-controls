@@ -1,0 +1,9 @@
+{
+  "schema_version": "psb-ai-fleet-telemetry-evidence/v1",
+  "profile": "malformed",
+  "collector_available": true,
+  "captured_at": "not-a-time",
+  "endpoints": "not-a-list",
+  "ingestion": {},
+  "alerts": []
+}

@@ -1,0 +1,5 @@
+FAIL PSB-AI-004/AAR-025 surface=claude-code endpoint enrollment export freshness or sequence evidence is incomplete
+FAIL PSB-AI-004/AAR-025 surface=codex endpoint enrollment export freshness or sequence evidence is incomplete
+FAIL PSB-AI-004/AAR-025 surface=central-ingestion central evidence storage or content classification is unsafe
+FAIL PSB-AI-004/AAR-025 surface=alert-pipeline required alert coverage enablement freshness or delivery is incomplete
+RESULT FAIL profile=insecure checks=4 failures=4

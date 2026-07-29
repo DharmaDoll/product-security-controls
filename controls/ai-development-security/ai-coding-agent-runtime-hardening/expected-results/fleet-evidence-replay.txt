@@ -1,0 +1,4 @@
+PASS PSB-AI-004/AAR-026 surface=issuer-auth collector statement is authenticated by the active pinned key
+PASS PSB-AI-004/AAR-026 surface=payload-binding statement binds the exact recent fleet snapshot and policy
+FAIL PSB-AI-004/AAR-026 surface=sequence-chain snapshot sequence or previous digest is replayed or discontinuous
+RESULT FAIL profile=secure checks=3 failures=1

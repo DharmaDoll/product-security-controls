@@ -1,0 +1,14 @@
+{
+  "schema_version": "psb-ai-hook-failure-boundary-evidence/v1",
+  "profile": "malformed",
+  "assessment_scope": "negative",
+  "cases": [
+    {
+      "scenario_id": "malformed",
+      "scenario_class": "timed-out",
+      "provider": "codex",
+      "product_version": "0.138.0",
+      "hook_state": "timed-out"
+    }
+  ]
+}

@@ -7,10 +7,11 @@ Last updated: 2026-07-29
 
 ## Current state
 
-Status: `sixth-slice-complete`
+Status: `twelfth-slice-complete`
 
-Current phase: Phase 24 complete. Select the next remaining scope before
-starting Phase 25.
+Current phase: Phase 48 complete. Collector evidence origin authentication,
+payload integrity, freshness, and monotonic replay protection are implemented
+as deterministic reference evidence.
 
 ## Phase checklist
 
@@ -67,6 +68,57 @@ starting Phase 25.
   `PreToolUse` and test allow, deny, error, redaction, and sink failure.
 - [x] Phase 24: add atomic checklist rows, mappings, expected results,
   regenerate artifacts, and run the full verification sequence.
+- [x] Phase 25: define seventh-slice network threat, control boundary,
+  assumptions, and acceptance criteria.
+- [x] Phase 26: implement the provider-neutral network policy and offline
+  verifier.
+- [x] Phase 27: add exact-destination, DNS rebinding, private/local/metadata,
+  proxy, local-listener, Unix socket, malformed, and unavailable fixtures.
+- [x] Phase 28: add atomic checklist rows, mappings, documentation, regenerate
+  artifacts, and run the full verification sequence.
+- [x] Phase 29: define eighth-slice hook-failure threat, official product
+  behavior boundary, assumptions, and acceptance criteria.
+- [x] Phase 30: implement the provider-neutral downstream hook-permit policy
+  and offline verifier.
+- [x] Phase 31: add both-provider completed, denied, not-started, timed-out,
+  abnormal-exit, invalid-output, bypass, gateway-unavailable, and malformed
+  fixtures.
+- [x] Phase 32: add atomic checklist rows, mappings, documentation, regenerate
+  artifacts, and run the full verification sequence.
+- [x] Phase 33: define ninth-slice uncertain-outcome threat, transaction
+  boundary, assumptions, and acceptance criteria.
+- [x] Phase 34: implement the provider-neutral side-effect reconciliation
+  policy and offline state verifier.
+- [x] Phase 35: add applied, timeout-after-apply, timeout-before-apply,
+  replacement-approval retry, unknown outcome, replay, duplicate-mutation,
+  unavailable, and malformed fixtures.
+- [x] Phase 36: add atomic checklist rows, mappings, documentation, regenerate
+  artifacts, and run the full verification sequence.
+- [x] Phase 37: define tenth-slice command-indirection threat, trusted
+  normalization boundary, assumptions, and acceptance criteria.
+- [x] Phase 38: implement the provider-neutral typed command broker policy and
+  offline classifier.
+- [x] Phase 39: add direct argv, environment wrapper, shell string, script,
+  task runner, Git alias, unknown command, unavailable engine, and malformed
+  fixtures.
+- [x] Phase 40: add atomic checklist rows, mappings, documentation, regenerate
+  artifacts, and run the full verification sequence.
+- [x] Phase 41: define eleventh-slice telemetry adoption threat, evidence
+  boundary, assumptions, and acceptance criteria.
+- [x] Phase 42: implement the fleet telemetry policy and offline verifier.
+- [x] Phase 43: add both-provider enrollment, ingestion freshness, sequence
+  gap, forbidden content, alert delivery, unavailable collector, and malformed
+  fixtures.
+- [x] Phase 44: add atomic checklist rows, mappings, documentation, regenerate
+  artifacts, and run the full verification sequence.
+- [x] Phase 45: define twelfth-slice collector evidence forgery and replay
+  threat, trust boundary, assumptions, and acceptance criteria.
+- [x] Phase 46: implement the fleet evidence trust policy, signature and
+  checkpoint verifier, and isolated synthetic trust root.
+- [x] Phase 47: add secure, payload-tampered, signature-tampered, untrusted-key,
+  replayed, unavailable-verifier, and malformed fixtures.
+- [x] Phase 48: add atomic checklist rows, mappings, documentation, regenerate
+  artifacts, and run the full verification sequence.
 
 ## First-slice scope
 
@@ -90,15 +142,18 @@ settings, contact a model, access a production service, or use a real secret.
 - [complete] bind high-impact approval evidence to actor, agent, tool,
   target, normalized parameters, policy version, timestamp, and expiry;
 - [partial: MCP, Skill authority, unreviewed plugin installation, installed
-  runtime inventory, browser and computer-use defaults complete] add app,
-  socket, metadata-service, proxy, and private-network capability checks;
+  runtime inventory, browser and computer-use defaults, socket,
+  metadata-service, proxy, and private-network command-egress checks complete]
+  add remaining app-specific and live provider network-surface checks;
 - [partial: managed PreToolUse input, signed issuer authentication, local
   atomic consumption, policy and engine failure, replay, unknown parameters,
-  and parameter tampering complete] add product hook process startup and
-  timeout assessment, external-side-effect reconciliation, shell indirection,
-  and remaining rule-failure fixtures;
-- [partial: deterministic inventory and redacted hook audit evidence complete]
-  add adopted fleet collector export ingestion alert and live client evidence.
+  parameter tampering, and synthetic hook startup/timeout/downstream permit
+  assessment, synthetic external-side-effect reconciliation, and typed command
+  indirection classification complete] add live product/backend/broker failure
+  injection and remaining rule-failure fixtures;
+- [partial: deterministic inventory, redacted hook audit, and synthetic adopted
+  fleet collector, export ingestion, and alert evidence complete] add live
+  organization-owned client, collector, SIEM, and receiver evidence.
 
 ## Third-slice decision record
 
@@ -326,6 +381,319 @@ Acceptance criteria:
 - console and generated checklist evidence contain only check IDs, provider,
   decision reasons, and reviewed mappings.
 
+## Seventh-slice decision record
+
+Target control: `PSB-AI-004`
+Domain: `ai-development-security`
+
+Threat/failure scenario: a prompt-injected agent or compromised tool uses
+temporarily enabled network access to exfiltrate source or credentials, reach a
+cloud metadata service or local daemon, pivot through a private network or
+upstream proxy, or exploit DNS rebinding between policy evaluation and the
+actual connection.
+
+Control boundary:
+
+- `AAR-004` remains the primary default: command network access is off;
+- this slice covers only an explicitly selected destination-specific profile
+  for tasks whose reviewed MCP endpoint cannot run offline;
+- the sample gateway consumes managed policy and resolver evidence without
+  performing DNS queries or contacting a destination during repository tests;
+- browser, connector, web-search, product control-plane, and MCP server-side
+  egress remain separate network surfaces.
+
+Assumptions:
+
+- a managed network proxy or lower-layer egress gateway enforces the same
+  exact-host, port, path, resolved-address, and connection-address decision;
+- resolver evidence is complete, recent, produced outside repository
+  authority, and cannot be replaced by the agent;
+- exact synthetic `.invalid` destinations and public IP addresses are fixtures
+  only; no network request is made;
+- upstream proxies, SOCKS, local listener exposure, private/local addresses,
+  metadata endpoints, and Unix sockets are unnecessary for the sample task;
+- product-specific network settings are reviewed against the official
+  documentation baseline before fleet deployment.
+
+Acceptance criteria:
+
+- network-off remains the ordinary profile and enabling the bounded profile
+  without the independent gateway is an error;
+- only exact HTTPS hosts, port 443, and reviewed path prefixes are accepted;
+  wildcard hosts, IP-literal URLs, userinfo, fragments, unreviewed ports,
+  cleartext HTTP, and lookalike subdomains are denied;
+- proxy environment use, SOCKS, non-loopback local listeners, Unix sockets,
+  localhost, private, loopback, link-local, multicast, reserved, unspecified,
+  and known metadata destinations are denied;
+- DNS failure, timeout, stale evidence, hostname mismatch, malformed address
+  evidence, and an actual connection address not present in the reviewed
+  resolution set return `ERROR` or `FAIL`, never allow;
+- all resolved and connected addresses must remain globally routable, and the
+  transport layer must bind the connection to the classified address to reduce
+  DNS rebinding risk;
+- outputs contain only scenario IDs, check IDs, and reason classes, never URLs,
+  hostnames, addresses, proxy values, or request content.
+
+## Eighth-slice decision record
+
+Target control: `PSB-AI-004`
+Domain: `ai-development-security`
+
+Threat/failure scenario: a managed `PreToolUse` hook is configured but cannot
+start, exceeds its timeout, exits unexpectedly, or returns invalid output, and
+the product reports a hook error while continuing a side-effecting MCP call.
+
+Control boundary:
+
+- explicit provider-native deny output and exit `2` remain defense in depth;
+- a product hook process is not the sole authorization boundary for remote
+  side effects because startup and timeout behavior is not equivalent to a
+  verified deny across reviewed providers and versions;
+- an independent MCP-side gateway requires a request-bound permit created only
+  after the managed hook completes, records its sanitized decision, and returns
+  allow;
+- this slice verifies synthetic lifecycle and gateway evidence offline; it does
+  not start either product or contact an MCP server.
+
+Assumptions:
+
+- the MCP-side gateway and permit state are outside repository, agent, plugin,
+  user, and product-hook write authority;
+- the production permit issuer authenticates and binds a short-lived,
+  single-request permit to the normalized tool call; this slice models the
+  state transition but does not commit an issuer private key;
+- the side-effecting MCP implementation rejects missing, invalid, replayed, or
+  unverifiable permits before mutation;
+- provider-native continuation after hook failure is treated as hostile input,
+  not as authorization;
+- all identities, versions, request references, permits, and outcomes in
+  fixtures are synthetic and contain no secret or target value.
+
+Acceptance criteria:
+
+- both reviewed providers pass a completed allow only when managed matching,
+  exit `0`, valid allow output, pre-output audit commit, exact request binding,
+  trusted permit state, mandatory gateway enforcement, and the gateway allow
+  all agree;
+- explicit deny, not-started, timed-out, abnormal-exit, and invalid-output
+  cases produce no valid permit and no observed external side effect, even when
+  the native product would otherwise continue;
+- optional or bypassed gateway enforcement with an observed side effect is a
+  finding;
+- unavailable gateway or permit verification and malformed lifecycle evidence
+  return `ERROR`, never allow or a clean result;
+- HITL policy is unchanged: routine reviewed operations remain automatic and
+  high-impact actions still use the one bound approval from earlier slices;
+- output contains provider, scenario ID, check ID, and reason class only, never
+  hook input, tool arguments, targets, permit contents, or remote URLs.
+
+## Ninth-slice decision record
+
+Target control: `PSB-AI-004`
+Domain: `ai-development-security`
+
+Threat/failure scenario: the local gate atomically consumes an approval and
+dispatches a remote MCP mutation, but the response is lost or times out, so an
+agent retries with a restored approval or new idempotency key and executes the
+side effect twice.
+
+Control boundary:
+
+- local SQLite approval consumption remains atomic only on the endpoint;
+- the remote side-effect gateway owns an idempotency record bound to the exact
+  normalized request digest and exposes an authenticated outcome lookup;
+- reconciliation never rolls back or restores the original consumed approval;
+- this slice validates synthetic state offline and does not contact or mutate a
+  production backend.
+
+Assumptions:
+
+- the backend checks the idempotency key and request digest before mutation and
+  returns a conflict when one key is reused for different content;
+- gateway outcome evidence is protected from repository, agent, plugin, and
+  ordinary developer writes;
+- a replacement approval is independently issued only after a complete
+  `not-applied` outcome and remains bound to the same exact request and
+  idempotency key;
+- `unknown`, unavailable, inconsistent, or conflicting outcome state is not
+  converted into an automatic retry;
+- all request digests, approval IDs, idempotency keys, attempts, and mutation
+  references in fixtures are synthetic.
+
+Acceptance criteria:
+
+- original approval consumption is committed before the first dispatch and is
+  never restored or reused for a new logical attempt;
+- every dispatch carries the same request digest and idempotency key, and the
+  backend enforces their one-to-one binding;
+- a successful or timeout-after-apply lookup completes without retry and
+  observes at most one mutation;
+- timeout-before-apply requires a distinct consumed replacement approval before
+  retry, while preserving the original idempotency key and exact request;
+- unknown outcome blocks, reports no automatic retry, and requires operator
+  reconciliation rather than assuming success or failure;
+- approval restoration, automatic retry, changed idempotency key or digest,
+  more than one mutation, and incomplete outcome evidence are findings;
+- unavailable reconciliation or malformed state returns `ERROR`;
+- outputs contain only scenario ID, check ID, and reason class, never target,
+  parameters, backend URL, credential, approval content, or mutation data.
+
+## Tenth-slice decision record
+
+Target control: `PSB-AI-004`
+Domain: `ai-development-security`
+
+Threat/failure scenario: action policy recognizes a direct `git push` or
+package publication command, but an agent invokes the same operation through
+`env`, a shell `-c` string, executable script, task runner, Git alias, or
+unknown wrapper and obtains automatic execution.
+
+Control boundary:
+
+- a managed command broker receives provider input before generic command
+  execution and produces a typed action class, decision, and HITL route;
+- exact direct argv and reviewed environment assignment wrappers may be
+  normalized, while shell strings, scripts, task runners, interpreters, and
+  unresolved aliases are not considered equivalent to a safe direct command;
+- denied indirection is not rescued with repeated human prompts; a reviewed
+  typed action must be used when the operation is genuinely required;
+- this slice classifies synthetic invocations offline and does not execute any
+  command or script.
+
+Assumptions:
+
+- provider adapters preserve argv boundaries or mark input as a shell string;
+- executable resolution, Git alias resolution, and broker state are produced
+  by managed code outside repository and agent write authority;
+- the broker policy covers the high-impact classes already defined by
+  `PSB-AI-004`, while unknown or ambiguous operations default deny;
+- script and task-runner contents can change after review, so this slice does
+  not auto-approve them based on display name;
+- all command names, arguments, aliases, paths, and targets are synthetic and
+  no real process is launched.
+
+Acceptance criteria:
+
+- reviewed read-only direct argv remains zero-HITL;
+- direct high-impact argv and completely resolved reviewed Git aliases map to
+  exactly one action class and one bound approval;
+- environment assignment wrappers preserve classification only when the final
+  executable and argv are unambiguous;
+- shell `-c`, interpreter code, scripts, task runners, unknown wrappers,
+  unresolved aliases, ambiguous resolution, and unknown operations are denied
+  without an override prompt;
+- a substring-only broker that automatically allows wrapped high-impact
+  commands is a finding;
+- unavailable resolution or policy engine and malformed invocation evidence
+  return `ERROR`;
+- output contains provider, scenario ID, check ID, decision class, and reason
+  only, never command arguments, environment values, target, script content, or
+  path.
+
+## Eleventh-slice decision record
+
+Target control: `PSB-AI-004`
+Domain: `ai-development-security`
+
+Threat/failure scenario: endpoint policy writes local sanitized events, but a
+provider is not enrolled, export silently stops, ingestion develops gaps, raw
+request content enters the collector, or alert rules never deliver, leaving
+the organization unable to detect runtime drift and fail-open activity.
+
+Control boundary:
+
+- `AAR-019` owns local fixed-schema pre-execution audit creation and storage;
+- this slice verifies managed fleet enrollment, export receipt, centralized
+  ingestion state, content classification, sequence completeness, and tested
+  alert delivery for both reviewed providers;
+- server-side tool outcomes and backend mutations remain distinct evidence
+  joined by hashed references rather than copied request content;
+- repository tests use synthetic adoption snapshots and do not contact a SIEM,
+  page an operator, or read production logs.
+
+Assumptions:
+
+- collector snapshots are produced by organization-managed inventory and
+  logging systems outside repository and agent write authority;
+- export transport authenticates endpoints and centralized storage is
+  immutable to ordinary developers and agents;
+- sequence and lag state reflect every expected endpoint event rather than a
+  sampled subset;
+- alert tests use synthetic events and an organization-owned delivery receipt;
+- no prompt, transcript, tool input, parameter, target, body, output,
+  credential, signature, private URL, or permit content is needed for alerts.
+
+Acceptance criteria:
+
+- recent managed snapshots include both Claude Code and Codex endpoint classes
+  with enrollment, export, ingestion, and sequence state complete;
+- ingestion lag is at most five minutes, no sequence gap exists, rejected or
+  quarantined records are explicitly accounted for, and centralized evidence
+  is immutable and access-controlled;
+- collector field classification remains metadata-only and no forbidden
+  content field appears;
+- required alerts cover unknown extension, hook failure, audit sink failure,
+  gateway bypass, approval replay, reconciliation unknown, and command broker
+  bypass;
+- every alert is enabled and has a recent synthetic delivery receipt within
+  the maximum latency;
+- missing provider adoption, stale ingestion, sequence gaps, broad storage,
+  content leakage, disabled rule, or failed delivery is a finding;
+- unavailable collector or alert verification and malformed evidence return
+  `ERROR`;
+- output contains provider, check ID, profile, and reason class only, never
+  endpoint identity, event content, delivery address, or alert payload.
+
+## Twelfth-slice decision record
+
+Target control: `PSB-AI-004`
+Domain: `ai-development-security`
+
+Threat/failure scenario: an agent, developer process, compromised endpoint, or
+pipeline intermediary replaces a failing fleet snapshot with fabricated clean
+JSON, changes the evidence after collection, or replays an older valid
+snapshot so `AAR-025` evaluates attacker-controlled state.
+
+Control boundary:
+
+- `AAR-025` continues to validate the security meaning of the fleet snapshot;
+- this slice authenticates an organization collector statement that binds the
+  exact canonical snapshot digest, policy identity, collection time, sequence,
+  and previous accepted snapshot digest;
+- a managed checkpoint records the last accepted sequence and snapshot digest
+  outside repository and agent write authority;
+- repository tests use a dedicated synthetic public key and precomputed
+  signature; no private key is committed or production collector contacted.
+
+Assumptions:
+
+- the production collector signing key is independently protected and never
+  delivered to developer endpoints or agents;
+- the trust manifest and checkpoint are absolute, non-symlink, managed files
+  with integrity and rollback protection supplied by the deployment system;
+- one collector stream has a single monotonically increasing sequence and an
+  explicit previous-snapshot digest;
+- canonical JSON and SHA-256 identify the exact snapshot payload, while an
+  asymmetric signature authenticates issuer control;
+- OpenSSL 3 is the pinned managed verifier for this executable sample.
+
+Acceptance criteria:
+
+- the active key ID, issuer, algorithm, validity interval, and public-key
+  SHA-256 match a dedicated fleet collector trust manifest;
+- the RSA PKCS#1 v1.5 SHA-256 signature authenticates the canonical statement;
+- the statement subject digest equals the exact canonical fleet snapshot
+  digest and binds the expected policy ID and revision;
+- statement collection time is recent and agrees with the snapshot capture
+  time;
+- sequence is exactly the managed checkpoint sequence plus one and
+  `previous_snapshot_digest` equals the checkpoint snapshot digest;
+- payload or signature tampering and replay are findings;
+- missing or untrusted keys, unavailable crypto verifier, malformed trust,
+  statement, checkpoint, or snapshot evidence return `ERROR`;
+- output contains only check ID, profile, and reason class, never signature,
+  endpoint identity, event content, or collector address.
+
 ## Resume command
 
 ```bash
@@ -370,6 +738,46 @@ fixed-schema hashed-reference allow/deny/error audit events, no-follow
 permission-bounded append and `fsync`, generated audit verification, and
 stale, unavailable, malformed, leakage, excessive-retention, missing-directory,
 and symlink-sink failure cases.
+
+The seventh-slice completion run on the same date repeated all commands after
+adding `AAR-020` and `AAR-021`, an exact managed HTTPS destination policy,
+recent public-unicast DNS classification, connected-address transport binding,
+and cleartext, lookalike, userinfo, fragment, port, path, proxy, SOCKS,
+listener, Unix socket, local, private, metadata, stale, mismatch, rebinding,
+unavailable, and malformed failure cases.
+
+The eighth-slice completion run on the same date repeated all commands after
+adding `AAR-022`, a mandatory downstream request-bound permit policy, both
+provider lifecycle coverage for completed allow, explicit deny, not-started,
+timeout, abnormal exit, invalid output, and invalid permit, plus optional
+gateway bypass, gateway unavailable, and malformed evidence failure cases.
+
+The ninth-slice completion run on the same date repeated all commands after
+adding `AAR-023`, stable request digest and idempotency policy, applied,
+timeout-after-apply, timeout-before-apply, replacement-approved retry, and
+unknown-outcome states, plus approval restoration, automatic retry, changed
+request identity, duplicate mutation, unavailable reconciliation, and malformed
+state failure cases.
+
+The tenth-slice completion run on the same date repeated all commands after
+adding `AAR-024`, direct argv and transparent environment normalization,
+read-only zero-HITL, high-impact and force-push action classes, resolved and
+unresolved Git aliases, and shell, script, task-runner, interpreter, unknown,
+auto-allow bypass, unavailable-engine, and malformed failure cases.
+
+The eleventh-slice completion run on the same date repeated all commands after
+adding `AAR-025`, both-provider managed enrollment and export, fresh gap-free
+ingestion, reject and quarantine accounting, immutable metadata-only central
+storage, seven synthetic alert-delivery receipts, and missing-provider, stale,
+gap, content-leakage, failed-alert, unavailable-collector, and malformed
+failure cases.
+
+The twelfth-slice completion run on the same date repeated all commands after
+adding `AAR-026`, a dedicated collector trust root, public-key digest pin,
+OpenSSL 3 signature verification, exact snapshot and policy binding, recent
+collection time, monotonic sequence and previous-digest checkpoint, and
+payload-tamper, signature-tamper, replay, unknown-key, malformed, and
+unavailable-verifier failure cases.
 
 For the next slice, start with a selected incomplete outcome under
 “Remaining work after the first slice”, update this status to `in-progress`,

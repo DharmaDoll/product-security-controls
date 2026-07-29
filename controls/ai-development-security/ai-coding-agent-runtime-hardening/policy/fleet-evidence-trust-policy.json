@@ -1,0 +1,13 @@
+{
+  "schema_version": "psb-ai-fleet-evidence-trust-policy/v1",
+  "policy_id": "PSB-AI-004-FLEET-EVIDENCE-TRUST",
+  "policy_revision": "2026-07-29.1",
+  "expected_fleet_policy_id": "PSB-AI-004-FLEET-TELEMETRY",
+  "expected_fleet_policy_revision": "2026-07-29.1",
+  "expected_snapshot_schema": "psb-ai-fleet-telemetry-evidence/v1",
+  "expected_statement_schema": "psb-ai-fleet-snapshot-statement/v1",
+  "signature_algorithm": "rsa-pkcs1v15-sha256",
+  "maximum_statement_age_seconds": 3600,
+  "require_exact_next_sequence": true,
+  "require_previous_snapshot_digest": true
+}

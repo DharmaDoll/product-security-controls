@@ -1,0 +1,18 @@
+{
+  "schema_version": "psb-ai-signed-fleet-snapshot/v1",
+  "key_id": "fixture-fleet-collector-key-2026-07",
+  "algorithm": "rsa-pkcs1v15-sha256",
+  "statement": {
+    "schema_version": "psb-ai-fleet-snapshot-statement/v1",
+    "statement_id": "FLEET-STMT-FIXTURE-1042",
+    "issuer": "fixture-fleet-collector",
+    "subject_schema": "psb-ai-fleet-telemetry-evidence/v1",
+    "subject_sha256": "d8f78d4f3601eecdf5a974bced7cedf76c8f2e81018f9e9771b87bde3d8516d8",
+    "sequence": 1042,
+    "previous_snapshot_sha256": "022bc4d12fafd4555146064c3fad099aeb3de789bc32384db6bfd435fdde9ee2",
+    "collected_at": "2026-07-29T12:01:30Z",
+    "policy_id": "PSB-AI-004-FLEET-TELEMETRY",
+    "policy_revision": "2026-07-29.1"
+  },
+  "signature_base64": "i2wcVdi1OOsRb3QZOpRapq3T+8MT6iO2W11JUnF+j3HuBUXKAN80eWXSKXZHZBmjeoMOSbBd/+LbrihX2toJRa3ijGxwlWph2fadYUdquxxdpS2gsbf/wBYJ0Y3Bu+WnnGfhc1o89q5skbnY7aMtLw9NE5WD23jj8sAktRaSUDtUpvIuBF0qyekaVR6BdXmmUVVmEidDy0efJzGm7IT/f6tuz/j8qkRDP8bF6Dp2qxv78KWETrR2Dq1KTTZ47p47jjKXUTprp9Hn1RwJANThDpCQsTN3uGPGGi/R/8hG59/18lonzuhWO1UFnCA9W8/d0acdB/f3XdcLYT6g0eAmHA=="
+}

@@ -1,0 +1,7 @@
+{
+  "schema_version": "psb-ai-signed-fleet-snapshot/v1",
+  "key_id": "fixture-fleet-collector-key-2026-07",
+  "algorithm": "rsa-pkcs1v15-sha256",
+  "statement": [],
+  "signature_base64": "not-a-valid-signature"
+}

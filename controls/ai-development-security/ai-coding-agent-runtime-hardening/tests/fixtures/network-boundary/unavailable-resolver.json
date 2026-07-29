@@ -1,0 +1,24 @@
+{
+  "schema_version": "psb-ai-network-boundary-evidence/v1",
+  "profile": "resolver-unavailable",
+  "managed_gateway_available": true,
+  "cases": [
+    {
+      "scenario_id": "resolver-unavailable",
+      "network_profile": "destination-specific",
+      "destination_url": "https://docs.example.invalid/mcp/v1",
+      "proxy_url": null,
+      "socks_enabled": false,
+      "local_bind_address": null,
+      "unix_socket": null,
+      "resolver": {
+        "status": "unavailable",
+        "hostname": "docs.example.invalid",
+        "captured_at": "2026-07-29T12:01:00Z",
+        "addresses": []
+      },
+      "connected_address": null,
+      "transport_address_bound": false
+    }
+  ]
+}

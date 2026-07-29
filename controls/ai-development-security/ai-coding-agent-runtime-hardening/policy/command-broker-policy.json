@@ -1,0 +1,58 @@
+{
+  "schema_version": "psb-ai-command-broker-policy/v1",
+  "policy_id": "PSB-AI-004-COMMAND-BROKER",
+  "policy_revision": "2026-07-29.1",
+  "default_decision": "deny",
+  "transparent_wrapper": "env-assignments-only",
+  "opaque_forms": [
+    "shell-string",
+    "script",
+    "task-runner",
+    "interpreter-code",
+    "unknown-wrapper"
+  ],
+  "read_only_operations": {
+    "git": [
+      "status",
+      "diff",
+      "log",
+      "show"
+    ]
+  },
+  "high_impact_operations": {
+    "git": {
+      "commit": "source-commit",
+      "push": "source-publication",
+      "push-force": "source-history-rewrite",
+      "rebase": "source-history-rewrite",
+      "reset-hard": "source-history-rewrite"
+    },
+    "npm": {
+      "install": "dependency-installation",
+      "add": "dependency-installation",
+      "publish": "package-publication"
+    },
+    "terraform": {
+      "apply": "infrastructure-change",
+      "destroy": "infrastructure-change"
+    }
+  },
+  "required_secure_scenarios": [
+    "read-only-direct",
+    "high-impact-direct",
+    "environment-wrapper",
+    "force-push",
+    "resolved-git-alias",
+    "unresolved-git-alias",
+    "shell-string",
+    "script-file",
+    "task-runner",
+    "interpreter-code",
+    "unknown-command"
+  ],
+  "hitl_strategy": {
+    "read-only": "none",
+    "high-impact": "one-bound-approval",
+    "opaque-or-unknown": "deny-without-prompt"
+  }
+}

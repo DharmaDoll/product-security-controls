@@ -1,0 +1,2 @@
+ERROR PSB-AI-004/AAR-022 profile=malformed hook failure boundary evaluation failed: hook lifecycle case is malformed
+RESULT ERROR profile=malformed checks=0 failures=1

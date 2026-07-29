@@ -7,9 +7,21 @@ verify_approval="$control_dir/scripts/verify-approval.py"
 authorize_signed="$control_dir/scripts/authorize-signed-approval.py"
 verify_capabilities="$control_dir/scripts/verify-capabilities.py"
 verify_runtime_state="$control_dir/scripts/verify-runtime-state.py"
+verify_network_boundary="$control_dir/scripts/verify-network-boundary.py"
+verify_hook_failure_boundary="$control_dir/scripts/verify-hook-failure-boundary.py"
+verify_side_effect_reconciliation="$control_dir/scripts/verify-side-effect-reconciliation.py"
+verify_command_broker="$control_dir/scripts/verify-command-broker.py"
+verify_fleet_telemetry="$control_dir/scripts/verify-fleet-telemetry.py"
+verify_fleet_evidence="$control_dir/scripts/verify-fleet-evidence.py"
 pretool_gate="$control_dir/scripts/pretool-gate.py"
 policy="$control_dir/policy/runtime-policy.json"
 runtime_assessment_policy="$control_dir/policy/runtime-assessment-policy.json"
+network_boundary_policy="$control_dir/policy/network-boundary-policy.json"
+hook_failure_boundary_policy="$control_dir/policy/hook-failure-boundary-policy.json"
+side_effect_reconciliation_policy="$control_dir/policy/side-effect-reconciliation-policy.json"
+command_broker_policy="$control_dir/policy/command-broker-policy.json"
+fleet_telemetry_policy="$control_dir/policy/fleet-telemetry-policy.json"
+fleet_evidence_trust_policy="$control_dir/policy/fleet-evidence-trust-policy.json"
 temporary_directory="$(mktemp -d "${TMPDIR:-/tmp}/psb-ai-004.XXXXXX")"
 trap 'rm -rf -- "$temporary_directory"' EXIT
 
@@ -156,6 +168,130 @@ run_signed_approval_case() {
     "$ledger" \
     --openssl "$openssl_path" \
     --now "$now_text" \
+    >"$temporary_directory/$case_name.txt" || actual_exit=$?
+  if [[ "$actual_exit" -ne "$expected_exit" ]]; then
+    echo "FAIL $case_name exit: expected=$expected_exit actual=$actual_exit"
+    exit 1
+  fi
+  diff -u "$control_dir/expected-results/$expected_result" \
+    "$temporary_directory/$case_name.txt"
+}
+
+run_network_boundary_case() {
+  local case_name="$1"
+  local expected_exit="$2"
+  local evidence="$3"
+  local expected_result="$4"
+  local actual_exit=0
+
+  python3 "$verify_network_boundary" \
+    "$network_boundary_policy" \
+    "$evidence" \
+    --now "2026-07-29T12:02:00Z" \
+    >"$temporary_directory/$case_name.txt" || actual_exit=$?
+  if [[ "$actual_exit" -ne "$expected_exit" ]]; then
+    echo "FAIL $case_name exit: expected=$expected_exit actual=$actual_exit"
+    exit 1
+  fi
+  diff -u "$control_dir/expected-results/$expected_result" \
+    "$temporary_directory/$case_name.txt"
+}
+
+run_hook_failure_boundary_case() {
+  local case_name="$1"
+  local expected_exit="$2"
+  local evidence="$3"
+  local expected_result="$4"
+  local actual_exit=0
+
+  python3 "$verify_hook_failure_boundary" \
+    "$hook_failure_boundary_policy" \
+    "$evidence" \
+    >"$temporary_directory/$case_name.txt" || actual_exit=$?
+  if [[ "$actual_exit" -ne "$expected_exit" ]]; then
+    echo "FAIL $case_name exit: expected=$expected_exit actual=$actual_exit"
+    exit 1
+  fi
+  diff -u "$control_dir/expected-results/$expected_result" \
+    "$temporary_directory/$case_name.txt"
+}
+
+run_side_effect_reconciliation_case() {
+  local case_name="$1"
+  local expected_exit="$2"
+  local evidence="$3"
+  local expected_result="$4"
+  local actual_exit=0
+
+  python3 "$verify_side_effect_reconciliation" \
+    "$side_effect_reconciliation_policy" \
+    "$evidence" \
+    >"$temporary_directory/$case_name.txt" || actual_exit=$?
+  if [[ "$actual_exit" -ne "$expected_exit" ]]; then
+    echo "FAIL $case_name exit: expected=$expected_exit actual=$actual_exit"
+    exit 1
+  fi
+  diff -u "$control_dir/expected-results/$expected_result" \
+    "$temporary_directory/$case_name.txt"
+}
+
+run_command_broker_case() {
+  local case_name="$1"
+  local expected_exit="$2"
+  local evidence="$3"
+  local expected_result="$4"
+  local actual_exit=0
+
+  python3 "$verify_command_broker" \
+    "$command_broker_policy" \
+    "$evidence" \
+    >"$temporary_directory/$case_name.txt" || actual_exit=$?
+  if [[ "$actual_exit" -ne "$expected_exit" ]]; then
+    echo "FAIL $case_name exit: expected=$expected_exit actual=$actual_exit"
+    exit 1
+  fi
+  diff -u "$control_dir/expected-results/$expected_result" \
+    "$temporary_directory/$case_name.txt"
+}
+
+run_fleet_telemetry_case() {
+  local case_name="$1"
+  local expected_exit="$2"
+  local evidence="$3"
+  local expected_result="$4"
+  local actual_exit=0
+
+  python3 "$verify_fleet_telemetry" \
+    "$fleet_telemetry_policy" \
+    "$evidence" \
+    --now "2026-07-29T12:02:00Z" \
+    >"$temporary_directory/$case_name.txt" || actual_exit=$?
+  if [[ "$actual_exit" -ne "$expected_exit" ]]; then
+    echo "FAIL $case_name exit: expected=$expected_exit actual=$actual_exit"
+    exit 1
+  fi
+  diff -u "$control_dir/expected-results/$expected_result" \
+    "$temporary_directory/$case_name.txt"
+}
+
+run_fleet_evidence_case() {
+  local case_name="$1"
+  local expected_exit="$2"
+  local envelope="$3"
+  local evidence="$4"
+  local checkpoint="$5"
+  local expected_result="$6"
+  local openssl_path="${7:-/usr/bin/openssl}"
+  local actual_exit=0
+
+  python3 "$verify_fleet_evidence" \
+    "$fleet_evidence_trust_policy" \
+    "$control_dir/secure/fleet-evidence/collector-trust.json" \
+    "$envelope" \
+    "$evidence" \
+    "$checkpoint" \
+    --openssl "$openssl_path" \
+    --now "2026-07-29T12:02:00Z" \
     >"$temporary_directory/$case_name.txt" || actual_exit=$?
   if [[ "$actual_exit" -ne "$expected_exit" ]]; then
     echo "FAIL $case_name exit: expected=$expected_exit actual=$actual_exit"
@@ -650,6 +786,147 @@ run_runtime_state_case \
   "$hook_audit_log" \
   "runtime-state-secure.txt"
 
+network_boundary_fixtures="$control_dir/tests/fixtures/network-boundary"
+run_network_boundary_case \
+  "network-boundary-secure" 0 \
+  "$control_dir/secure/network-boundary/evidence.json" \
+  "network-boundary-secure.txt"
+run_network_boundary_case \
+  "network-boundary-insecure" 1 \
+  "$control_dir/insecure/network-boundary/evidence.json" \
+  "network-boundary-insecure.txt"
+run_network_boundary_case \
+  "network-boundary-resolver-unavailable" 2 \
+  "$network_boundary_fixtures/unavailable-resolver.json" \
+  "network-boundary-resolver-unavailable.txt"
+run_network_boundary_case \
+  "network-boundary-gateway-unavailable" 2 \
+  "$network_boundary_fixtures/unavailable-gateway.json" \
+  "network-boundary-gateway-unavailable.txt"
+run_network_boundary_case \
+  "network-boundary-malformed" 2 \
+  "$network_boundary_fixtures/malformed.json" \
+  "network-boundary-malformed.txt"
+
+hook_failure_boundary_fixtures="$control_dir/tests/fixtures/hook-failure-boundary"
+run_hook_failure_boundary_case \
+  "hook-failure-boundary-secure" 0 \
+  "$control_dir/secure/hook-failure-boundary/evidence.json" \
+  "hook-failure-boundary-secure.txt"
+run_hook_failure_boundary_case \
+  "hook-failure-boundary-insecure" 1 \
+  "$control_dir/insecure/hook-failure-boundary/evidence.json" \
+  "hook-failure-boundary-insecure.txt"
+run_hook_failure_boundary_case \
+  "hook-failure-boundary-gateway-unavailable" 2 \
+  "$hook_failure_boundary_fixtures/gateway-unavailable.json" \
+  "hook-failure-boundary-gateway-unavailable.txt"
+run_hook_failure_boundary_case \
+  "hook-failure-boundary-malformed" 2 \
+  "$hook_failure_boundary_fixtures/malformed.json" \
+  "hook-failure-boundary-malformed.txt"
+
+side_effect_reconciliation_fixtures="$control_dir/tests/fixtures/side-effect-reconciliation"
+run_side_effect_reconciliation_case \
+  "side-effect-reconciliation-secure" 0 \
+  "$control_dir/secure/side-effect-reconciliation/evidence.json" \
+  "side-effect-reconciliation-secure.txt"
+run_side_effect_reconciliation_case \
+  "side-effect-reconciliation-insecure" 1 \
+  "$control_dir/insecure/side-effect-reconciliation/evidence.json" \
+  "side-effect-reconciliation-insecure.txt"
+run_side_effect_reconciliation_case \
+  "side-effect-reconciliation-unavailable" 2 \
+  "$side_effect_reconciliation_fixtures/unavailable.json" \
+  "side-effect-reconciliation-unavailable.txt"
+run_side_effect_reconciliation_case \
+  "side-effect-reconciliation-malformed" 2 \
+  "$side_effect_reconciliation_fixtures/malformed.json" \
+  "side-effect-reconciliation-malformed.txt"
+
+command_broker_fixtures="$control_dir/tests/fixtures/command-broker"
+run_command_broker_case \
+  "command-broker-secure" 0 \
+  "$control_dir/secure/command-broker/evidence.json" \
+  "command-broker-secure.txt"
+run_command_broker_case \
+  "command-broker-insecure" 1 \
+  "$control_dir/insecure/command-broker/evidence.json" \
+  "command-broker-insecure.txt"
+run_command_broker_case \
+  "command-broker-unavailable" 2 \
+  "$command_broker_fixtures/unavailable.json" \
+  "command-broker-unavailable.txt"
+run_command_broker_case \
+  "command-broker-malformed" 2 \
+  "$command_broker_fixtures/malformed.json" \
+  "command-broker-malformed.txt"
+
+fleet_telemetry_fixtures="$control_dir/tests/fixtures/fleet-telemetry"
+run_fleet_telemetry_case \
+  "fleet-telemetry-secure" 0 \
+  "$control_dir/secure/fleet-telemetry/evidence.json" \
+  "fleet-telemetry-secure.txt"
+run_fleet_telemetry_case \
+  "fleet-telemetry-insecure" 1 \
+  "$control_dir/insecure/fleet-telemetry/evidence.json" \
+  "fleet-telemetry-insecure.txt"
+run_fleet_telemetry_case \
+  "fleet-telemetry-unavailable" 2 \
+  "$fleet_telemetry_fixtures/unavailable.json" \
+  "fleet-telemetry-unavailable.txt"
+run_fleet_telemetry_case \
+  "fleet-telemetry-malformed" 2 \
+  "$fleet_telemetry_fixtures/malformed.json" \
+  "fleet-telemetry-malformed.txt"
+
+fleet_evidence="$control_dir/secure/fleet-evidence"
+fleet_evidence_fixtures="$control_dir/tests/fixtures/fleet-evidence"
+fleet_snapshot="$control_dir/secure/fleet-telemetry/evidence.json"
+run_fleet_evidence_case \
+  "fleet-evidence-secure" 0 \
+  "$fleet_evidence/envelope.json" \
+  "$fleet_snapshot" \
+  "$fleet_evidence/checkpoint.json" \
+  "fleet-evidence-secure.txt"
+run_fleet_evidence_case \
+  "fleet-evidence-payload-tampered" 1 \
+  "$fleet_evidence/envelope.json" \
+  "$control_dir/insecure/fleet-telemetry/evidence.json" \
+  "$fleet_evidence/checkpoint.json" \
+  "fleet-evidence-payload-tampered.txt"
+run_fleet_evidence_case \
+  "fleet-evidence-signature-tampered" 1 \
+  "$fleet_evidence_fixtures/tampered-signature-envelope.json" \
+  "$fleet_snapshot" \
+  "$fleet_evidence/checkpoint.json" \
+  "fleet-evidence-signature-tampered.txt"
+run_fleet_evidence_case \
+  "fleet-evidence-replay" 1 \
+  "$fleet_evidence/envelope.json" \
+  "$fleet_snapshot" \
+  "$fleet_evidence_fixtures/replay-checkpoint.json" \
+  "fleet-evidence-replay.txt"
+run_fleet_evidence_case \
+  "fleet-evidence-untrusted-key" 2 \
+  "$fleet_evidence_fixtures/untrusted-key-envelope.json" \
+  "$fleet_snapshot" \
+  "$fleet_evidence/checkpoint.json" \
+  "fleet-evidence-untrusted-key.txt"
+run_fleet_evidence_case \
+  "fleet-evidence-malformed" 2 \
+  "$fleet_evidence_fixtures/malformed-envelope.json" \
+  "$fleet_snapshot" \
+  "$fleet_evidence/checkpoint.json" \
+  "fleet-evidence-malformed.txt"
+run_fleet_evidence_case \
+  "fleet-evidence-verifier-unavailable" 2 \
+  "$fleet_evidence/envelope.json" \
+  "$fleet_snapshot" \
+  "$fleet_evidence/checkpoint.json" \
+  "fleet-evidence-verifier-unavailable.txt" \
+  "$temporary_directory/missing-openssl"
+
 if rg -n -i 'token=|api[_-]?key|password|secret-value|private-url' \
   "$temporary_directory"; then
   echo "FAIL generated evidence contains a forbidden sensitive marker"
@@ -669,4 +946,11 @@ echo "PASS both managed hooks allowed one exact approval and denied missing inva
 echo "PASS installed runtime inventories matched approved dependencies and rejected drift"
 echo "PASS managed audit covered allow deny and error without request content"
 echo "PASS unavailable inventory and audit sinks failed closed"
+echo "PASS exact egress allowed only reviewed HTTPS destinations and path prefixes"
+echo "PASS proxy local private metadata socket and DNS rebinding paths failed closed"
+echo "PASS downstream permits contained hook startup timeout exit and output failures"
+echo "PASS uncertain side effects reconciled without approval replay or duplicate mutation"
+echo "PASS typed command broker denied shell script task-runner and alias indirection"
+echo "PASS adopted fleet telemetry verified both providers ingestion and alert delivery"
+echo "PASS collector-signed fleet evidence rejected tampering replay and unknown trust"
 echo "PASS evidence stayed deterministic and sanitized"

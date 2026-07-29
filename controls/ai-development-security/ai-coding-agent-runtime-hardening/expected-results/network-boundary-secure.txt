@@ -1,0 +1,3 @@
+PASS PSB-AI-004/AAR-020 scenario=exact-reviewed-destination exact managed HTTPS destination has no proxy local listener or socket escape
+PASS PSB-AI-004/AAR-021 scenario=exact-reviewed-destination recent complete DNS evidence stays public and binds the connected address
+RESULT PASS profile=secure checks=2 failures=0

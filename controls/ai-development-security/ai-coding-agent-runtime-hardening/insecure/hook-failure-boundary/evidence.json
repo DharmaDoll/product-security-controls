@@ -1,0 +1,9 @@
+{
+  "schema_version": "psb-ai-hook-failure-boundary-evidence/v1",
+  "profile": "insecure",
+  "assessment_scope": "negative",
+  "cases": [
+    {"scenario_id":"claude-timeout-bypass","scenario_class":"timed-out","provider":"claude-code","product_version":"2.1.219","managed_hook_matched":true,"hook_state":"timed-out","exit_code":null,"hook_decision":null,"hook_audit_committed":false,"request_binding_status":"unavailable","permit_issuer_status":"unavailable","permit_status":"missing","gateway_available":true,"gateway_enforcement":"optional","gateway_decision":"allow","gateway_audit_committed":false,"native_product_would_continue":true,"external_side_effect_observed":true},
+    {"scenario_id":"codex-startup-bypass","scenario_class":"not-started","provider":"codex","product_version":"0.138.0","managed_hook_matched":true,"hook_state":"not-started","exit_code":null,"hook_decision":null,"hook_audit_committed":false,"request_binding_status":"unavailable","permit_issuer_status":"unavailable","permit_status":"missing","gateway_available":true,"gateway_enforcement":"optional","gateway_decision":"allow","gateway_audit_committed":false,"native_product_would_continue":true,"external_side_effect_observed":true}
+  ]
+}
