@@ -1,0 +1,51 @@
+{
+  "schema_version": "psb-slsa-build-l2-evidence-adapter-policy/v1",
+  "source": "test-fixture",
+  "profile_id": "slsa-build-l2",
+  "bundle_root": "bundles",
+  "scope": {
+    "producer_id": "https://producer.example.invalid/product",
+    "build_platform_id": "https://build.example.invalid/release",
+    "consumer_id": "https://consumer.example.invalid/verifier",
+    "artifact_family": "example/product",
+    "release_id": "product-v1.2.3",
+    "source_revision": "0123456789abcdef0123456789abcdef01234567"
+  },
+  "trusted_bundles": [
+    {
+      "issuer_role": "build-platform",
+      "path": "build-platform.json",
+      "sha256": "2cfc94b5c50a541b498525acdba613ce1c40fafc8d00eb53a741a9c50078fa7e",
+      "reviewed_by": "product-security",
+      "reviewed_at": "2026-07-29T12:15:00Z"
+    },
+    {
+      "issuer_role": "consumer",
+      "path": "consumer.json",
+      "sha256": "a6830e6667ac71f2ca9b00903d4d8d0f526ab85dcc59540d9431490fdc61a2f4",
+      "reviewed_by": "product-security",
+      "reviewed_at": "2026-07-29T12:15:00Z"
+    },
+    {
+      "issuer_role": "security-monitor",
+      "path": "security-monitor.json",
+      "sha256": "77393b0ef09418631588f2fdaab513f2de4f05f37b66084d256642066e595341",
+      "reviewed_by": "product-security",
+      "reviewed_at": "2026-07-29T12:15:00Z"
+    },
+    {
+      "issuer_role": "security-review",
+      "path": "security-review.json",
+      "sha256": "77f7203ca1dfae4bbdabf103b98609eddf264313930b73f934bfcda24c83a237",
+      "reviewed_by": "risk-owner",
+      "reviewed_at": "2026-07-29T12:15:00Z"
+    },
+    {
+      "issuer_role": "software-producer",
+      "path": "software-producer.json",
+      "sha256": "230b0f2224fee88b228e63071b36c5b1959b31f67c711ffd0b6d0a4e701a37bf",
+      "reviewed_by": "product-security",
+      "reviewed_at": "2026-07-29T12:15:00Z"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": "psb-slsa-build-l2-issuer-bundle/v1",
+  "profile_id": "slsa-build-l2",
+  "issuer_role": "build-platform",
+  "scope_sha256": "e75cbce01b89a8593197db87886d68ad7f7475e2c7bba3c454c528ddb92fc812",
+  "observed_at": "2026-07-29T12:00:00Z",
+  "evidence": [
+    {
+      "code": "platform-policy",
+      "type": "platform-policy",
+      "uri": "https://evidence.example.invalid/slsa/platform-policy.json",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "result": "pass",
+      "immutable": true
+    },
+    {
+      "code": "build-record",
+      "type": "build-record",
+      "uri": "https://evidence.example.invalid/slsa/build-record.json",
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "result": "pass",
+      "immutable": true
+    }
+  ]
+}

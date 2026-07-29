@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DharmaDoll/product-security-controls/schemas/slsa-security-review-receipt.schema.json",
+  "title": "SLSA Build L2 security-review verification receipt",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile_id",
+    "issuer_role",
+    "collected_at",
+    "observed_at",
+    "expires_at",
+    "scope_sha256",
+    "input_digests",
+    "signature_verified",
+    "signed_review_record",
+    "findings",
+    "disclaimer"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "psb-slsa-security-review-receipt/v1"
+    },
+    "profile_id": {
+      "const": "slsa-build-l2"
+    },
+    "issuer_role": {
+      "const": "security-review"
+    },
+    "collected_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "scope_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "input_digests": {
+      "type": "object",
+      "required": ["review", "signature", "trusted_public_key"],
+      "properties": {
+        "review": {
+          "$ref": "#/$defs/sha256"
+        },
+        "signature": {
+          "$ref": "#/$defs/sha256"
+        },
+        "trusted_public_key": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "additionalProperties": false
+    },
+    "signature_verified": {
+      "type": "boolean"
+    },
+    "signed_review_record": {
+      "type": "object"
+    },
+    "findings": {
+      "type": "object",
+      "required": [
+        "platform_capability_assessment",
+        "signer_ownership_assessment"
+      ],
+      "properties": {
+        "platform_capability_assessment": {
+          "$ref": "#/$defs/findings"
+        },
+        "signer_ownership_assessment": {
+          "$ref": "#/$defs/findings"
+        }
+      },
+      "additionalProperties": false
+    },
+    "disclaimer": {
+      "const": "This review receipt is evidence input, not a SLSA level claim."
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "findings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]+(?:-[a-z]+)*$"
+      }
+    }
+  }
+}

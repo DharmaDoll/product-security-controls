@@ -141,10 +141,27 @@ Planned control packages:
 The `PSB-REL-002` mapping is reviewed against its implementation, negative
 tests, distribution trust boundary, and sanitized evidence.
 All seven cumulative requirements now have reviewed `mapped-evidence` rows in
-the generated `SLSA L2 Coverage` view. Milestone completion still requires a
-separate end-to-end assessment of the producer, build platform, and consumer;
-the mapping status alone is not a level claim. L3 hardening is a later
-milestone and is not required for this target.
+the generated `SLSA L2 Coverage` view. The separate end-to-end assessment is
+implemented in [`SLSA_BUILD_L2_ASSESSMENT.md`](SLSA_BUILD_L2_ASSESSMENT.md).
+It requires current evidence for an exact producer, build platform, consumer,
+artifact family, release, and source revision, and distinguishes `PASS`,
+`FAIL`, `INCOMPLETE`, and `ERROR`. Milestone completion still requires an
+organization-owned live input that produces `PASS`. A vendor-neutral adapter
+now verifies five independently reviewed, digest-pinned issuer bundles and
+assembles the 11 evidence records without trusting hand-entered status flags.
+A GitHub Actions collector now supplies the first provider-specific
+`build-platform` bundle by cryptographically verifying artifact provenance
+with a version- and digest-pinned GitHub CLI, exact signer/source expectations,
+and self-hosted-runner denial. A separate GitHub Releases collector now emits
+role-separated `software-producer` publication evidence and an independent
+`security-monitor` storage probe using immutable release and asset digest
+metadata. The consumer collector now reruns the pinned `PSB-REL-001` verifier,
+and the security-review collector authenticates a scoped, expiring assessment
+of platform capability and signer ownership. All five issuer roles therefore
+have executable collector paths and an end-to-end fixture test. Milestone
+completion still requires organization-owned live policies and evidence that
+produce `PASS`; repository fixtures and mapping status are not a level claim.
+L3 hardening is a later milestone and is not required for this target.
 
 ## Phase 4 — Release integrity
 
@@ -248,7 +265,9 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    lifecycle with least privilege, expiration, protected storage, inventory,
    revocation, and audit evidence — implemented.
 3. `PSB-CICD-004` — explicit least-privilege workflow and job permissions,
-   rejecting broad write scopes.
+   rejecting broad write scopes — implemented with workflow deny-all,
+   purpose-bound exact job policies, OIDC scoping, trusted-ref conditions,
+   protected-environment requirements, and repository-wide verification.
 4. `PSB-CICD-005` — fork-safe and untrusted-PR-safe workflows with no privileged
    credential exposure or execution through `pull_request_target`.
 5. `PSB-CODE-001` — application secret handling with externalized secrets,

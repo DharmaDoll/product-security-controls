@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DharmaDoll/product-security-controls/schemas/slsa-build-l2-assessment-input.schema.json",
+  "title": "Product Security Blueprint SLSA Build L2 assessment input",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "source",
+    "assessed_at",
+    "scope",
+    "evidence_catalog"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "psb-slsa-build-l2-assessment-input/v1"
+    },
+    "source": {
+      "enum": ["live", "test-fixture"]
+    },
+    "assessed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "producer_id",
+        "build_platform_id",
+        "consumer_id",
+        "artifact_family",
+        "release_id",
+        "source_revision"
+      ],
+      "properties": {
+        "producer_id": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "build_platform_id": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "consumer_id": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "artifact_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "release_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence_catalog": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "type",
+          "issuer_role",
+          "uri",
+          "sha256",
+          "scope_sha256",
+          "observed_at",
+          "result",
+          "immutable",
+          "authenticated",
+          "reviewed"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "type": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "issuer_role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uri": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "scope_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "result": {
+            "enum": ["pass", "finding", "error"]
+          },
+          "immutable": {
+            "type": "boolean"
+          },
+          "authenticated": {
+            "type": "boolean"
+          },
+          "reviewed": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

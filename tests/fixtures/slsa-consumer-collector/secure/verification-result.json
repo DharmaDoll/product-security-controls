@@ -1,0 +1,5 @@
+{
+  "schema_version": "psb-slsa-consumer-verification-fixture/v1",
+  "verifier_exit_code": 0,
+  "reason_codes": []
+}

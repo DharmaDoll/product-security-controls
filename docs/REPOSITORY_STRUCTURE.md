@@ -34,7 +34,8 @@
 │   ├── slsa/
 │   └── nist-ssdf/
 ├── schemas/
-│   └── control.schema.json
+│   ├── control.schema.json
+│   └── framework assessment contracts
 ├── scripts/
 │   ├── validate-controls/
 │   ├── generate-index/
@@ -56,10 +57,15 @@
 │   ├── CODEX_WORKFLOW.md
 │   ├── PLANNED_CONTROLS.md
 │   ├── SECURITY_GUIDANCE_SOURCES.md
+│   ├── SLSA_BUILD_L2_ASSESSMENT.md
+│   ├── GITHUB_ACTIONS_SLSA_COLLECTOR.md
+│   ├── GITHUB_RELEASES_SLSA_COLLECTOR.md
+│   ├── SLSA_CONSUMER_AND_REVIEW_COLLECTORS.md
 │   ├── ROADMAP.md
 │   └── adr/
 └── policies/
-    └── exceptions/
+    ├── exceptions/
+    └── framework-assessments/
 ```
 
 ## Design rule

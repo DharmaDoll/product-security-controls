@@ -1,0 +1,37 @@
+{
+  "_type": "https://in-toto.io/Statement/v1",
+  "subject": [
+    {
+      "name": "release.bin",
+      "digest": {
+        "sha256": "a1b78aa97b2a32b6f5609d0fd538e2d8e5e5c9a1e5b8a7a72cd02c0554333d0a"
+      }
+    }
+  ],
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "predicate": {
+    "buildDefinition": {
+      "buildType": "https://build.example.test/types/release/v1",
+      "externalParameters": {
+        "repository": "https://github.com/example/product",
+        "ref": "refs/tags/v1.0.0"
+      },
+      "resolvedDependencies": [
+        {
+          "uri": "git+https://github.com/example/product",
+          "digest": {
+            "gitCommit": "0123456789abcdef0123456789abcdef01234567"
+          }
+        }
+      ]
+    },
+    "runDetails": {
+      "builder": {
+        "id": "https://builder.example.test/hosted/v1"
+      },
+      "metadata": {
+        "invocationId": "synthetic-build-0001"
+      }
+    }
+  }
+}

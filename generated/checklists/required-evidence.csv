@@ -101,6 +101,17 @@ PSB-CICD-003,PSB-CICD-003-SAS-002,repository-admin,hybrid,repository ruleset evi
 PSB-CICD-003,PSB-CICD-003-SAS-003,repository-admin,automated,sanitized verifier output
 PSB-CICD-003,PSB-CICD-003-SAS-004,repository-admin,automated,negative-test output
 PSB-CICD-003,PSB-CICD-003-SAS-005,repository-admin,automated,sanitized verifier output
+PSB-CICD-004,PSB-CICD-004-PERM-001,repository-admin,automated,sanitized verifier output
+PSB-CICD-004,PSB-CICD-004-PERM-001,repository-admin,automated,reviewed permissions policy
+PSB-CICD-004,PSB-CICD-004-PERM-002,repository-admin,automated,sanitized verifier output
+PSB-CICD-004,PSB-CICD-004-PERM-002,repository-admin,automated,job-purpose sidecar policy
+PSB-CICD-004,PSB-CICD-004-PERM-003,ci-platform,automated,negative-test output
+PSB-CICD-004,PSB-CICD-004-PERM-003,ci-platform,automated,reviewed permissions policy
+PSB-CICD-004,PSB-CICD-004-PERM-004,repository-admin,hybrid,sanitized verifier output
+PSB-CICD-004,PSB-CICD-004-PERM-004,repository-admin,hybrid,GitHub Environment protection evidence
+PSB-CICD-004,PSB-CICD-004-PERM-005,repository-admin,automated,negative-test output
+PSB-CICD-004,PSB-CICD-004-PERM-005,repository-admin,automated,reviewed caller policy
+PSB-CICD-004,PSB-CICD-004-PERM-006,ci-platform,automated,negative-test output
 PSB-DEPS-001,PSB-DEPS-001-COOL-001,repository-admin,automated,sanitized verifier output
 PSB-DEPS-001,PSB-DEPS-001-COOL-002,security,automated,sanitized verifier output
 PSB-DEPS-001,PSB-DEPS-001-COOL-002,security,automated,exception approval

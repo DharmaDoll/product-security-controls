@@ -1,0 +1,193 @@
+id: PSB-CICD-004
+title: Enforce explicit least-privilege GitHub Actions permissions
+domain: cicd-security
+summary: Deny implicit GITHUB_TOKEN privileges and bind each job to an exact reviewed permission set, trusted ref condition, and protected environment where required.
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - verify
+threats:
+  - id: CICD-IMPLICIT-TOKEN-PERMISSIONS
+    description: Workflow or reusable-workflow caller inherits a repository default that grants more GITHUB_TOKEN access than reviewers can see in the job.
+  - id: CICD-OVERPRIVILEGED-JOB
+    description: Malicious or compromised job code uses unnecessary write or OIDC permissions to modify source, packages, deployments, attestations, or cloud resources.
+implementations:
+  insecure:
+    - insecure/workflow.yml
+    - insecure/policy.json
+  secure:
+    - secure/workflow.yml
+    - secure/policy.json
+    - secure/repository-policy.json
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-CICD-004
+  expected:
+    - workflow permissions default to explicit deny-all and every job declares an exact permission set
+    - test report release and deploy jobs stay within purpose-specific permission ceilings
+    - write-capable jobs use reviewed ref conditions and release or deploy jobs use protected environments
+    - id-token write is limited to exact release or deploy jobs that require token federation
+    - reusable-workflow callers cannot inherit implicit or broader permissions
+    - unsupported syntax policy gaps and parser failures remain distinct from clean results
+checks:
+  - id: PERM-001
+    title: Workflows deny token permissions by default and jobs opt in explicitly
+    required_state: top-level permissions is deny-all and every job has an explicit permission map
+    responsible_role: repository-admin
+    applies_to:
+      - github-actions-workflow
+      - github-token
+    context:
+      threat_actor: repository administrator misconfiguration or contributor relying on a permissive inherited default
+      attack_or_failure_scenario: a job without visible permissions receives organization or repository default token access
+      why_required: explicit top-level deny-all and job opt-in make the effective token boundary reviewable in the workflow change
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-004
+      expected: absent permissions read-all write-all and non-deny top-level defaults are rejected
+      evidence:
+        - sanitized verifier output
+        - reviewed permissions policy
+    mapping_status: reviewed
+  - id: PERM-002
+    title: Job permissions exactly match the reviewed job purpose
+    required_state: exact policy-approved permission set within the test report release or deploy ceiling
+    responsible_role: repository-admin
+    applies_to:
+      - github-actions-job
+      - github-token
+    context:
+      threat_actor: compromised Action dependency malicious build step or maintainer granting convenience permissions
+      attack_or_failure_scenario: job code receives write access unrelated to its test reporting release or deployment activity
+      why_required: purpose-bound exact sets reduce the impact of code execution inside one job and prevent unused privilege accumulation
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-004
+      expected: purpose mismatches and permissions outside the reviewed exact set are rejected
+      evidence:
+        - sanitized verifier output
+        - job-purpose sidecar policy
+    mapping_status: reviewed
+  - id: PERM-003
+    title: OIDC token issuance is limited to the exact federation job
+    required_state: id-token write appears only in reviewed release or deploy jobs
+    responsible_role: ci-platform
+    applies_to:
+      - github-actions-job
+      - oidc-token
+    context:
+      threat_actor: malicious step or dependency requesting a GitHub OIDC token from an unrelated job
+      attack_or_failure_scenario: a test or reporting job exchanges an OIDC token against a cloud trust policy and gains workload access
+      why_required: id-token write enables token issuance even though it does not directly grant repository writes and must be scoped independently
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-004
+      expected: id-token write outside an approved release or deploy purpose is rejected
+      evidence:
+        - negative-test output
+        - reviewed permissions policy
+    mapping_status: reviewed
+  - id: PERM-004
+    title: Write-capable jobs are restricted to reviewed refs and environments
+    required_state: exact trusted-ref condition plus protected environment for release and deploy
+    responsible_role: repository-admin
+    applies_to:
+      - privileged-ci-job
+      - github-environment
+    context:
+      threat_actor: untrusted branch contributor compromised maintainer or accidental trigger
+      attack_or_failure_scenario: a job with publication deployment or token-issuance capability runs for an unreviewed ref without environment approval
+      why_required: permission minimization limits capability while ref and environment gates limit when that remaining capability can be exercised
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-CICD-004 and review GitHub Environment protection settings
+      expected: write jobs lack neither the reviewed condition nor the required protected environment
+      evidence:
+        - sanitized verifier output
+        - GitHub Environment protection evidence
+    mapping_status: reviewed
+  - id: PERM-005
+    title: Reusable-workflow callers pass explicit non-escalating permissions
+    required_state: caller job permission set is explicit and bounded by its reviewed purpose
+    responsible_role: repository-admin
+    applies_to:
+      - reusable-workflow-caller
+      - github-token
+    context:
+      threat_actor: compromised reusable workflow or caller maintainer omitting the token boundary
+      attack_or_failure_scenario: called workflow receives an implicit repository default or a caller grants broader permissions than the reusable task needs
+      why_required: GitHub prevents called workflows from elevating caller permissions but cannot minimize an already broad or implicit caller token
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-004
+      expected: omitted and purpose-exceeding caller permissions are rejected
+      evidence:
+        - negative-test output
+        - reviewed caller policy
+    mapping_status: reviewed
+  - id: PERM-006
+    title: Permission verification fails closed
+    required_state: missing policy unreviewed workflow unsupported YAML and parse failure return an error
+    responsible_role: ci-platform
+    applies_to:
+      - ci-permission-verifier
+    context:
+      threat_actor: unsupported YAML construct stale policy malformed input or verifier execution failure
+      attack_or_failure_scenario: one or more jobs cannot be evaluated but the repository is reported as least privilege
+      why_required: a distinct error state prevents incomplete permission coverage from becoming clean evidence
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-004
+      expected: evaluation failures use exit 2 and cannot be interpreted as pass
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
+mappings:
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHAS-REF-SECURE-USE
+    relationship: verifies
+    confidence: high
+    rationale: The control verifies GitHub's least-privilege guidance by making the GITHUB_TOKEN default deny-all and reviewing exact job-level grants, while environment administration remains external evidence.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - PERM-001
+      - PERM-002
+      - PERM-003
+      - PERM-004
+      - PERM-005
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-AC-04.01
+    relationship: supports
+    confidence: high
+    rationale: Explicit workflow deny-all and mandatory job permission maps avoid a task silently receiving a more permissive pipeline or repository default.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - PERM-001
+      - PERM-005
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-AC-04.02
+    relationship: verifies
+    confidence: high
+    rationale: Exact job-purpose policies and negative fixtures directly verify that assigned CI/CD permissions stay within the minimum reviewed privileges for the corresponding activity.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - PERM-002
+      - PERM-003
+      - PERM-004
+      - PERM-005
+limitations:
+  - The sidecar job purpose and exact permission set require semantic human review and can encode a bad decision if approved carelessly.
+  - Static ref-condition matching does not prove branch protection tag protection or GitHub Environment approval rules are enabled.
+  - GITHUB_TOKEN restrictions do not reduce permissions of separately supplied PATs GitHub App tokens cloud credentials or other secrets.
+  - Actions and shell steps in one job share that job token so different trust boundaries should use separate jobs.
+  - Fork safety and pull_request_target behavior are delegated to PSB-CICD-005 and cloud OIDC trust conditions to PSB-CICD-006.
+  - Unknown GitHub permission scopes or unsupported YAML constructs fail closed until the verifier is reviewed and updated.
+status: prototype
+owner: product-security
+evidence_level: E3

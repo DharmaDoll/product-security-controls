@@ -1,0 +1,15 @@
+# Synthetic fixture snapshot; this file is not a deployable workflow.
+name: release-fixture
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Build fixture
+        shell: bash
+        run: printf 'synthetic fixture only\n'

@@ -1,4 +1,4 @@
-.PHONY: bootstrap lint verify verify-control assess-control test generate generate-index generate-mappings generate-checklists validate-controls clean
+.PHONY: bootstrap lint verify verify-control assess-control collect-github-actions-build-platform collect-github-releases-evidence collect-slsa-consumer-evidence collect-slsa-security-review-evidence build-slsa-build-l2-evidence assess-slsa-build-l2 assess-slsa-build-l2-bundles test generate generate-index generate-mappings generate-checklists validate-controls clean
 
 bootstrap:
 	@echo "No external bootstrap required."
@@ -20,6 +20,70 @@ verify-control:
 assess-control:
 	@test -n "$(CONTROL)" || (echo "CONTROL is required" >&2; exit 2)
 	@python3 scripts/run-assessments.py --control "$(CONTROL)"
+
+collect-github-actions-build-platform:
+	@test -n "$(COLLECTOR_POLICY)" || (echo "COLLECTOR_POLICY is required" >&2; exit 2)
+	@test -n "$(BUNDLE_OUTPUT)" || (echo "BUNDLE_OUTPUT is required" >&2; exit 2)
+	@test -n "$(RECEIPT_OUTPUT)" || (echo "RECEIPT_OUTPUT is required" >&2; exit 2)
+	@python3 scripts/collect-github-actions-build-platform.py \
+		--policy "$(COLLECTOR_POLICY)" \
+		--output "$(BUNDLE_OUTPUT)" \
+		--receipt-output "$(RECEIPT_OUTPUT)" \
+		$(if $(GH_CLI),--gh "$(GH_CLI)")
+
+collect-github-releases-evidence:
+	@test -n "$(COLLECTOR_POLICY)" || (echo "COLLECTOR_POLICY is required" >&2; exit 2)
+	@test -n "$(BUNDLE_OUTPUT)" || (echo "BUNDLE_OUTPUT is required" >&2; exit 2)
+	@test -n "$(RECEIPT_OUTPUT)" || (echo "RECEIPT_OUTPUT is required" >&2; exit 2)
+	@python3 scripts/collect-github-releases-evidence.py \
+		--policy "$(COLLECTOR_POLICY)" \
+		--output "$(BUNDLE_OUTPUT)" \
+		--receipt-output "$(RECEIPT_OUTPUT)" \
+		$(if $(GH_CLI),--gh "$(GH_CLI)")
+
+collect-slsa-consumer-evidence:
+	@test -n "$(COLLECTOR_POLICY)" || (echo "COLLECTOR_POLICY is required" >&2; exit 2)
+	@test -n "$(BUNDLE_OUTPUT)" || (echo "BUNDLE_OUTPUT is required" >&2; exit 2)
+	@test -n "$(RECEIPT_OUTPUT)" || (echo "RECEIPT_OUTPUT is required" >&2; exit 2)
+	@python3 scripts/collect-slsa-consumer-evidence.py \
+		--policy "$(COLLECTOR_POLICY)" \
+		--output "$(BUNDLE_OUTPUT)" \
+		--receipt-output "$(RECEIPT_OUTPUT)" \
+		$(if $(OPENSSL),--openssl "$(OPENSSL)")
+
+collect-slsa-security-review-evidence:
+	@test -n "$(COLLECTOR_POLICY)" || (echo "COLLECTOR_POLICY is required" >&2; exit 2)
+	@test -n "$(BUNDLE_OUTPUT)" || (echo "BUNDLE_OUTPUT is required" >&2; exit 2)
+	@test -n "$(RECEIPT_OUTPUT)" || (echo "RECEIPT_OUTPUT is required" >&2; exit 2)
+	@python3 scripts/collect-slsa-security-review-evidence.py \
+		--policy "$(COLLECTOR_POLICY)" \
+		--output "$(BUNDLE_OUTPUT)" \
+		--receipt-output "$(RECEIPT_OUTPUT)" \
+		$(if $(OPENSSL),--openssl "$(OPENSSL)")
+
+build-slsa-build-l2-evidence:
+	@test -n "$(ADAPTER_POLICY)" || (echo "ADAPTER_POLICY is required" >&2; exit 2)
+	@python3 scripts/build-slsa-build-l2-evidence.py \
+		--assessment-policy policies/framework-assessments/slsa-build-l2.json \
+		--adapter-policy "$(ADAPTER_POLICY)" \
+		--output generated/assessments/slsa-build-l2-evidence.json
+
+assess-slsa-build-l2:
+	@test -n "$(EVIDENCE)" || (echo "EVIDENCE is required" >&2; exit 2)
+	@python3 scripts/assess-slsa-build-l2.py \
+		--policy policies/framework-assessments/slsa-build-l2.json \
+		--coverage generated/checklists/profiles/slsa-build-l2-coverage.csv \
+		--evidence "$(EVIDENCE)" \
+		--json-output generated/assessments/slsa-build-l2.json \
+		--csv-output generated/assessments/slsa-build-l2.csv
+
+assess-slsa-build-l2-bundles: build-slsa-build-l2-evidence
+	@python3 scripts/assess-slsa-build-l2.py \
+		--policy policies/framework-assessments/slsa-build-l2.json \
+		--coverage generated/checklists/profiles/slsa-build-l2-coverage.csv \
+		--evidence generated/assessments/slsa-build-l2-evidence.json \
+		--json-output generated/assessments/slsa-build-l2.json \
+		--csv-output generated/assessments/slsa-build-l2.csv
 
 generate: generate-index generate-mappings generate-checklists
 

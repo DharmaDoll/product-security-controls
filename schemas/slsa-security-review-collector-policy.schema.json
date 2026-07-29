@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DharmaDoll/product-security-controls/schemas/slsa-security-review-collector-policy.schema.json",
+  "title": "SLSA Build L2 security-review evidence collector policy",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "source",
+    "profile_id",
+    "scope",
+    "review_file",
+    "review_sha256",
+    "signature_file",
+    "signature_sha256",
+    "trusted_public_key_file",
+    "trusted_public_key_sha256",
+    "expected_reviewer_id",
+    "expected_signer_id",
+    "maximum_review_age_seconds",
+    "receipt_uri"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "psb-slsa-security-review-collector-policy/v1"
+    },
+    "source": {
+      "enum": ["live", "test-fixture"]
+    },
+    "profile_id": {
+      "const": "slsa-build-l2"
+    },
+    "scope": {
+      "$ref": "#/$defs/scope"
+    },
+    "review_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "review_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "signature_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "signature_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "trusted_public_key_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trusted_public_key_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "expected_reviewer_id": {
+      "$ref": "#/$defs/httpsUri"
+    },
+    "expected_signer_id": {
+      "$ref": "#/$defs/httpsUri"
+    },
+    "maximum_review_age_seconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 31536000
+    },
+    "receipt_uri": {
+      "$ref": "#/$defs/httpsUri"
+    },
+    "openssl": {
+      "type": "object",
+      "required": ["version", "sha256", "timeout_seconds"],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+(?:\\.[0-9]+){1,3}[a-z]?$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        }
+      },
+      "additionalProperties": false
+    },
+    "verification_fixture": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "source": {
+          "const": "live"
+        }
+      },
+      "required": ["openssl"],
+      "not": {
+        "required": ["verification_fixture"]
+      }
+    },
+    {
+      "properties": {
+        "source": {
+          "const": "test-fixture"
+        }
+      },
+      "required": ["verification_fixture"],
+      "not": {
+        "required": ["openssl"]
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "httpsUri": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "producer_id",
+        "build_platform_id",
+        "consumer_id",
+        "artifact_family",
+        "release_id",
+        "source_revision"
+      ],
+      "properties": {
+        "producer_id": {
+          "$ref": "#/$defs/httpsUri"
+        },
+        "build_platform_id": {
+          "$ref": "#/$defs/httpsUri"
+        },
+        "consumer_id": {
+          "$ref": "#/$defs/httpsUri"
+        },
+        "artifact_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "release_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

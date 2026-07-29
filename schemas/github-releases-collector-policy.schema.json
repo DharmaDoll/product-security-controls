@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DharmaDoll/product-security-controls/schemas/github-releases-collector-policy.schema.json",
+  "title": "GitHub Releases SLSA evidence collector policy",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "source",
+    "profile_id",
+    "issuer_role",
+    "scope",
+    "repository",
+    "release_tag",
+    "artifact",
+    "provenance",
+    "maximum_publication_delay_seconds",
+    "receipt_uri"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "psb-github-releases-collector-policy/v1"
+    },
+    "source": {
+      "enum": ["live", "test-fixture"]
+    },
+    "profile_id": {
+      "const": "slsa-build-l2"
+    },
+    "issuer_role": {
+      "enum": ["software-producer", "security-monitor"]
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "producer_id",
+        "build_platform_id",
+        "consumer_id",
+        "artifact_family",
+        "release_id",
+        "source_revision"
+      ],
+      "properties": {
+        "producer_id": {"type": "string", "pattern": "^https://"},
+        "build_platform_id": {"type": "string", "pattern": "^https://"},
+        "consumer_id": {"type": "string", "pattern": "^https://"},
+        "artifact_family": {"type": "string", "minLength": 1},
+        "release_id": {"type": "string", "minLength": 1},
+        "source_revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+    },
+    "release_tag": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "artifact": {"$ref": "#/$defs/asset"},
+    "provenance": {"$ref": "#/$defs/asset"},
+    "maximum_publication_delay_seconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 300
+    },
+    "receipt_uri": {
+      "type": "string",
+      "pattern": "^https://"
+    },
+    "producer_policy_evidence": {"$ref": "#/$defs/upstream"},
+    "build_policy_evidence": {"$ref": "#/$defs/upstream"},
+    "github_cli": {
+      "type": "object",
+      "required": ["version", "sha256", "timeout_seconds"],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        }
+      },
+      "additionalProperties": false
+    },
+    "release_fixture": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "asset": {
+      "type": "object",
+      "required": ["name", "sha256", "content_type"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "content_type": {
+          "type": "string",
+          "minLength": 3
+        }
+      },
+      "additionalProperties": false
+    },
+    "upstream": {
+      "type": "object",
+      "required": ["uri", "sha256", "result", "immutable"],
+      "properties": {
+        "uri": {"type": "string", "pattern": "^https://"},
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "result": {"enum": ["pass", "finding", "error"]},
+        "immutable": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "source": {"const": "live"}
+        }
+      },
+      "then": {
+        "required": ["github_cli"],
+        "not": {"required": ["release_fixture"]}
+      },
+      "else": {
+        "required": ["release_fixture"],
+        "not": {"required": ["github_cli"]}
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "issuer_role": {"const": "software-producer"}
+        }
+      },
+      "then": {
+        "required": [
+          "producer_policy_evidence",
+          "build_policy_evidence"
+        ]
+      },
+      "else": {
+        "not": {
+          "anyOf": [
+            {"required": ["producer_policy_evidence"]},
+            {"required": ["build_policy_evidence"]}
+          ]
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

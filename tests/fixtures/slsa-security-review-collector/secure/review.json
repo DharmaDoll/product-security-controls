@@ -1,0 +1,33 @@
+{
+  "schema_version": "psb-slsa-build-platform-security-review/v1",
+  "profile_id": "slsa-build-l2",
+  "scope_sha256": "e75cbce01b89a8593197db87886d68ad7f7475e2c7bba3c454c528ddb92fc812",
+  "reviewer": {
+    "id": "https://security.example.invalid/review-team",
+    "role": "security-review"
+  },
+  "reviewed_at": "2026-07-29T12:00:00Z",
+  "expires_at": "2026-08-28T12:00:00Z",
+  "platform_capability_assessment": {
+    "result": "pass",
+    "build_platform_id": "https://build.example.invalid/release",
+    "target_level": 2,
+    "hosted_execution": true,
+    "consistent_build_process": true,
+    "control_plane_provenance_generation": true,
+    "evidence_uri": "https://evidence.example.invalid/slsa/platform-capability-source.json",
+    "evidence_sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+  },
+  "signer_ownership_assessment": {
+    "result": "pass",
+    "signer_id": "https://builder.example.test/hosted/v1",
+    "platform_owned_identity": true,
+    "tenant_signing_capability": false,
+    "rotation_and_revocation_reviewed": true,
+    "evidence_uri": "https://evidence.example.invalid/slsa/signer-ownership-source.json",
+    "evidence_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "limitations": [
+    "This synthetic review does not assess SLSA Build Level 3 isolation."
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DharmaDoll/product-security-controls/schemas/slsa-build-l2-evidence-adapter-policy.schema.json",
+  "title": "SLSA Build L2 evidence adapter policy",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "source",
+    "profile_id",
+    "bundle_root",
+    "scope",
+    "trusted_bundles"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "psb-slsa-build-l2-evidence-adapter-policy/v1"
+    },
+    "source": {
+      "enum": ["live", "test-fixture"]
+    },
+    "profile_id": {
+      "const": "slsa-build-l2"
+    },
+    "bundle_root": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "producer_id",
+        "build_platform_id",
+        "consumer_id",
+        "artifact_family",
+        "release_id",
+        "source_revision"
+      ],
+      "properties": {
+        "producer_id": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "build_platform_id": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "consumer_id": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "artifact_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "release_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "trusted_bundles": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": [
+          "issuer_role",
+          "path",
+          "sha256",
+          "reviewed_by",
+          "reviewed_at"
+        ],
+        "properties": {
+          "issuer_role": {
+            "enum": [
+              "build-platform",
+              "consumer",
+              "security-monitor",
+              "security-review",
+              "software-producer"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "reviewed_by": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reviewed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

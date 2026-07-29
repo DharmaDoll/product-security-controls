@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DharmaDoll/product-security-controls/schemas/github-actions-build-platform-collector-policy.schema.json",
+  "title": "GitHub Actions SLSA Build L2 build-platform collector policy",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "source",
+    "profile_id",
+    "scope",
+    "repository",
+    "source_ref",
+    "artifact_file",
+    "artifact_sha256",
+    "platform_policy_file",
+    "platform_policy_repository_path",
+    "platform_policy_sha256",
+    "signer_workflow",
+    "signer_digest",
+    "expected_invocation_id",
+    "build_record_uri",
+    "expected_builder_id",
+    "expected_build_type"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "psb-github-actions-build-platform-collector-policy/v1"
+    },
+    "source": {
+      "enum": ["live", "test-fixture"]
+    },
+    "profile_id": {
+      "const": "slsa-build-l2"
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "producer_id",
+        "build_platform_id",
+        "consumer_id",
+        "artifact_family",
+        "release_id",
+        "source_revision"
+      ],
+      "properties": {
+        "producer_id": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "build_platform_id": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "consumer_id": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "artifact_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "release_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+    },
+    "source_ref": {
+      "type": "string",
+      "pattern": "^refs/"
+    },
+    "artifact_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "platform_policy_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "platform_policy_repository_path": {
+      "type": "string",
+      "pattern": "^\\.github/workflows/.+\\.ya?ml$"
+    },
+    "platform_policy_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "signer_workflow": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/\\.github/workflows/.+\\.ya?ml$"
+    },
+    "signer_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "expected_invocation_id": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/actions/runs/[1-9][0-9]*/attempts/[1-9][0-9]*$"
+    },
+    "build_record_uri": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "expected_builder_id": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "expected_build_type": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "github_cli": {
+      "type": "object",
+      "required": [
+        "version",
+        "sha256",
+        "timeout_seconds",
+        "allow_public_good"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "allow_public_good": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "verification_fixture": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "source": {
+          "const": "live"
+        }
+      },
+      "required": ["github_cli"],
+      "not": {
+        "required": ["verification_fixture"]
+      }
+    },
+    {
+      "properties": {
+        "source": {
+          "const": "test-fixture"
+        }
+      },
+      "required": ["verification_fixture"],
+      "not": {
+        "required": ["github_cli"]
+      }
+    }
+  ],
+  "additionalProperties": false
+}

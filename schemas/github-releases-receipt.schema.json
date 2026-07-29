@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DharmaDoll/product-security-controls/schemas/github-releases-receipt.schema.json",
+  "title": "GitHub Releases evidence receipt",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "provider",
+    "profile_id",
+    "issuer_role",
+    "observed_at",
+    "scope_sha256",
+    "release_snapshot",
+    "observations",
+    "findings",
+    "disclaimer"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "psb-github-releases-receipt/v1"
+    },
+    "provider": {"const": "github-releases"},
+    "profile_id": {"const": "slsa-build-l2"},
+    "issuer_role": {
+      "enum": ["software-producer", "security-monitor"]
+    },
+    "observed_at": {"type": "string", "format": "date-time"},
+    "scope_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "release_snapshot": {"type": "object"},
+    "observations": {"type": "object"},
+    "findings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]+(?:-[a-z]+)*$"
+      }
+    },
+    "disclaimer": {
+      "const": "This provider receipt is evidence input, not a SLSA level claim."
+    }
+  },
+  "additionalProperties": false
+}

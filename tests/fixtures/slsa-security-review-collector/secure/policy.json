@@ -1,0 +1,24 @@
+{
+  "schema_version": "psb-slsa-security-review-collector-policy/v1",
+  "source": "test-fixture",
+  "profile_id": "slsa-build-l2",
+  "scope": {
+    "producer_id": "https://producer.example.invalid/product",
+    "build_platform_id": "https://build.example.invalid/release",
+    "consumer_id": "https://consumer.example.invalid/verifier",
+    "artifact_family": "example/product",
+    "release_id": "product-v1.2.3",
+    "source_revision": "0123456789abcdef0123456789abcdef01234567"
+  },
+  "review_file": "review.json",
+  "review_sha256": "49af1657dfd9c40818bf1ff93e3b6e6dd5eec5f93e7f99d183a115de8d21f630",
+  "signature_file": "signature.b64",
+  "signature_sha256": "9f6962c4097064af6dd36e57210959f65a152616ad61abef8f790bb431030a15",
+  "trusted_public_key_file": "reviewer-public-key.pem",
+  "trusted_public_key_sha256": "b424c49c8826dca9fda0a8ce1d12d6c8898cd2c427d5273c69850d8092af40c7",
+  "expected_reviewer_id": "https://security.example.invalid/review-team",
+  "expected_signer_id": "https://builder.example.test/hosted/v1",
+  "maximum_review_age_seconds": 86400,
+  "receipt_uri": "https://evidence.example.invalid/slsa/security-review-receipt.json",
+  "verification_fixture": "signature-verification.json"
+}

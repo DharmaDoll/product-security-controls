@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DharmaDoll/product-security-controls/schemas/slsa-consumer-receipt.schema.json",
+  "title": "SLSA Build L2 consumer verification receipt",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile_id",
+    "issuer_role",
+    "observed_at",
+    "scope_sha256",
+    "input_digests",
+    "verifier_exit_code",
+    "verifier_output_sha256",
+    "result",
+    "reason_codes",
+    "disclaimer"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "psb-slsa-consumer-receipt/v1"
+    },
+    "profile_id": {
+      "const": "slsa-build-l2"
+    },
+    "issuer_role": {
+      "const": "consumer"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "scope_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "input_digests": {
+      "type": "object",
+      "required": [
+        "artifact",
+        "provenance",
+        "signature",
+        "trust_policy",
+        "trusted_public_key",
+        "verifier"
+      ],
+      "properties": {
+        "artifact": {
+          "$ref": "#/$defs/sha256"
+        },
+        "provenance": {
+          "$ref": "#/$defs/sha256"
+        },
+        "signature": {
+          "$ref": "#/$defs/sha256"
+        },
+        "trust_policy": {
+          "$ref": "#/$defs/sha256"
+        },
+        "trusted_public_key": {
+          "$ref": "#/$defs/sha256"
+        },
+        "verifier": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "additionalProperties": false
+    },
+    "verifier_exit_code": {
+      "enum": [0, 1]
+    },
+    "verifier_output_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "result": {
+      "enum": ["pass", "finding"]
+    },
+    "reason_codes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]+(?:-[a-z]+)*$"
+      }
+    },
+    "disclaimer": {
+      "const": "This consumer receipt is evidence input, not a SLSA level claim."
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

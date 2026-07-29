@@ -1,0 +1,52 @@
+{
+  "schema_version": "psb-framework-assessment-policy/v1",
+  "profile_id": "slsa-build-l2",
+  "framework": "slsa",
+  "framework_version": "1.2",
+  "track": "build",
+  "target_level": 2,
+  "maximum_evidence_age_seconds": 86400,
+  "required_evidence_issuers": {
+    "platform-policy": "build-platform",
+    "build-record": "build-platform",
+    "platform-capability-assessment": "security-review",
+    "producer-policy": "software-producer",
+    "build-policy": "software-producer",
+    "publication-manifest": "software-producer",
+    "storage-probe": "security-monitor",
+    "consumer-verification-result": "consumer",
+    "consumer-trust-policy": "consumer",
+    "provenance-signature-verification": "consumer",
+    "signer-ownership-assessment": "security-review"
+  },
+  "requirements": {
+    "build-l1#platform-generates-provenance": [
+      "platform-policy",
+      "build-record"
+    ],
+    "build-l1#producer-appropriate-build-platform": [
+      "producer-policy",
+      "platform-capability-assessment"
+    ],
+    "build-l1#producer-consistent-build": [
+      "build-policy",
+      "build-record"
+    ],
+    "build-l1#producer-distributes-provenance": [
+      "publication-manifest",
+      "storage-probe"
+    ],
+    "build-l2#consumer-validates-authenticity": [
+      "consumer-verification-result",
+      "consumer-trust-policy"
+    ],
+    "build-l2#platform-authentic-provenance": [
+      "provenance-signature-verification",
+      "signer-ownership-assessment"
+    ],
+    "build-l2#producer-hosted-build-platform": [
+      "platform-capability-assessment",
+      "build-record"
+    ]
+  }
+}

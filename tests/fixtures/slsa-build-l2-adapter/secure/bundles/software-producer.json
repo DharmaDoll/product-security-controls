@@ -1,0 +1,33 @@
+{
+  "schema_version": "psb-slsa-build-l2-issuer-bundle/v1",
+  "profile_id": "slsa-build-l2",
+  "issuer_role": "software-producer",
+  "scope_sha256": "e75cbce01b89a8593197db87886d68ad7f7475e2c7bba3c454c528ddb92fc812",
+  "observed_at": "2026-07-29T12:00:00Z",
+  "evidence": [
+    {
+      "code": "producer-policy",
+      "type": "producer-policy",
+      "uri": "https://evidence.example.invalid/slsa/producer-policy.json",
+      "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "result": "pass",
+      "immutable": true
+    },
+    {
+      "code": "build-policy",
+      "type": "build-policy",
+      "uri": "https://evidence.example.invalid/slsa/build-policy.json",
+      "sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+      "result": "pass",
+      "immutable": true
+    },
+    {
+      "code": "publication-manifest",
+      "type": "publication-manifest",
+      "uri": "https://evidence.example.invalid/slsa/publication-manifest.json",
+      "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+      "result": "pass",
+      "immutable": true
+    }
+  ]
+}

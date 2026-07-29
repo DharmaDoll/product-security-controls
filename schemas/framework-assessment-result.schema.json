@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DharmaDoll/product-security-controls/schemas/framework-assessment-result.schema.json",
+  "title": "Product Security Blueprint framework assessment result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "assessment_kind",
+    "source",
+    "generated_at",
+    "profile",
+    "scope_sha256",
+    "conclusion",
+    "summary",
+    "results",
+    "disclaimer"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "assessment_kind": {"const": "framework-adoption"},
+    "source": {"enum": ["live", "test-fixture"]},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "profile": {
+      "type": "object",
+      "required": ["id", "framework", "version", "track", "target_level"],
+      "properties": {
+        "id": {"const": "slsa-build-l2"},
+        "framework": {"const": "slsa"},
+        "version": {"const": "1.2"},
+        "track": {"const": "build"},
+        "target_level": {"const": 2}
+      },
+      "additionalProperties": false
+    },
+    "scope_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "conclusion": {
+      "enum": ["PASS", "FAIL", "INCOMPLETE", "ERROR"]
+    },
+    "summary": {
+      "type": "object",
+      "required": ["PASS", "FAIL", "NOT_CHECKED", "ERROR"],
+      "properties": {
+        "PASS": {"type": "integer", "minimum": 0},
+        "FAIL": {"type": "integer", "minimum": 0},
+        "NOT_CHECKED": {"type": "integer", "minimum": 0},
+        "ERROR": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "results": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "required": [
+          "requirement_id",
+          "title",
+          "responsibility",
+          "status",
+          "mapped_checks",
+          "evidence_codes",
+          "detail"
+        ],
+        "properties": {
+          "requirement_id": {"type": "string", "minLength": 1},
+          "title": {"type": "string", "minLength": 1},
+          "responsibility": {"type": "string", "minLength": 1},
+          "status": {
+            "enum": ["PASS", "FAIL", "NOT_CHECKED", "ERROR"]
+          },
+          "mapped_checks": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "evidence_codes": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            }
+          },
+          "detail": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "disclaimer": {
+      "const": "This scoped assessment is not certification or a general compliance claim."
+    }
+  },
+  "additionalProperties": false
+}

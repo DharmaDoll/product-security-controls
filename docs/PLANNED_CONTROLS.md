@@ -46,9 +46,9 @@ PSB-AI-004 ──────────────────┘
 ```
 
 Within one priority, complete one E3 vertical slice before starting the next.
-The next planned control after the required application-checklist input is
-`PSB-REL-002`, because it closes the remaining producer-side SLSA Build L2
-provenance-distribution gap.
+The application-checklist import still requires its organization-owned source.
+The next independently executable control after `PSB-CICD-004` is
+`PSB-CICD-005`.
 
 ## Prerequisite: application checklist reconciliation
 
@@ -152,11 +152,37 @@ publication/storage `ERROR` states. The reviewed SLSA mapping supplies evidence
 for the distribution requirement but does not claim cumulative level
 achievement.
 
+### Cumulative SLSA Build Level 2 assessment
+
+Status: `prototype` — scoped evaluator and offline fixtures implemented.
+Control ID: none; this joins control evidence and is not a new control.
+
+The evaluator described in
+[`SLSA_BUILD_L2_ASSESSMENT.md`](SLSA_BUILD_L2_ASSESSMENT.md) combines the
+seven-row coverage view with 11 types of current evidence for an exact
+producer, build platform, consumer, artifact family, release, and source
+revision. Secure, finding, absent, execution-error, and malformed fixtures
+preserve fail-closed result semantics. The vendor-neutral bundle adapter now
+requires all five issuer roles, exact scope binding, independently reviewed
+SHA-256 pins, safe local paths, and all 11 evidence types before it produces a
+catalog. The GitHub Actions `build-platform` collector is implemented with
+pinned GitHub CLI verification, exact signer/source/workflow/artifact binding,
+and self-hosted-runner denial. The GitHub Releases collector separately emits
+the complete producer bundle and independent storage-monitor bundle with
+immutable release, asset digest, location, state, and timing checks. The
+consumer collector now reruns the pinned `PSB-REL-001` verifier over exact
+artifact, provenance, signature, and consumer-policy inputs. The independent
+security-review collector verifies a signed, scoped, expiring assessment of
+platform capability and signer ownership. All five role collectors feed one
+end-to-end passing fixture. The remaining milestone input is
+organization-owned live policies and evidence; until that input yields
+`PASS`, this repository makes no Level 2 achievement claim.
+
 ## P1: foundational controls
 
 ### PSB-CICD-004 — Explicit least-privilege workflow permissions
 
-Status: `ready`  
+Status: `prototype` — first E3 vertical slice implemented
 Domain: `cicd-security`
 
 #### Goal
@@ -182,6 +208,16 @@ their task.
    escalation, and unnecessary `id-token: write`.
 6. Verify repository workflows without modifying them.
 
+Implemented slice:
+
+- top-level `permissions: {}` and explicit permissions for every job;
+- exact sidecar policy sets for test, report, release, and deploy purposes;
+- trusted-ref conditions for every write-capable job;
+- protected environments for release and deploy;
+- `id-token: write` restricted to release and deploy purposes;
+- explicit reusable-workflow caller permissions;
+- repository-wide workflow coverage and fail-closed unsupported syntax.
+
 #### Acceptance criteria
 
 - every workflow and job resolves to an explicit permission set;
@@ -192,7 +228,7 @@ their task.
 
 ### PSB-CICD-005 — Fork-safe and untrusted-PR-safe workflows
 
-Status: `dependency-required` on `PSB-CICD-004`  
+Status: `ready` — `PSB-CICD-004` dependency implemented
 Domain: `cicd-security`
 
 #### Goal

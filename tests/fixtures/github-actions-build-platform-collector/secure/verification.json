@@ -1,0 +1,56 @@
+{
+  "results": [
+    {
+      "attestation": {
+        "fixture": true
+      },
+      "verificationResult": {
+        "signature": {
+          "certificate": {
+            "issuer": "https://token.actions.githubusercontent.com"
+          }
+        },
+        "statement": {
+          "_type": "https://in-toto.io/Statement/v1",
+          "subject": [
+            {
+              "name": "release.bin",
+              "digest": {
+                "sha256": "f924f8684cf47f03207bcd76c795789f413ec5df7ee5f1413450b725b6b4f915"
+              }
+            }
+          ],
+          "predicateType": "https://slsa.dev/provenance/v1",
+          "predicate": {
+            "buildDefinition": {
+              "buildType": "https://slsa-framework.github.io/github-actions-buildtypes/workflow/v1",
+              "externalParameters": {
+                "workflow": {
+                  "ref": "refs/tags/product-v1.2.3",
+                  "repository": "https://github.com/example/product",
+                  "path": "/.github/workflows/release.yml"
+                }
+              },
+              "resolvedDependencies": [
+                {
+                  "uri": "git+https://github.com/example/product",
+                  "digest": {
+                    "gitCommit": "0123456789abcdef0123456789abcdef01234567"
+                  }
+                }
+              ]
+            },
+            "runDetails": {
+              "builder": {
+                "id": "https://github.com/actions/runner/github-hosted"
+              },
+              "metadata": {
+                "invocationId": "https://github.com/example/product/actions/runs/123456789/attempts/1"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

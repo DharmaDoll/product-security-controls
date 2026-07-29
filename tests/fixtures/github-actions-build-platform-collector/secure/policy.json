@@ -1,0 +1,27 @@
+{
+  "schema_version": "psb-github-actions-build-platform-collector-policy/v1",
+  "source": "test-fixture",
+  "profile_id": "slsa-build-l2",
+  "scope": {
+    "producer_id": "https://producer.example.invalid/product",
+    "build_platform_id": "https://build.example.invalid/release",
+    "consumer_id": "https://consumer.example.invalid/verifier",
+    "artifact_family": "example/product",
+    "release_id": "product-v1.2.3",
+    "source_revision": "0123456789abcdef0123456789abcdef01234567"
+  },
+  "repository": "example/product",
+  "source_ref": "refs/tags/product-v1.2.3",
+  "artifact_file": "release.bin",
+  "artifact_sha256": "f924f8684cf47f03207bcd76c795789f413ec5df7ee5f1413450b725b6b4f915",
+  "platform_policy_file": "release.yml",
+  "platform_policy_repository_path": ".github/workflows/release.yml",
+  "platform_policy_sha256": "6c41eba40b41e92726740eacfe95fc068e13cb228df5648750b1f383c8cab518",
+  "signer_workflow": "example/product/.github/workflows/release.yml",
+  "signer_digest": "0123456789abcdef0123456789abcdef01234567",
+  "expected_invocation_id": "https://github.com/example/product/actions/runs/123456789/attempts/1",
+  "build_record_uri": "https://evidence.example.invalid/slsa/github-actions/build-record.json",
+  "expected_builder_id": "https://github.com/actions/runner/github-hosted",
+  "expected_build_type": "https://slsa-framework.github.io/github-actions-buildtypes/workflow/v1",
+  "verification_fixture": "verification.json"
+}

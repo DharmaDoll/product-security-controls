@@ -1,0 +1,25 @@
+{
+  "schema_version": "psb-slsa-build-l2-issuer-bundle/v1",
+  "profile_id": "slsa-build-l2",
+  "issuer_role": "security-review",
+  "scope_sha256": "e75cbce01b89a8593197db87886d68ad7f7475e2c7bba3c454c528ddb92fc812",
+  "observed_at": "2026-07-29T12:00:00Z",
+  "evidence": [
+    {
+      "code": "platform-capability-assessment",
+      "type": "platform-capability-assessment",
+      "uri": "https://evidence.example.invalid/slsa/platform-capability-assessment.json",
+      "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "result": "pass",
+      "immutable": true
+    },
+    {
+      "code": "signer-ownership-assessment",
+      "type": "signer-ownership-assessment",
+      "uri": "https://evidence.example.invalid/slsa/signer-ownership-assessment.json",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "result": "pass",
+      "immutable": true
+    }
+  ]
+}

@@ -52,6 +52,7 @@ controls/<domain>/<control>/
 | `PSB-CICD-001` | External GitHub Actions and reusable workflows use immutable references | E3 |
 | `PSB-CICD-002` | GitHub Actions expressions do not generate runner shell source | E3 |
 | `PSB-CICD-003` | pinned zizmorでworkflowをblock判定し、trusted branchのSARIFを記録 | E3 |
+| `PSB-CICD-004` | workflowをdeny-allにし、job目的ごとの明示的な最小`GITHUB_TOKEN`権限を強制 | E3 |
 | `PSB-DEPS-001` | 依存パッケージの公開直後採用を7日間のcooldownで制御 | E3 |
 | `PSB-DEPS-002` | install時のdependency code executionをdefault denyに制御 | E3 |
 | `PSB-DEPS-003` | frozen lockfileとartifact integrityを検証 | E3 |
@@ -98,6 +99,65 @@ SLSA Build Level 2を目標にする場合は
 `profiles/slsa-build-l2-coverage.csv`には未マッピング要件も`gap`として残るため、
 対象行があることをLevel 2達成と解釈しません。Excel版では
 `SLSA Build L2`と`SLSA L2 Coverage`シートをフィルタできます。
+
+特定のproducer、build platform、consumer、release、source revisionについて、
+7つの累積要件を組織所有の証跡で判定する場合:
+
+```bash
+make assess-slsa-build-l2 EVIDENCE=/absolute/path/to/live-evidence.json
+```
+
+入力契約、11種類の必要証跡、担当分離、判定の意味は
+[`docs/SLSA_BUILD_L2_ASSESSMENT.md`](docs/SLSA_BUILD_L2_ASSESSMENT.md)を
+参照してください。これは新しいcontrolではなく、既存controlsの証跡を束ねる
+assessmentです。マッピング完了とスコープ付きassessmentのPASSは別の状態です。
+5担当のdigest固定済みbundleから入力JSONの組立ても行う場合は、次の一段実行を
+使用できます。
+
+```bash
+make assess-slsa-build-l2-bundles \
+  ADAPTER_POLICY=/absolute/path/to/reviewed-adapter-policy.json
+```
+
+GitHub Actionsの署名済みprovenanceから`build-platform` bundleを収集する場合:
+
+```bash
+make collect-github-actions-build-platform \
+  COLLECTOR_POLICY=/absolute/path/to/github-collector-policy.json \
+  BUNDLE_OUTPUT=/absolute/path/to/bundles/build-platform.json \
+  RECEIPT_OUTPUT=/absolute/path/to/evidence/build-record.json \
+  GH_CLI=/absolute/path/to/pinned/gh
+```
+
+GitHub Releasesからproducer publicationまたは独立storage probeを収集する場合:
+
+```bash
+make collect-github-releases-evidence \
+  COLLECTOR_POLICY=/absolute/path/to/github-releases-policy.json \
+  BUNDLE_OUTPUT=/absolute/path/to/bundles/issuer-role.json \
+  RECEIPT_OUTPUT=/absolute/path/to/evidence/release-receipt.json \
+  GH_CLI=/absolute/path/to/pinned/gh
+```
+
+consumer側の`PSB-REL-001`検証証跡を収集する場合:
+
+```bash
+make collect-slsa-consumer-evidence \
+  COLLECTOR_POLICY=/absolute/path/to/consumer-policy.json \
+  BUNDLE_OUTPUT=/absolute/path/to/bundles/consumer.json \
+  RECEIPT_OUTPUT=/absolute/path/to/evidence/consumer-verification.json \
+  OPENSSL=/absolute/path/to/pinned/openssl
+```
+
+独立したplatform capability／signer ownership reviewを収集する場合:
+
+```bash
+make collect-slsa-security-review-evidence \
+  COLLECTOR_POLICY=/absolute/path/to/security-review-policy.json \
+  BUNDLE_OUTPUT=/absolute/path/to/bundles/security-review.json \
+  RECEIPT_OUTPUT=/absolute/path/to/evidence/security-review.json \
+  OPENSSL=/absolute/path/to/pinned/openssl
+```
 
 Linux開発端末上で読み取り専用assessmentを実行する場合:
 

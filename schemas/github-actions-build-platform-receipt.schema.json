@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DharmaDoll/product-security-controls/schemas/github-actions-build-platform-receipt.schema.json",
+  "title": "GitHub Actions build-platform verification receipt",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "provider",
+    "profile_id",
+    "observed_at",
+    "scope_sha256",
+    "artifact",
+    "invocation_id",
+    "verified_attestation",
+    "findings",
+    "disclaimer"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "psb-github-actions-build-platform-receipt/v1"
+    },
+    "provider": {
+      "const": "github-actions"
+    },
+    "profile_id": {
+      "const": "slsa-build-l2"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "scope_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["name", "sha256"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "invocation_id": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://github\\.com/"
+    },
+    "verified_attestation": {
+      "type": "object"
+    },
+    "findings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]+(?:-[a-z]+)*$"
+      }
+    },
+    "disclaimer": {
+      "const": "This provider receipt is evidence input, not a SLSA level claim."
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,7 @@
+{
+  "schema_version": "psb-slsa-build-l2-assessment-input/v1",
+  "source": "test-fixture",
+  "assessed_at": "not-a-time",
+  "scope": [],
+  "evidence_catalog": "missing"
+}
