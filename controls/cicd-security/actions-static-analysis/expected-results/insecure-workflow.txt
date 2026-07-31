@@ -6,6 +6,7 @@ FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:1 - se
 FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:6 - top-level permissions must be deny-all ({})
 FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:12 - actions/checkout must use a full commit SHA
 FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:14 - zizmor input collect must be explicit
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:14 - zizmor input persona must be explicit
 FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:14 - zizmor input token must be explicit
 FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:14 - zizmor-action is not pinned to the reviewed commit
 FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:14 - zizmorcore/zizmor-action must use a full commit SHA
@@ -13,4 +14,4 @@ FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:16 - z
 FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:17 - zizmor input online-audits must be 'false'
 FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:18 - zizmor input version must be '1.28.0'
 FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:20 - zizmor input fail-on-no-inputs must be 'true'
-REJECTED 15 workflow policy violation(s)
+REJECTED 16 workflow policy violation(s)

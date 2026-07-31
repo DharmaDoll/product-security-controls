@@ -29,6 +29,7 @@ jobs:
           inputs: .github
           collect: all
           online-audits: false
+          persona: auditor
           version: "1.28.0"
           token: ""
           advanced-security: false
@@ -39,9 +40,9 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
-      actions: read
+      actions: read # upload-sarif reads workflow run metadata
       contents: read
-      security-events: write
+      security-events: write # upload the SARIF result
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009d3f1e5b2c74e2e27d2e5 # v6.0.2
@@ -53,6 +54,7 @@ jobs:
           inputs: .github
           collect: all
           online-audits: false
+          persona: auditor
           version: "1.28.0"
           token: ""
           advanced-security: true

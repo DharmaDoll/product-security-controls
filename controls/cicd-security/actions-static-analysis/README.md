@@ -76,7 +76,8 @@ scriptやbuildを実行しません。
 
 `online-audits: false`かつ`token: ""`とし、scanner containerへ
 `GITHUB_TOKEN`を渡しません。代わりに、GitHub APIが必要なonline-only auditは
-対象外になります。
+対象外になります。`persona: auditor`でinformational/low severityを暗黙に
+抑制せず、triage対象として可視化します。
 
 ## 導入
 

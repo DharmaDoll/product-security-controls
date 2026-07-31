@@ -129,6 +129,7 @@ def verify_workflow(path: Path) -> int:
         "inputs": ".github",
         "collect": "all",
         "online-audits": "false",
+        "persona": "auditor",
         "version": ZIZMOR_VERSION,
         "token": "",
         "fail-on-no-inputs": "true",
@@ -176,7 +177,9 @@ def verify_workflow(path: Path) -> int:
     security_event_lines = [
         index + 1
         for index, line in enumerate(lines)
-        if line.strip() == "security-events: write"
+        if (match := KEY_VALUE_RE.match(line))
+        and match.group("key") == "security-events"
+        and scalar(match.group("value") or "") == "write"
     ]
     if len(security_event_lines) != 1:
         add_violation(
