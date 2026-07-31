@@ -20,6 +20,7 @@ SERIAL_RE = re.compile(
 )
 DIGEST_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 COMMIT_RE = re.compile(r"^[0-9a-f]{40,64}$")
+ARTIFACT_RE = re.compile(r"^[^\s]+@sha256:[0-9a-f]{64}$")
 REQUIRED_ACTIONS = [
     "preserve-evidence",
     "suspend-workflows",
@@ -137,6 +138,8 @@ def validate_records(
         for field in ("repository", "build_id", "artifact"):
             if not isinstance(record.get(field), str) or not record[field]:
                 findings.append(f"build record {serial} missing {field}")
+        if not ARTIFACT_RE.fullmatch(str(record.get("artifact", ""))):
+            findings.append(f"build record {serial} artifact must use an exact digest")
         if not COMMIT_RE.fullmatch(str(record.get("source_commit", ""))):
             findings.append(f"build record {serial} source_commit must be immutable")
         for field in ("provenance_digest", "log_digest"):
@@ -160,6 +163,37 @@ def validate_records(
             findings.append(
                 f"build record {serial} dependency_track_project_version is invalid"
             )
+        deployments = record.get("deployments")
+        if not isinstance(deployments, list) or not deployments:
+            findings.append(f"build record {serial} requires deployment inventory")
+            continue
+        deployment_ids: set[str] = set()
+        for deployment_index, deployment in enumerate(deployments):
+            label = f"build record {serial} deployment {deployment_index}"
+            if not isinstance(deployment, dict):
+                raise InputError(f"{label} must be an object")
+            deployment_id = deployment.get("deployment_id")
+            if (
+                not isinstance(deployment_id, str)
+                or not deployment_id
+                or "latest" in deployment_id
+                or deployment_id in deployment_ids
+            ):
+                findings.append(f"{label} has invalid or duplicate deployment_id")
+            else:
+                deployment_ids.add(deployment_id)
+            if deployment.get("artifact") != record.get("artifact"):
+                findings.append(f"{label} artifact does not match the build record")
+            if not isinstance(deployment.get("environment"), str) or not deployment.get(
+                "environment"
+            ):
+                findings.append(f"{label} requires an environment")
+            if deployment.get("status") != "active":
+                findings.append(f"{label} is not an active deployment observation")
+            try:
+                parse_time(deployment.get("observed_at"), f"{label}.observed_at")
+            except InputError:
+                findings.append(f"{label} observed_at is invalid")
     missing = sorted(serials - set(by_serial))
     if missing:
         findings.append(f"build records missing SBOM serials: {', '.join(missing)}")
@@ -177,9 +211,12 @@ def parse_time(value: Any, label: str) -> datetime:
     if not isinstance(value, str):
         raise InputError(f"{label} must be an RFC3339 timestamp")
     try:
-        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError as error:
         raise InputError(f"{label} must be an RFC3339 timestamp") from error
+    if parsed.tzinfo is None:
+        raise InputError(f"{label} must include a timezone")
+    return parsed
 
 
 def validate_dependency_track_policy(value: dict[str, Any]) -> list[str]:
@@ -456,6 +493,13 @@ def run(
             f"repository={record['repository']} build={record['build_id']} "
             f"artifact={record['artifact']} sbom={path.name}"
             f"{dependency_track_suffix}"
+        )
+        output.append(
+            "DEPLOYED "
+            + ",".join(
+                f"{deployment['environment']}:{deployment['deployment_id']}"
+                for deployment in record["deployments"]
+            )
         )
         output.append(
             "EVIDENCE "

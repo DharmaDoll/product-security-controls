@@ -1,7 +1,7 @@
 id: PSB-REL-003
-title: Release artifactへSBOMを結び付けて公開・処理確認する
+title: SBOM lifecycle observationsをrelease artifactへ結び付けて一元管理する
 domain: release-integrity
-summary: CycloneDX SBOMをexact release artifactへdigest-boundで公開し、Dependency-Trackのleast-privilege登録と非同期処理完了をfail-closedで検証する。
+summary: Source build deploymentのCycloneDX observationsを別identityとauthorityで関連付け、exact release artifactのSBOM公開とDependency-Track処理完了をfail-closedで検証する。
 check_context_version: "1.0"
 security_functions:
   - detect
@@ -16,6 +16,10 @@ threats:
     description: Dependency-Trackのupload受付、処理失敗、validation失敗、timeoutまたは古いvulnerability dataがcleanな分析結果として扱われる。
   - id: SBOM-PLATFORM-OVERPRIVILEGE
     description: CI用API keyがproject作成やsystem設定権限を持ち、誤ったprojectへの登録またはplatform compromiseのblast radiusが広がる。
+  - id: SBOM-LIFECYCLE-IDENTITY-COLLAPSE
+    description: Source build deploymentのSBOMが同じserialへ上書きされ、source-only inventoryがrelease authorityになり、commit artifact deploymentの関係を追跡できない。
+  - id: SBOM-DEPLOYMENT-INVENTORY-GAP
+    description: 稼働deploymentがimmutable artifact digestへ結び付かず、既知脆弱性発生時に実際の配置先を特定できない。
 implementations:
   insecure:
     - insecure/artifact/release.bin
@@ -23,12 +27,14 @@ implementations:
     - insecure/release-manifest.json
     - insecure/dependency-track-policy.json
     - insecure/dependency-track-receipt.json
+    - insecure/sbom-lifecycle-policy.json
   secure:
     - secure/artifact/release.bin
     - secure/bom.cdx.json
     - secure/release-manifest.json
     - secure/dependency-track-policy.json
     - secure/dependency-track-receipt.json
+    - secure/sbom-lifecycle-policy.json
     - scripts/verify.py
 verification:
   commands:
@@ -40,6 +46,8 @@ verification:
     - Dependency-Track uses a pre-created exact project UUID and version TLS and BOM_UPLOAD-only identity
     - only BOM_PROCESSED is success while processing validation timeout analyzer and parser failures return ERROR
     - normalized evidence contains no API key SBOM body or secret-bearing request data
+    - source build and deployment observations use separate serials triggers completeness claims and authority
+    - immutable commit artifact digest and deployment ID form an exact catalog relationship graph
 checks:
   - id: SBM-001
     title: CycloneDX identities are exact and machine readable
@@ -176,13 +184,53 @@ checks:
         - sanitized SBM-007 freshness result
         - analyzer health metadata
     mapping_status: reviewed
+  - id: SBM-008
+    title: SBOM observations occur at defined lifecycle transitions
+    required_state: source at pull request or push build after artifact creation and deployment at deploy plus continuous refresh
+    responsible_role: ci-platform
+    applies_to:
+      - source-sbom
+      - build-sbom
+      - deployment-inventory
+    context:
+      threat_actor: incomplete automation stale inventory collector or team generating an SBOM only once in the lifecycle
+      attack_or_failure_scenario: dependency intent build-added components or deployed state changes are absent because no observation runs at the relevant transition
+      why_required: distinct transition-triggered observations reveal different facts while explicit completeness labels prevent any one view from claiming unsupported coverage
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-003
+      expected: missing manual mistimed or fail-open lifecycle observations are rejected
+      evidence:
+        - sanitized SBM-008 verifier result
+        - lifecycle observation policy
+    mapping_status: reviewed
+  - id: SBM-009
+    title: SBOM catalog preserves distinct authority and identity links
+    required_state: unique serials and exact commit to artifact digest to deployment relationships with build SBOM as release authority
+    responsible_role: release-manager
+    applies_to:
+      - sbom-catalog
+      - release-artifact
+      - deployment-inventory
+    context:
+      threat_actor: catalog overwrite stale source scan ambiguous latest deployment or operator treating all SBOM views as equivalent
+      attack_or_failure_scenario: source-only inventory is trusted for released bytes or responders cannot identify which exact artifact is running in an environment
+      why_required: immutable graph edges and explicit authority retain early feedback without weakening release evidence and enable deployed impact lookup
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-003
+      expected: duplicate serial mutable source wrong artifact deployment or missing relationship is rejected
+      evidence:
+        - sanitized SBM-009 verifier result
+        - commit artifact deployment relationship record
+    mapping_status: reviewed
 mappings:
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: PS.3.1
     relationship: supports
     confidence: high
-    rationale: Exact release artifactにdigest-boundの完全なSBOMを関連付け、immutable location、retention、processing receiptとともに保存することでrelease supporting dataの安全なarchiveを支援する。
+    rationale: Source build deployment observationsをunique serialとimmutable relationshipで分離し、exact release artifactにdigest-boundの完全なSBOMをimmutable location、retention、processing receiptとともに保存することでrelease supporting dataの安全なarchiveを支援する。
     reviewer: product-security
     review_date: "2026-07-31"
     applies_to:
@@ -191,12 +239,14 @@ mappings:
       - SBM-003
       - SBM-004
       - SBM-006
+      - SBM-008
+      - SBM-009
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: RV.1.1
     relationship: supports
     confidence: high
-    rationale: Exact PURLとcomponent relationshipを持つSBOMをDependency-Trackへ登録し、処理完了とvulnerability data freshnessをfail-closedで検証することで脆弱性識別に必要な情報収集を支援する。
+    rationale: Exact PURLとcomponent relationshipを持つartifact-authoritative SBOMとdeployment observationをDependency-Trackへ関連付け、処理完了とvulnerability data freshnessをfail-closedで検証することで脆弱性識別に必要な情報収集を支援する。
     reviewer: product-security
     review_date: "2026-07-31"
     applies_to:
@@ -205,6 +255,8 @@ mappings:
       - SBM-005
       - SBM-006
       - SBM-007
+      - SBM-008
+      - SBM-009
 limitations:
   - Fixtures do not execute a package manager SBOM generator release API object store or live Dependency-Track instance.
   - The normalized receipt is a project contract and requires a version-specific production adapter whose OpenAPI permission and event semantics are independently reviewed.
@@ -213,6 +265,10 @@ limitations:
   - Vulnerability matching depends on external data source PURL CPE alias and affected-range quality and can produce false positives or false negatives.
   - An SBOM is evidence and does not prove the release is vulnerability-free secure SLSA compliant or formally compliant with any framework.
   - This control is not a SLSA Build Level 2 requirement and does not replace provenance generation distribution authenticity or subject verification.
+  - Source observations are early feedback and do not prove the content of built release bytes.
+  - Deployment observations identify the deployed artifact and observed environment state but do not prove a complete inventory of every component loaded in memory.
+  - Supplier-provided signed SBOM verification is not implemented by this control and requires a separate trust signature revocation product identity and quarantine boundary.
+  - SPDX ingestion requires a version-pinned parser and equivalent negative tests before it can be added to the current CycloneDX 1.7 adapter.
 status: prototype
 owner: product-security
 evidence_level: E3

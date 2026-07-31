@@ -1,4 +1,4 @@
-# PSB-REL-003: release artifactへSBOMを結び付けて公開・処理確認する
+# PSB-REL-003: SBOM lifecycle observationsをrelease artifactへ結び付ける
 
 ## Goal
 
@@ -6,6 +6,25 @@ Release artifactごとに完全なCycloneDX SBOMを生成し、artifactとSBOM�
 SHA-256、release version、component graphを一対一で結び付けます。SBOMは
 immutableなrelease locationへ同時公開し、Dependency-Trackへleast-privilegeで
 登録した後、非同期処理が完了したことまで確認します。
+
+同時に、SBOMを1回だけ生成するのではなく、次の3つの観測を別documentとして
+一元catalogへ関連付けます。
+
+| Observation | Trigger | Subject | Authority |
+| --- | --- | --- | --- |
+| Source | pull requestまたはpush | immutable commit SHAとdeclared dependency | early feedback only |
+| Build | artifact生成直後 | 実artifactのSHA-256とbuild時に観測したcomponent | release authoritative |
+| Deployment | deploy時と継続refresh | deployment IDと実際に配置したartifact SHA-256 | operational observation |
+
+3つを同じserialへ上書きしません。Source observationは「導入意図を早く検出する」
+ためには有用ですが、OS package、bundle、static link、build時downloadを含むrelease
+artifactの証明には使いません。Build observationをexact released bytesへ結び付ける
+既存の`SBM-002`がrelease inventoryのauthoritative boundaryです。
+
+Deployment observationは、どのartifactがどのenvironmentへ配置されたかと、
+collectorが観測できたoperational stateを表します。「実行中memory上の全componentを
+完全に観測した」とは仮定しません。この区別により、早期feedback、release evidence、
+稼働影響検索を混ぜずに積み上げられます。
 
 このcontrolが防ぐのは「SBOMファイルがどこかにある」だけの状態です。攻撃者、
 誤ったbuild automation、またはrelease operatorのミスにより、別artifact向け、
@@ -24,6 +43,9 @@ SBOMが正常なrelease evidenceとして扱われるfailure scenarioを対象�
   literal API key、plaintext transport
 - upload受付を分析完了とみなし、処理失敗やtimeoutをcleanとして扱うpolicy
 - 誤ったproject UUID、SBOM digest、serial、secret-bearing receipt
+- lifecycleで1つのserialを上書きし、source-only SBOMをrelease authorityにする
+- branch名、`latest` deployment、誤ったartifactを使うidentity graph
+- lifecycle collector失敗をcleanな一元inventoryとして扱う
 
 ## Secure implementation
 
@@ -41,6 +63,10 @@ SBOMが正常なrelease evidenceとして扱われるfailure scenarioを対象�
    照合する。
 7. `BOM_PROCESSING_FAILED`、`BOM_VALIDATION_FAILED`、timeout、解析dataの停止・
    陳腐化、parse failureを`ERROR`として終了する。
+8. Source、Build、Deployment observationを別serialで保存し、commit SHA →
+   artifact SHA-256 → deployment IDをgraphとして照合する。
+9. 各observationのtrigger、completeness、authorityを固定し、source／runtime viewが
+   release-authoritative Build SBOMを上書きしない。
 
 Fixtureは実APIへ接続しません。Dependency-Track API、webhookまたはread-only API
 から取得した結果を`psb-dependency-track-receipt/1.0`へ正規化するproduction
@@ -77,6 +103,23 @@ Fixtureの`PASS`はproduction releaseやDependency-Track deploymentの準拠を�
 Live environmentでは、exact release、project、API identity、OpenAPI version、通知配送、
 analyzer health、vulnerability data freshnessのorganization-owned evidenceが必要です。
 
+## Format and supplier boundary
+
+標準formatの相互運用性は重要ですが、このE3 adapterが実際にparseし、negative testを
+持つのはCycloneDX 1.7 JSONです。SPDXも有力な標準ですが、version-pinned parser、
+identity／relationship／completenessの同等contract、malformed input testを追加する
+までは「対応済み」と表示しません。
+
+Supplierやplatform teamから入手するSBOMはuntrusted inputです。調達で署名付きSBOMを
+要求する場合も、署名があるだけでは採用しません。想定product、version、artifact
+digest、signer identity、timestamp、失効状態、schemaを検証し、不一致または検証不能を
+quarantineする独立controlが必要です。このcontrolはproducer-owned release artifactの
+SBOMを対象とし、supplier署名検証済みとは主張しません。
+
+User-supplied guidanceの原文と、このrepositoryでauthorityを分離した解釈は
+[`docs/user-supplied-sbom-lifecycle-guidance-ja.md`](docs/user-supplied-sbom-lifecycle-guidance-ja.md)
+に保存しています。
+
 ## Operational notes
 
 - API keyはsecret managerから注入し、upload jobだけに渡します。
@@ -86,6 +129,10 @@ analyzer health、vulnerability data freshnessのorganization-owned evidenceが�
 - Analyzerやmirrorの停止中に「脆弱性なし」と判断してはいけません。
 - Portfolio、component、脆弱性、license dataは機密情報としてaccessとretentionを
   制限します。
+- 一元catalogはobservationを上書きせず、commit、artifact、deploymentのimmutable
+  relationshipを保持します。
+- Source observationのfindingはPR feedbackに使用し、release artifact inventoryの
+  substituteにはしません。
 - VEXやsuppressionはSBOMの事実を変更しません。判断にはowner、理由、scope、期限、
   再評価を必要とします。
 
@@ -104,6 +151,10 @@ analyzer health、vulnerability data freshnessのorganization-owned evidenceが�
 ## References
 
 - [CycloneDX 1.7 JSON Reference](https://cyclonedx.org/docs/1.7/json/)
+- [CycloneDX SBOM capability](https://cyclonedx.org/capabilities/sbom/)
+- [CycloneDX Operations BOM capability](https://cyclonedx.org/capabilities/obom/)
+- [SPDX specifications](https://spdx.dev/use/specifications/)
+- [CISA SBOM Resources Library](https://www.cisa.gov/topics/cyber-threats-and-advisories/sbom/sbomresourceslibrary)
 - [Dependency-Track CI/CD integration](https://docs.dependencytrack.org/usage/cicd/)
 - [Dependency-Track notifications](https://docs.dependencytrack.org/integrations/notifications/)
 - [Dependency-Track users and permissions](https://docs.dependencytrack.org/administration/users-and-permissions/)

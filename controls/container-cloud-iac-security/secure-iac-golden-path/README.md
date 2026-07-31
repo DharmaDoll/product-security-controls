@@ -110,7 +110,7 @@ reusable workflowは次のcontrolを組み合わせます。表の状態を保�
 | Provenance distribution | `PSB-REL-002` | implemented |
 | OCI provenance and workload admission | `PSB-CONTAINER-001` | implemented |
 | Cloud OIDC federation profile | `PSB-CICD-006` | planned |
-| Artifact-bound CycloneDX SBOM generation and publication | `PSB-REL-003` | implemented |
+| Source／Build／Deployment SBOM identity plus artifact-bound Build SBOM publication | `PSB-REL-003` | implemented |
 | SBOM portfolio and continuous analysis | `PSB-REL-003` Dependency-Track adapter | implemented as normalized fail-closed composition |
 
 Artifact signing generationは未実装です。`PSB-REL-001`はconsumer側の署名・
@@ -132,6 +132,9 @@ component、relationship、complete compositionを検証してから公開しま
 します。`BOM_PROCESSING_FAILED`、`BOM_VALIDATION_FAILED`、timeout、stale analyzer
 dataはすべて`ERROR`です。Golden Pathはこのcontrolを再実装せず、独立した
 `make verify-control CONTROL=PSB-REL-003`の証跡を要求します。
+Source observationはPR feedback、Build observationはrelease authority、
+Deployment observationはartifact配置のoperational evidenceとして別serialで保持し、
+Golden Pathが1つのSBOMへ上書きしないことも同controlへ委譲します。
 
 OIDCの`id-token: write`はworkflow全体へ付与せず、protected deploy jobだけへ
 明示的に付与し、cloud側trust policyでrepository、ref、environment、audience、

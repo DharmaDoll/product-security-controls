@@ -36,6 +36,7 @@ PSB-CICD-004 ──> PSB-CICD-005 ──> PSB-CICD-006
        └────────> PSB-DETECT-001 ──> reusable Golden Path integration
 
 PSB-REL-002 + PSB-DETECT-001 ──> PSB-REL-003 ──> Golden Path + PSB-GOV-001
+PSB-REL-003 + PSB-REL-001 ─────> PSB-REL-004 supplier SBOM trust
 
 PSB-DETECT-001 + PSB-IAC-001 ──> PSB-CONTAINER-001
 PSB-BUILD-003 + PSB-REL-002 + PSB-REL-001 ──> image provenance admission
@@ -56,9 +57,10 @@ PSB-AI-004 ──────────────────┘
 Within one priority, complete one E3 vertical slice before starting the next.
 The application-checklist import still requires its organization-owned source.
 `PSB-CICD-005`, `PSB-DETECT-001`, `PSB-REL-003`, and `PSB-CONTAINER-001` are
-implemented. Artifact-bound SBOM publication now composes into the Golden Path
-and a Dependency-Track portfolio query adapter extends `PSB-GOV-001`; the
-container admission result unblocks later registry and runtime compositions.
+implemented. Lifecycle-linked artifact-bound SBOM publication now composes
+into the Golden Path, and a Dependency-Track plus deployment-inventory query
+adapter extends `PSB-GOV-001`; supplier SBOM trust remains `PSB-REL-004`, and
+the container admission result unblocks later registry and runtime compositions.
 `PSB-CICD-006` is also ready because both CI/CD dependencies exist.
 
 ## Prerequisite: application checklist reconciliation
@@ -556,8 +558,8 @@ Planning source:
 
 ### PSB-REL-003 — SBOM generation, binding, and publication
 
-Status: `implemented` — E3 artifact binding, completeness, publication, and
-Dependency-Track processing slice
+Status: `implemented` — E3 lifecycle identity, artifact binding, completeness,
+publication, deployment linkage, and Dependency-Track processing slice
 
 Domain: `release-integrity`
 
@@ -581,6 +583,13 @@ parser failure distinct from clean. `PSB-GOV-001` separately consumes a
 read-only exact CVE/PURL portfolio response with complete pagination and links
 it back to build evidence.
 
+The lifecycle slice keeps source, build, and deployment observations as
+separate documents with unique serials and explicit completeness and authority.
+It links immutable commit SHA to artifact SHA-256 to deployment ID. Source is
+early feedback, build is the release-authoritative inventory, and deployment
+is an operational observation that does not claim complete process-memory
+coverage.
+
 #### Acceptance criteria
 
 - the SBOM corresponds to the released artifact, not merely the source tree;
@@ -590,6 +599,10 @@ it back to build evidence.
 - Dependency-Track project UUID, version, SBOM serial, digest, component count,
   composition, and fresh analyzer state match the exact release;
 - Golden Path composes the control without duplicating its implementation;
+- source build and deployment observations cannot overwrite one another or
+  substitute a source-only view for the exact release artifact;
+- an impacted artifact can be joined to active deployments by digest without
+  trusting a mutable image tag;
 - an SBOM is evidence, not proof that dependencies are vulnerability-free.
 
 Planning and implementation source:
@@ -597,6 +610,54 @@ Planning and implementation source:
 - [`REF-REL-001`](SECURITY_GUIDANCE_SOURCES.md#ref-rel-001) supplies the
   versioned API, permission, and event semantics. Dependency-Track remains a
   tool reference rather than a framework mapping source.
+- [`REF-REL-002`](SECURITY_GUIDANCE_SOURCES.md#ref-rel-002) and
+  [`REF-USER-005`](SECURITY_GUIDANCE_SOURCES.md#ref-user-005) supply reviewed
+  lifecycle and format design input without becoming compliance mappings.
+
+### PSB-REL-004 — Supplier SBOM trust and quarantine
+
+Status: `planned` — separate from producer-owned `PSB-REL-003`
+
+Domain: `release-integrity`
+
+#### Goal
+
+Accept a supplier or platform-team SBOM only when its signature and exact
+product, version, artifact digest, signer identity, timestamp, revocation, and
+schema expectations verify; quarantine mismatched or unverifiable evidence.
+
+#### Boundary
+
+- `PSB-REL-003` owns SBOMs generated for this organization's exact release
+  artifact and the source/build/deployment lifecycle relationship.
+- `PSB-REL-004` owns externally supplied SBOM trust, signature verification,
+  signer lifecycle, product identity, and quarantine.
+- `PSB-GOV-001` may search accepted supplier inventory but does not decide
+  whether it is authentic.
+- CycloneDX 1.7 is the first planned adapter. SPDX requires an independently
+  version-pinned parser and equivalent identity, relationship, malformed-input,
+  and signature negative tests.
+
+#### First runnable slice
+
+Create synthetic supplier artifact, SBOM, detached signature, trust policy,
+revocation snapshot, and receipt fixtures. Recompute artifact and SBOM digests,
+authenticate the signer, bind product/version/digest, enforce a bounded
+timestamp and current revocation evidence, and emit `QUARANTINE` or `ERROR`
+without importing failed input into the normal portfolio.
+
+#### Acceptance criteria
+
+- a valid signature over an SBOM for another artifact or product is rejected;
+- unknown, expired, or revoked signers and stale revocation evidence fail
+  closed;
+- unsigned, malformed, unsupported-format, or schema-invalid input is
+  quarantined rather than treated as absent risk;
+- supplier upload identity cannot mutate unrelated portfolio or policy state;
+- sanitized evidence excludes supplier confidential component content and key
+  material;
+- framework mappings remain provisional until the executable slice and exact
+  source requirements are reviewed.
 
 ### PSB-CONTAINER-001 — Container runtime baseline
 

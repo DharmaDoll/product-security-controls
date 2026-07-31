@@ -2,6 +2,7 @@
   "schema": "psb-release-sbom-manifest/1.0",
   "artifact_family": "example-release",
   "release_version": "1.4.0",
+  "source_revision": "branch:main",
   "artifact": {
     "path": "artifact/release.bin",
     "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",

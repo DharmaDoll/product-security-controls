@@ -16,6 +16,7 @@ from uuid import UUID
 
 
 DIGEST_RE = re.compile(r"^[0-9a-f]{64}$")
+COMMIT_RE = re.compile(r"^[0-9a-f]{40,64}$")
 SERIAL_RE = re.compile(
     r"^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-"
     r"[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
@@ -316,6 +317,132 @@ def check_sanitized_fresh_evidence(
     return []
 
 
+def lifecycle_observations(
+    lifecycle: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    raw_observations = lifecycle.get("observations")
+    if not isinstance(raw_observations, list):
+        raise InputError("SBOM lifecycle observations must be a list")
+    observations: dict[str, dict[str, Any]] = {}
+    for index, observation in enumerate(raw_observations):
+        if not isinstance(observation, dict):
+            raise InputError(f"SBOM lifecycle observation {index} must be an object")
+        stage = observation.get("stage")
+        if not isinstance(stage, str) or stage in observations:
+            raise InputError(f"SBOM lifecycle observation {index} has invalid stage")
+        observations[stage] = observation
+    return observations
+
+
+def check_lifecycle_timing(lifecycle: dict[str, Any]) -> list[str]:
+    issues: list[str] = []
+    if lifecycle.get("schema") != "psb-sbom-lifecycle-policy/1.0":
+        issues.append("lifecycle policy schema is unsupported")
+    catalog = object_at(lifecycle, "catalog", "SBOM lifecycle policy")
+    expected_catalog = {
+        "canonical_format": "CycloneDX-1.7",
+        "distinct_observation_documents": True,
+        "overwrite_existing_serial": False,
+        "incomplete_or_unavailable_state": "ERROR",
+    }
+    for field, expected in expected_catalog.items():
+        if catalog.get(field) != expected:
+            issues.append(f"catalog {field} must be {expected}")
+    observations = lifecycle_observations(lifecycle)
+    if set(observations) != {"source", "build", "deployment"}:
+        issues.append("source build and deployment observations are all required")
+        return issues
+    expected = {
+        "source": ("pull-request-or-push", "declared-dependency-view"),
+        "build": ("after-artifact-created", "built-artifact-view"),
+        "deployment": (
+            "deployment-and-continuous-refresh",
+            "observed-state-not-memory-complete",
+        ),
+    }
+    for stage, (trigger, completeness) in expected.items():
+        observation = observations[stage]
+        if observation.get("trigger") != trigger:
+            issues.append(f"{stage} SBOM trigger is not {trigger}")
+        if observation.get("completeness") != completeness:
+            issues.append(f"{stage} SBOM completeness is not {completeness}")
+    return issues
+
+
+def check_lifecycle_identity(
+    lifecycle: dict[str, Any],
+    sbom: dict[str, Any],
+    manifest: dict[str, Any],
+    artifact_digest: str,
+) -> list[str]:
+    issues: list[str] = []
+    source_revision = lifecycle.get("source_revision")
+    if not isinstance(source_revision, str) or not COMMIT_RE.fullmatch(source_revision):
+        issues.append("lifecycle source revision is not an immutable commit")
+    if manifest.get("source_revision") != source_revision:
+        issues.append("release manifest source revision does not match lifecycle policy")
+    observations = lifecycle_observations(lifecycle)
+    if set(observations) != {"source", "build", "deployment"}:
+        return [*issues, "lifecycle identity graph is incomplete"]
+    serials = [observation.get("serial_number") for observation in observations.values()]
+    if (
+        not all(isinstance(serial, str) and SERIAL_RE.fullmatch(serial) for serial in serials)
+        or len(set(serials)) != len(serials)
+    ):
+        issues.append("source build and deployment observations require unique valid serials")
+
+    source = observations["source"]
+    build = observations["build"]
+    deployment = observations["deployment"]
+    if (
+        source.get("subject_type") != "source-revision"
+        or source.get("subject") != source_revision
+        or source.get("authority") != "early-feedback-only"
+    ):
+        issues.append("source observation is not commit-bound early feedback")
+    if (
+        build.get("subject_type") != "artifact-sha256"
+        or build.get("subject") != artifact_digest
+        or build.get("serial_number") != sbom.get("serialNumber")
+        or build.get("authority") != "release-authoritative"
+    ):
+        issues.append("build observation is not the artifact-bound release authority")
+    deployment_id = deployment.get("deployment_id")
+    if (
+        deployment.get("subject_type") != "deployed-artifact-sha256"
+        or deployment.get("subject") != artifact_digest
+        or not isinstance(deployment_id, str)
+        or not deployment_id
+        or "latest" in deployment_id
+        or deployment.get("authority") != "operational-observation"
+    ):
+        issues.append("deployment observation is not bound to an exact deployed artifact")
+
+    relationships = lifecycle.get("relationships")
+    if not isinstance(relationships, list):
+        raise InputError("SBOM lifecycle relationships must be a list")
+    expected_relationships = {
+        (
+            "source-produced-artifact",
+            source_revision,
+            artifact_digest,
+        ),
+        (
+            "artifact-deployed-as",
+            artifact_digest,
+            deployment_id,
+        ),
+    }
+    actual_relationships = {
+        (item.get("type"), item.get("from"), item.get("to"))
+        for item in relationships
+        if isinstance(item, dict)
+    }
+    if actual_relationships != expected_relationships:
+        issues.append("commit artifact and deployment relationships are incomplete")
+    return issues
+
+
 Check = Callable[
     [dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any], str, str],
     list[str],
@@ -336,12 +463,14 @@ def main() -> int:
     parser.add_argument("--artifact", type=Path, required=True)
     parser.add_argument("--sbom", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--lifecycle-policy", type=Path, required=True)
     parser.add_argument("--dependency-track-policy", type=Path, required=True)
     parser.add_argument("--dependency-track-receipt", type=Path, required=True)
     args = parser.parse_args()
     try:
         sbom = load_json(args.sbom, "SBOM")
         manifest = load_json(args.manifest, "release manifest")
+        lifecycle = load_json(args.lifecycle_policy, "SBOM lifecycle policy")
         policy = load_json(args.dependency_track_policy, "Dependency-Track policy")
         receipt = load_json(args.dependency_track_receipt, "Dependency-Track receipt")
         artifact_digest = sha256(args.artifact, "artifact")
@@ -351,6 +480,26 @@ def main() -> int:
             issues = check(
                 sbom, manifest, policy, receipt, artifact_digest, sbom_digest
             )
+            if issues:
+                findings += 1
+                print(f"FAIL {check_id} {title}: {'; '.join(issues)}")
+            else:
+                print(f"PASS {check_id} {title}")
+        lifecycle_checks = [
+            (
+                "SBM-008",
+                "SBOM observations occur at defined lifecycle transitions",
+                check_lifecycle_timing(lifecycle),
+            ),
+            (
+                "SBM-009",
+                "SBOM catalog preserves distinct authority and identity links",
+                check_lifecycle_identity(
+                    lifecycle, sbom, manifest, artifact_digest
+                ),
+            ),
+        ]
+        for check_id, title, issues in lifecycle_checks:
             if issues:
                 findings += 1
                 print(f"FAIL {check_id} {title}: {'; '.join(issues)}")

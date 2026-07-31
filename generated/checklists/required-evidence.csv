@@ -186,6 +186,8 @@ PSB-GOV-001,PSB-GOV-001-INC-004,incident-response,automated,negative-test output
 PSB-GOV-001,PSB-GOV-001-INC-005,incident-response,automated,negative-test output
 PSB-GOV-001,PSB-GOV-001-INC-006,incident-response,hybrid,sanitized Dependency-Track impact response
 PSB-GOV-001,PSB-GOV-001-INC-006,incident-response,hybrid,project UUID version SBOM serial and build-record linkage
+PSB-GOV-001,PSB-GOV-001-INC-007,incident-response,hybrid,sanitized deployment impact result
+PSB-GOV-001,PSB-GOV-001-INC-007,incident-response,hybrid,deployment inventory collector evidence
 PSB-IAC-001,PSB-IAC-001-IAC-001,ci-platform,automated,sanitized verifier output
 PSB-IAC-001,PSB-IAC-001-IAC-001,ci-platform,automated,module release review
 PSB-IAC-001,PSB-IAC-001-IAC-002,ci-platform,automated,sanitized plan verifier output
@@ -239,6 +241,10 @@ PSB-REL-003,PSB-REL-003-SBM-006,release-manager,automated,sanitized SBM-006 rece
 PSB-REL-003,PSB-REL-003-SBM-006,release-manager,automated,normalized processing receipt
 PSB-REL-003,PSB-REL-003-SBM-007,security,automated,sanitized SBM-007 freshness result
 PSB-REL-003,PSB-REL-003-SBM-007,security,automated,analyzer health metadata
+PSB-REL-003,PSB-REL-003-SBM-008,ci-platform,automated,sanitized SBM-008 verifier result
+PSB-REL-003,PSB-REL-003-SBM-008,ci-platform,automated,lifecycle observation policy
+PSB-REL-003,PSB-REL-003-SBM-009,release-manager,automated,sanitized SBM-009 verifier result
+PSB-REL-003,PSB-REL-003-SBM-009,release-manager,automated,commit artifact deployment relationship record
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-001,shared,external-evidence,identity or source-platform credential policy
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-002,developer,hybrid,credential helper configuration
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-002,developer,hybrid,sanitized assessment result

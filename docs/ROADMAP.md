@@ -88,9 +88,10 @@ explicit composition of implemented versus planned CI capabilities,
 provider-side bypass enforcement requirements, continuous drift detection,
 and bounded corrective action. `PSB-DETECT-001`, `PSB-REL-002`,
 `PSB-REL-003`, and `PSB-CONTAINER-001` are now implemented components.
-`PSB-REL-003` adds artifact-bound CycloneDX publication and a normalized
-Dependency-Track processing receipt; artifact signing generation and cloud
-OIDC profiles remain incomplete.
+`PSB-REL-003` adds distinct source/build/deployment observations,
+artifact-bound CycloneDX publication, and a normalized Dependency-Track
+processing receipt; artifact signing generation, supplier SBOM trust, and
+cloud OIDC profiles remain incomplete.
 
 Also add source-protection controls for public repository exposure, including
 GitHub dorking scenarios, secret discovery in current and historical content,
@@ -187,7 +188,9 @@ Add:
 Signed SLSA provenance expectation verification is implemented as
 `PSB-REL-001`.
 Artifact-bound CycloneDX generation, publication, completeness verification,
-and fail-closed Dependency-Track ingestion are implemented as `PSB-REL-003`.
+fail-closed Dependency-Track ingestion, and distinct source/build/deployment
+observation linkage are implemented as `PSB-REL-003`. Supplier-provided signed
+SBOM trust and quarantine remain planned as `PSB-REL-004`.
 
 ## Phase 5 — AI development security
 
@@ -319,26 +322,29 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    cloud credentials.
 5. `PSB-REL-003` — SBOM generation, artifact binding, publication,
    completeness checks, consumer-side mismatch handling, and fail-closed
-   Dependency-Track processing — implemented with seven atomic checks,
-   positive and negative fixtures, distinct runtime error states, and Golden
-   Path plus `PSB-GOV-001` composition.
-6. `PSB-CONTAINER-001` — immutable image digests, non-root execution, minimal
+   Dependency-Track processing — implemented with nine atomic checks,
+   positive and negative fixtures, distinct source/build/deployment
+   observations, runtime error states, and Golden Path plus `PSB-GOV-001`
+   composition.
+6. `PSB-REL-004` — signed supplier SBOM product/artifact identity, signer
+   lifecycle, revocation freshness, schema validation, and quarantine.
+7. `PSB-CONTAINER-001` — immutable image digests, non-root execution, minimal
    capabilities, admission-policy verification, and a follow-on composition
    that applies existing `PSB-REL-001` SLSA provenance verification to the
    exact admitted OCI manifest digest — implemented with API-native Kubernetes
    fixtures, nine atomic admission checks, default-deny network policy,
    platform PID and fail-closed evidence, and actual `PSB-REL-001` verifier
    composition.
-7. `PSB-CONTAINER-002` — registry transport, repository-scoped authorization,
+8. `PSB-CONTAINER-002` — registry transport, repository-scoped authorization,
    short-lived identity, immutable release protection, audit, and image
    lifecycle enforcement.
-8. `PSB-CONTAINER-003` — minimal patched container hosts, protected daemon and
+9. `PSB-CONTAINER-003` — minimal patched container hosts, protected daemon and
    runtime sockets, user and kernel isolation, management restriction, and
    host audit policy.
-9. `PSB-CONTAINER-004` — workload-bound runtime event detection, alert
+10. `PSB-CONTAINER-004` — workload-bound runtime event detection, alert
    delivery, telemetry failure handling, and authorization-bound response
    handoff.
-10. `PSB-GOV-002` — narrow, owned, justified, and time-bound security exceptions
+11. `PSB-GOV-002` — narrow, owned, justified, and time-bound security exceptions
    with expiry enforcement.
 
 ### P3 — Extended application and AI development security

@@ -58,6 +58,22 @@ set -e
 test "$insecure_status" -eq 1
 diff -u "$control/expected-results/insecure.txt" "$temporary_directory/insecure.txt"
 
+set +e
+python3 "$control/scripts/respond.py" \
+  --package compromised-lib \
+  --version 4.2.0 \
+  --inventory-dir "$control/secure/inventory" \
+  --records "$control/tests/fixtures/unlinked-deployment-records.json" \
+  --runbook "$control/secure/runbook.json" \
+  --dry-run >"$temporary_directory/unlinked-deployment.txt"
+unlinked_deployment_status=$?
+set -e
+test "$unlinked_deployment_status" -eq 1
+grep -F "artifact does not match the build record" \
+  "$temporary_directory/unlinked-deployment.txt" >/dev/null
+grep -F "observed_at is invalid" \
+  "$temporary_directory/unlinked-deployment.txt" >/dev/null
+
 printf '%s\n' '{"bomFormat":' >"$temporary_directory/broken.cdx.json"
 set +e
 python3 "$control/scripts/respond.py" \
@@ -97,3 +113,4 @@ echo "PASS incomplete inventory and unsafe runbook rejected"
 echo "PASS malformed SBOM fails closed"
 echo "PASS Dependency-Track exact CVE PURL portfolio impact is evidence-linked"
 echo "PASS Dependency-Track incomplete pagination and outage remain ERROR"
+echo "PASS deployed artifact inventory is digest linked and fail closed"

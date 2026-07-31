@@ -59,11 +59,11 @@ controls/<domain>/<control>/
 | `PSB-DEPS-003` | frozen lockfileとartifact integrityを検証 | E3 |
 | `PSB-REL-001` | release署名とSLSA provenanceをconsumer expectationへ照合 | E3 |
 | `PSB-REL-002` | release artifactとprovenanceをdigest-boundで公開・配布 | E3 |
-| `PSB-REL-003` | artifact-bound CycloneDX SBOMを公開し、Dependency-Track処理完了までfail-closedで検証 | E3 |
+| `PSB-REL-003` | Source／Build／Deployment SBOMを分離し、artifact-bound Build SBOMとDependency-Track処理をfail-closedで検証 | E3 |
 | `PSB-BUILD-001` | untrusted buildをcredential・deploy権限・broad egressから隔離 | E3 |
 | `PSB-BUILD-002` | 一貫したrelease buildを承認済みhosted platformへ限定 | E3 |
 | `PSB-BUILD-003` | platformがauthentic SLSA provenanceを自動生成 | E3 |
-| `PSB-GOV-001` | local SBOMとDependency-Trackのexact CVE/PURL検索から影響範囲とdry-run対応planを生成 | E3 |
+| `PSB-GOV-001` | local SBOMとDependency-Track検索からbuild artifact、active deployment、dry-run対応planを生成 | E3 |
 | `PSB-IAC-001` | versioned secure IaC module、resolved-plan PaC gate、provider enforcement、drift controlによるGolden Path | E3 |
 | `PSB-DETECT-001` | integrity検証済みTrivyと固定DB identityで脆弱性・container・IaC・secret・SBOMを検査し、DockSecの任意remediation profileをAI非依存gateへ限定してclean／finding／errorを分離 | E3 |
 | `PSB-CONTAINER-001` | exact OCI digestとSLSA provenanceをnon-root・host-isolated・resource/network-bounded workloadへfail-closed admissionで結合 | E3 |

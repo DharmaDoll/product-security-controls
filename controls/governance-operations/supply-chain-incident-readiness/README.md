@@ -1,10 +1,12 @@
-# PSB-GOV-001: supply-chain incidentの影響範囲と対応planを即時生成する
+# PSB-GOV-001: build artifactと稼働deploymentのincident影響を即時特定する
 
 ## Goal
 
 汚染が疑われるpackage名とexact versionを入力すると、集中管理したSBOMから影響する
 repository、build、artifact、credential identifier、証跡を逆引きし、containment、
 credential失効、clean rebuild、通知のrunbookをdry-runで生成できる状態にします。
+さらにbuild recordのexact artifact digestをactive deploymentへ関連付け、
+「どのenvironmentでそのbyte列が稼働しているか」を影響結果へ含めます。
 
 ## 実装
 
@@ -18,6 +20,8 @@ credential失効、clean rebuild、通知のrunbookをdry-runで生成できる�
 - 全page取得、inventory freshness、analyzer health、query failureを検証する
   read-only adapter contract
 - external actionを実行しないdry-run plan
+- immutable deployment ID、environment、observation time、exact artifact digestの
+  build recordへの関連付け
 
 fixtureのpackage、repository、artifact、credential identifierはすべてsyntheticです。
 実token、個人情報、production dataは含みません。
@@ -67,6 +71,12 @@ Upload用の`BOM_UPLOAD` identityとは分離し、調査adapterには
 API outage、stale inventory、analyzer failure、query mismatchは「該当なし」ではなく
 終了コード`2`です。
 
+Deployment inventoryも同じfail-closed原則で扱います。Image名や`latest` tagだけでは
+artifact identityになりません。SBOMに結び付いたbuild recordとdeployment collectorの
+artifact digestが一致しない場合、稼働影響は検証不能です。Fixtureはactive deployment
+relationshipを検証しますが、process memory上にloadされたすべてのlibrary、ephemeral
+workload、runtime downloadを完全に観測したとは主張しません。
+
 | 終了コード | 意味 |
 | --- | --- |
 | `0` | inventory検証成功、該当なし |
@@ -100,6 +110,8 @@ API outage、stale inventory、analyzer failure、query mismatchは「該当な�
   不完全、またはvulnerability dataが古い場合はfalse negativeが生じる
 - Dependency-Track 4.14.3 fixtureを5系へ移行する場合、breaking API、
   distribution、permission、notification semanticsを再レビューする
+- deployment collectorのcluster coverage、freshness、ephemeral workload coverageが
+  不完全なら稼働影響のfalse negativeが残る
 
 ## 公式リファレンス
 

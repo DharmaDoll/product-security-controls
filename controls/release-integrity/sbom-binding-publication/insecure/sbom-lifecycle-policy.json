@@ -1,0 +1,41 @@
+{
+  "schema": "psb-sbom-lifecycle-policy/1.0",
+  "source_revision": "branch:main",
+  "catalog": {
+    "canonical_format": "mixed-and-implicit",
+    "distinct_observation_documents": false,
+    "overwrite_existing_serial": true,
+    "incomplete_or_unavailable_state": "CLEAN"
+  },
+  "observations": [
+    {
+      "stage": "source",
+      "trigger": "manual",
+      "serial_number": "urn:uuid:33333333-3333-4333-8333-333333333333",
+      "subject_type": "branch",
+      "subject": "main",
+      "authority": "release-authoritative",
+      "completeness": "assumed-complete"
+    },
+    {
+      "stage": "build",
+      "trigger": "before-artifact-created",
+      "serial_number": "urn:uuid:33333333-3333-4333-8333-333333333333",
+      "subject_type": "source-tree",
+      "subject": "main",
+      "authority": "release-authoritative",
+      "completeness": "source-only"
+    },
+    {
+      "stage": "deployment",
+      "trigger": "manual",
+      "serial_number": "urn:uuid:33333333-3333-4333-8333-333333333333",
+      "subject_type": "deployment-name",
+      "subject": "production-latest",
+      "deployment_id": "production/latest",
+      "authority": "release-authoritative",
+      "completeness": "memory-complete-assumed"
+    }
+  ],
+  "relationships": []
+}

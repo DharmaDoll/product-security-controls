@@ -10,7 +10,7 @@
 | 3. lockfileで完全性を担保する | manifest、frozen graph、registry、artifact hashを一致させる | `PSB-DEPS-003` |
 | 4. 信頼signalを検証する | 署名、provenance、builder、source、artifactをconsumer expectationへ照合する | `PSB-REL-001` |
 | 5. 権限とnetworkを最小化する | untrusted buildをcredentialとdeploy trust boundaryから隔離する | `PSB-BUILD-001` |
-| 6. 事後に即応できる状態を保つ | SBOMから影響範囲を逆引きし、evidence-first response planを生成する | `PSB-GOV-001` |
+| 6. lifecycle inventoryから事後に即応する | commit、artifact、deploymentを別SBOM observationで結び、稼働影響とevidence-first response planを生成する | `PSB-REL-003`, `PSB-GOV-001` |
 
 ## Controlの連鎖
 
@@ -27,7 +27,7 @@ signature + provenance expectations
       ↓
 credential-free isolated build
       ↓
-SBOM inventory + incident response
+source/build/deployment SBOM graph + incident response
 ```
 
 各controlは独立して検証できますが、単独では十分ではありません。例えば、
@@ -45,6 +45,8 @@ cooldownを通過したmalicious packageはinstall script controlやSCAで扱い
 - exceptionはexact target、owner、別承認者、理由、期限を持つ
 - buildとdeployを別trust boundaryにする
 - SBOM、provenance、build log、artifact digestを同じrelease identityへ関連付ける
+- Source SBOMを早期feedback、Build SBOMをrelease authority、Deployment inventoryを稼働観測として分離する
+- commit SHA、artifact digest、deployment IDをimmutable graphで関連付け、同じserialへ上書きしない
 - destructive responseはevidence保全後にmanual approvalで実施する
 
 これらのcontrolはformal complianceやSLSA levelを自動的に証明しません。

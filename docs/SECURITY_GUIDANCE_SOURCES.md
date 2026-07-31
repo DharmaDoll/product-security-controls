@@ -237,7 +237,7 @@ Disposition:
   - `PSB-CONTAINER-001` — implemented OCI provenance and workload admission;
   - `PSB-CICD-006` — planned cloud OIDC federation;
   - `PSB-REL-002` — implemented provenance distribution;
-  - `PSB-REL-003` — planned SBOM distribution.
+  - `PSB-REL-003` — implemented SBOM lifecycle and artifact-bound distribution.
 
 Disposition:
 
@@ -273,6 +273,42 @@ Disposition:
   scope, or mapping review required;
 - keep organization-only rows and completed assessment evidence outside
   generated public guidance.
+
+<a id="ref-user-005"></a>
+
+### REF-USER-005 — SBOM lifecycle acquisition and centralized management guidance
+
+- Status: `adopted-partially`
+- Type: user-supplied narrative guidance
+- Provider: repository user
+- Provided date: `2026-07-31`
+- Original input:
+  [SBOM lifecycle guidance](../controls/release-integrity/sbom-binding-publication/docs/user-supplied-sbom-lifecycle-guidance-ja.md)
+- External bibliography: not supplied in the original input
+- License or redistribution terms: not supplied separately
+- Related controls:
+  - `PSB-REL-003` — source, build, and deployment observation identity plus
+    artifact-bound release SBOM;
+  - `PSB-GOV-001` — component-to-build-to-deployment impact lookup;
+  - `PSB-REL-004` — planned supplier SBOM signature trust and quarantine.
+
+Adopted contribution:
+
+- collect separate observations at source, build, and deployment transitions;
+- make the artifact-observed build SBOM authoritative for release bytes;
+- preserve commit SHA, artifact digest, and deployment ID relationships in a
+  centralized catalog;
+- use source inventory for early feedback and deployment inventory for active
+  impact lookup without overwriting release evidence;
+- retain signed supplier SBOM intake as a distinct trust boundary.
+
+Narrowed or deferred contribution:
+
+- runtime observation does not prove a complete inventory of every component
+  loaded in process memory;
+- CycloneDX 1.7 is the only format implemented by the current E3 adapter;
+- SPDX and supplier signature verification remain planned until version-pinned
+  parsers, trust policy, and equivalent negative tests exist.
 
 <a id="ref-cicd-001"></a>
 
@@ -1113,8 +1149,9 @@ Disposition and limitations:
   - [version 5 documentation](https://dependencytrack.github.io/docs/next/)
 - Repository review date: `2026-07-31`
 - Related controls:
-  - `PSB-REL-003` — exact artifact-bound CycloneDX publication, least-privilege
-    upload, and completed processing receipt verification;
+  - `PSB-REL-003` — distinct source/build/deployment observation identities,
+    exact artifact-bound CycloneDX publication, least-privilege upload, and
+    completed processing receipt verification;
   - `PSB-GOV-001` — exact CVE and component portfolio search linked back to
     SBOM serials, project UUIDs, versions, build records, and response evidence;
   - `PSB-IAC-001` — Golden Path composition of the implemented
@@ -1171,6 +1208,49 @@ Disposition and limitations:
 - a processed SBOM and an empty finding set do not prove that the software is
   vulnerability-free.
 
+<a id="ref-rel-002"></a>
+
+### REF-REL-002 — SBOM lifecycle, operational inventory, and interchange guidance
+
+- Status: `adopted-partially`
+- Type: official government consumption guidance and open-standard
+  documentation
+- Publishers: CISA, OWASP CycloneDX, and the SPDX Project
+- Official sources:
+  - [CISA Recommended Practices for SBOM Consumption](https://www.cisa.gov/sites/default/files/2024-08/SECURING_THE_SOFTWARE_SUPPLY_CHAIN_RECOMMENDED_PRACTICES_FOR_SOFTWARE_BILL_OF_MATERIALS_CONSUMPTION-508.pdf)
+  - [CISA SBOM Resources Library](https://www.cisa.gov/topics/cyber-threats-and-advisories/sbom/sbomresourceslibrary)
+  - [CycloneDX SBOM capability](https://cyclonedx.org/capabilities/sbom/)
+  - [CycloneDX Operations BOM capability](https://cyclonedx.org/capabilities/obom/)
+  - [CycloneDX 1.7 JSON reference](https://cyclonedx.org/docs/1.7/json/)
+  - [SPDX specifications](https://spdx.dev/use/specifications/)
+  - [SPDX 3.0.1 specification](https://spdx.dev/wp-content/uploads/sites/31/2024/12/SPDX-3.0.1-1.pdf)
+- Repository review date: `2026-07-31`
+- Related controls:
+  - `PSB-REL-003`;
+  - `PSB-GOV-001`;
+  - planned `PSB-REL-004`.
+
+Adopted contribution:
+
+- treat SBOM as machine-readable component and relationship evidence across
+  lifecycle use cases rather than a one-time file;
+- keep operational environment inventory distinguishable from the software
+  release SBOM and link both by exact artifact identity;
+- use a portfolio to answer what and where is affected while retaining source
+  evidence and explicit completeness;
+- keep standardized formats interoperable without claiming support for a
+  format that the repository does not parse and test.
+
+Disposition and limitations:
+
+- these sources are references, not framework mappings or compliance claims;
+- the current executable adapter remains CycloneDX 1.7 JSON only;
+- SPDX 3.1 was observed as a release candidate and is not pinned as an
+  implemented production format;
+- CISA consumption guidance informs future supplier intake, but
+  `PSB-REL-004` must supply signature, revocation, identity, and quarantine
+  evidence before that boundary is implemented.
+
 ## Chat-history reconciliation
 
 The reviewed collaboration history contained:
@@ -1185,13 +1265,13 @@ The reviewed collaboration history contained:
   plus the CI/CD threat taxonomy recorded as `REF-CICD-011`;
 - implementation sources selected while delivering and extending
   `PSB-DETECT-001` and the SBOM consumption path, recorded as
-  `REF-DETECT-001..002` and `REF-REL-001`;
+  `REF-DETECT-001..002` and `REF-REL-001..002`;
 - dependency registry proxy documentation selected for the managed acquisition
   path in `PSB-DEPS-001`, recorded as `REF-DEPS-001`;
 - Kubernetes platform guidance selected while delivering
   `PSB-CONTAINER-001`, recorded as `REF-CONTAINER-002`;
-- three substantial user-supplied source texts or tables, recorded as
-  `REF-USER-001..003`;
+- four substantial user-supplied source texts or tables, recorded as
+  `REF-USER-001..003` and `REF-USER-005`;
 - one referenced but not yet supplied application assessment source, recorded
   as `REF-USER-004`;
 - implementation requests for pre-commit examples, Gitleaks and alternative

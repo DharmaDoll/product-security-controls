@@ -1,7 +1,7 @@
 id: PSB-GOV-001
-title: supply-chain incidentの影響範囲と対応planを即時生成する
+title: supply-chain incidentのbuild artifactと稼働deployment影響を即時特定する
 domain: governance-operations
-summary: SBOMとbuild evidenceから汚染packageの影響範囲を逆引きし、承認付きdry-run response planを生成する。
+summary: SBOMとbuild evidenceから汚染packageをrepository build artifact deploymentへ逆引きし、承認付きdry-run response planを生成する。
 check_context_version: "1.0"
 security_functions:
   - detect
@@ -13,6 +13,8 @@ threats:
     description: 汚染dependency発覚時に使用repository、build、artifact、credentialを特定できず、containmentと復旧が遅延する。
   - id: SUPPLY-CHAIN-RESPONSE-EVIDENCE-LOSS
     description: 証跡保全前のcache削除やcredential失効、未承認の破壊的対応により調査可能性または可用性が損なわれる。
+  - id: SUPPLY-CHAIN-RUNTIME-INVENTORY-GAP
+    description: SBOM対象artifactとactive deploymentのdigest関係が欠落し、稼働している影響serviceとenvironmentがincident scopeから漏れる。
 implementations:
   insecure:
     - insecure/inventory/incomplete.cdx.json
@@ -38,6 +40,7 @@ verification:
     - 不完全inventoryとunsafe runbookが拒否される
     - Dependency-Trackのexact CVE component portfolio結果がproject UUID version SBOM serial PURLとbuild evidenceへ相互照合される
     - Dependency-Trackの不完全pagination outage stale inventory analyzer failureがERRORになる
+    - active deployment ID environment and observed artifact digest are linked to each impacted build record
 checks:
   - id: INC-001
     title: Exact package versions can be traced to affected products
@@ -147,33 +150,55 @@ checks:
         - sanitized Dependency-Track impact response
         - project UUID version SBOM serial and build-record linkage
     mapping_status: reviewed
+  - id: INC-007
+    title: Active deployments are linked to exact SBOM artifacts
+    required_state: immutable deployment ID environment observation time and exact artifact digest match the build record
+    responsible_role: incident-response
+    applies_to:
+      - deployment-inventory
+      - sbom-inventory
+      - incident-response
+    context:
+      threat_actor: stale deployment collector mutable image tag or incomplete environment inventory
+      attack_or_failure_scenario: responders identify a vulnerable release artifact but cannot determine which active environments run those exact bytes
+      why_required: digest-bound deployment relationships convert release impact into an actionable runtime scope without treating an image name or latest tag as identity
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-GOV-001 and inspect the organization deployment inventory collector
+      expected: mismatched mutable duplicate inactive or malformed deployment observations are rejected
+      evidence:
+        - sanitized deployment impact result
+        - deployment inventory collector evidence
+    mapping_status: reviewed
 mappings:
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: RV.1.1
     relationship: supports
     confidence: high
-    rationale: Releaseに含まれるcomponentをSBOM inventoryで継続的に識別し、報告された汚染versionとの影響照合を支援する。
+    rationale: Releaseに含まれるcomponentをSBOM inventoryで継続的に識別し、exact artifact digestでactive deploymentへ関連付けて報告された汚染versionの稼働影響照合を支援する。
     reviewer: product-security
-    review_date: "2026-07-27"
+    review_date: "2026-07-31"
     applies_to:
       - INC-001
       - INC-002
       - INC-005
       - INC-006
+      - INC-007
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: RV.2.1
     relationship: supports
     confidence: high
-    rationale: 影響artifactとbuild evidenceを特定し、containment、credential失効、safe rebuildのrisk response planを生成する。
+    rationale: 影響artifact、active deployment、build evidenceを特定し、containment、credential失効、safe rebuildのrisk response planを生成する。
     reviewer: product-security
-    review_date: "2026-07-27"
+    review_date: "2026-07-31"
     applies_to:
       - INC-001
       - INC-003
       - INC-005
       - INC-006
+      - INC-007
   - framework: mitre-attack
     version: "v19.1"
     id: T1195.001
@@ -192,6 +217,8 @@ limitations:
   - Scanner inventoryまたはrecord読取失敗をcleanな結果として扱ってはいけない。
   - Dependency-Track adapterは4.14.3のnormalized fixture contractでありlive API access project ACL pagination and analyzer freshness require organization evidence.
   - Dependency-Track 5系はbreaking API distribution and notification changesを再レビューしてからadapter versionを更新する。
+  - Deployment fixture proves artifact-to-deployment identity linkage but not that every process-loaded library or ephemeral workload was observed.
+  - Live deployment completeness freshness cluster scope and collector health require organization evidence and unavailable collection must not become no impact.
 status: prototype
 owner: product-security
 evidence_level: E3

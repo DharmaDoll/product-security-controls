@@ -91,6 +91,9 @@ evidence.
 - missing provenance;
 - SBOMが別artifact、source tree、または誤ったrelease versionを表す一方で、
   release inventoryとして信頼されること;
+- source build deploymentのSBOM observationsが同じserialへ上書きされ、
+  source-only viewがrelease authorityになり、commitからartifactとdeploymentへの
+  immutable relationshipが失われること;
 - direct／transitive component、exact PURL、relationship、completenessの欠落に
   より、vulnerabilityまたはincident impact searchがfalse negativeになること;
 - Dependency-Trackのupload受付を分析完了と誤認し、processing failure、
@@ -98,6 +101,8 @@ evidence.
 - auto-created project、broad API key、不完全pagination、project ACL gapにより
   SBOMが誤ったportfolioへ登録されるか、影響製品が検索結果から欠落すること;
 - mutable container tags.
+- exact artifact digestとactive deploymentの関係が欠落し、稼働中の影響serviceが
+  SBOM incident scopeから漏れること;
 
 The
 [CI/CD threat-matrix reconciliation](CICD_THREAT_MATRIX_RECONCILIATION.md)
