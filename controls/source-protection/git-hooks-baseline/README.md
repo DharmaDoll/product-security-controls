@@ -1,5 +1,16 @@
 # PSB-SOURCE-002: 開発者向けGit hooksセキュリティベースライン
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | Developerがsecret、機密file、credential-bearing metadataをcommit・pushすると、現在treeから削除してもGit historyやremote copyへ残り続ける。 |
+| 誰から、または何から守るか | Developerの不注意、侵害されたlocal tool、生成file、synthetic token patternの見逃し、hook bypass、scanner・Git実行障害から守る。 |
+| 何が対象か | Repository-owned `pre-commit`・`commit-msg`・`pre-push` hook、staged file、commit message、導入される全履歴、forbidden file、secret pattern、file size。 |
+| 何をするか | Reviewed `core.hooksPath`から共通scannerを実行し、commit前の内容・messageとpushで新規導入される全reachable historyを検査してblockする。 |
+| 成功状態 | Secret・機密file・危険metadata・oversized fileがremote到達前に拒否され、matched valueは表示されず、scanner failureはcleanと区別される。 |
+| 対象外・残余リスク | Local hookは変更・回避・省略でき、既に公開済みcopyを消せないため、server-side・CI scan、credential revoke、公開面reviewを別途必要とする。 |
+
 ## セキュリティ上の問題
 
 commitやpushによって、secret、秘密鍵、環境設定ファイル、内部情報、

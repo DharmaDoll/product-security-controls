@@ -1,5 +1,16 @@
 # PSB-CICD-004: GitHub Actionsのtoken権限をjob目的へ限定する
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | Workflowやjobが暗黙のrepository defaultを継承すると、reviewerに見えない過剰な`GITHUB_TOKEN`やOIDC権限がcode executionへ付与される。 |
+| 誰から、または何から守るか | Workflow injection、侵害されたdependency、誤設定、reusable workflow caller、untrusted refからのprivileged job起動から守る。 |
+| 何が対象か | GitHub Actions workflow、job、`GITHUB_TOKEN`、`id-token`、protected environment、trusted ref condition、reusable workflow caller。 |
+| 何をするか | Top-levelをdeny-allにし、job目的別のexact permission map、trusted ref、environment protection、OIDC job分離を明示して検証する。 |
+| 成功状態 | 全jobが明示的な最小権限を持ち、write・OIDC権限は目的とtrusted contextへ限定され、暗黙・broad・評価不能な権限は拒否される。 |
+| 対象外・残余リスク | 最小権限として承認した権限自体の妥当性はsemantic reviewが必要で、GitHub App・cloud IAM・runner host権限までは直接評価しない。 |
+
 ## Security problem
 
 GitHub Actionsはjobごとにrepository-scopedの`GITHUB_TOKEN`を発行します。

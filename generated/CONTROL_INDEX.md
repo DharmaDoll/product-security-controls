@@ -23,6 +23,7 @@ Generated control catalog. Do not edit manually.
 | PSB-REL-001 | release-integrity | release署名とProvenanceを期待値に照合する | 5 | prototype | E3 |
 | PSB-REL-002 | release-integrity | Release artifactとprovenanceを一対一で公開・配布する | 5 | prototype | E3 |
 | PSB-REL-003 | release-integrity | SBOM lifecycle observationsをrelease artifactへ結び付けて一元管理する | 9 | prototype | E3 |
+| PSB-REL-004 | release-integrity | supplier SBOMを検証してからportfolioへ受け入れる | 8 | prototype | E3 |
 | PSB-SOURCE-001 | source-protection | Harden developer endpoints and local trust boundaries | 29 | prototype | E3 |
 | PSB-SOURCE-002 | source-protection | リポジトリ所有の開発者向けGit hooksセキュリティベースライン | 14 | prototype | E3 |
 | PSB-SOURCE-003 | source-protection | 公開リポジトリ露出とGitHub dorking検証 | 13 | reference | E3 |

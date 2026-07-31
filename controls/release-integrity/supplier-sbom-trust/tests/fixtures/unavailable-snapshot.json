@@ -1,0 +1,7 @@
+{
+  "schema": "psb-signer-status-snapshot/1.0",
+  "status": "UNAVAILABLE",
+  "observed_at": "2026-07-31T00:05:00Z",
+  "expires_at": "2026-08-01T00:05:00Z",
+  "signers": []
+}

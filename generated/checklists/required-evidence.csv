@@ -245,6 +245,22 @@ PSB-REL-003,PSB-REL-003-SBM-008,ci-platform,automated,sanitized SBM-008 verifier
 PSB-REL-003,PSB-REL-003-SBM-008,ci-platform,automated,lifecycle observation policy
 PSB-REL-003,PSB-REL-003-SBM-009,release-manager,automated,sanitized SBM-009 verifier result
 PSB-REL-003,PSB-REL-003-SBM-009,release-manager,automated,commit artifact deployment relationship record
+PSB-REL-004,PSB-REL-004-SUP-001,release-manager,automated,sanitized SUP-001 verifier result
+PSB-REL-004,PSB-REL-004-SUP-001,release-manager,automated,approved signer identity and public-key digest without key material
+PSB-REL-004,PSB-REL-004-SUP-002,release-manager,automated,sanitized SUP-002 verifier result
+PSB-REL-004,PSB-REL-004-SUP-002,release-manager,automated,consumer-owned product and digest expectation
+PSB-REL-004,PSB-REL-004-SUP-003,release-manager,automated,sanitized SUP-003 verifier result
+PSB-REL-004,PSB-REL-004-SUP-003,release-manager,automated,adapter format and version policy
+PSB-REL-004,PSB-REL-004-SUP-004,security,automated,sanitized SUP-004 verifier result
+PSB-REL-004,PSB-REL-004-SUP-004,security,automated,signer identity status and snapshot age without key material
+PSB-REL-004,PSB-REL-004-SUP-005,ci-platform,automated,sanitized SUP-005 decision state
+PSB-REL-004,PSB-REL-004-SUP-005,ci-platform,automated,quarantine workflow result without supplier body
+PSB-REL-004,PSB-REL-004-SUP-006,ci-platform,hybrid,sanitized SUP-006 policy result
+PSB-REL-004,PSB-REL-004-SUP-006,ci-platform,hybrid,portfolio permission assignment without credential value
+PSB-REL-004,PSB-REL-004-SUP-007,security,automated,sanitized SUP-007 policy result
+PSB-REL-004,PSB-REL-004-SUP-007,security,automated,check IDs and decision state only
+PSB-REL-004,PSB-REL-004-SUP-008,security,automated,sanitized SUP-008 error result
+PSB-REL-004,PSB-REL-004-SUP-008,security,automated,operational alert identifier without supplier content
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-001,shared,external-evidence,identity or source-platform credential policy
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-002,developer,hybrid,credential helper configuration
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-002,developer,hybrid,sanitized assessment result

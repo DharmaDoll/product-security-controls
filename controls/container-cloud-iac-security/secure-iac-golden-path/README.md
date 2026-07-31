@@ -1,5 +1,16 @@
 # PSB-IAC-001: Secure IaC golden path
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | 開発者が標準moduleやCI gateを迂回すると、暗号化なし、public exposure、過剰IAMなどのinfrastructureがdeployされ、後からの手動reviewだけでは防げない。 |
+| 誰から、または何から守るか | 悪意または誤設定のあるdeveloper、module差替え、policy bypass、CI障害、console変更によるdrift、過剰な自動修復から守る。 |
+| 何が対象か | IaC source、versioned module registry、Terraform plan、Policy as Code engine、reusable CI、cloud identity、provider-side enforcement、deployed resource。 |
+| 何をするか | Secure-by-default moduleをversion・digest固定で提供し、resolved planをfail-closed policy gateへ通し、provider hook・drift検知・bounded correctionを組み合わせる。 |
+| 成功状態 | Approved moduleとexact planが全policyを通過し、CI bypassもprovider側で拒否され、driftとevaluator errorがclean deploymentとして扱われない。 |
+| 対象外・残余リスク | FixtureはTerraformやcloud APIを実行せず、module実装やpolicy自体の欠陥、provider compromise、すべてのmanual changeを単独では検出しない。 |
+
 ## Security problem
 
 開発者へ長いsecurity手順を渡すだけでは、暗号化、private network、image、

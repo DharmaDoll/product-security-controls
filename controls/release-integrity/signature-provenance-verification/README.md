@@ -1,5 +1,16 @@
 # PSB-REL-001: release署名とProvenanceを期待値に照合する
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | 署名が存在しても、別artifact、未承認builder・source、弱いtrust levelのprovenanceなら、consumerが偽または想定外releaseを正規品として受け入れる。 |
+| 誰から、または何から守るか | Artifact・provenance差替え、unauthorized signer、compromised release channel、wrong builder・source、trust signal削除、crypto・parser障害から守る。 |
+| 何が対象か | Release artifact、SLSA provenance、subject digest、Ed25519 signature、trusted public key、builder・build type・source・commit・ref expectation。 |
+| 何をするか | Consumer側でartifact digestとsubject、署名、signer-builder pair、build process、source revision、no-downgrade policyを使用直前に照合する。 |
+| 成功状態 | Exact artifactの署名付きprovenanceが全consumer expectationへ一致し、改ざん・不正署名・wrong source・downgradeは拒否、実行不能はERRORになる。 |
+| 対象外・残余リスク | Local fixtureはkeyless PKI、transparency log、revocation、timestamp、trusted builder侵害を評価せず、SLSA levelやformal complianceを証明しない。 |
+
 ## Goal
 
 release artifactの署名をtrusted public keyで検証し、provenanceのartifact digest、

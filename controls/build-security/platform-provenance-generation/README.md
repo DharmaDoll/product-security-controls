@@ -1,5 +1,16 @@
 # PSB-BUILD-003: Build platformがauthentic provenanceを自動生成する
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | Tenant build stepがprovenanceを自己申告・省略・改変できると、artifactのbuilder、process、source inputを信頼して追跡できない。 |
+| 誰から、または何から守るか | 侵害されたbuild script、悪意あるtenant、provenance生成の無効化、field sourceの混同、signingまたはverifier障害から守る。 |
+| 何が対象か | Hosted build control plane、provenance generation policy、release artifact、provenance field source、platform signing identity、consumer verifier。 |
+| 何をするか | Platform control planeがartifact digest、build process、top-level inputを自動収集し、tenantから分離したidentityでprovenanceを認証することを検証する。 |
+| 成功状態 | Provenance生成をtenantが無効化できず、artifact subjectと必須fieldがplatform-owned sourceから得られ、署名とverifierが正常に評価される。 |
+| 対象外・残余リスク | Fixtureは実build serviceを構築せず、platform自体の侵害やprovenance publication・consumer-side subject照合は別controlの境界である。 |
+
 ## Security problem
 
 Build script自身がprovenanceを任意生成できる構成では、provenanceを省略したり、

@@ -1,0 +1,5 @@
+QUARANTINE SUP-006 supplier intake identity is not project-bound and least privileged
+QUARANTINE SUP-007 evidence policy permits supplier content or key material
+QUARANTINE SUP-002 supplier SBOM root does not identify the signed product artifact
+QUARANTINE SUP-004 signer is not active in the current status snapshot
+RESULT QUARANTINE 4 finding(s); portfolio import blocked

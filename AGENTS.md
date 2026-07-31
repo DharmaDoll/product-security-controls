@@ -34,6 +34,8 @@ A user should be able to open the repository and quickly answer:
 
 Every important control should therefore include:
 
+- a first-page summary that states the security problem, threat actor or
+  failure source, target, required action, success state, and residual boundary;
 - a concise explanation;
 - insecure and secure examples;
 - runnable implementation;
@@ -140,6 +142,22 @@ the threat, what happens, and why the check exists without requiring the reader
 to open the parent README. `applies_to` identifies the target. Do not satisfy
 this requirement by copying one generic paragraph into every row.
 
+Every control README MUST use `## このcontrolを一枚で理解する` as its first
+H2 section. The section MUST contain a six-row Markdown table with these exact
+row labels:
+
+1. `セキュリティ上の問題`
+2. `誰から、または何から守るか`
+3. `何が対象か`
+4. `何をするか`
+5. `成功状態`
+6. `対象外・残余リスク`
+
+Each row must be control-specific and substantive. It must not contain a
+placeholder such as `TBD`, and it must not merely copy the same generic control
+summary into every row. Detailed implementation, verification, integration,
+operational, and mapping sections follow this one-page summary.
+
 ## 6. Prohibited behavior
 
 Agents must not:
@@ -174,13 +192,18 @@ controls/<domain>/<control-slug>/
 └── docs/
 ```
 
-Not every directory is required when irrelevant, but `README.md`, `control.yaml`, and verification must exist.
+Not every directory is required when irrelevant, but `README.md`,
+`control.yaml`, and verification must exist. `README.md` must satisfy the
+validated one-page summary contract above.
 
 ## 8. Definition of done
 
 A control is complete when:
 
 - the security problem is explained;
+- the mandatory one-page README summary answers who or what creates the threat,
+  what is protected, what the control does, what success means, and what remains
+  outside the boundary;
 - a threat/failure scenario is documented;
 - implementation files exist;
 - insecure and secure behavior are distinguishable;

@@ -45,6 +45,7 @@ Product Securityの資料は、次のいずれかに偏りやすい。
 ## Success criteria
 
 - controls are easy to discover;
+- each control can be understood from a consistent one-page boundary summary;
 - examples are runnable;
 - insecure and secure behavior are clear;
 - verification is automated;

@@ -1,5 +1,16 @@
 # PSB-CICD-005: forkと未信頼PRをprivileged CIから分離する
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | Forkや未信頼PRのcodeをsecret、write token、protected environment、self-hosted runnerがあるcontextで実行すると、contributorが権限を奪取できる。 |
+| 誰から、または何から守るか | 悪意あるfork contributor、改変されたPR code、`pull_request_target` misuse、cache poisoning、trusted jobへの同一run内elevationから守る。 |
+| 何が対象か | Pull request workflow、checkout revision、GitHub token、secret、environment、runner group、cache、workflow triggerとrun間handoff。 |
+| 何をするか | Untrusted validationをcredential-free hosted jobへ限定し、privileged処理はreview済みrevisionを使う新しいtrusted runとして開始する。 |
+| 成功状態 | PR jobはread-only・secretなし・protected environmentなしで動き、head codeをprivileged contextへ持ち込まず、trusted phaseは独立triggerとartifact identityを検証する。 |
+| 対象外・残余リスク | Static fixtureはorganizationのfork approval、branch・environment protection、runner-group policyのlive enforcementを証明しない。 |
+
 ## Security problem
 
 forkまたは未レビューbranchのpull requestは、workflow、build script、test、

@@ -1,5 +1,16 @@
 # PSB-DETECT-001: Integrity-verified security scanner execution
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | Security scanner自身、database、policyが改ざん・陳腐化・停止していると、危険なsourceやartifactを検査するjobが侵害経路または偽のclean evidenceになる。 |
+| 誰から、または何から守るか | Scanner配布経路の攻撃者、malicious dependency・contributor、scanner・DB障害、secret-bearing log、broad ignore、AI remediationの誤判定から守る。 |
+| 何が対象か | Scanner binaryとrelease evidence、vulnerability DB、source、container、IaC、secret、SBOM、exception、normalized scan evidence、CI gate。 |
+| 何をするか | Scanner version・checksum・publisher identityとDB identityを固定し、offline scanを実行し、finding・clean・errorを分離し、evidence redactionとexact期限付き例外を強制する。 |
+| 成功状態 | 承認済みscanner bytesとcurrent dataで全categoryを評価し、blocking findingは終了1、tool・DB・parser・evidence障害は終了2となり、どちらもreleaseをblockする。 |
+| 対象外・残余リスク | Synthetic DB fixtureはcurrent production vulnerability evidenceではなく、scanner false positive・false negative、未対応ecosystem、許可済み例外の誤判断は残る。 |
+
 ## 何を守るコントロールか
 
 このコントロールは、脆弱性・コンテナ設定・IaC・シークレット・SBOMを

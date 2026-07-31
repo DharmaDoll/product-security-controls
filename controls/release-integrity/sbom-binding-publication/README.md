@@ -1,5 +1,16 @@
 # PSB-REL-003: SBOM lifecycle observationsをrelease artifactへ結び付ける
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | Source-only、別artifact向け、不完全、未処理のSBOMがrelease evidenceとして扱われると、脆弱性影響調査で誤ったcomponent inventoryを信頼する。 |
+| 誰から、または何から守るか | 誤ったgenerator・build automation・release operator、artifact差替え、incomplete graph、Dependency-Track処理・analyzer・parser障害から守る。 |
+| 何が対象か | Source・Build・Deployment CycloneDX observation、release artifact、SBOMとmanifest digest、component graph、publication、Dependency-Track projectとreceipt。 |
+| 何をするか | 三つのobservationを別identity・authorityで関連付け、Build SBOMをexact artifactへbindしてimmutable公開し、least-privilege upload後の処理完了まで検証する。 |
+| 成功状態 | CycloneDX 1.7 identity・exact PURL・完全graph・artifact binding・publication・`BOM_PROCESSED`・lifecycle linkが一致し、failureはcleanにならない。 |
+| 対象外・残余リスク | Fixtureは実generator・release API・object storage・Dependency-Trackを実行せず、SBOMの存在はcomponent omissionや脆弱性なしを証明しない。 |
+
 ## Goal
 
 Release artifactごとに完全なCycloneDX SBOMを生成し、artifactとSBOM双方の

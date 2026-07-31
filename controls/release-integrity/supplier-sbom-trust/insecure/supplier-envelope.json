@@ -1,0 +1,19 @@
+{
+  "schema": "psb-supplier-sbom-envelope/1.0",
+  "supplier_id": "synthetic-supplier",
+  "product": {
+    "name": "admin-console",
+    "version": "9.9.9"
+  },
+  "artifact": {
+    "sha256": "874578099714e3ac224b76d16cf191c46f22aaa116d8bd2973cc6e2443c902c5"
+  },
+  "sbom": {
+    "format": "CycloneDX",
+    "spec_version": "1.7",
+    "serial_number": "urn:uuid:4d288d84-7050-4d7f-b00b-bf9991c255a1",
+    "sha256": "21fe81685f77e36fdeb34e46b4ec973e37e739e5d518f79523fc2a6fdc4db622"
+  },
+  "signer_id": "urn:psb:test:synthetic-supplier:release",
+  "signed_at": "2026-07-31T00:00:00Z"
+}

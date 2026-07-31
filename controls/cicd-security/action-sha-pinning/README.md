@@ -1,5 +1,16 @@
 # PSB-CICD-001: Immutable GitHub Actions references
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | GitHub Actionやreusable workflowをtag・branchで参照すると、review後に参照先codeが無断で変わりCI権限で実行される。 |
+| 誰から、または何から守るか | Upstream maintainer侵害、tag移動、repository takeover、脆弱なAction release、advisory取得・scanner障害から守る。 |
+| 何が対象か | GitHub Actions workflow内の外部Action、reusable workflow、commit reference、advisory snapshot、検証器。 |
+| 何をするか | 外部依存をfull 40-character commit SHAへ固定し、review済みadvisory snapshotと照合し、mutableまたは未評価の参照を拒否する。 |
+| 成功状態 | 全外部`uses`がimmutable SHAで、既知の対象Action脆弱性がなく、advisoryまたはparserを評価できない場合はcleanにせず停止する。 |
+| 対象外・残余リスク | 固定commitが最初から悪性・脆弱な可能性や、Action内部のdownload、credential forwarding、実行時挙動は別途reviewが必要である。 |
+
 ## Security problem
 
 GitHub Actions and reusable workflows execute code inside CI jobs that may have

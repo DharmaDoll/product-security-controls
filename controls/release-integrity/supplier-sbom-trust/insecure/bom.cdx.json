@@ -1,0 +1,39 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:4d288d84-7050-4d7f-b00b-bf9991c255a1",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-07-31T00:00:00Z",
+    "component": {
+      "type": "application",
+      "bom-ref": "pkg:generic/synthetic-supplier/widget@2.4.1",
+      "name": "widget",
+      "version": "2.4.1",
+      "purl": "pkg:generic/synthetic-supplier/widget@2.4.1",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "874578099714e3ac224b76d16cf191c46f22aaa116d8bd2973cc6e2443c902c5"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/example-parser@1.2.3",
+      "name": "example-parser",
+      "version": "1.2.3",
+      "purl": "pkg:pypi/example-parser@1.2.3"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:generic/synthetic-supplier/widget@2.4.1",
+      "dependsOn": [
+        "pkg:pypi/example-parser@1.2.3"
+      ]
+    }
+  ]
+}

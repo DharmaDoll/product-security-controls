@@ -1,5 +1,16 @@
 # PSB-DEPS-003: lockfileと取得artifactの完全性を強制する
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | Manifest、lockfile、registry、取得artifactが一致しなければ、review済みdependency graphと実build inputが異なるものへ差し替わる。 |
+| 誰から、または何から守るか | Lockfile改変、未承認registry、version range、cacheまたはartifact差替え、暗黙lockfile更新、proxy fallbackから守る。 |
+| 何が対象か | Dependency manifest、lockfile、exact version、managed registry origin、download artifact hash、package-manager frozen install、検証器。 |
+| 何をするか | Manifestとfrozen lockfileの集合・version・originを照合し、実artifact SHA-256をlock recordへ検証して、CI中の再解決・書換え・public fallbackを拒否する。 |
+| 成功状態 | Dependency名とexact versionが完全一致し、managed proxy由来のartifact hashがlockfileと一致し、missing・tampered・parse不能な入力は停止する。 |
+| 対象外・残余リスク | 正しいhashはpackageが安全・脆弱性なしであることを証明せず、意味的なdependency妥当性、license、既知脆弱性は別controlが必要である。 |
+
 ## Goal
 
 CIとbuildでlockfile外のdependency解決および暗黙のlockfile書換えを禁止し、

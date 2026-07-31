@@ -97,3 +97,9 @@ Tools are referenced inside controls.
 Generated checklist CSV, Markdown, and XLSX files are derived from atomic
 `checks` and check-level mapping links in `control.yaml`. Regenerate them with
 `make generate-checklists`; do not maintain a separate spreadsheet source.
+
+Each control package's `README.md` begins with the validated
+`このcontrolを一枚で理解する` table defined in
+[`CONTROL_MODEL.md`](CONTROL_MODEL.md#one-page-readme-contract). This
+human-readable overview and the machine-readable `control.yaml` serve different
+views of the same boundary; neither replaces the other.

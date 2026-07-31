@@ -1,5 +1,16 @@
 # PSB-SOURCE-001: Developer endpoint hardening
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | Developer endpointはsource、GitHub token、cloud credential、SSH key、build toolを保持するため、単一端末の侵害や不注意が組織全体の侵害へつながる。 |
+| 誰から、または何から守るか | Malware、phishing、端末盗難、悪意あるdependency・tool、credential theft、未patch OS、developerの誤設定や手動bypassから守る。 |
+| 何が対象か | Developer deviceとOS、disk、MDM・EDR、identity・MFA、SSH・commit署名、secret storage、IDE・Git workflow、sandbox、network・registry設定。 |
+| 何をするか | Patch・encryption・EDR、phishing-resistant MFA、hardware-backed key、short-lived secret、pre-commit・IDE scan、managed isolationを個人注意でなくguardrailとして強制する。 |
+| 成功状態 | 28 checksのpolicyとread-only assessmentが必要状態を示し、static credential・unmanaged endpoint・broad local trust・検査不能状態が適合扱いにならない。 |
+| 対象外・残余リスク | Declared policyとfixtureは実端末のenforcementを完全には証明せず、zero-day、承認済みsoftware、identity providerやMDM control plane侵害は残る。 |
+
 ## Security problem
 
 Developer endpoints hold source code, SSH keys, access tokens, package

@@ -1,0 +1,243 @@
+id: PSB-REL-004
+title: supplier SBOMを検証してからportfolioへ受け入れる
+domain: release-integrity
+summary: 署名済みsupplier SBOMをexact product artifact signer lifecycleとconsumer policyへ照合し、不一致を通常portfolioの外へ隔離する。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - verify
+  - govern
+threats:
+  - id: SUPPLIER-SBOM-IDENTITY-SUBSTITUTION
+    description: 有効な署名付きSBOMが別の製品、version、artifactへ付け替えられ、誤ったinventoryが信頼される。
+  - id: SUPPLIER-SIGNER-LIFECYCLE-BYPASS
+    description: 未知、期限切れ、失効済みsignerまたは古いstatus情報が受入時に見逃される。
+  - id: SUPPLIER-SBOM-FAIL-OPEN
+    description: malformed input、失効確認不能、暗号検証器障害がcleanまたは通常importとして扱われる。
+  - id: SUPPLIER-IMPORT-OVERPRIVILEGE
+    description: supplier upload identityが別projectのinventory作成やportfolio policy変更まで実行する。
+implementations:
+  insecure:
+    - insecure/artifact/release.bin
+    - insecure/bom.cdx.json
+    - insecure/supplier-envelope.json
+    - insecure/signature.b64
+    - insecure/trusted-public-key.pem
+    - insecure/intake-policy.json
+    - insecure/revocation-snapshot.json
+  secure:
+    - secure/artifact/release.bin
+    - secure/bom.cdx.json
+    - secure/supplier-envelope.json
+    - secure/signature.b64
+    - secure/trusted-public-key.pem
+    - secure/intake-policy.json
+    - secure/revocation-snapshot.json
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-REL-004
+  expected:
+    - detached Ed25519 signature verifies against a digest-pinned consumer-owned public key
+    - signed supplier product version artifact digest SBOM digest serial and root component all match
+    - only the supported CycloneDX 1.7 structural profile is accepted
+    - unknown expired and revoked signers are quarantined using a fresh status snapshot
+    - failed supplier input never enters the normal portfolio
+    - import identity is bound to one pre-created project with BOM_UPLOAD only
+    - evidence excludes component inventory SBOM body signature and key material
+    - stale unavailable status and crypto execution failure return ERROR rather than a clean result
+checks:
+  - id: SUP-001
+    title: Signed envelope authenticates an approved supplier signer
+    required_state: valid Ed25519 signature from the expected signer using a digest-pinned consumer trust root
+    responsible_role: release-manager
+    applies_to:
+      - supplier-sbom-envelope
+      - supplier-signature
+      - trust-root
+    context:
+      threat_actor: external forger compromised transfer channel or unauthorized supplier signing identity
+      attack_or_failure_scenario: an attacker changes supplier claims or presents a signature under a key the consumer did not approve
+      why_required: consumer-owned trust and cryptographic envelope integrity authenticate the claims before product fields can be relied upon
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-004
+      expected: invalid untrusted or digest-mismatched signatures are quarantined
+      evidence:
+        - sanitized SUP-001 verifier result
+        - approved signer identity and public-key digest without key material
+    mapping_status: reviewed
+  - id: SUP-002
+    title: Signed supplier identity binds the exact product artifact and SBOM
+    required_state: supplier product version artifact SHA-256 SBOM SHA-256 serial and root identity match consumer expectations
+    responsible_role: release-manager
+    applies_to:
+      - supplier-artifact
+      - supplier-sbom
+      - supplier-sbom-envelope
+    context:
+      threat_actor: artifact substituter release-channel mix-up or operator attaching authentic evidence to the wrong product
+      attack_or_failure_scenario: a validly signed SBOM for another product version or byte sequence is imported under the expected release
+      why_required: signature validity alone does not establish that evidence describes the exact bytes and product the consumer will use
+    verification:
+      type: automated
+      method: recompute artifact and SBOM SHA-256 then run make verify-control CONTROL=PSB-REL-004
+      expected: a valid signature over another product artifact SBOM or serial is quarantined
+      evidence:
+        - sanitized SUP-002 verifier result
+        - consumer-owned product and digest expectation
+    mapping_status: reviewed
+  - id: SUP-003
+    title: Supplier SBOM uses the supported structural profile
+    required_state: CycloneDX 1.7 identity root component components and dependency graph fields are structurally valid
+    responsible_role: release-manager
+    applies_to:
+      - supplier-sbom
+      - sbom-parser
+    context:
+      threat_actor: malformed supplier export unsupported format version or parser-confusion attempt
+      attack_or_failure_scenario: ambiguous or structurally incomplete content enters inventory because a filename or content type was trusted
+      why_required: a version-bounded structural gate prevents unsupported syntax from becoming incomplete or misinterpreted portfolio data
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-004
+      expected: malformed unsupported or incomplete supplier SBOM content is quarantined
+      evidence:
+        - sanitized SUP-003 verifier result
+        - adapter format and version policy
+    mapping_status: reviewed
+  - id: SUP-004
+    title: Supplier signer lifecycle and revocation status are current
+    required_state: signer is known active time-valid and evaluated with a non-stale available status snapshot
+    responsible_role: security
+    applies_to:
+      - supplier-signer
+      - signer-status-source
+    context:
+      threat_actor: holder of a retired key supplier account compromise or status distribution outage
+      attack_or_failure_scenario: an old authentic signature is reused after key expiry or revocation or while current signer status is unknown
+      why_required: signature mathematics does not convey current authorization so bounded validity and fresh revocation evidence are independently required
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-004
+      expected: unknown expired or revoked signers are quarantined while stale or unavailable status returns ERROR
+      evidence:
+        - sanitized SUP-004 verifier result
+        - signer identity status and snapshot age without key material
+    mapping_status: reviewed
+  - id: SUP-005
+    title: Failed supplier input stays outside the normal portfolio
+    required_state: only ACCEPTED_FOR_PORTFOLIO_IMPORT proceeds while every QUARANTINE or ERROR outcome blocks normal import
+    responsible_role: ci-platform
+    applies_to:
+      - supplier-intake-workflow
+      - quarantine-store
+      - sbom-portfolio
+    context:
+      threat_actor: fail-open pipeline automatic upload job or reviewer confusing quarantine with a clean vulnerability result
+      attack_or_failure_scenario: rejected or unevaluated supplier inventory becomes searchable authoritative portfolio data
+      why_required: an explicit trust boundary prevents untrusted evidence from contaminating the inventory used for later impact decisions
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-004
+      expected: positive input alone emits ACCEPTED and every negative or operational error blocks import
+      evidence:
+        - sanitized SUP-005 decision state
+        - quarantine workflow result without supplier body
+    mapping_status: reviewed
+  - id: SUP-006
+    title: Supplier import identity is project-bound and least privileged
+    required_state: one pre-created exact portfolio project with BOM_UPLOAD only and no project creation policy modification or auto-import
+    responsible_role: ci-platform
+    applies_to:
+      - supplier-upload-identity
+      - sbom-portfolio
+    context:
+      threat_actor: compromised intake job leaked upload credential or malicious supplier content triggering broad platform operations
+      attack_or_failure_scenario: the intake path creates unrelated projects changes policy or overwrites inventory beyond its assigned product
+      why_required: exact destination and one-purpose permission reduce inventory corruption and platform blast radius independently of content authenticity
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-REL-004 and inspect portfolio-side identity assignment
+      expected: wildcard project automatic import broad permission project creation or policy modification is rejected
+      evidence:
+        - sanitized SUP-006 policy result
+        - portfolio permission assignment without credential value
+    mapping_status: reviewed
+  - id: SUP-007
+    title: Supplier intake evidence is metadata-only
+    required_state: evidence excludes component inventory SBOM body signature and public or private key material
+    responsible_role: security
+    applies_to:
+      - security-evidence
+      - supplier-confidential-data
+    context:
+      threat_actor: evidence exporter CI logger or broad evidence viewer receiving supplier-confidential inventory
+      attack_or_failure_scenario: proving intake execution creates an unnecessary second copy of sensitive component and trust material
+      why_required: minimal decision metadata demonstrates control execution without expanding disclosure and retention scope
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-004
+      expected: evidence policy that includes inventory or key material is quarantined
+      evidence:
+        - sanitized SUP-007 policy result
+        - check IDs and decision state only
+    mapping_status: unmapped
+  - id: SUP-008
+    title: Verification infrastructure failure remains an error
+    required_state: unavailable stale or unparsable trusted status and crypto execution failures emit ERROR and block import
+    responsible_role: security
+    applies_to:
+      - supplier-intake-verifier
+      - signer-status-source
+    context:
+      threat_actor: service outage stale cache malformed trusted policy or missing cryptographic executable
+      attack_or_failure_scenario: authenticity cannot be evaluated but the pipeline records a clean scan or accepts supplier inventory
+      why_required: a distinct operational error state prevents absence of verification from becoming evidence of trust
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-004
+      expected: stale unavailable status and missing OpenSSL return exit code 2 and never ACCEPTED
+      evidence:
+        - sanitized SUP-008 error result
+        - operational alert identifier without supplier content
+    mapping_status: unmapped
+mappings:
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PW.4.1
+    relationship: supports
+    confidence: medium
+    rationale: Supplier componentの取得時に署名者、製品、version、artifact、SBOMをconsumer expectationへ照合し、不正な外部component情報を隔離することでacquisition reviewを支援するが、component自体がwell-securedであることは証明しない。
+    reviewer: product-security
+    review_date: "2026-07-31"
+    applies_to:
+      - SUP-001
+      - SUP-002
+      - SUP-003
+      - SUP-004
+      - SUP-005
+      - SUP-006
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: RV.1.1
+    relationship: supports
+    confidence: medium
+    rationale: 脆弱性識別に利用するsupplier inventoryをexact artifact identityとtrust stateへ結び、未検証inventoryの通常portfolio混入を防ぐことで後続の情報収集品質を支援するが、本control自体は脆弱性照合を実行しない。
+    reviewer: product-security
+    review_date: "2026-07-31"
+    applies_to:
+      - SUP-002
+      - SUP-003
+      - SUP-005
+limitations:
+  - CycloneDX verification is a control-specific structural profile rather than validation against the complete official JSON Schema.
+  - The test-only public key does not model PKI chains OCSP CRLs keyless identities timestamp authorities or transparency logs.
+  - Production signer status sources require independently authenticated version-pinned adapters and monitored availability.
+  - A legitimate compromised supplier signer or dishonest supplier build may still produce internally consistent signed evidence.
+  - A signed SBOM can omit components or relationships and does not prove that the product is vulnerability-free or secure.
+  - SPDX requires a separate version-pinned parser and equivalent malformed identity relationship and signature negative tests.
+  - This control is not a SLSA Build level requirement and does not establish framework or product compliance.
+status: prototype
+owner: product-security
+evidence_level: E3

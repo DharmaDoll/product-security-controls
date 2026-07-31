@@ -290,7 +290,7 @@ Disposition:
   - `PSB-REL-003` — source, build, and deployment observation identity plus
     artifact-bound release SBOM;
   - `PSB-GOV-001` — component-to-build-to-deployment impact lookup;
-  - `PSB-REL-004` — planned supplier SBOM signature trust and quarantine.
+  - `PSB-REL-004` — implemented supplier SBOM signature trust and quarantine.
 
 Adopted contribution:
 
@@ -307,8 +307,10 @@ Narrowed or deferred contribution:
 - runtime observation does not prove a complete inventory of every component
   loaded in process memory;
 - CycloneDX 1.7 is the only format implemented by the current E3 adapter;
-- SPDX and supplier signature verification remain planned until version-pinned
-  parsers, trust policy, and equivalent negative tests exist.
+- supplier signature verification is implemented with a local Ed25519 fixture,
+  consumer trust policy, signer-status snapshot, and equivalent negative tests;
+- SPDX remains planned until a version-pinned parser and equivalent malformed,
+  identity, relationship, and signature negative tests exist.
 
 <a id="ref-cicd-001"></a>
 
@@ -1228,7 +1230,7 @@ Disposition and limitations:
 - Related controls:
   - `PSB-REL-003`;
   - `PSB-GOV-001`;
-  - planned `PSB-REL-004`.
+  - `PSB-REL-004`.
 
 Adopted contribution:
 
@@ -1247,9 +1249,10 @@ Disposition and limitations:
 - the current executable adapter remains CycloneDX 1.7 JSON only;
 - SPDX 3.1 was observed as a release candidate and is not pinned as an
   implemented production format;
-- CISA consumption guidance informs future supplier intake, but
-  `PSB-REL-004` must supply signature, revocation, identity, and quarantine
-  evidence before that boundary is implemented.
+- CISA consumption guidance informs supplier intake, while `PSB-REL-004`
+  supplies an E3 local signature, signer-status, exact identity, and quarantine
+  boundary; production PKI, transparency, and remote revocation adapters remain
+  deployment-specific.
 
 ## Chat-history reconciliation
 

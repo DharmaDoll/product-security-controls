@@ -115,6 +115,35 @@ the same generic control summary across every check.
 Context is reviewed control metadata, not generated filler. Do not copy one
 generic paragraph across rows merely to satisfy validation.
 
+## One-page README contract
+
+`control.yaml` is the machine-readable source for generated checklist rows.
+The control `README.md` is the human entry point and must answer the control
+boundary without requiring the reader to reconstruct it from implementation
+files.
+
+The first H2 in every control README is exactly:
+
+```markdown
+## このcontrolを一枚で理解する
+```
+
+It contains one Markdown table with these exact, non-empty rows:
+
+| Row | Required content |
+|---|---|
+| `セキュリティ上の問題` | The unsafe condition and security consequence |
+| `誰から、または何から守るか` | Attacker, compromised component, mistake, or service failure |
+| `何が対象か` | Concrete assets, identities, workflows, artifacts, or control planes |
+| `何をするか` | Preventive, detective, verification, response, or governance action |
+| `成功状態` | Observable accepted state and relevant fail-closed behavior |
+| `対象外・残余リスク` | Explicit boundary that this control does not prove or mitigate |
+
+The table is a concise overview, not a replacement for insecure and secure
+examples, integration, verification and expected output, operational notes,
+limitations, references, or atomic check metadata. `make validate-controls`
+rejects a missing, duplicated, misplaced, empty, or placeholder row.
+
 Framework-specific adoption profiles are derived from pinned framework registry
 metadata and the row-level `applies_to` links. A cumulative level profile, such
 as SLSA Build L2, includes requirements whose `minimum_level` is at or below the

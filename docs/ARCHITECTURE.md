@@ -19,6 +19,9 @@ Framework mappings and adoption guidance
 ### 1. Control catalog
 
 `controls/` contains individually understandable and testable security controls.
+Each package starts with a validated one-page README overview of the problem,
+threat source, target, action, success state, and residual boundary, followed by
+the executable implementation and machine-readable atomic checks.
 
 ### 2. Shared tooling
 

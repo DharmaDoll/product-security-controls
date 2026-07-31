@@ -55,6 +55,16 @@ ASSESSMENT_RESULTS = {"PASS", "FAIL", "NOT_CHECKED", "ERROR", "N/A"}
 CONTROL_ID_RE = re.compile(r"^PSB-[A-Z]+-[0-9]{3}$")
 CHECK_ID_RE = re.compile(r"^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$")
 _INTEGER_RE = re.compile(r"^-?\d+$")
+README_OVERVIEW_HEADING = "## このcontrolを一枚で理解する"
+README_OVERVIEW_ROWS = (
+    "セキュリティ上の問題",
+    "誰から、または何から守るか",
+    "何が対象か",
+    "何をするか",
+    "成功状態",
+    "対象外・残余リスク",
+)
+_EMPTY_OVERVIEW_VALUES = {"", "-", "tbd", "todo", "n/a"}
 
 
 class MetadataError(ValueError):
@@ -168,6 +178,49 @@ def discover_controls() -> list[dict[str, Any]]:
 def _require_text(data: dict[str, Any], field: str, errors: list[str], label: str) -> None:
     if not isinstance(data.get(field), str) or not data[field].strip():
         errors.append(f"{label}: {field} must be a non-empty string")
+
+
+def validate_readme_overview(readme: str, label: str) -> list[str]:
+    """Validate the mandatory first-page human-readable control summary."""
+
+    errors: list[str] = []
+    headings = list(re.finditer(r"^## .+$", readme, flags=re.MULTILINE))
+    overview_headings = [
+        match for match in headings if match.group(0) == README_OVERVIEW_HEADING
+    ]
+    if len(overview_headings) != 1:
+        errors.append(
+            f"{label}: README must contain exactly one "
+            f"{README_OVERVIEW_HEADING!r} section"
+        )
+        return errors
+    overview = overview_headings[0]
+    if not headings or headings[0].start() != overview.start():
+        errors.append(
+            f"{label}: {README_OVERVIEW_HEADING!r} must be the first H2 section"
+        )
+    next_heading = next(
+        (match for match in headings if match.start() > overview.start()),
+        None,
+    )
+    section_end = next_heading.start() if next_heading else len(readme)
+    section = readme[overview.end() : section_end]
+    for row in README_OVERVIEW_ROWS:
+        matches = re.findall(
+            rf"^\|\s*{re.escape(row)}\s*\|\s*(.*?)\s*\|\s*$",
+            section,
+            flags=re.MULTILINE,
+        )
+        if len(matches) != 1:
+            errors.append(
+                f"{label}: README overview must contain exactly one {row!r} row"
+            )
+            continue
+        if matches[0].strip().lower() in _EMPTY_OVERVIEW_VALUES:
+            errors.append(
+                f"{label}: README overview row {row!r} must be substantive"
+            )
+    return errors
 
 
 def validate_controls(controls: list[dict[str, Any]]) -> list[str]:
@@ -419,6 +472,14 @@ def validate_controls(controls: list[dict[str, Any]]) -> list[str]:
         for required in ("README.md", "tests/test.sh"):
             if not (directory / required).is_file():
                 errors.append(f"{label}: missing required file {required}")
+        readme_path = directory / "README.md"
+        if readme_path.is_file():
+            try:
+                readme = readme_path.read_text(encoding="utf-8")
+            except (OSError, UnicodeError) as error:
+                errors.append(f"{label}: cannot read README.md: {error}")
+            else:
+                errors.extend(validate_readme_overview(readme, label))
 
     return errors
 

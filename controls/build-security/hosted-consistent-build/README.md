@@ -1,5 +1,16 @@
 # PSB-BUILD-002: 一貫したrelease buildを承認済みhosted platformで実行する
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | 開発者端末や未評価builderで作られたreleaseは、誰がどのprocessとinputでbuildしたかをconsumerが信頼できない。 |
+| 誰から、または何から守るか | Local buildの混入、未承認builder、version drift、手動parameter差替え、build record欠落や取得障害から守る。 |
+| 何が対象か | Release build policy、hosted build platform、versioned build definition、source revision、top-level parameter、build record、release trigger。 |
+| 何をするか | 承認済みhosted platformと固定capability evidenceを選び、同一sourceとversioned processを承認済みparameterで一貫してbuildしたrecordを検証する。 |
+| 成功状態 | Builder identity、platform capability、source、definition、parameter、triggerがconsumer-owned expectationに一致し、不十分または取得不能なevidenceはfail closedとなる。 |
+| 対象外・残余リスク | Reference verifierはhosted build service自体を構築せず、承認済みplatformやbuild definitionが安全であること、artifact再現性を単独では証明しない。 |
+
 ## Security problem
 
 Release artifactを開発者端末や未評価のbuilderで作成できると、consumerはartifactが

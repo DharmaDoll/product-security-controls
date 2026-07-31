@@ -1,5 +1,16 @@
 # PSB-CICD-003: GitHub Actionsの静的解析
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | Workflow変更にcommand injection、mutable dependency、危険なtrigger、過剰権限が入っても、通常reviewだけでは見落とされやすい。 |
+| 誰から、または何から守るか | 悪意あるcontributor、設定ミス、zizmor配布物の差替え、untrusted PRとprivileged SARIF uploadの混同、scanner失敗から守る。 |
+| 何が対象か | GitHub Actions workflow、zizmor binary、scanner workflow、SARIF evidence、untrusted PR gate、trusted reporting job。 |
+| 何をするか | Versionとchecksumを固定したzizmorでworkflowを静的解析し、untrusted gatingとprivileged SARIF uploadを別trust boundaryに分離する。 |
+| 成功状態 | Scanner identityが固定され、findingはblockされ、clean・finding・scanner errorが別状態となり、repository workflowもreview済みpolicyへ一致する。 |
+| 対象外・残余リスク | Static analysisはjobが実際に必要とする権限、external Actionの内部挙動、runtime network・credential accessを完全には証明しない。 |
+
 ## 目的
 
 GitHub Actions workflowの変更時に、command injection、危険なtrigger、

@@ -1,5 +1,16 @@
 # PSB-GOV-001: build artifactと稼働deploymentのincident影響を即時特定する
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | 汚染dependency発覚時にrepository、build、artifact、credential、稼働deploymentを逆引きできないと、影響判定・containment・clean rebuildが遅れる。 |
+| 誰から、または何から守るか | Supply-chain compromise、incomplete・stale SBOM、誤ったartifact identity、Dependency-Track outage、不完全pagination、危険な自動responseから守る。 |
+| 何が対象か | CycloneDX inventory、build evidence、artifact digest、provenance、credential identifier、Dependency-Track response、deployment inventory、incident runbook。 |
+| 何をするか | Exact package・version・PURL・CVEからbuildとartifactを逆引きし、digestでactive deploymentへ結び、承認を要するsanitized dry-run response planを生成する。 |
+| 成功状態 | 完全でfreshなinventoryから影響対象または該当なしを証跡付きで判定でき、検索・parser・pagination・analyzer障害は該当なしとせずERRORになる。 |
+| 対象外・残余リスク | SBOMにないcomponent、runtime download、ephemeral workload、未観測deploymentはfalse negativeとなり得て、fixtureは実credential失効やproduction responseを実行しない。 |
+
 ## Goal
 
 汚染が疑われるpackage名とexact versionを入力すると、集中管理したSBOMから影響する

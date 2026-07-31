@@ -1,5 +1,16 @@
 # PSB-CICD-002: Prevent GitHub Actions command injection
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | Attacker-influenced GitHub expressionを`run`へ直接展開すると、値がrunner shell sourceとして解釈され任意command injectionになる。 |
+| 誰から、または何から守るか | Fork contributor、悪意あるIssue・PR metadata、変更可能なworkflow input、YAMLまたはshell境界の誤解、parser障害から守る。 |
+| 何が対象か | GitHub Actionsの`run` scalar、event expression、workflow value、environment boundary、workflow verifier。 |
+| 何をするか | `${{ ... }}`の`run`直接補間を禁止し、値をenvironmentまたはstructured argument境界へ移し、shell quotingを適用する。 |
+| 成功状態 | `run` scriptに直接expressionがなく、multiline・quoted・unsupported syntaxも検査され、評価不能なworkflowはfail closedとなる。 |
+| 対象外・残余リスク | Environmentへ移した値もshell・subprocessで安全に引用する必要があり、script自身のinjectionや外部Action内部の処理はこの検査だけでは防げない。 |
+
 ## Security problem
 
 GitHub Actions evaluates `${{ ... }}` expressions before an inline `run:` step

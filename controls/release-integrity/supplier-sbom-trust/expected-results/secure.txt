@@ -1,0 +1,2 @@
+PASS supplier signature identity schema and signer status verified
+RESULT ACCEPTED_FOR_PORTFOLIO_IMPORT

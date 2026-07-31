@@ -1,0 +1,34 @@
+{
+  "schema": "psb-supplier-sbom-intake-policy/1.0",
+  "expected_supplier_id": "synthetic-supplier",
+  "expected_product": {
+    "name": "widget",
+    "version": "2.4.1",
+    "artifact_sha256": "874578099714e3ac224b76d16cf191c46f22aaa116d8bd2973cc6e2443c902c5"
+  },
+  "accepted_sbom": {
+    "format": "CycloneDX",
+    "spec_version": "1.7"
+  },
+  "trusted_signer": {
+    "id": "urn:psb:test:synthetic-supplier:release",
+    "algorithm": "ed25519",
+    "public_key": "trusted-public-key.pem",
+    "public_key_sha256": "469c8c65cf47e0f71db1410b188810cf4c81a50ade0015ddc701b1f441bb21a7"
+  },
+  "maximum_signature_age_hours": 72,
+  "maximum_revocation_age_hours": 24,
+  "import": {
+    "auto_import": false,
+    "portfolio_project_id": "9c32beea-216c-4c7e-a340-0b3172b6c27d",
+    "allowed_permissions": [
+      "BOM_UPLOAD"
+    ],
+    "may_create_project": false,
+    "may_modify_policy": false
+  },
+  "evidence": {
+    "include_component_inventory": false,
+    "include_key_material": false
+  }
+}

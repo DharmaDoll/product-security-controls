@@ -45,6 +45,11 @@ controls/<domain>/<control>/
 └── scripts/
 ```
 
+各controlの`README.md`は、最初に`このcontrolを一枚で理解する`表を置きます。
+表にはセキュリティ上の問題、誰または何から守るか、対象、実施内容、成功状態、
+対象外・残余リスクを記載します。詳細な実装・検証説明と、`control.yaml`から生成する
+行単位チェックリストの両方を維持します。
+
 ## Implemented controls
 
 | Control | Outcome | Evidence |
@@ -60,11 +65,13 @@ controls/<domain>/<control>/
 | `PSB-REL-001` | release署名とSLSA provenanceをconsumer expectationへ照合 | E3 |
 | `PSB-REL-002` | release artifactとprovenanceをdigest-boundで公開・配布 | E3 |
 | `PSB-REL-003` | Source／Build／Deployment SBOMを分離し、artifact-bound Build SBOMとDependency-Track処理をfail-closedで検証 | E3 |
+| `PSB-REL-004` | supplier SBOMの署名・製品・artifact・signer lifecycleを検証し、不一致を通常portfolioから隔離 | E3 |
 | `PSB-BUILD-001` | untrusted buildをcredential・deploy権限・broad egressから隔離 | E3 |
 | `PSB-BUILD-002` | 一貫したrelease buildを承認済みhosted platformへ限定 | E3 |
 | `PSB-BUILD-003` | platformがauthentic SLSA provenanceを自動生成 | E3 |
 | `PSB-GOV-001` | local SBOMとDependency-Track検索からbuild artifact、active deployment、dry-run対応planを生成 | E3 |
 | `PSB-IAC-001` | versioned secure IaC module、resolved-plan PaC gate、provider enforcement、drift controlによるGolden Path | E3 |
+| `PSB-AI-004` | Claude CodeとCodexのfilesystem・network・extension・高影響操作を共通のleast-privilege runtime policyで統制 | E3 |
 | `PSB-DETECT-001` | integrity検証済みTrivyと固定DB identityで脆弱性・container・IaC・secret・SBOMを検査し、DockSecの任意remediation profileをAI非依存gateへ限定してclean／finding／errorを分離 | E3 |
 | `PSB-CONTAINER-001` | exact OCI digestとSLSA provenanceをnon-root・host-isolated・resource/network-bounded workloadへfail-closed admissionで結合 | E3 |
 | `PSB-SOURCE-001` | MDM、EDR/XDR、strong authentication、secret guard、IDE feedback、sandboxを含む28のdeveloper endpoint guardrail | E3 |

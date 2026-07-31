@@ -1,5 +1,16 @@
 # PSB-SOURCE-003: 公開リポジトリ露出とGitHub dorking検証
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | Public repositoryではcurrent codeだけでなく履歴、Issue、PR、Wiki、Actions、Release等からsecret・内部情報・個人情報が探索され、削除やprivate化後もcopyが残る。 |
+| 誰から、または何から守るか | GitHub検索を使う外部攻撃者、secret harvesting bot、crawler、侵害されたwrite account、visibility誤設定、rate limit・scanner停止から守る。 |
+| 何が対象か | Public repositoryのcurrent treeと全reachable history、Issue・PR・Discussion・Wiki・Actions・Release・Pages、fork・mirror、自社domain・email・機密marker。 |
+| 何をするか | Repository限定とglobal attacker-view検索、complete-clone history scan、GitHub公開面review、Secret Scanning・Push Protection確認、credential-first remediationを組み合わせる。 |
+| 成功状態 | 意図的public化のowner・期限付きreviewと全検査面のsanitized evidenceがあり、露出はrevoke・rotate後に再検査され、未完了・scanner errorはcleanにならない。 |
+| 対象外・残余リスク | GitHub検索は全履歴を保証せず、未知のfork・clone・cache・外部indexや取得済み情報を完全に削除できないため、0件は過去露出なしの証明ではない。 |
+
 ## セキュリティ上の問題
 
 公開リポジトリでは、source codeだけでなく、Git履歴、Issue、Pull Request、
@@ -10,7 +21,7 @@ Discussion、Wiki、Actions logやartifact、Release、Pagesも第三者から�
 最新treeからファイルを削除したこと、repositoryをprivateへ変更したこと、検索結果が
 0件だったことのいずれも、過去の公開が消えた証明にはなりません。
 
-## このcontrolを一枚で理解する
+## 防御対象と検査層の詳細
 
 ### 誰から、または何から守るか
 

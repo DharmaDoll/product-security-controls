@@ -56,11 +56,13 @@ PSB-AI-004 ──────────────────┘
 
 Within one priority, complete one E3 vertical slice before starting the next.
 The application-checklist import still requires its organization-owned source.
-`PSB-CICD-005`, `PSB-DETECT-001`, `PSB-REL-003`, and `PSB-CONTAINER-001` are
-implemented. Lifecycle-linked artifact-bound SBOM publication now composes
-into the Golden Path, and a Dependency-Track plus deployment-inventory query
-adapter extends `PSB-GOV-001`; supplier SBOM trust remains `PSB-REL-004`, and
-the container admission result unblocks later registry and runtime compositions.
+`PSB-CICD-005`, `PSB-DETECT-001`, `PSB-REL-003`, `PSB-REL-004`, and
+`PSB-CONTAINER-001` are implemented. Lifecycle-linked artifact-bound SBOM
+publication now composes into the Golden Path, a Dependency-Track plus
+deployment-inventory query adapter extends `PSB-GOV-001`, and supplier SBOM
+trust now has a separate signed identity, signer lifecycle, and quarantine
+boundary. The container admission result unblocks later registry and runtime
+compositions.
 `PSB-CICD-006` is also ready because both CI/CD dependencies exist.
 
 ## Prerequisite: application checklist reconciliation
@@ -616,7 +618,8 @@ Planning and implementation source:
 
 ### PSB-REL-004 — Supplier SBOM trust and quarantine
 
-Status: `planned` — separate from producer-owned `PSB-REL-003`
+Status: `implemented` — E3 signed identity, signer lifecycle, least-privilege
+import, quarantine, and operational-error slice
 
 Domain: `release-integrity`
 
@@ -634,17 +637,20 @@ schema expectations verify; quarantine mismatched or unverifiable evidence.
   signer lifecycle, product identity, and quarantine.
 - `PSB-GOV-001` may search accepted supplier inventory but does not decide
   whether it is authentic.
-- CycloneDX 1.7 is the first planned adapter. SPDX requires an independently
+- CycloneDX 1.7 is the current implemented adapter. SPDX requires an independently
   version-pinned parser and equivalent identity, relationship, malformed-input,
   and signature negative tests.
 
-#### First runnable slice
+#### Implemented slice
 
-Create synthetic supplier artifact, SBOM, detached signature, trust policy,
-revocation snapshot, and receipt fixtures. Recompute artifact and SBOM digests,
-authenticate the signer, bind product/version/digest, enforce a bounded
-timestamp and current revocation evidence, and emit `QUARANTINE` or `ERROR`
-without importing failed input into the normal portfolio.
+Synthetic supplier artifact, CycloneDX 1.7 SBOM, signed envelope, detached
+Ed25519 signature, digest-pinned test public key, consumer trust policy, and
+signer-status snapshot exercise the pre-import boundary. The verifier
+recomputes artifact and SBOM digests, authenticates the signer, binds
+supplier/product/version/digest/serial/root identity, enforces bounded
+signature and revocation timestamps, restricts the upload identity to one
+pre-created project with `BOM_UPLOAD`, and emits distinct `QUARANTINE` or
+`ERROR` results without importing failed input into the normal portfolio.
 
 #### Acceptance criteria
 
@@ -656,8 +662,10 @@ without importing failed input into the normal portfolio.
 - supplier upload identity cannot mutate unrelated portfolio or policy state;
 - sanitized evidence excludes supplier confidential component content and key
   material;
-- framework mappings remain provisional until the executable slice and exact
-  source requirements are reviewed.
+- stale or unavailable signer status and crypto execution failure remain
+  `ERROR`, never a clean or accepted result;
+- reviewed NIST SSDF mappings describe supporting evidence and do not claim
+  that the supplier component is secure or compliant.
 
 ### PSB-CONTAINER-001 — Container runtime baseline
 

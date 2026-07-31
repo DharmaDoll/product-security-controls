@@ -1,5 +1,16 @@
 # PSB-DEPS-001: managed registry proxyとrelease cooldown
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | 公開直後のdependency versionを端末やCIが即時採用すると、maintainer侵害やmalicious releaseが発見・撤回される前に組織へ広がる。 |
+| 誰から、または何から守るか | 侵害されたmaintainer・registry、dependency confusion、typosquatting、public registry direct access、proxy障害時fallback、古い例外から守る。 |
+| 何が対象か | Dependency update、package versionと公開時刻、managed registry proxy、client設定、artifact hash、cooldown policy、期限付き例外。 |
+| 何をするか | Dependency取得をapproved proxyへ固定し、新versionを既定7日間保留し、必要な緊急採用だけをexact package・version・owner・期限付きで例外化する。 |
+| 成功状態 | 採用versionがcooldownを満たすか有効なexact例外を持ち、取得元とartifact integrityが固定され、proxyまたはmetadata障害はpublic fallbackせず停止する。 |
+| 対象外・残余リスク | Cooldown期間の経過は安全性を保証せず、既に悪性の旧version、private package compromise、既知脆弱性、runtime behaviorは別途評価が必要である。 |
+
 ## セキュリティ上の問題
 
 公開直後の依存パッケージを自動的に採用すると、maintainer accountの侵害、

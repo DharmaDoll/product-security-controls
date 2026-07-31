@@ -22,14 +22,16 @@ Implement this control as one complete vertical slice.
 2. Describe the threat or failure scenario.
 3. Define measurable acceptance criteria.
 4. Create the control package.
-5. Add an insecure example where safe and useful.
-6. Add a secure example.
-7. Add automated verification.
-8. Add expected results.
-9. Add operational guidance and limitations.
-10. Add provisional framework mappings.
-11. Regenerate indexes.
-12. Run all relevant tests.
+5. Make `## このcontrolを一枚で理解する` the first README H2 and complete
+   all six required rows defined in `docs/CONTROL_MODEL.md`.
+6. Add an insecure example where safe and useful.
+7. Add a secure example.
+8. Add automated verification.
+9. Add expected results.
+10. Add operational guidance and limitations.
+11. Add provisional framework mappings.
+12. Regenerate indexes.
+13. Run all relevant tests.
 
 ## Required package structure
 

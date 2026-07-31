@@ -1,5 +1,16 @@
 # PSB-SOURCE-004: Source access credential lifecycle
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | GitHub OAuth token、PAT、SSH key、App credentialが長寿命・過剰権限・平文保管・未棚卸しだと、単一credential theftがsource改変や組織侵害へ拡大する。 |
+| 誰から、または何から守るか | Phishing、malware、悪意あるtool、local access、漏洩credentialの再利用、owner不在、rotation・revocation失敗から守る。 |
+| 何が対象か | Developerとautomationのsource-platform credential、OAuth・PAT・SSH・GitHub App、scope、repository access、保管、期限、利用証跡、incident response。 |
+| 何をするか | Automationは短命installation tokenやworkload identityを優先し、credentialをpurpose・owner・exact scope・保管・期限へbindして棚卸し、rotation、revokeを検証する。 |
+| 成功状態 | Credential classごとの最小権限・短寿命・hardwareまたはsecret-manager保護・利用monitoringが満たされ、orphan・stale・broad・malformed recordは拒否される。 |
+| 対象外・残余リスク | Verifierはlive GitHub credentialを列挙・失効・実権限testせず、identity provider、developer endpoint、GitHub control plane自体の侵害を防がない。 |
+
 ## Security problem
 
 GitHub OAuth tokens, personal access tokens (PATs), SSH keys, and GitHub App

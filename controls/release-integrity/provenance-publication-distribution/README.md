@@ -1,5 +1,16 @@
 # PSB-REL-002: Release artifactとprovenanceを一対一で公開・配布する
 
+## このcontrolを一枚で理解する
+
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | Build platformが正しいprovenanceを生成しても、artifactと一緒にimmutable・discoverableな形で配布・保持されなければconsumerは検証できない。 |
+| 誰から、または何から守るか | Release automation・operatorのミス、証跡を削除する攻撃者、mutable storage管理者、遅延upload、release API・inventory・parser障害から守る。 |
+| 何が対象か | Release artifact、provenance object、release manifest、artifact subject digest、publication location・timestamp、access、retention、no-downgrade policy。 |
+| 何をするか | Artifactごとに一意なdigest-bound provenanceを同じversioned releaseへ同時公開し、exact HTTPS location、immutability、保持期間、discoverabilityを検証する。 |
+| 成功状態 | 各artifactにexact subjectのprovenanceが一対一で存在し、5分以内に公開され最低365日保持され、欠落・再利用・mutable・取得不能は拒否される。 |
+| 対象外・残余リスク | このcontrolはprovenance内容や署名を再検証せず、build時生成は`PSB-BUILD-003`、consumer authenticityは`PSB-REL-001`が所有する。 |
+
 ## セキュリティ上の問題
 
 Build platformが正しいprovenanceを生成しても、artifactだけをreleaseし、provenanceを

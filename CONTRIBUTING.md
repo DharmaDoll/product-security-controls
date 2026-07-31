@@ -8,6 +8,8 @@ Every pull request should normally implement or improve one control.
 
 - control ID;
 - problem and threat scenario;
+- completed one-page README summary with target, action, success state, and
+  residual boundary;
 - files changed;
 - insecure and secure behavior;
 - verification evidence;

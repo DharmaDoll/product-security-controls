@@ -90,8 +90,10 @@ and bounded corrective action. `PSB-DETECT-001`, `PSB-REL-002`,
 `PSB-REL-003`, and `PSB-CONTAINER-001` are now implemented components.
 `PSB-REL-003` adds distinct source/build/deployment observations,
 artifact-bound CycloneDX publication, and a normalized Dependency-Track
-processing receipt; artifact signing generation, supplier SBOM trust, and
-cloud OIDC profiles remain incomplete.
+processing receipt. `PSB-REL-004` adds signed supplier product/artifact
+identity, signer lifecycle, least-privilege intake, and fail-closed
+quarantine. Artifact signing generation and cloud OIDC profiles remain
+incomplete.
 
 Also add source-protection controls for public repository exposure, including
 GitHub dorking scenarios, secret discovery in current and historical content,
@@ -190,7 +192,8 @@ Signed SLSA provenance expectation verification is implemented as
 Artifact-bound CycloneDX generation, publication, completeness verification,
 fail-closed Dependency-Track ingestion, and distinct source/build/deployment
 observation linkage are implemented as `PSB-REL-003`. Supplier-provided signed
-SBOM trust and quarantine remain planned as `PSB-REL-004`.
+SBOM product/artifact identity, signer status, and quarantine are implemented
+as `PSB-REL-004`.
 
 ## Phase 5 — AI development security
 
@@ -327,7 +330,10 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    observations, runtime error states, and Golden Path plus `PSB-GOV-001`
    composition.
 6. `PSB-REL-004` — signed supplier SBOM product/artifact identity, signer
-   lifecycle, revocation freshness, schema validation, and quarantine.
+   lifecycle, revocation freshness, schema validation, and quarantine —
+   implemented with eight atomic checks, positive and negative signed
+   fixtures, least-privilege project binding, and distinct quarantine versus
+   verification-error states.
 7. `PSB-CONTAINER-001` — immutable image digests, non-root execution, minimal
    capabilities, admission-policy verification, and a follow-on composition
    that applies existing `PSB-REL-001` SLSA provenance verification to the

@@ -10,7 +10,13 @@ from pathlib import Path
 REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPOSITORY_ROOT / "scripts"))
 
-from control_metadata import discover_controls, validate_controls  # noqa: E402
+from control_metadata import (  # noqa: E402
+    README_OVERVIEW_HEADING,
+    README_OVERVIEW_ROWS,
+    discover_controls,
+    validate_controls,
+    validate_readme_overview,
+)
 
 
 class ControlMetadataValidationTest(unittest.TestCase):
@@ -110,6 +116,41 @@ class ControlMetadataValidationTest(unittest.TestCase):
         errors = validate_controls([control])
         self.assertTrue(
             any("check_context_version must be" in error for error in errors)
+        )
+
+    def test_readme_overview_contract_accepts_all_rows(self) -> None:
+        rows = "\n".join(f"| {row} | reviewed content |" for row in README_OVERVIEW_ROWS)
+        readme = (
+            "# PSB-TEST-001\n\n"
+            f"{README_OVERVIEW_HEADING}\n\n"
+            "| 観点 | 内容 |\n"
+            "|---|---|\n"
+            f"{rows}\n\n"
+            "## Details\n"
+        )
+        self.assertEqual(validate_readme_overview(readme, "test"), [])
+
+    def test_readme_overview_must_be_first_h2(self) -> None:
+        rows = "\n".join(f"| {row} | reviewed content |" for row in README_OVERVIEW_ROWS)
+        readme = (
+            "# PSB-TEST-001\n\n"
+            "## Goal\n\nSomething\n\n"
+            f"{README_OVERVIEW_HEADING}\n\n"
+            f"{rows}\n"
+        )
+        errors = validate_readme_overview(readme, "test")
+        self.assertTrue(any("must be the first H2" in error for error in errors))
+
+    def test_readme_overview_rejects_missing_and_placeholder_rows(self) -> None:
+        rows = "\n".join(
+            f"| {row} | {'TBD' if row == README_OVERVIEW_ROWS[0] else 'reviewed content'} |"
+            for row in README_OVERVIEW_ROWS[:-1]
+        )
+        readme = f"# PSB-TEST-001\n\n{README_OVERVIEW_HEADING}\n\n{rows}\n"
+        errors = validate_readme_overview(readme, "test")
+        self.assertTrue(any("must be substantive" in error for error in errors))
+        self.assertTrue(
+            any(README_OVERVIEW_ROWS[-1] in error for error in errors)
         )
 
 
