@@ -1,0 +1,35 @@
+{
+  "schema": "psb-runtime-sensor-health/1.0",
+  "provider": "falco",
+  "adapter_contract": "falco-json/0.44.0",
+  "sensor_release": "0.44.0",
+  "sensor_artifact_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "config_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "ruleset_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "observed_at": "2026-07-31T12:03:00Z",
+  "status": {
+    "running": true,
+    "connected": true,
+    "licensed": true
+  },
+  "enabled_rule_ids": [
+    "unexpected-shell",
+    "protected-file-write",
+    "privilege-escalation",
+    "runtime-socket-access",
+    "denied-network-destination",
+    "resource-abuse"
+  ],
+  "telemetry": {
+    "batch_first_sequence": 1,
+    "batch_last_sequence": 6,
+    "batch_event_count": 6,
+    "events_dropped": 0,
+    "output_dropped": 0
+  },
+  "source_metrics": {
+    "scap.n_drops": 0,
+    "falco.outputs_queue_num_drops": 0,
+    "falco.n_store_evts_drops": 0
+  }
+}

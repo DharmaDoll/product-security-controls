@@ -1,0 +1,12 @@
+{
+  "schema": "psb-runtime-response-policy/1.0",
+  "mode": "automatic-containment",
+  "automatic_destructive_actions": true,
+  "require_independent_authorization": false,
+  "preserve_evidence_before_action": false,
+  "allowed_handoffs": [
+    "kill-workload",
+    "delete-pod"
+  ],
+  "authorization_max_age_seconds": 86400
+}

@@ -1,0 +1,11 @@
+{
+  "schema": "psb-runtime-alert-delivery/1.0",
+  "receiver_id": "soc-runtime-primary",
+  "owned_by": "security",
+  "authentication": "signature",
+  "tls_verified": true,
+  "test_event_id": "synthetic-delivery-test-20260731",
+  "delivered": true,
+  "failed_deliveries": 0,
+  "observed_at": "2026-07-31T12:03:30Z"
+}

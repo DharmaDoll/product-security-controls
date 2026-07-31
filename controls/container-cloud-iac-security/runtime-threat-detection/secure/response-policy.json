@@ -1,0 +1,13 @@
+{
+  "schema": "psb-runtime-response-policy/1.0",
+  "mode": "authorization-bound-dry-run",
+  "automatic_destructive_actions": false,
+  "require_independent_authorization": true,
+  "preserve_evidence_before_action": true,
+  "allowed_handoffs": [
+    "open-incident",
+    "request-workload-isolation",
+    "request-credential-revocation"
+  ],
+  "authorization_max_age_seconds": 300
+}

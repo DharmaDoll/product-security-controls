@@ -87,7 +87,8 @@ contract, resolved Terraform plan decision gate, fail-closed policy behavior,
 explicit composition of implemented versus planned CI capabilities,
 provider-side bypass enforcement requirements, continuous drift detection,
 and bounded corrective action. `PSB-DETECT-001`, `PSB-REL-002`,
-`PSB-REL-003`, and `PSB-CONTAINER-001` are now implemented components.
+`PSB-REL-003`, `PSB-CONTAINER-001`, and `PSB-CONTAINER-004` are now
+implemented components.
 `PSB-REL-003` adds distinct source/build/deployment observations,
 artifact-bound CycloneDX publication, and a normalized Dependency-Track
 processing receipt. `PSB-REL-004` adds signed supplier product/artifact
@@ -347,9 +348,11 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
 9. `PSB-CONTAINER-003` — minimal patched container hosts, protected daemon and
    runtime sockets, user and kernel isolation, management restriction, and
    host audit policy.
-10. `PSB-CONTAINER-004` — workload-bound runtime event detection, alert
-   delivery, telemetry failure handling, and authorization-bound response
-   handoff.
+10. `PSB-CONTAINER-004` — implemented at E3 with workload-bound Falco and
+   Sysdig event adapters, six behavior categories, sensor/drop/sequence health,
+   alert delivery failure handling, sanitized evidence, and
+   authorization-bound response handoff. Live privileged sensor deployment
+   remains dependent on `PSB-CONTAINER-003`.
 11. `PSB-GOV-002` — narrow, owned, justified, and time-bound security exceptions
    with expiry enforcement.
 

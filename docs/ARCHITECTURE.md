@@ -22,6 +22,8 @@ Framework mappings and adoption guidance
 Each package starts with a validated one-page README overview of the problem,
 threat source, target, action, success state, and residual boundary, followed by
 the executable implementation and machine-readable atomic checks.
+`controls/README.md` is the generated human entry point grouped by product
+security domain and links directly to every implemented control package.
 
 ### 2. Shared tooling
 
@@ -34,6 +36,9 @@ the executable implementation and machine-readable atomic checks.
 ### 4. Generated views
 
 `generated/` contains indexes and reverse mappings produced from `control.yaml`.
+The human-facing `controls/README.md` is also generated from the same metadata
+so the root navigation and exported views do not require a second catalog
+source.
 
 ### 5. Experiments
 

@@ -1,0 +1,7 @@
+PASS RTD-001 provider adapter and sensor identity verified
+PASS RTD-002 exact workload and image binding ready
+PASS RTD-009 sensor health sequence and zero-drop telemetry verified
+PASS RTD-010 alert receiver delivery verified
+PASS RTD-011 authorization-bound response verified
+PASS RTD-012 runtime evidence policy is sanitized
+RESULT CLEAN no runtime policy events

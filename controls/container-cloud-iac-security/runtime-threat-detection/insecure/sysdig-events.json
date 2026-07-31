@@ -1,0 +1,165 @@
+[
+  {
+    "id": "sysdig-event-001",
+    "type": "policy",
+    "timestampRFC3339Nano": "2026-07-31T12:00:01Z",
+    "originator": "policy",
+    "category": "runtime",
+    "source": "syscall",
+    "name": "PSB Unexpected shell",
+    "severity": 0,
+    "description": "SYNTHETIC-SENSITIVE-COMMAND must not reach evidence",
+    "content": {
+      "falsePositive": false,
+      "fields": {
+        "psb.event_id": "sysdig-event-001",
+        "psb.rule_id": "unexpected-shell",
+        "psb.category": "process",
+        "psb.sequence": 1,
+        "psb.cluster": "synthetic-cluster",
+        "k8s.ns.name": "payments",
+        "psb.workload.kind": "Deployment",
+        "psb.workload.name": "checkout",
+        "k8s.pod.uid": "11111111-2222-4333-8444-555555555555",
+        "container.full_id": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "container.image.digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "psb.admission_policy_version": "psb-container-admission/1.0"
+      }
+    }
+  },
+  {
+    "id": "sysdig-event-002",
+    "type": "policy",
+    "timestampRFC3339Nano": "2026-07-31T12:00:02Z",
+    "originator": "policy",
+    "category": "runtime",
+    "source": "syscall",
+    "name": "PSB Protected file write",
+    "severity": 1,
+    "content": {
+      "falsePositive": false,
+      "fields": {
+        "psb.event_id": "sysdig-event-002",
+        "psb.rule_id": "protected-file-write",
+        "psb.category": "file",
+        "psb.sequence": 2,
+        "psb.cluster": "synthetic-cluster",
+        "k8s.ns.name": "payments",
+        "psb.workload.kind": "Deployment",
+        "psb.workload.name": "checkout",
+        "k8s.pod.uid": "11111111-2222-4333-8444-555555555555",
+        "container.full_id": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "container.image.digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "psb.admission_policy_version": "psb-container-admission/1.0"
+      }
+    }
+  },
+  {
+    "id": "sysdig-event-003",
+    "type": "policy",
+    "timestampRFC3339Nano": "2026-07-31T12:00:03Z",
+    "originator": "policy",
+    "category": "runtime",
+    "source": "syscall",
+    "name": "PSB Privilege escalation",
+    "severity": 2,
+    "content": {
+      "falsePositive": false,
+      "fields": {
+        "psb.event_id": "sysdig-event-003",
+        "psb.rule_id": "privilege-escalation",
+        "psb.category": "privilege",
+        "psb.sequence": 3,
+        "psb.cluster": "synthetic-cluster",
+        "k8s.ns.name": "payments",
+        "psb.workload.kind": "Deployment",
+        "psb.workload.name": "checkout",
+        "k8s.pod.uid": "11111111-2222-4333-8444-555555555555",
+        "container.full_id": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "container.image.digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "psb.admission_policy_version": "psb-container-admission/1.0"
+      }
+    }
+  },
+  {
+    "id": "sysdig-event-004",
+    "type": "policy",
+    "timestampRFC3339Nano": "2026-07-31T12:00:04Z",
+    "originator": "policy",
+    "category": "runtime",
+    "source": "syscall",
+    "name": "PSB Runtime socket access",
+    "severity": 3,
+    "content": {
+      "falsePositive": false,
+      "fields": {
+        "psb.event_id": "sysdig-event-004",
+        "psb.rule_id": "runtime-socket-access",
+        "psb.category": "runtime-boundary",
+        "psb.sequence": 4,
+        "psb.cluster": "synthetic-cluster",
+        "k8s.ns.name": "payments",
+        "psb.workload.kind": "Deployment",
+        "psb.workload.name": "checkout",
+        "k8s.pod.uid": "11111111-2222-4333-8444-555555555555",
+        "container.full_id": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "container.image.digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "psb.admission_policy_version": "psb-container-admission/1.0"
+      }
+    }
+  },
+  {
+    "id": "sysdig-event-005",
+    "type": "policy",
+    "timestampRFC3339Nano": "2026-07-31T12:00:05Z",
+    "originator": "policy",
+    "category": "runtime",
+    "source": "syscall",
+    "name": "PSB Denied network destination",
+    "severity": 4,
+    "content": {
+      "falsePositive": false,
+      "fields": {
+        "psb.event_id": "sysdig-event-005",
+        "psb.rule_id": "denied-network-destination",
+        "psb.category": "network",
+        "psb.sequence": 5,
+        "psb.cluster": "synthetic-cluster",
+        "k8s.ns.name": "payments",
+        "psb.workload.kind": "Deployment",
+        "psb.workload.name": "checkout",
+        "k8s.pod.uid": "11111111-2222-4333-8444-555555555555",
+        "container.full_id": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "container.image.digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "psb.admission_policy_version": "psb-container-admission/1.0"
+      }
+    }
+  },
+  {
+    "id": "sysdig-event-006",
+    "type": "policy",
+    "timestampRFC3339Nano": "2026-07-31T12:00:06Z",
+    "originator": "policy",
+    "category": "runtime",
+    "source": "syscall",
+    "name": "PSB Resource abuse",
+    "severity": 5,
+    "content": {
+      "falsePositive": false,
+      "fields": {
+        "psb.event_id": "sysdig-event-006",
+        "psb.rule_id": "resource-abuse",
+        "psb.category": "resource",
+        "psb.sequence": 6,
+        "psb.cluster": "synthetic-cluster",
+        "k8s.ns.name": "payments",
+        "psb.workload.kind": "Deployment",
+        "psb.workload.name": "checkout",
+        "k8s.pod.uid": "11111111-2222-4333-8444-555555555555",
+        "container.full_id": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "container.image.digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "psb.admission_policy_version": "psb-container-admission/1.0"
+      }
+    }
+  }
+]

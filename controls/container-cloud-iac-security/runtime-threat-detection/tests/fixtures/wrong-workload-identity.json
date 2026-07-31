@@ -1,0 +1,13 @@
+{
+  "schema": "psb-runtime-workload-identity/1.0",
+  "identity": {
+    "cluster": "synthetic-cluster",
+    "namespace": "payments",
+    "workload_kind": "Deployment",
+    "workload_name": "different-workload",
+    "pod_uid": "11111111-2222-4333-8444-555555555555",
+    "container_id": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "image_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "admission_policy_version": "psb-container-admission/1.0"
+  }
+}

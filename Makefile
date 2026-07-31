@@ -4,6 +4,7 @@ bootstrap:
 	@echo "No external bootstrap required."
 
 lint: validate-controls
+	@python3 scripts/generate-index.py --check
 	@python3 scripts/generate-mappings.py --check-only
 	@python3 scripts/generate-checklists.py --check
 

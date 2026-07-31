@@ -84,6 +84,12 @@ Mapping candidates are provisional. They become reviewed mappings only when an
 implemented control has an atomic check, runnable verification, negative
 fixture, and rationale that directly supports the cited identifier.
 
+`PSB-CONTAINER-004` now meets that implementation threshold for NIST
+`4.4.4`. Falco and Sysdig supply representative provider adapters through
+[`REF-CONTAINER-003`](SECURITY_GUIDANCE_SOURCES.md#ref-container-003) and
+[`REF-CONTAINER-004`](SECURITY_GUIDANCE_SOURCES.md#ref-container-004);
+they are tool references, not framework mappings or mandatory products.
+
 ## SLSA relationship
 
 SLSA v1.2 treats a container image as a build artifact. The trust flow is:

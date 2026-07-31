@@ -959,6 +959,84 @@ Disposition and limitations:
 - the pinned documentation source records reviewed semantics but does not pin
   a Kubernetes cluster version or prove that a cluster adopted them.
 
+<a id="ref-container-003"></a>
+
+### REF-CONTAINER-003 — Falco runtime event and health guidance
+
+- Status: `adopted-partially`
+- Type: official open-source runtime security product documentation
+- Publisher: The Falco Project
+- Reviewed release:
+  [`falcosecurity/falco` `0.44.0`](https://github.com/falcosecurity/falco/releases/tag/0.44.0)
+- Live documentation:
+  - [JSON output](https://falco.org/docs/outputs/formatting/#json-output)
+  - [Supported rule fields](https://falco.org/docs/reference/rules/supported-fields/)
+  - [Metrics](https://falco.org/docs/metrics/)
+- Repository review date: `2026-07-31`
+- Related controls:
+  - `PSB-CONTAINER-004` — Falco JSON adapter, workload identity, rule and
+    drop-health verification;
+  - `PSB-CONTAINER-003` — future live sensor installation, host privilege,
+    kernel compatibility, and sensor hardening.
+
+Adopted contribution:
+
+- consume structured JSON fields instead of parsing human-formatted output;
+- require workload, container, and exact image identity in every normalized
+  event;
+- treat kernel, internal-store, and output-queue drops as observation failure;
+- pin the adapter contract and independently review the sensor artifact,
+  configuration, and ruleset identity.
+
+Disposition and limitations:
+
+- Falco is a reference adapter, not a mandatory product or framework mapping;
+- repository tests use sanitized synthetic events and do not install a
+  privileged sensor or download a Falco artifact;
+- the release tag pins the reviewed binary release, while live documentation
+  can change and must be re-reviewed before an adapter-contract update;
+- deployment privilege, driver choice, kernel support, performance, retention,
+  and update verification remain live platform responsibilities under
+  `PSB-CONTAINER-003`.
+
+<a id="ref-container-004"></a>
+
+### REF-CONTAINER-004 — Sysdig runtime event forwarding and agent health guidance
+
+- Status: `adopted-partially`
+- Type: official commercial runtime security product documentation
+- Publisher: Sysdig
+- Live documentation:
+  - [Event forwarding](https://docs.sysdig.com/en/sysdig-secure/event-forwarding/)
+  - [Runtime policy events](https://docs.sysdig.com/en/sysdig-secure/runtime-policy-events/)
+  - [Sysdig Agent health metrics](https://docs.sysdig.com/en/sysdig-monitor/integrations/integration-library/sysdig-agent-health/)
+- Reviewed adapter contract date: `2026-07-31`
+- Related controls:
+  - `PSB-CONTAINER-004` — Sysdig runtime policy event adapter, agent and
+    forwarding-health verification;
+  - `PSB-CONTAINER-003` — future live agent installation and host-side
+    hardening.
+
+Adopted contribution:
+
+- normalize runtime policy event arrays into the provider-neutral runtime
+  schema;
+- bind event fields to exact workload and image identity supplied at admission;
+- verify agent health, connection, license, analyzer drop, and event forwarding
+  status independently from a zero-event result;
+- test end-to-end alert delivery separately from local detection.
+
+Disposition and limitations:
+
+- Sysdig is a reference adapter, not a mandatory product, purchase
+  recommendation, or framework mapping;
+- vendor SaaS documentation does not expose an immutable documentation commit,
+  so the contract date is review metadata rather than an immutable source pin;
+- `13.0.0-fixture` in repository data is synthetic schema input and is not a
+  recommended product version;
+- tests do not contact vendor APIs, use credentials, or prove subscription,
+  deployment, retention, or incident-response configuration.
+
 <a id="ref-deps-001"></a>
 
 ### REF-DEPS-001 — Takumi Guard dependency registry proxy

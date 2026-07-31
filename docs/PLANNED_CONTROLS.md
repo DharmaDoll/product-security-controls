@@ -45,7 +45,8 @@ PSB-CICD-006 ────────────────> PSB-CONTAINER-002
 
 PSB-SOURCE-001 + PSB-BUILD-001 ──> PSB-CONTAINER-003 boundary review
 
-PSB-CONTAINER-001 + PSB-CONTAINER-003 ──> PSB-CONTAINER-004
+PSB-CONTAINER-001 ──> PSB-CONTAINER-004 offline runtime evaluation
+PSB-CONTAINER-003 ──> PSB-CONTAINER-004 live sensor adoption
 
 PSB-GOV-002 ──> shared exception enforcement across later controls
 
@@ -57,12 +58,14 @@ PSB-AI-004 ──────────────────┘
 Within one priority, complete one E3 vertical slice before starting the next.
 The application-checklist import still requires its organization-owned source.
 `PSB-CICD-005`, `PSB-DETECT-001`, `PSB-REL-003`, `PSB-REL-004`, and
-`PSB-CONTAINER-001` are implemented. Lifecycle-linked artifact-bound SBOM
-publication now composes into the Golden Path, a Dependency-Track plus
-deployment-inventory query adapter extends `PSB-GOV-001`, and supplier SBOM
-trust now has a separate signed identity, signer lifecycle, and quarantine
-boundary. The container admission result unblocks later registry and runtime
-compositions.
+`PSB-CONTAINER-001`, and `PSB-CONTAINER-004` are implemented.
+Lifecycle-linked artifact-bound SBOM publication now composes into the Golden
+Path, a Dependency-Track plus deployment-inventory query adapter extends
+`PSB-GOV-001`, and supplier SBOM trust now has a separate signed identity,
+signer lifecycle, and quarantine boundary. The container admission identity
+now composes with Falco and Sysdig runtime event adapters. Live sensor
+installation and host-side enforcement remain dependent on
+`PSB-CONTAINER-003`.
 `PSB-CICD-006` is also ready because both CI/CD dependencies exist.
 
 ## Prerequisite: application checklist reconciliation
@@ -930,8 +933,9 @@ offline verifier for:
 
 ### PSB-CONTAINER-004 — Container runtime threat detection
 
-Status: `dependency-required` on the workload identity and admission contract
-from `PSB-CONTAINER-001`
+Status: `implemented` at E3 for the offline provider-neutral evaluator and
+synthetic Falco/Sysdig adapters; live adoption remains dependent on the
+host-side sensor boundary from `PSB-CONTAINER-003`
 Domain: `container-cloud-iac-security`
 
 #### Goal
@@ -971,12 +975,14 @@ route becomes unavailable and the absence of events is mistaken for safety.
 - destructive containment remains outside the automatic detector decision and
   requires a separately authorized response path.
 
-#### First runnable slice
+#### Implemented runnable slice
 
-Provide deterministic synthetic runtime events, a reviewed workload profile,
-and an offline evaluator for:
+The control provides deterministic synthetic Falco JSON and Sysdig runtime
+policy events, a provider-neutral normalizer, a reviewed workload profile, and
+an offline evaluator for:
 
-- exact workload, image digest, namespace, node, and policy-version binding;
+- exact workload, image digest, namespace, Pod UID, container ID, and
+  policy-version binding;
 - unexpected process and shell execution;
 - protected-file mutation and writes outside declared writable paths;
 - privilege, capability, namespace, sensitive mount, and runtime-socket access;
@@ -986,18 +992,22 @@ and an offline evaluator for:
 - missing sequence, stale events, dropped telemetry, unknown schema, evaluator
   failure, and alert-delivery failure as `ERROR`.
 
-No privileged runtime sensor is installed by the first slice. A later eBPF,
-audit, or managed-runtime adapter requires separate privilege, kernel,
-performance, integrity, and data-retention review.
+No privileged runtime sensor is installed by this slice. Live Falco, Sysdig,
+eBPF, audit, or managed-runtime deployment requires `PSB-CONTAINER-003`
+privilege, kernel, performance, integrity, and data-retention review. Falco and
+Sysdig are reference adapters rather than mandatory products.
 
-#### Provisional source allocation
+#### Source allocation
 
 - NIST SP 800-190: `4.4.4`; image and runtime software vulnerability
   detection under `4.1.1`, `4.1.3`, and `4.4.1` remains
   `PSB-DETECT-001`;
 - OWASP Docker Security Cheat Sheet: Rule 6 runtime-monitoring examples;
 - CIS Docker Benchmark: logging and audit mappings only after the authorized
-  v1.8.0 recommendation inventory is reviewed.
+  v1.8.0 recommendation inventory is reviewed;
+- Falco and Sysdig provider contracts:
+  `REF-CONTAINER-003` and `REF-CONTAINER-004`; these are tool references, not
+  framework mappings or mandatory products.
 
 #### Acceptance criteria
 
@@ -1012,6 +1022,9 @@ performance, integrity, and data-retention review.
   workloads or evidence merely because one detector fired;
 - positive, negative, missing-sensor, malformed-event, and delivery-failure
   cases reach E3.
+
+Implemented by
+[`controls/container-cloud-iac-security/runtime-threat-detection/`](../controls/container-cloud-iac-security/runtime-threat-detection/).
 
 ### PSB-GOV-002 — Time-bound security exceptions
 

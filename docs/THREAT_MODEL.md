@@ -141,6 +141,12 @@ mapping or a claim of complete coverage.
   impact;
 - admission-policy findings, unknown values, or evaluation failures being
   interpreted as an allow decision;
+- post-admission shell, protected-file write, privilege, runtime-socket,
+  unexpected network, or resource-abuse behavior escaping detection;
+- missing runtime rules, stale signals, event drops, disconnected forwarders,
+  or alert-delivery failure being interpreted as an event-free clean result;
+- ambiguous runtime event identity causing a detection or response to be
+  assigned to the wrong workload or mutable image;
 - registry, orchestrator, host OS, runtime, and application responsibilities
   being collapsed into one checklist whose evidence cannot identify the failed
   trust boundary.

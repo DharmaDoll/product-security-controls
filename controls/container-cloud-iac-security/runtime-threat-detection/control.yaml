@@ -1,0 +1,297 @@
+id: PSB-CONTAINER-004
+title: Detect workload-bound container runtime threats without treating telemetry failure as clean
+domain: container-cloud-iac-security
+summary: Normalize Falco or Sysdig runtime events, bind them to admitted workload identity, verify telemetry health, and hand detections to an authorization-bound response.
+check_context_version: "1.0"
+security_functions:
+  - detect
+  - verify
+  - respond
+threats:
+  - id: CONTAINER-RUNTIME-POST-ADMISSION-BEHAVIOR
+    description: A compromised or malicious workload starts unexpected processes modifies protected files escalates privileges crosses runtime boundaries communicates with denied destinations or exhausts resources after admission.
+  - id: CONTAINER-RUNTIME-IDENTITY-CONFUSION
+    description: A runtime event is attributed to the wrong workload or to a mutable image identity and causes incorrect triage or response.
+  - id: CONTAINER-RUNTIME-TELEMETRY-FAIL-OPEN
+    description: Sensor outage event drop rule removal forwarding failure or malformed input is interpreted as an event-free clean result.
+  - id: CONTAINER-RUNTIME-UNSAFE-RESPONSE
+    description: A detection triggers destructive action without independent authorization or leaks sensitive raw command and payload content into evidence.
+implementations:
+  insecure:
+    - insecure/falco-events.jsonl
+    - insecure/sysdig-events.json
+    - insecure/falco-detection-health.json
+    - insecure/sysdig-detection-health.json
+    - insecure/alert-delivery.json
+    - insecure/response-policy.json
+  secure:
+    - secure/runtime-policy.json
+    - secure/workload-identity.json
+    - secure/falco-events.jsonl
+    - secure/sysdig-events.json
+    - secure/falco-health.json
+    - secure/sysdig-health.json
+    - secure/alert-delivery.json
+    - secure/response-policy.json
+    - scripts/normalize.py
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-CONTAINER-004
+  expected:
+    - Falco and Sysdig event fixtures normalize to the same reviewed runtime behavior categories
+    - runtime events bind to the exact admitted workload container and immutable image digest
+    - event drops sensor disconnection malformed events and alert delivery failures return ERROR rather than CLEAN
+    - raw provider output is excluded and destructive response remains independently authorized
+checks:
+  - id: RTD-001
+    title: Provider adapter and sensor policy identity are reviewed and exact
+    required_state: provider adapter contract sensor release artifact config and ruleset digests exactly match the reviewed runtime policy
+    responsible_role: ci-platform
+    applies_to:
+      - runtime-sensor
+      - provider-adapter
+      - runtime-policy
+    context:
+      threat_actor: compromised update channel operator mistake or unreviewed sensor and rule change
+      attack_or_failure_scenario: runtime events are produced by an unexpected binary adapter configuration or ruleset whose semantics differ from review
+      why_required: detection output is only meaningful when the producing implementation and rule policy have an exact reviewed identity
+    verification:
+      type: hybrid
+      method: compare sensor health release artifact config ruleset and adapter contract with the reviewed provider policy
+      expected: any identity mismatch returns ERROR
+      evidence:
+        - sanitized sensor policy identity result
+    mapping_status: reviewed
+  - id: RTD-002
+    title: Every runtime event binds to exact admitted workload and image identity
+    required_state: cluster namespace workload Pod UID full container ID exact image digest and admission policy version match admission evidence
+    responsible_role: ci-platform
+    applies_to:
+      - runtime-event
+      - kubernetes-workload
+      - oci-image
+    context:
+      threat_actor: attacker event routing defect or operator using mutable and ambiguous workload labels
+      attack_or_failure_scenario: a true event is assigned to the wrong workload or an unrelated image and causes missed or destructive response
+      why_required: provider event content alone does not prove which immutable admitted artifact produced the behavior
+    verification:
+      type: automated
+      method: normalize provider fields and compare the full identity object with PSB-CONTAINER-001 admission evidence
+      expected: a missing mismatched or mutable identity returns ERROR
+      evidence:
+        - sanitized identity binding result
+    mapping_status: reviewed
+  - id: RTD-003
+    title: Unexpected process and shell execution is detected
+    required_state: reviewed rules emit a workload-bound event for unexpected process or shell startup
+    responsible_role: security
+    applies_to:
+      - container-process
+      - runtime-event
+    context:
+      threat_actor: external attacker malicious dependency or insider executing commands inside a running container
+      attack_or_failure_scenario: an interactive shell or unapproved binary starts after application compromise
+      why_required: admission settings cannot determine which processes execute after the workload starts
+    verification:
+      type: automated
+      method: evaluate synthetic Falco and Sysdig unexpected-shell events
+      expected: both adapters report RTD-003 as DETECTED
+      evidence:
+        - sanitized detection result
+    mapping_status: reviewed
+  - id: RTD-004
+    title: Protected runtime file modification is detected
+    required_state: reviewed rules emit a workload-bound event when a protected executable configuration or credential path is written
+    responsible_role: security
+    applies_to:
+      - container-filesystem
+      - runtime-event
+    context:
+      threat_actor: compromised process attempting persistence configuration tampering or credential replacement
+      attack_or_failure_scenario: a process modifies a protected runtime path after admission
+      why_required: a read-only baseline may have required writable paths and does not prove that every runtime write is intended
+    verification:
+      type: automated
+      method: evaluate synthetic Falco and Sysdig protected-file-write events
+      expected: both adapters report RTD-004 as DETECTED
+      evidence:
+        - sanitized detection result
+    mapping_status: reviewed
+  - id: RTD-005
+    title: Runtime privilege capability and namespace escalation is detected
+    required_state: reviewed rules emit a workload-bound event for unexpected privilege capability or namespace changes
+    responsible_role: security
+    applies_to:
+      - linux-privilege
+      - container-namespace
+      - runtime-event
+    context:
+      threat_actor: compromised process attempting container escape or elevated host operations
+      attack_or_failure_scenario: a process gains capabilities changes namespaces or performs a privileged operation after start
+      why_required: preventive restrictions reduce but do not observe attempted or newly exposed privilege escalation paths
+    verification:
+      type: automated
+      method: evaluate synthetic Falco and Sysdig privilege-escalation events
+      expected: both adapters report RTD-005 as DETECTED
+      evidence:
+        - sanitized detection result
+    mapping_status: reviewed
+  - id: RTD-006
+    title: Runtime socket and sensitive boundary access is detected
+    required_state: reviewed rules emit a workload-bound event for container runtime socket or sensitive host boundary access
+    responsible_role: security
+    applies_to:
+      - container-runtime-api
+      - host-boundary
+      - runtime-event
+    context:
+      threat_actor: compromised workload seeking control of sibling containers or the node
+      attack_or_failure_scenario: a process accesses a runtime control socket or sensitive host mount that bypasses container isolation
+      why_required: runtime API access can grant node-level authority and needs a distinct high-signal event beyond generic file writes
+    verification:
+      type: automated
+      method: evaluate synthetic Falco and Sysdig runtime-socket-access events
+      expected: both adapters report RTD-006 as DETECTED
+      evidence:
+        - sanitized detection result
+    mapping_status: reviewed
+  - id: RTD-007
+    title: Denied runtime listener and network destination activity is detected
+    required_state: reviewed rules emit a workload-bound event for an unexpected listener or denied destination
+    responsible_role: security
+    applies_to:
+      - container-network
+      - runtime-event
+    context:
+      threat_actor: compromised workload establishing command and control lateral movement or data exfiltration
+      attack_or_failure_scenario: a process opens an unexpected listener or connects outside the workload network policy expectation
+      why_required: network prevention can be misconfigured and does not by itself provide workload-attributed behavioral evidence
+    verification:
+      type: automated
+      method: evaluate synthetic Falco and Sysdig denied-network-destination events
+      expected: both adapters report RTD-007 as DETECTED
+      evidence:
+        - sanitized detection result
+    mapping_status: reviewed
+  - id: RTD-008
+    title: Abnormal process and resource consumption is detected
+    required_state: reviewed rules emit a workload-bound event for process count CPU memory or related resource abuse
+    responsible_role: security
+    applies_to:
+      - container-resource
+      - runtime-event
+    context:
+      threat_actor: malicious code denial-of-service input dependency bomb or faulty application loop
+      attack_or_failure_scenario: a running workload consumes abnormal process or compute resources and affects shared availability
+      why_required: hard limits bound maximum impact but behavioral detection identifies abuse and degradation before or at the limit
+    verification:
+      type: automated
+      method: evaluate synthetic Falco and Sysdig resource-abuse events
+      expected: both adapters report RTD-008 as DETECTED
+      evidence:
+        - sanitized detection result
+    mapping_status: reviewed
+  - id: RTD-009
+    title: Sensor health rule coverage sequence and drop state are complete
+    required_state: sensor and forwarder are healthy all required rules are enabled signals are fresh sequence is complete and event and output drops are zero
+    responsible_role: ci-platform
+    applies_to:
+      - runtime-sensor
+      - telemetry-pipeline
+      - rule-inventory
+    context:
+      threat_actor: sensor evasion overload kernel incompatibility rule drift network outage or monitoring service failure
+      attack_or_failure_scenario: missing events or rules produce an empty batch that is incorrectly reported as no malicious activity
+      why_required: absence of detections is evidence only when the observation path and required coverage are demonstrably complete
+    verification:
+      type: automated
+      method: validate provider health required rule set signal age batch count sequence and provider-specific drop counters
+      expected: any stale incomplete dropped disconnected or malformed state returns ERROR
+      evidence:
+        - sanitized sensor health result
+    mapping_status: reviewed
+  - id: RTD-010
+    title: Runtime alerts reach an owned authenticated receiver
+    required_state: a fresh signed test event reaches the policy-owned TLS-verified receiver with zero failed deliveries
+    responsible_role: security
+    applies_to:
+      - alert-forwarder
+      - incident-receiver
+    context:
+      threat_actor: routing drift expired credential receiver outage TLS failure or unowned integration
+      attack_or_failure_scenario: the sensor detects a threat but no accountable responder receives the alert
+      why_required: local sensor health does not prove end-to-end delivery into the operational response path
+    verification:
+      type: hybrid
+      method: compare fresh authenticated delivery evidence with receiver ID and owner in policy
+      expected: failed stale unauthenticated or wrong receiver delivery returns ERROR
+      evidence:
+        - sanitized alert delivery test result
+    mapping_status: reviewed
+  - id: RTD-011
+    title: Destructive response requires independent authorization
+    required_state: response is authorization-bound dry-run preserves evidence and cannot automatically kill delete isolate or revoke
+    responsible_role: security
+    applies_to:
+      - incident-response
+      - workload-isolation
+    context:
+      threat_actor: false positive compromised detector malicious rule update or responder automation defect
+      attack_or_failure_scenario: a forged or incorrect detection automatically destroys a workload or revokes production access
+      why_required: runtime detectors are fallible and high-impact response needs a separate authority and preserved evidence
+    verification:
+      type: automated
+      method: validate response mode authorization and evidence-preservation fields
+      expected: automatic destructive response is reported as a finding
+      evidence:
+        - sanitized response policy result
+    mapping_status: unmapped
+  - id: RTD-012
+    title: Runtime evidence excludes raw sensitive provider content
+    required_state: evidence contains only check provider rule category event decision metadata and excludes raw command arguments files payloads and credentials
+    responsible_role: security
+    applies_to:
+      - runtime-evidence
+      - security-log
+    context:
+      threat_actor: log reader compromised observability account or accidental disclosure through raw runtime telemetry
+      attack_or_failure_scenario: command lines environment values file content or packet payload expose credentials personal data or protected code in evidence
+      why_required: detection evidence must support triage without creating a second sensitive-data repository
+    verification:
+      type: automated
+      method: validate evidence allowlist and prove provider raw output markers never reach verifier output
+      expected: forbidden fields are rejected and synthetic sensitive markers are absent
+      evidence:
+        - sanitized evidence policy result
+    mapping_status: unmapped
+mappings:
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.4.4
+    relationship: detects
+    confidence: high
+    rationale: Workload-bound process file privilege runtime-boundary network and resource events plus sensor and delivery health provide executable post-admission detection evidence relevant to application vulnerabilities in running containers.
+    reviewer: product-security
+    review_date: "2026-07-31"
+    applies_to:
+      - RTD-001
+      - RTD-002
+      - RTD-003
+      - RTD-004
+      - RTD-005
+      - RTD-006
+      - RTD-007
+      - RTD-008
+      - RTD-009
+      - RTD-010
+limitations:
+  - Synthetic fixtures do not prove live cluster sensor deployment kernel visibility event delivery or SOC response.
+  - The adapters intentionally cover a narrow reviewed Falco JSON and Sysdig runtime policy event contract rather than every provider schema.
+  - Fixture artifact hashes and the synthetic Sysdig release value are not production version recommendations or supply-chain verification evidence.
+  - Encrypted payload semantics unknown behaviors kernel evasion and compromise of the sensor host remain outside detection.
+  - Automatic isolation process termination deletion and credential revocation are not implemented and require independently authorized response tooling.
+  - The NIST mappings express relevant relationships and do not establish SP 800-190 compliance or complete coverage.
+status: adopted
+owner: product-security
+evidence_level: E3

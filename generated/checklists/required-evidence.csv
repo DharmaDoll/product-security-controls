@@ -138,6 +138,18 @@ PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-008,ci-platform,hybrid,NetworkPolicy ver
 PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-008,ci-platform,hybrid,CNI enforcement evidence
 PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-009,ci-platform,automated,admission enforcement evidence
 PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-009,ci-platform,automated,error-state negative-test output
+PSB-CONTAINER-004,PSB-CONTAINER-004-RTD-001,ci-platform,hybrid,sanitized sensor policy identity result
+PSB-CONTAINER-004,PSB-CONTAINER-004-RTD-002,ci-platform,automated,sanitized identity binding result
+PSB-CONTAINER-004,PSB-CONTAINER-004-RTD-003,security,automated,sanitized detection result
+PSB-CONTAINER-004,PSB-CONTAINER-004-RTD-004,security,automated,sanitized detection result
+PSB-CONTAINER-004,PSB-CONTAINER-004-RTD-005,security,automated,sanitized detection result
+PSB-CONTAINER-004,PSB-CONTAINER-004-RTD-006,security,automated,sanitized detection result
+PSB-CONTAINER-004,PSB-CONTAINER-004-RTD-007,security,automated,sanitized detection result
+PSB-CONTAINER-004,PSB-CONTAINER-004-RTD-008,security,automated,sanitized detection result
+PSB-CONTAINER-004,PSB-CONTAINER-004-RTD-009,ci-platform,automated,sanitized sensor health result
+PSB-CONTAINER-004,PSB-CONTAINER-004-RTD-010,security,hybrid,sanitized alert delivery test result
+PSB-CONTAINER-004,PSB-CONTAINER-004-RTD-011,security,automated,sanitized response policy result
+PSB-CONTAINER-004,PSB-CONTAINER-004-RTD-012,security,automated,sanitized evidence policy result
 PSB-DEPS-001,PSB-DEPS-001-COOL-001,repository-admin,automated,sanitized verifier output
 PSB-DEPS-001,PSB-DEPS-001-COOL-002,security,automated,sanitized verifier output
 PSB-DEPS-001,PSB-DEPS-001-COOL-002,security,automated,exception approval

@@ -1,0 +1,8 @@
+FAIL RTD-011 response handoff is not authorization-bound and evidence-preserving
+DETECTED RTD-003 provider=falco rule=unexpected-shell category=process
+DETECTED RTD-004 provider=falco rule=protected-file-write category=file
+DETECTED RTD-005 provider=falco rule=privilege-escalation category=privilege
+DETECTED RTD-006 provider=falco rule=runtime-socket-access category=runtime-boundary
+DETECTED RTD-007 provider=falco rule=denied-network-destination category=network
+DETECTED RTD-008 provider=falco rule=resource-abuse category=resource
+RESULT DETECTED_OR_BLOCKED 7 finding(s); response handoff required

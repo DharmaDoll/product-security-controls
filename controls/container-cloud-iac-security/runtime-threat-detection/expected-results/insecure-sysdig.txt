@@ -1,0 +1,7 @@
+DETECTED RTD-003 provider=sysdig rule=unexpected-shell category=process
+DETECTED RTD-004 provider=sysdig rule=protected-file-write category=file
+DETECTED RTD-005 provider=sysdig rule=privilege-escalation category=privilege
+DETECTED RTD-006 provider=sysdig rule=runtime-socket-access category=runtime-boundary
+DETECTED RTD-007 provider=sysdig rule=denied-network-destination category=network
+DETECTED RTD-008 provider=sysdig rule=resource-abuse category=resource
+RESULT DETECTED_OR_BLOCKED 6 finding(s); response handoff required

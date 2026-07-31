@@ -50,34 +50,14 @@ controls/<domain>/<control>/
 対象外・残余リスクを記載します。詳細な実装・検証説明と、`control.yaml`から生成する
 行単位チェックリストの両方を維持します。
 
-## Implemented controls
+## Control catalog
 
-| Control | Outcome | Evidence |
-|---|---|---|
-| `PSB-CICD-001` | External GitHub Actions and reusable workflows use immutable references | E3 |
-| `PSB-CICD-002` | GitHub Actions expressions do not generate runner shell source | E3 |
-| `PSB-CICD-003` | pinned zizmorでworkflowをblock判定し、trusted branchのSARIFを記録 | E3 |
-| `PSB-CICD-004` | workflowをdeny-allにし、job目的ごとの明示的な最小`GITHUB_TOKEN`権限を強制 | E3 |
-| `PSB-CICD-005` | fork／未信頼PRをcredential-free jobへ隔離し、privileged処理を新しいtrusted runへ分離 | E3 |
-| `PSB-DEPS-001` | managed registry proxyを強制し、公開直後dependencyの採用を独立した7日間cooldownで制御 | E3 |
-| `PSB-DEPS-002` | install時のdependency code executionをdefault denyに制御 | E3 |
-| `PSB-DEPS-003` | frozen lockfileとartifact integrityを検証 | E3 |
-| `PSB-REL-001` | release署名とSLSA provenanceをconsumer expectationへ照合 | E3 |
-| `PSB-REL-002` | release artifactとprovenanceをdigest-boundで公開・配布 | E3 |
-| `PSB-REL-003` | Source／Build／Deployment SBOMを分離し、artifact-bound Build SBOMとDependency-Track処理をfail-closedで検証 | E3 |
-| `PSB-REL-004` | supplier SBOMの署名・製品・artifact・signer lifecycleを検証し、不一致を通常portfolioから隔離 | E3 |
-| `PSB-BUILD-001` | untrusted buildをcredential・deploy権限・broad egressから隔離 | E3 |
-| `PSB-BUILD-002` | 一貫したrelease buildを承認済みhosted platformへ限定 | E3 |
-| `PSB-BUILD-003` | platformがauthentic SLSA provenanceを自動生成 | E3 |
-| `PSB-GOV-001` | local SBOMとDependency-Track検索からbuild artifact、active deployment、dry-run対応planを生成 | E3 |
-| `PSB-IAC-001` | versioned secure IaC module、resolved-plan PaC gate、provider enforcement、drift controlによるGolden Path | E3 |
-| `PSB-AI-004` | Claude CodeとCodexのfilesystem・network・extension・高影響操作を共通のleast-privilege runtime policyで統制 | E3 |
-| `PSB-DETECT-001` | integrity検証済みTrivyと固定DB identityで脆弱性・container・IaC・secret・SBOMを検査し、DockSecの任意remediation profileをAI非依存gateへ限定してclean／finding／errorを分離 | E3 |
-| `PSB-CONTAINER-001` | exact OCI digestとSLSA provenanceをnon-root・host-isolated・resource/network-bounded workloadへfail-closed admissionで結合 | E3 |
-| `PSB-SOURCE-001` | MDM、EDR/XDR、strong authentication、secret guard、IDE feedback、sandboxを含む28のdeveloper endpoint guardrail | E3 |
-| `PSB-SOURCE-002` | リポジトリ所有のGit hooksで開発端末からの情報漏洩を予防 | E3 |
-| `PSB-SOURCE-003` | GitHub dorking、全履歴scan、公開面reviewでpublic repository露出を検証 | E3 |
-| `PSB-SOURCE-004` | GitHub OAuth token、PAT、SSH key、App credentialの最小権限・期限・保管・棚卸し・失効を統制 | E3 |
+実装済みcontrolは、ドメイン別の
+[`controls/README.md`](controls/README.md)から探せます。各controlへ直接移動でき、
+security function、atomic check数、成熟度、証跡レベルも一覧できます。
+
+担当、確認方法、証跡、framework mappingを含む行単位の導入判断には、後述する
+生成チェックリストを使用してください。
 
 Software supply-chain controlの関係は
 [`docs/SUPPLY_CHAIN_PRINCIPLES.md`](docs/SUPPLY_CHAIN_PRINCIPLES.md)を参照してください。

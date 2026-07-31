@@ -10,6 +10,7 @@
 ├── .codex/
 │   └── prompts/
 ├── controls/
+│   ├── README.md
 │   ├── secure-design/
 │   ├── secure-coding/
 │   ├── source-protection/
@@ -97,6 +98,10 @@ Tools are referenced inside controls.
 Generated checklist CSV, Markdown, and XLSX files are derived from atomic
 `checks` and check-level mapping links in `control.yaml`. Regenerate them with
 `make generate-checklists`; do not maintain a separate spreadsheet source.
+
+The domain-grouped [`controls/README.md`](../controls/README.md) and flat
+`generated/CONTROL_INDEX.md` are both derived from `control.yaml`. Regenerate
+them with `make generate-index`; `make lint` rejects stale catalog views.
 
 Each control package's `README.md` begins with the validated
 `このcontrolを一枚で理解する` table defined in

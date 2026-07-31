@@ -1,0 +1,71 @@
+{
+  "schema": "psb-runtime-threat-policy/1.0",
+  "maximum_signal_age_seconds": 300,
+  "providers": {
+    "falco": {
+      "provider": "falco",
+      "adapter_contract": "falco-json/0.44.0",
+      "sensor_release": "0.44.0",
+      "sensor_artifact_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "config_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "ruleset_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "sysdig": {
+      "provider": "sysdig",
+      "adapter_contract": "sysdig-runtime-policy-events/2026-07-31",
+      "sensor_release": "13.0.0-fixture",
+      "sensor_artifact_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "config_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "ruleset_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    }
+  },
+  "required_rules": [
+    {
+      "id": "unexpected-shell",
+      "category": "process"
+    },
+    {
+      "id": "protected-file-write",
+      "category": "file"
+    },
+    {
+      "id": "privilege-escalation",
+      "category": "privilege"
+    },
+    {
+      "id": "runtime-socket-access",
+      "category": "runtime-boundary"
+    },
+    {
+      "id": "denied-network-destination",
+      "category": "network"
+    },
+    {
+      "id": "resource-abuse",
+      "category": "resource"
+    }
+  ],
+  "alert_delivery": {
+    "receiver_id": "soc-runtime-primary",
+    "owned_by": "security"
+  },
+  "evidence": {
+    "allowed_fields": [
+      "check_id",
+      "provider",
+      "rule_id",
+      "category",
+      "event_id",
+      "decision"
+    ],
+    "forbidden_fields": [
+      "command",
+      "arguments",
+      "file_content",
+      "network_payload",
+      "raw_output",
+      "credential"
+    ],
+    "include_raw_provider_event": false
+  }
+}
