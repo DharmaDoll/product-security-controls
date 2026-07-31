@@ -1,0 +1,4 @@
+ERROR scanner execution did not complete: scanner_unavailable
+ERROR scanner database digest does not match reviewed metadata
+ERROR sanitized evidence contains prohibited field $.findings[0].match
+ERROR invalid scanner result JSON: Expecting property name enclosed in double quotes

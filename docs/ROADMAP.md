@@ -24,7 +24,9 @@ Implement four complete controls:
    `PSB-DEPS-002`; normalized frozen lockfile and artifact integrity verification
    is implemented as `PSB-DEPS-003`
 3. Secure secret handling in an application
-4. Trivy verification for container/IaC/secret examples
+4. Trivy verification for container/IaC/secret examples — implemented as
+   `PSB-DETECT-001` with immutable release verification, offline database
+   identity, sanitized evidence, and distinct clean/finding/error states
 
 Each must include insecure, secure, tests, expected results, and mappings.
 
@@ -69,6 +71,10 @@ Add:
 - runner hardening;
 - verified downloads;
 - container digest pinning.
+- container registry transport, least privilege, mutation protection, audit,
+  and stale-image lifecycle;
+- container host and daemon hardening;
+- post-admission container runtime threat detection with fail-closed telemetry.
 
 Build credential, privilege, sandbox, egress, and telemetry containment is
 implemented as `PSB-BUILD-001`.
@@ -78,8 +84,11 @@ Secure infrastructure golden-path composition is implemented as
 contract, resolved Terraform plan decision gate, fail-closed policy behavior,
 explicit composition of implemented versus planned CI capabilities,
 provider-side bypass enforcement requirements, continuous drift detection,
-and bounded corrective action. It does not mark the planned Trivy, SBOM,
-provenance distribution, artifact signing, or cloud OIDC profiles complete.
+and bounded corrective action. `PSB-DETECT-001`, `PSB-REL-002`,
+`PSB-REL-003`, and `PSB-CONTAINER-001` are now implemented components.
+`PSB-REL-003` adds artifact-bound CycloneDX publication and a normalized
+Dependency-Track processing receipt; artifact signing generation and cloud
+OIDC profiles remain incomplete.
 
 Also add source-protection controls for public repository exposure, including
 GitHub dorking scenarios, secret discovery in current and historical content,
@@ -175,6 +184,8 @@ Add:
 
 Signed SLSA provenance expectation verification is implemented as
 `PSB-REL-001`.
+Artifact-bound CycloneDX generation, publication, completeness verification,
+and fail-closed Dependency-Track ingestion are implemented as `PSB-REL-003`.
 
 ## Phase 5 — AI development security
 
@@ -228,7 +239,10 @@ Add:
 - repository template documentation.
 
 SBOM impact search and evidence-first supply-chain incident response planning is
-implemented as `PSB-GOV-001`.
+implemented as `PSB-GOV-001`, including a normalized read-only
+Dependency-Track exact CVE/PURL portfolio adapter that requires complete
+pagination and links project UUID/version and SBOM serials back to build
+evidence.
 
 ## Prioritized control backlog
 
@@ -281,7 +295,13 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    tests.
 8. `PSB-DETECT-001` — pinned, integrity-verified Trivy verification for
    filesystem, container, IaC, secret, and SBOM fixtures, with scanner errors
-   distinct from clean results.
+   distinct from clean results — implemented with checksum and Sigstore
+   verification, known affected-version rejection, database identity,
+   secret-safe normalization, exact expiring exceptions, and a documented
+   Checkov non-adoption decision. An optional DockSec `2026.7.5` adapter now
+   adds Dockerfile and Compose remediation feedback through an offline
+   scan-only fail-closed gate; AI output remains non-authoritative and the
+   upstream Action is rejected because its internal downloads are mutable.
 
 ### P2 — Exposure reduction and release completeness
 
@@ -296,10 +316,27 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
 4. `PSB-CICD-006` — short-lived, audience-bound OIDC federation without stored
    cloud credentials.
 5. `PSB-REL-003` — SBOM generation, artifact binding, publication,
-   completeness checks, and consumer-side mismatch handling.
+   completeness checks, consumer-side mismatch handling, and fail-closed
+   Dependency-Track processing — implemented with seven atomic checks,
+   positive and negative fixtures, distinct runtime error states, and Golden
+   Path plus `PSB-GOV-001` composition.
 6. `PSB-CONTAINER-001` — immutable image digests, non-root execution, minimal
-   capabilities, and admission-policy verification.
-7. `PSB-GOV-002` — narrow, owned, justified, and time-bound security exceptions
+   capabilities, admission-policy verification, and a follow-on composition
+   that applies existing `PSB-REL-001` SLSA provenance verification to the
+   exact admitted OCI manifest digest — implemented with API-native Kubernetes
+   fixtures, nine atomic admission checks, default-deny network policy,
+   platform PID and fail-closed evidence, and actual `PSB-REL-001` verifier
+   composition.
+7. `PSB-CONTAINER-002` — registry transport, repository-scoped authorization,
+   short-lived identity, immutable release protection, audit, and image
+   lifecycle enforcement.
+8. `PSB-CONTAINER-003` — minimal patched container hosts, protected daemon and
+   runtime sockets, user and kernel isolation, management restriction, and
+   host audit policy.
+9. `PSB-CONTAINER-004` — workload-bound runtime event detection, alert
+   delivery, telemetry failure handling, and authorization-bound response
+   handoff.
+10. `PSB-GOV-002` — narrow, owned, justified, and time-bound security exceptions
    with expiry enforcement.
 
 ### P3 — Extended application and AI development security
@@ -360,6 +397,12 @@ limitations, and reviewed row-level mappings.
 
 Add the following only with a concrete implementation and automated evidence:
 
+- CIS Docker Benchmark v1.8.0 as the Docker-specific configuration benchmark
+  for `PSB-CONTAINER-001..004`, with recommendation ownership split by
+  workload admission, registry, host or daemon, and runtime-detection outcome.
+  Activation is `input-required` until an official authorized PDF, SHA-256,
+  recommendation inventory, and reuse terms are reviewed; do not use
+  third-party PDF mirrors;
 - CIS Software Supply Chain Security Benchmark controls that add unique,
   automatable checks beyond the pinned GitHub security guidance;
 - AWS security guidance as an AWS provider profile when AWS-specific IAM,

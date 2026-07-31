@@ -124,6 +124,20 @@ PSB-CICD-005,PSB-CICD-005-PRB-004,repository-admin,automated,negative-test outpu
 PSB-CICD-005,PSB-CICD-005-PRB-005,repository-admin,automated,sanitized verifier output
 PSB-CICD-005,PSB-CICD-005-PRB-005,repository-admin,automated,branch protection evidence
 PSB-CICD-005,PSB-CICD-005-PRB-006,ci-platform,automated,negative-test output
+PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-001,developer,automated,admitted image reference
+PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-001,developer,automated,OCI manifest digest verifier output
+PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-002,release-manager,automated,PSB-REL-001 verifier output
+PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-002,release-manager,automated,provenance expectation policy
+PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-003,developer,automated,sanitized admission verifier output
+PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-004,developer,automated,sanitized admission verifier output
+PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-005,developer,automated,sanitized admission verifier output
+PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-006,developer,automated,sanitized admission verifier output
+PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-007,shared,hybrid,workload resource verifier output
+PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-007,shared,hybrid,runtime PID policy evidence
+PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-008,ci-platform,hybrid,NetworkPolicy verifier output
+PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-008,ci-platform,hybrid,CNI enforcement evidence
+PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-009,ci-platform,automated,admission enforcement evidence
+PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-009,ci-platform,automated,error-state negative-test output
 PSB-DEPS-001,PSB-DEPS-001-COOL-001,repository-admin,automated,sanitized verifier output
 PSB-DEPS-001,PSB-DEPS-001-COOL-002,security,automated,sanitized verifier output
 PSB-DEPS-001,PSB-DEPS-001-COOL-002,security,automated,exception approval
@@ -143,11 +157,30 @@ PSB-DEPS-003,PSB-DEPS-003-LOCK-002,repository-admin,automated,sanitized verifier
 PSB-DEPS-003,PSB-DEPS-003-LOCK-003,developer,automated,sanitized verifier output
 PSB-DEPS-003,PSB-DEPS-003-LOCK-004,developer,automated,negative-test output
 PSB-DEPS-003,PSB-DEPS-003-LOCK-005,developer,automated,negative-test output
+PSB-DETECT-001,PSB-DETECT-001-DVS-001,ci-platform,automated,sanitized release verification receipt
+PSB-DETECT-001,PSB-DETECT-001-DVS-001,ci-platform,automated,artifact digest negative-test output
+PSB-DETECT-001,PSB-DETECT-001-DVS-002,security,automated,scanner database metadata
+PSB-DETECT-001,PSB-DETECT-001-DVS-002,security,automated,normalized result metadata
+PSB-DETECT-001,PSB-DETECT-001-DVS-003,ci-platform,automated,expected-results/clean.txt
+PSB-DETECT-001,PSB-DETECT-001-DVS-003,ci-platform,automated,expected-results/findings.txt
+PSB-DETECT-001,PSB-DETECT-001-DVS-003,ci-platform,automated,expected-results/errors.txt
+PSB-DETECT-001,PSB-DETECT-001-DVS-004,shared,automated,sanitized category finding output
+PSB-DETECT-001,PSB-DETECT-001-DVS-004,shared,automated,isolated insecure fixtures
+PSB-DETECT-001,PSB-DETECT-001-DVS-005,security,automated,sanitized normalized JSON
+PSB-DETECT-001,PSB-DETECT-001-DVS-005,security,automated,secret-leak negative-test output
+PSB-DETECT-001,PSB-DETECT-001-DVS-006,security,automated,exception policy output
+PSB-DETECT-001,PSB-DETECT-001-DVS-007,security,automated,pinned comparison decision
+PSB-DETECT-001,PSB-DETECT-001-DVS-007,security,automated,pinned DockSec adoption profile
+PSB-DETECT-001,PSB-DETECT-001-DVS-008,ci-platform,automated,sanitized DockSec gate result
+PSB-DETECT-001,PSB-DETECT-001-DVS-008,ci-platform,automated,DockSec profile negative-test output
+PSB-DETECT-001,PSB-DETECT-001-DVS-008,ci-platform,automated,scanner error-state output
 PSB-GOV-001,PSB-GOV-001-INC-001,incident-response,automated,sanitized impact report
 PSB-GOV-001,PSB-GOV-001-INC-002,build-platform,automated,sanitized verifier output
 PSB-GOV-001,PSB-GOV-001-INC-003,incident-response,automated,generated dry-run response plan
 PSB-GOV-001,PSB-GOV-001-INC-004,incident-response,automated,negative-test output
 PSB-GOV-001,PSB-GOV-001-INC-005,incident-response,automated,negative-test output
+PSB-GOV-001,PSB-GOV-001-INC-006,incident-response,hybrid,sanitized Dependency-Track impact response
+PSB-GOV-001,PSB-GOV-001-INC-006,incident-response,hybrid,project UUID version SBOM serial and build-record linkage
 PSB-IAC-001,PSB-IAC-001-IAC-001,ci-platform,automated,sanitized verifier output
 PSB-IAC-001,PSB-IAC-001-IAC-001,ci-platform,automated,module release review
 PSB-IAC-001,PSB-IAC-001-IAC-002,ci-platform,automated,sanitized plan verifier output
@@ -158,6 +191,7 @@ PSB-IAC-001,PSB-IAC-001-IAC-005,ci-platform,automated,negative-test output
 PSB-IAC-001,PSB-IAC-001-IAC-005,ci-platform,automated,error-state output
 PSB-IAC-001,PSB-IAC-001-IAC-006,ci-platform,hybrid,sanitized composition verifier output
 PSB-IAC-001,PSB-IAC-001-IAC-006,ci-platform,hybrid,referenced control verifier outputs
+PSB-IAC-001,PSB-IAC-001-IAC-006,ci-platform,hybrid,PSB-REL-003 artifact SBOM and processing receipt evidence
 PSB-IAC-001,PSB-IAC-001-IAC-007,ci-platform,hybrid,sanitized verifier output
 PSB-IAC-001,PSB-IAC-001-IAC-007,ci-platform,hybrid,cloud trust policy
 PSB-IAC-001,PSB-IAC-001-IAC-008,ci-platform,external-evidence,provider enforcement configuration
@@ -186,6 +220,20 @@ PSB-REL-002,PSB-REL-002-RPD-003,release-manager,automated,publication timestamps
 PSB-REL-002,PSB-REL-002-RPD-004,release-manager,automated,sanitized RPD-004 verifier result
 PSB-REL-002,PSB-REL-002-RPD-004,release-manager,automated,protected artifact-family publication policy
 PSB-REL-002,PSB-REL-002-RPD-005,release-manager,automated,sanitized RPD-005 negative-test output
+PSB-REL-003,PSB-REL-003-SBM-001,release-manager,automated,sanitized SBM-001 verifier result
+PSB-REL-003,PSB-REL-003-SBM-001,release-manager,automated,generated CycloneDX SBOM
+PSB-REL-003,PSB-REL-003-SBM-002,release-manager,automated,sanitized SBM-002 verifier result
+PSB-REL-003,PSB-REL-003-SBM-002,release-manager,automated,release manifest digest record
+PSB-REL-003,PSB-REL-003-SBM-003,release-manager,automated,sanitized SBM-003 verifier result
+PSB-REL-003,PSB-REL-003-SBM-003,release-manager,automated,component graph fixture
+PSB-REL-003,PSB-REL-003-SBM-004,release-manager,automated,sanitized SBM-004 verifier result
+PSB-REL-003,PSB-REL-003-SBM-004,release-manager,automated,release storage policy
+PSB-REL-003,PSB-REL-003-SBM-005,ci-platform,hybrid,sanitized SBM-005 verifier result
+PSB-REL-003,PSB-REL-003-SBM-005,ci-platform,hybrid,API team permission evidence without key value
+PSB-REL-003,PSB-REL-003-SBM-006,release-manager,automated,sanitized SBM-006 receipt result
+PSB-REL-003,PSB-REL-003-SBM-006,release-manager,automated,normalized processing receipt
+PSB-REL-003,PSB-REL-003-SBM-007,security,automated,sanitized SBM-007 freshness result
+PSB-REL-003,PSB-REL-003-SBM-007,security,automated,analyzer health metadata
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-001,shared,external-evidence,identity or source-platform credential policy
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-002,developer,hybrid,credential helper configuration
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-002,developer,hybrid,sanitized assessment result

@@ -28,6 +28,7 @@
 │   ├── cisa-product-security-bad-practices/
 │   ├── mitre-attack/
 │   ├── mitre-atlas/
+│   ├── nist-sp-800-190/
 │   ├── openssf-osps-baseline/
 │   ├── owasp-top10/
 │   ├── owasp-asvs/
@@ -54,6 +55,7 @@
 │   ├── REPOSITORY_STRUCTURE.md
 │   ├── THREAT_MODEL.md
 │   ├── CICD_THREAT_MATRIX_RECONCILIATION.md
+│   ├── CONTAINER_SECURITY_SOURCE_ALLOCATION.md
 │   ├── FRAMEWORK_MAPPING.md
 │   ├── CODEX_WORKFLOW.md
 │   ├── PLANNED_CONTROLS.md

@@ -1,0 +1,52 @@
+{
+  "schema": "psb-docksec-adapter-policy/v1",
+  "tool": {
+    "name": "docksec",
+    "version": "latest",
+    "source_commit": "main",
+    "distribution": {
+      "repository": "https://pypi.org/project/docksec/",
+      "filename": "docksec-latest.whl",
+      "sha256": "unverified",
+      "trusted_publishing": false
+    }
+  },
+  "adoption": {
+    "role": "authoritative-security-scanner",
+    "primary_scanner": "docksec-ai",
+    "replaces_primary_scanner": true,
+    "unique_value": [],
+    "upstream_github_action": "use-version-tag"
+  },
+  "gate": {
+    "mode": "ai-only",
+    "network": "unrestricted",
+    "output": "html",
+    "fail_on": "AI-SCORE",
+    "cache": "accept-stale",
+    "decision_source": "ai-score",
+    "ai_remediation": "blocking",
+    "exit_mapping": {
+      "0": "clean",
+      "1": "finding",
+      "2": "clean",
+      "3": "clean"
+    }
+  },
+  "runtime": {
+    "installation": "upstream-auto-installer",
+    "docksec_distribution_integrity": "not-required",
+    "transitive_dependency_lock": "not-required",
+    "external_scanner_integrity": "not-required",
+    "automatic_external_tool_installer": "allowed",
+    "github_action_reference": "version-tag"
+  },
+  "prohibited": [],
+  "evidence": {
+    "schema": "arbitrary-report",
+    "retain_raw_output": true,
+    "retain_ai_output_as_gate_evidence": true,
+    "target_path": "absolute",
+    "severity_counts": []
+  }
+}

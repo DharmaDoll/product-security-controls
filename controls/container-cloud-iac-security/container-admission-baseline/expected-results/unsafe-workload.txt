@@ -1,0 +1,29 @@
+FAIL CNT-001 containers/api image is not pinned to an exact sha256 digest
+FAIL CNT-001 first-slice evidence must cover exactly one unique admitted image identity
+FAIL CNT-003 service account token automount must be disabled
+FAIL CNT-003 pod runAsNonRoot must be true
+FAIL CNT-003 pod runAsUser is absent root or below policy minimum
+FAIL CNT-003 containers/api runAsNonRoot must be true
+FAIL CNT-003 containers/api runAsUser is absent root or below minimum
+FAIL CNT-003 containers/api privileged must be false
+FAIL CNT-003 containers/api allowPrivilegeEscalation must be false
+FAIL CNT-004 containers/api must drop ALL capabilities
+FAIL CNT-004 containers/api must add no capabilities
+FAIL CNT-005 pod hostNetwork must be explicitly false
+FAIL CNT-005 pod hostPID must be explicitly false
+FAIL CNT-005 pod hostIPC must be explicitly false
+FAIL CNT-005 volume runtime-socket uses forbidden type hostPath
+FAIL CNT-005 volume runtime-socket exposes a host path
+FAIL CNT-005 containers/api mounts a container runtime socket
+FAIL CNT-006 pod seccomp profile must be RuntimeDefault
+FAIL CNT-006 containers/api root filesystem must be read-only
+FAIL CNT-007 containers/api lacks CPU or memory requests
+FAIL CNT-007 containers/api lacks CPU or memory limits
+FAIL CNT-007 containers/api has invalid CPU quantities
+FAIL CNT-007 containers/api has invalid memory quantities
+FAIL CNT-008 network policy selector does not target the workload
+FAIL CNT-008 network policy must cover ingress and egress
+FAIL CNT-008 baseline network policy ingress is not default deny
+FAIL CNT-008 baseline network policy egress is not default deny
+FAIL CNT-002 provenance cannot be bound without one exact image identity
+DECISION DENY 28 violation(s)

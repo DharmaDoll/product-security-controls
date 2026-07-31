@@ -233,10 +233,11 @@ Disposition:
 - License or redistribution terms: not supplied separately
 - Related controls:
   - `PSB-IAC-001` — secure IaC Golden Path;
-  - `PSB-DETECT-001` — planned integrity-verified scanner execution;
+  - `PSB-DETECT-001` — implemented integrity-verified scanner execution;
+  - `PSB-CONTAINER-001` — implemented OCI provenance and workload admission;
   - `PSB-CICD-006` — planned cloud OIDC federation;
-  - `PSB-REL-002` and `PSB-REL-003` — planned provenance and SBOM
-    distribution.
+  - `PSB-REL-002` — implemented provenance distribution;
+  - `PSB-REL-003` — planned SBOM distribution.
 
 Disposition:
 
@@ -683,7 +684,7 @@ Disposition and limitations:
 - Related controls and plans:
   - implemented CI/CD, build, dependency, release, IaC, and source-protection
     controls listed in the reconciliation;
-  - `PSB-CICD-006`, `PSB-DEPS-004`, `PSB-DETECT-001`, and `PSB-REL-003`;
+  - `PSB-CICD-006`, `PSB-DEPS-004`, and `PSB-REL-003`;
   - roadmap gaps for CI runner hardening and artifact-signing generation.
 
 Adopted contribution:
@@ -822,6 +823,303 @@ Disposition and limitations:
 - public APIs and detector behavior can change; the pinned source snapshot does
   not by itself pin a future executable integration.
 
+<a id="ref-container-001"></a>
+
+### REF-CONTAINER-001 — OWASP Docker Security Cheat Sheet
+
+- Status: `reviewed`
+- Type: community container implementation cheat sheet
+- Publisher: OWASP Cheat Sheet Series
+- Product scope: Docker, with selected Kubernetes examples
+- Live URL:
+  [Docker Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html)
+- Pinned source:
+  [`Docker_Security_Cheat_Sheet.md` at `cb62ae45198d07302082d4725fc3bdfe24b25dd3`](https://github.com/OWASP/CheatSheetSeries/blob/cb62ae45198d07302082d4725fc3bdfe24b25dd3/cheatsheets/Docker_Security_Cheat_Sheet.md)
+- Source commit date: `2026-05-12`
+- Reviewed file SHA-256:
+  `3442288cd44dda71aed39e82d6abb7d1d6ffb12350ad1a667d8299c2b5488a43`
+- License:
+  [CC BY-SA 4.0](https://github.com/OWASP/CheatSheetSeries/blob/cb62ae45198d07302082d4725fc3bdfe24b25dd3/LICENSE.md)
+- Repository review date: `2026-07-30`
+- Related plans:
+  - `PSB-CONTAINER-001` — workload runtime baseline and admission;
+  - `PSB-CONTAINER-002` — registry transport, authorization, audit, and
+    lifecycle;
+  - `PSB-CONTAINER-003` — container host and daemon hardening;
+  - `PSB-CONTAINER-004` — post-admission runtime threat detection;
+  - `PSB-DETECT-001` — image and runtime vulnerability detection;
+  - `PSB-CODE-001` — secrets excluded from images;
+  - release-integrity controls for signature and provenance evidence.
+- Allocation:
+  [Container Security Source Allocation](CONTAINER_SECURITY_SOURCE_ALLOCATION.md)
+
+Adopted contribution:
+
+- use its insecure and secure patterns to design tests for non-root execution,
+  capability reduction, privilege-escalation prevention, network isolation,
+  seccomp or other Linux security modules, resource limits, read-only
+  filesystems, and admission enforcement;
+- retain host and Docker updates, daemon socket protection, rootless mode,
+  logging, secret injection, scanning, and supply-chain guidance under their
+  separate control owners;
+- treat product commands and Kubernetes snippets as implementation examples,
+  not universal acceptance criteria.
+
+Disposition and limitations:
+
+- this cheat sheet is reference guidance, not a framework registry, and its
+  rule numbers MUST NOT appear as `control.yaml` framework mappings;
+- Docker-specific commands do not prove equivalent Kubernetes, containerd,
+  CRI-O, managed-service, host, or cloud enforcement;
+- examples may change after the pinned file commit and require semantic review
+  before adoption;
+- no tool mentioned by the cheat sheet is installed or authorized solely by
+  this reference.
+
+<a id="ref-container-002"></a>
+
+### REF-CONTAINER-002 — Kubernetes workload and admission security guidance
+
+- Status: `adopted-partially`
+- Type: official platform configuration and admission implementation guidance
+- Publisher: Kubernetes project
+- Pinned source repository:
+  [`kubernetes/website` at `e95679cfa58a843e90bf8575d8b0db548dae452b`](https://github.com/kubernetes/website/tree/e95679cfa58a843e90bf8575d8b0db548dae452b)
+- Pinned source files:
+  - [Security Context](https://github.com/kubernetes/website/blob/e95679cfa58a843e90bf8575d8b0db548dae452b/content/en/docs/tasks/configure-pod-container/security-context.md)
+  - [Network Policies](https://github.com/kubernetes/website/blob/e95679cfa58a843e90bf8575d8b0db548dae452b/content/en/docs/concepts/services-networking/network-policies.md)
+  - [Admission Webhook Good Practices](https://github.com/kubernetes/website/blob/e95679cfa58a843e90bf8575d8b0db548dae452b/content/en/docs/concepts/cluster-administration/admission-webhooks-good-practices.md)
+- Live documentation:
+  - [Configure a Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
+  - [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
+  - [Admission Webhook Good Practices](https://kubernetes.io/docs/concepts/cluster-administration/admission-webhooks-good-practices/)
+- Repository review date: `2026-07-30`
+- Related control:
+  - `PSB-CONTAINER-001` — Kubernetes workload and provenance admission.
+
+Adopted contribution:
+
+- use pod and container security contexts to express non-root execution,
+  privilege-escalation denial, read-only filesystems, capability reduction,
+  and runtime-default seccomp;
+- require a NetworkPolicy that selects the intended workload and establishes
+  default-deny ingress and egress before narrower allow policies;
+- cover create and update operations, use a bounded timeout, and ensure
+  validating enforcement does not turn evaluator failure into an allow;
+- prefer built-in CEL admission for self-contained field checks, while
+  retaining a narrowly scoped validating webhook adapter when external OCI
+  provenance retrieval and cryptographic verification are required.
+
+Disposition and limitations:
+
+- Kubernetes product documentation is reference guidance, not a framework and
+  does not create `control.yaml` mappings;
+- a NetworkPolicy object has no effect when the selected cluster networking
+  implementation does not enforce NetworkPolicy;
+- webhook availability, dependency loops, API-version changes, RBAC, and
+  upgrade compatibility require live platform evidence and staging tests;
+- the pinned documentation source records reviewed semantics but does not pin
+  a Kubernetes cluster version or prove that a cluster adopted them.
+
+<a id="ref-detect-001"></a>
+
+### REF-DETECT-001 — Trivy release integrity and offline execution guidance
+
+- Status: `adopted-partially`
+- Type: official scanner release, integrity-verification documentation, and
+  security incident advisory
+- Publisher: Aqua Security, with GitHub Advisory Database incident record
+- Pinned implementation source:
+  [`aquasecurity/trivy` at `8a32853686209a428179bb3a1688802b25691564`](https://github.com/aquasecurity/trivy/tree/8a32853686209a428179bb3a1688802b25691564)
+- Pinned release:
+  [Trivy v0.72.0](https://github.com/aquasecurity/trivy/releases/tag/v0.72.0)
+- Release state: GitHub API reported `immutable: true` on `2026-07-30`
+- Reviewed Linux archive SHA-256:
+  `bbb64b9695866ce4a7a8f5c9592002c5961cab378577fa3f8a040df362b9b2ea`
+- Official documentation:
+  - [release signature verification](https://trivy.dev/latest/docs/advanced/signatures/)
+  - [air-gapped and offline operation](https://trivy.dev/latest/docs/advanced/air-gap/)
+- Supplemental incident record:
+  [GHSA-69fq-xp46-6x23](https://github.com/advisories/GHSA-69fq-xp46-6x23)
+- Repository review date: `2026-07-30`
+- Related control:
+  - `PSB-DETECT-001` — integrity-verified scanner execution and sanitized
+    fail-closed evidence.
+
+Adopted contribution:
+
+- verify the release asset, publisher checksum file, Sigstore bundle, OIDC
+  issuer, and exact release-workflow certificate identity before extraction;
+- record the extracted scanner binary digest as an additional local execution
+  identity;
+- separate explicit network-enabled DB or tool acquisition from ordinary
+  offline scan execution;
+- disable DB, Java DB, checks-bundle, VEX, version-check, and telemetry network
+  updates in the offline runner;
+- retain affected release identities as negative fixtures rather than assuming
+  a pinned version is safe merely because it is immutable.
+
+Disposition and limitations:
+
+- the official product documentation is implementation guidance, not a
+  framework and not a `control.yaml` mapping source;
+- a committed verification receipt is only a deterministic fixture;
+  production execution requires fresh successful checksum and Sigstore
+  verification evidence;
+- `cosign` remains a separate bootstrap trust dependency and must be supplied
+  through an organization-approved integrity process;
+- the latest documentation URLs can change; the implementation source and
+  release bytes stay pinned until a reviewed upgrade changes them.
+
+<a id="ref-detect-002"></a>
+
+### REF-DETECT-002 — OWASP DockSec container remediation orchestrator
+
+- Status: `adopted-partially`
+- Type: OWASP Lab Project tool and developer-remediation reference
+- Publisher: OWASP DockSec project
+- Official project page: [OWASP DockSec](https://owasp.org/DockSec/)
+- Pinned reviewed source:
+  [`OWASP/DockSec` at `4ddcb5285f437c0e84a42c748b0f61f56543e344`](https://github.com/OWASP/DockSec/tree/4ddcb5285f437c0e84a42c748b0f61f56543e344)
+- Pinned PyPI release:
+  [DockSec 2026.7.5](https://pypi.org/project/docksec/2026.7.5/)
+- Reviewed wheel SHA-256:
+  `7f8781db7651216556c86c71ab45527bc484801b974ff264fe0ebe7f70a6f5fb`
+- PyPI publication state: the reviewed wheel was not uploaded with Trusted
+  Publishing
+- Reviewed upstream integration files:
+  - [`action.yml`](https://github.com/OWASP/DockSec/blob/4ddcb5285f437c0e84a42c748b0f61f56543e344/action.yml)
+  - [`Dockerfile`](https://github.com/OWASP/DockSec/blob/4ddcb5285f437c0e84a42c748b0f61f56543e344/Dockerfile)
+  - [`entrypoint.sh`](https://github.com/OWASP/DockSec/blob/4ddcb5285f437c0e84a42c748b0f61f56543e344/entrypoint.sh)
+  - [`docksec/cli.py`](https://github.com/OWASP/DockSec/blob/4ddcb5285f437c0e84a42c748b0f61f56543e344/docksec/cli.py)
+- Repository review date: `2026-07-31`
+- Related controls:
+  - `PSB-DETECT-001` — pinned optional Dockerfile and Compose remediation
+    adapter with an AI-independent fail-closed gate;
+  - `PSB-IAC-001` — Golden Path composition consumes the `PSB-DETECT-001`
+    adapter without creating a separate security outcome.
+
+Adopted contribution:
+
+- use DockSec only for its documented unique developer-facing value:
+  contextual Dockerfile remediation and multi-service Compose correlation;
+- retain Trivy as the primary reviewed scanner rather than duplicating
+  vulnerability ownership;
+- run the authoritative gate with `--scan-only`, `--offline`, `--json`,
+  `--no-cache`, and `--fail-on high`;
+- normalize upstream status `0` to clean, `1` to finding, and both `2` and `3`
+  to project `ERROR`;
+- remove LLM provider credentials from the gate process and reject unexpected
+  AI output;
+- keep AI remediation optional and non-blocking.
+
+Rejected or deferred contribution:
+
+- the upstream GitHub Action is not adopted even at a full commit SHA because
+  its reviewed Dockerfile downloads Hadolint through a mutable `latest` URL
+  and installs Trivy through `curl | sh`;
+- `python -m docksec.setup_external_tools` is not used because every downloaded
+  scanner must be pinned and integrity-verified separately;
+- `docksec install-skill` is not run because it writes AI-agent instruction
+  files that require the independent `PSB-AI-002` review boundary;
+- `--no-redact`, AI scores as release decisions, broad baselines, and
+  non-expiring ignores are not accepted.
+
+Disposition and limitations:
+
+- DockSec is a tool and reference source, not a framework or a source of
+  `control.yaml` requirement identifiers;
+- a pinned wheel hash does not establish publisher identity, semantic safety,
+  or transitive dependency integrity;
+- the committed adapter does not build the production Python environment;
+  adopters must provide a reviewed hash-locked environment plus independently
+  verified Trivy, Hadolint, and database evidence;
+- application-level offline flags do not replace an OS-level network sandbox
+  for an untrusted executable;
+- AI suggestions can be incomplete or incorrect and require validation against
+  the original structured scanner finding and human review.
+
+<a id="ref-rel-001"></a>
+
+### REF-REL-001 — OWASP Dependency-Track SBOM portfolio and analysis platform
+
+- Status: `adopted-partially`
+- Type: official OWASP software supply-chain analysis platform, API
+  documentation, permission model, and event contract
+- Publisher: OWASP Dependency-Track project
+- Official project: [Dependency-Track](https://dependencytrack.org/)
+- Pinned adapter release:
+  [Dependency-Track 4.14.3](https://github.com/DependencyTrack/dependency-track/releases/tag/4.14.3)
+- Release state: GitHub reported the `4.14.3` release as immutable on
+  `2026-07-31`
+- Reviewed API server JAR SHA-256:
+  `11a5c85616b745803b5653016d9da2195f2e23ac66fe6a85d2ae2b4661d393a9`
+- Official documentation:
+  - [CI/CD SBOM publication](https://docs.dependencytrack.org/usage/cicd/)
+  - [notifications and BOM processing events](https://docs.dependencytrack.org/integrations/notifications/)
+  - [users and permissions](https://docs.dependencytrack.org/administration/users-and-permissions/)
+  - [REST API and OpenAPI discovery](https://docs.dependencytrack.org/integrations/rest-api/)
+  - [version 5 documentation](https://dependencytrack.github.io/docs/next/)
+- Repository review date: `2026-07-31`
+- Related controls:
+  - `PSB-REL-003` — exact artifact-bound CycloneDX publication, least-privilege
+    upload, and completed processing receipt verification;
+  - `PSB-GOV-001` — exact CVE and component portfolio search linked back to
+    SBOM serials, project UUIDs, versions, build records, and response evidence;
+  - `PSB-IAC-001` — Golden Path composition of the implemented
+    `PSB-REL-003` outcome without duplicating SBOM control ownership.
+
+Adopted contribution:
+
+- use Dependency-Track as an organization SBOM consumer and portfolio index,
+  not as the source of release-artifact identity;
+- upload to a pre-created exact project UUID and release version with a
+  separate `BOM_UPLOAD`-only identity;
+- treat the upload token or `BOM_CONSUMED` event as acceptance, not successful
+  analysis, and require a bound `BOM_PROCESSED` result;
+- map `BOM_PROCESSING_FAILED`, `BOM_VALIDATION_FAILED`, timeout, analyzer
+  outage, stale vulnerability data, and incomplete pagination to `ERROR`;
+- separate upload identity from read-only incident search using
+  `VIEW_PORTFOLIO` and `VIEW_VULNERABILITY`;
+- normalize provider output to sanitized metadata that excludes API keys, BOM
+  bodies, internal endpoints, and unnecessary vulnerability details;
+- require exact CVE, component PURL, project UUID and version, SBOM serial, and
+  local build-evidence linkage before accepting an impact result.
+
+Rejected or deferred contribution:
+
+- `autoCreate` and `PROJECT_CREATION_UPLOAD` are not part of the normal upload
+  path because ambiguous project creation weakens release identity binding;
+- broad `SYSTEM_CONFIGURATION`, portfolio mutation, policy-management, or
+  vulnerability-analysis permissions are not assigned to upload or read-only
+  search jobs;
+- the recommended GitHub Action is not adopted without a separate full-SHA,
+  internal-download, permission, and credential-flow review;
+- Dependency-Track is not treated as a replacement for lockfile integrity,
+  local fail-closed scanning, provenance, signature verification, or incident
+  evidence;
+- version `5.0.3` was the latest major release observed during review, but the
+  repository adapter deliberately remains on the reviewed `4.14.3` contract
+  because version 5 changes distribution, REST API, migration, and
+  notification semantics. Migration requires a separate semantic diff and
+  regression evidence.
+
+Disposition and limitations:
+
+- Dependency-Track is an implementation tool and reference, not a framework
+  and not a source of `control.yaml` requirement identifiers;
+- the committed adapter is offline and verifies normalized fixtures; it does
+  not deploy a server, authenticate, upload a production BOM, or prove
+  portfolio ACL coverage;
+- platform vulnerability results depend on external advisory freshness, PURL,
+  CPE, alias, ecosystem, and affected-version quality and can produce false
+  positives or false negatives;
+- SBOM upload is an untrusted-input boundary and production deployments need
+  parser hardening, size limits, current security fixes, isolation, and
+  monitoring;
+- a processed SBOM and an empty finding set do not prove that the software is
+  vulnerability-free.
+
 ## Chat-history reconciliation
 
 The reviewed collaboration history contained:
@@ -834,6 +1132,11 @@ The reviewed collaboration history contained:
   `REF-BUILD-001`, `REF-GOV-001`, and `REF-SOURCE-001`, plus the six
   practitioner and security-research sources recorded as `REF-CICD-005..010`,
   plus the CI/CD threat taxonomy recorded as `REF-CICD-011`;
+- implementation sources selected while delivering and extending
+  `PSB-DETECT-001` and the SBOM consumption path, recorded as
+  `REF-DETECT-001..002` and `REF-REL-001`;
+- Kubernetes platform guidance selected while delivering
+  `PSB-CONTAINER-001`, recorded as `REF-CONTAINER-002`;
 - three substantial user-supplied source texts or tables, recorded as
   `REF-USER-001..003`;
 - one referenced but not yet supplied application assessment source, recorded

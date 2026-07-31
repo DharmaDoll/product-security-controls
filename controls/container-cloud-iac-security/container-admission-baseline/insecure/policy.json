@@ -1,0 +1,49 @@
+{
+  "schema": "psb-container-admission-policy/v1",
+  "policy_version": "latest",
+  "trusted_registries": [
+    "*"
+  ],
+  "allowed_workload_kinds": [
+    "Deployment"
+  ],
+  "allowed_volume_types": [
+    "hostPath"
+  ],
+  "security_context": {
+    "minimum_run_as_user": 0,
+    "allow_privileged": true,
+    "allow_privilege_escalation": true,
+    "require_read_only_root_filesystem": false,
+    "required_capability_drop": [],
+    "allowed_capability_add": [
+      "SYS_ADMIN"
+    ],
+    "required_seccomp_profile": "Unconfined"
+  },
+  "resources": {
+    "required_requests": [],
+    "required_limits": [],
+    "maximum_cpu_millicores": 0,
+    "maximum_memory_mib": 0,
+    "maximum_pids": 0
+  },
+  "network": {
+    "require_default_deny_ingress": false,
+    "require_default_deny_egress": false
+  },
+  "provenance": {
+    "required": false,
+    "consumer_verifier_control": "none",
+    "subject_digest_algorithm": "none",
+    "artifact_media_type": "any"
+  },
+  "admission": {
+    "failure_policy": "Ignore",
+    "unavailable_result": "allow",
+    "operations": [
+      "CREATE"
+    ],
+    "maximum_timeout_seconds": 30
+  }
+}

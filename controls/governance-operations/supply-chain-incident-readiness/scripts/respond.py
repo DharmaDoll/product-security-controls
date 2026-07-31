@@ -7,8 +7,11 @@ import argparse
 import json
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
+from uuid import UUID
 
 
 SERIAL_RE = re.compile(
@@ -29,6 +32,10 @@ REQUIRED_ACTIONS = [
 
 
 class InputError(ValueError):
+    pass
+
+
+class EvaluationError(RuntimeError):
     pass
 
 
@@ -141,9 +148,163 @@ def validate_records(
             for item in credentials
         ):
             findings.append(f"build record {serial} credential_ids are invalid")
+        project_uuid = record.get("dependency_track_project_uuid")
+        project_version = record.get("dependency_track_project_version")
+        if project_uuid is not None and not valid_uuid(project_uuid):
+            findings.append(
+                f"build record {serial} dependency_track_project_uuid is invalid"
+            )
+        if project_version is not None and (
+            not isinstance(project_version, str) or not project_version
+        ):
+            findings.append(
+                f"build record {serial} dependency_track_project_version is invalid"
+            )
     missing = sorted(serials - set(by_serial))
     if missing:
         findings.append(f"build records missing SBOM serials: {', '.join(missing)}")
+    return by_serial, findings
+
+
+def valid_uuid(value: Any) -> bool:
+    try:
+        return isinstance(value, str) and str(UUID(value)) == value
+    except ValueError:
+        return False
+
+
+def parse_time(value: Any, label: str) -> datetime:
+    if not isinstance(value, str):
+        raise InputError(f"{label} must be an RFC3339 timestamp")
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as error:
+        raise InputError(f"{label} must be an RFC3339 timestamp") from error
+
+
+def validate_dependency_track_policy(value: dict[str, Any]) -> list[str]:
+    findings: list[str] = []
+    if value.get("adapter_schema") != "psb-dependency-track-impact-policy/1.0":
+        findings.append("Dependency-Track impact policy schema is unsupported")
+    server = value.get("server")
+    if not isinstance(server, dict):
+        raise InputError("Dependency-Track policy.server must be an object")
+    release = server.get("release")
+    digest = server.get("apiserver_sha256")
+    if not isinstance(release, str) or release in {"", "latest", "main", "master"}:
+        findings.append("Dependency-Track impact server release is mutable")
+    if not DIGEST_RE.fullmatch(str(digest or "")):
+        findings.append("Dependency-Track impact server is not integrity pinned")
+    endpoint = value.get("endpoint")
+    parsed = urlsplit(endpoint) if isinstance(endpoint, str) else None
+    if (
+        parsed is None
+        or parsed.scheme != "https"
+        or not parsed.hostname
+        or parsed.query
+        or parsed.fragment
+        or not parsed.path.endswith("/api/v1")
+    ):
+        findings.append("Dependency-Track impact endpoint is not exact authenticated HTTPS")
+    if value.get("api_key_source") != "environment:DEPENDENCY_TRACK_READ_API_KEY":
+        findings.append("Dependency-Track read API key source is not approved")
+    if value.get("api_permissions") != ["VIEW_PORTFOLIO", "VIEW_VULNERABILITY"]:
+        findings.append("Dependency-Track read API permissions are not exact")
+    if value.get("query_mode") != "exact-component-and-vulnerability":
+        findings.append("Dependency-Track query is not exact")
+    if value.get("pagination") != "all-pages-required":
+        findings.append("Dependency-Track pagination can omit projects")
+    if value.get("unavailable_state") != "ERROR":
+        findings.append("Dependency-Track query failure can appear as no impact")
+    age = value.get("max_inventory_age_hours")
+    if not isinstance(age, int) or isinstance(age, bool) or not 1 <= age <= 24:
+        findings.append("Dependency-Track inventory freshness exceeds 24 hours")
+    if value.get("evidence") != "sanitized-metadata-only":
+        findings.append("Dependency-Track query evidence is not minimized")
+    return findings
+
+
+def validate_dependency_track_response(
+    value: dict[str, Any],
+    policy: dict[str, Any],
+    package: str,
+    version: str,
+    vulnerability_id: str,
+) -> tuple[dict[str, dict[str, Any]], list[str]]:
+    if value.get("response_schema") != "psb-dependency-track-impact-response/1.0":
+        raise InputError("Dependency-Track response schema is unsupported")
+    if value.get("status") != "SUCCESS":
+        raise EvaluationError("Dependency-Track portfolio query is unavailable")
+    query = value.get("query")
+    if not isinstance(query, dict):
+        raise InputError("Dependency-Track response.query must be an object")
+    expected_query = {
+        "package": package,
+        "version": version,
+        "vulnerability_id": vulnerability_id,
+    }
+    if query != expected_query:
+        raise EvaluationError("Dependency-Track response does not match the exact query")
+    pagination = value.get("pagination")
+    if not isinstance(pagination, dict):
+        raise InputError("Dependency-Track response.pagination must be an object")
+    if pagination.get("complete") is not True:
+        raise EvaluationError("Dependency-Track portfolio pagination is incomplete")
+    pages_scanned = pagination.get("pages_scanned")
+    total_pages = pagination.get("total_pages")
+    if (
+        not isinstance(pages_scanned, int)
+        or isinstance(pages_scanned, bool)
+        or not isinstance(total_pages, int)
+        or isinstance(total_pages, bool)
+        or pages_scanned < 1
+        or pages_scanned != total_pages
+    ):
+        raise EvaluationError("Dependency-Track portfolio page coverage is incomplete")
+    health = value.get("analysis_health")
+    if not isinstance(health, dict):
+        raise InputError("Dependency-Track response.analysis_health must be an object")
+    if health.get("status") != "healthy":
+        raise EvaluationError("Dependency-Track analyzer or mirror is unavailable")
+    updated = parse_time(health.get("inventory_updated_at"), "inventory_updated_at")
+    evaluated = parse_time(health.get("evaluated_at"), "evaluated_at")
+    max_age = policy.get("max_inventory_age_hours")
+    if not isinstance(max_age, int):
+        raise InputError("max_inventory_age_hours must be an integer")
+    if updated > evaluated or (evaluated - updated).total_seconds() > max_age * 3600:
+        raise EvaluationError("Dependency-Track portfolio inventory is stale")
+    projects = value.get("projects")
+    if not isinstance(projects, list):
+        raise InputError("Dependency-Track response.projects must be a list")
+    if pagination.get("returned_count") != len(projects):
+        raise EvaluationError("Dependency-Track returned count is incomplete")
+    findings: list[str] = []
+    by_serial: dict[str, dict[str, Any]] = {}
+    for index, project in enumerate(projects):
+        if not isinstance(project, dict):
+            raise InputError(f"Dependency-Track project {index} must be an object")
+        project_uuid = project.get("project_uuid")
+        project_version = project.get("project_version")
+        serial = project.get("sbom_serial")
+        purl = project.get("component_purl")
+        if not valid_uuid(project_uuid):
+            findings.append(f"Dependency-Track project {index} UUID is invalid")
+        if not isinstance(project_version, str) or not project_version:
+            findings.append(f"Dependency-Track project {index} version is missing")
+        if not isinstance(serial, str) or not SERIAL_RE.fullmatch(serial):
+            findings.append(f"Dependency-Track project {index} SBOM serial is invalid")
+            continue
+        if serial in by_serial:
+            findings.append(f"Dependency-Track duplicate SBOM serial: {serial}")
+        by_serial[serial] = project
+        if not isinstance(purl, str) or f"/{package}@{version}" not in purl:
+            findings.append(
+                f"Dependency-Track project {project_uuid} component identity is not exact"
+            )
+        if project.get("vulnerability_id") != vulnerability_id:
+            findings.append(
+                f"Dependency-Track project {project_uuid} vulnerability does not match"
+            )
     return by_serial, findings
 
 
@@ -154,6 +315,9 @@ def run(
     records_path: Path,
     runbook_path: Path,
     dry_run: bool,
+    dependency_track_policy_path: Path | None = None,
+    dependency_track_response_path: Path | None = None,
+    vulnerability_id: str | None = None,
 ) -> tuple[int, list[str]]:
     if not package or not version or "*" in package or "*" in version:
         raise InputError("package and version must be exact non-empty identifiers")
@@ -161,6 +325,16 @@ def run(
     actions, findings = validate_runbook(runbook)
     if not dry_run:
         findings.append("reference responder only permits --dry-run")
+    if (dependency_track_policy_path is None) != (
+        dependency_track_response_path is None
+    ):
+        raise InputError(
+            "Dependency-Track policy and response must be supplied together"
+        )
+    if dependency_track_policy_path is not None and not vulnerability_id:
+        raise InputError(
+            "Dependency-Track impact search requires --vulnerability-id"
+        )
 
     try:
         paths = sorted(inventory_dir.glob("*.cdx.json"))
@@ -183,6 +357,24 @@ def run(
         load_json(records_path, "build records"), serials
     )
     findings.extend(record_findings)
+    dependency_track_projects: dict[str, dict[str, Any]] | None = None
+    if dependency_track_policy_path is not None and dependency_track_response_path is not None:
+        dependency_track_policy = load_json(
+            dependency_track_policy_path, "Dependency-Track policy"
+        )
+        findings.extend(validate_dependency_track_policy(dependency_track_policy))
+        dependency_track_projects, dependency_track_findings = (
+            validate_dependency_track_response(
+                load_json(
+                    dependency_track_response_path, "Dependency-Track response"
+                ),
+                dependency_track_policy,
+                package,
+                version,
+                str(vulnerability_id),
+            )
+        )
+        findings.extend(dependency_track_findings)
     if findings:
         return 1, [*(f"FAIL {finding}" for finding in findings), f"RESULT rejected with {len(findings)} finding(s)"]
 
@@ -193,15 +385,77 @@ def run(
             for component in sbom["components"]
         ):
             impacted.append((path, sbom, records[sbom["serialNumber"]]))
+    if dependency_track_projects is not None:
+        local_serials = {sbom["serialNumber"] for _, sbom, _ in impacted}
+        remote_serials = set(dependency_track_projects)
+        missing_remote = sorted(local_serials - remote_serials)
+        missing_local = sorted(remote_serials - local_serials)
+        if missing_remote:
+            findings.append(
+                "Dependency-Track is missing impacted SBOM serials: "
+                + ", ".join(missing_remote)
+            )
+        if missing_local:
+            findings.append(
+                "local evidence is missing Dependency-Track SBOM serials: "
+                + ", ".join(missing_local)
+            )
+        for _, sbom, record in impacted:
+            project = dependency_track_projects.get(sbom["serialNumber"])
+            if project is None:
+                continue
+            matching_purls = {
+                component.get("purl")
+                for component in sbom["components"]
+                if component.get("name") == package
+                and component.get("version") == version
+                and isinstance(component.get("purl"), str)
+            }
+            if project.get("component_purl") not in matching_purls:
+                findings.append(
+                    f"build record {sbom['serialNumber']} Dependency-Track PURL mismatch"
+                )
+            if record.get("dependency_track_project_uuid") != project.get(
+                "project_uuid"
+            ):
+                findings.append(
+                    f"build record {sbom['serialNumber']} Dependency-Track UUID mismatch"
+                )
+            if record.get("dependency_track_project_version") != project.get(
+                "project_version"
+            ):
+                findings.append(
+                    f"build record {sbom['serialNumber']} Dependency-Track version mismatch"
+                )
+    if findings:
+        return 1, [
+            *(f"FAIL {finding}" for finding in findings),
+            f"RESULT rejected with {len(findings)} finding(s)",
+        ]
     if not impacted:
         return 0, [f"CLEAN no inventory matches {package}@{version}"]
 
-    output = [f"DETECTED {package}@{version} in {len(impacted)} product(s)"]
+    query_suffix = (
+        f" vulnerability={vulnerability_id}"
+        if dependency_track_projects is not None
+        else ""
+    )
+    output = [
+        f"DETECTED {package}@{version} in {len(impacted)} product(s){query_suffix}"
+    ]
     for path, sbom, record in impacted:
+        dependency_track_suffix = ""
+        if dependency_track_projects is not None:
+            project = dependency_track_projects[sbom["serialNumber"]]
+            dependency_track_suffix = (
+                f" dependency_track_project={project['project_uuid']}"
+                f" project_version={project['project_version']}"
+            )
         output.append(
             "AFFECTED "
             f"repository={record['repository']} build={record['build_id']} "
             f"artifact={record['artifact']} sbom={path.name}"
+            f"{dependency_track_suffix}"
         )
         output.append(
             "EVIDENCE "
@@ -224,6 +478,9 @@ def main() -> int:
     parser.add_argument("--records", type=Path, required=True)
     parser.add_argument("--runbook", type=Path, required=True)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--dependency-track-policy", type=Path)
+    parser.add_argument("--dependency-track-response", type=Path)
+    parser.add_argument("--vulnerability-id")
     args = parser.parse_args()
     try:
         status, output = run(
@@ -233,8 +490,11 @@ def main() -> int:
             args.records,
             args.runbook,
             args.dry_run,
+            args.dependency_track_policy,
+            args.dependency_track_response,
+            args.vulnerability_id,
         )
-    except InputError as error:
+    except (InputError, EvaluationError) as error:
         print(f"ERROR verification unavailable: {error}")
         return 2
     print("\n".join(output))

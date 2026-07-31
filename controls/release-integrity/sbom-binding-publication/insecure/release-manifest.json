@@ -1,0 +1,38 @@
+{
+  "schema": "psb-release-sbom-manifest/1.0",
+  "artifact_family": "example-release",
+  "release_version": "1.4.0",
+  "artifact": {
+    "path": "artifact/release.bin",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "published_at": "2026-07-31T00:00:00Z"
+  },
+  "sbom": {
+    "path": "bom.cdx.json",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "format": "CycloneDX",
+    "spec_version": "1.7",
+    "serial_number": "urn:uuid:33333333-3333-4333-8333-333333333333",
+    "generated_from": "source-tree",
+    "required": false,
+    "published_at": "2026-07-31T04:00:00Z",
+    "location": "http://latest.example.invalid/bom.json?overwrite=true",
+    "immutable": false,
+    "retention_days": 7
+  },
+  "required_components": [
+    "pkg:pypi/example-direct@2.1.0",
+    "pkg:pypi/example-transitive@5.0.2"
+  ],
+  "required_relationships": [
+    {
+      "from": "pkg:generic/example-release@1.4.0",
+      "to": "pkg:pypi/example-direct@2.1.0"
+    },
+    {
+      "from": "pkg:pypi/example-direct@2.1.0",
+      "to": "pkg:pypi/example-transitive@5.0.2"
+    }
+  ],
+  "protected_artifact_family": false
+}

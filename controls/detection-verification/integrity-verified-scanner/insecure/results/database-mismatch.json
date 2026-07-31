@@ -1,0 +1,29 @@
+{
+  "schema": "psb-scanner-result/v1",
+  "scanner": {
+    "name": "trivy",
+    "version": "0.72.0",
+    "release_asset_sha256": "bbb64b9695866ce4a7a8f5c9592002c5961cab378577fa3f8a040df362b9b2ea",
+    "integrity_verified": true
+  },
+  "database": {
+    "repository": "ghcr.io/aquasecurity/trivy-db",
+    "schema_version": 2,
+    "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "fixture": true
+  },
+  "checks_bundle": {
+    "mode": "embedded",
+    "identity": "trivy-v0.72.0"
+  },
+  "execution": {
+    "status": "completed",
+    "target": "fixtures/clean",
+    "target_kind": "filesystem",
+    "offline": true,
+    "categories": [
+      "vulnerability"
+    ]
+  },
+  "findings": []
+}

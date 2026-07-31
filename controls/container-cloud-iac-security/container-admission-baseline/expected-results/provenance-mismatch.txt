@@ -1,0 +1,2 @@
+FAIL CNT-002 PSB-REL-001 rejected image provenance: artifact SHA-256 does not match provenance subject; provenance signature verification failed
+DECISION DENY 1 violation(s)

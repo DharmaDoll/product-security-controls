@@ -1,0 +1,6 @@
+PASS narrow exception EXAMPLE-2026-001 accepted until 2026-08-15T00:00:00Z
+FAIL exception rule_id must be exact and contain no wildcard
+FAIL exception target must be exact and contain no wildcard
+REJECTED 2 exception policy violation(s)
+FAIL exception is expired at the evaluation time
+REJECTED 1 exception policy violation(s)

@@ -20,7 +20,27 @@
     "immutable_reference": false,
     "permissions": "write-all",
     "implemented_controls": [],
-    "planned_controls": []
+    "planned_controls": [],
+    "container_feedback": {
+      "control": "none",
+      "adapter": "docksec-ai",
+      "role": "authoritative-security-scanner",
+      "gate": "ai-score",
+      "ai_remediation": "blocking",
+      "tool_failure": "clean",
+      "upstream_action": "mutable-version-tag"
+    },
+    "sbom_inventory": {
+      "control": "none",
+      "format": "unknown",
+      "artifact_binding": "source-tree",
+      "publication": "mutable-optional",
+      "adapter": "dependency-track-latest",
+      "project_binding": "auto-create-latest",
+      "upload_permission": "SYSTEM_CONFIGURATION",
+      "success": "UPLOAD_ACCEPTED",
+      "failure": "CLEAN"
+    }
   },
   "deployment_identity": {
     "type": "static-access-key",

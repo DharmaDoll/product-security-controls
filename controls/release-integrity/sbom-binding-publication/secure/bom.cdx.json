@@ -1,0 +1,77 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:33333333-3333-4333-8333-333333333333",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "bom-ref": "pkg:generic/example-release@1.4.0",
+      "name": "example-release",
+      "version": "1.4.0",
+      "purl": "pkg:generic/example-release@1.4.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "57535c54c527d189a1f25caf43de52d36698d23b0ead34ae38c13d40e48fd91a"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/example-direct@2.1.0",
+      "name": "example-direct",
+      "version": "2.1.0",
+      "purl": "pkg:pypi/example-direct@2.1.0",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "psb:dependency-kind",
+          "value": "direct"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/example-transitive@5.0.2",
+      "name": "example-transitive",
+      "version": "5.0.2",
+      "purl": "pkg:pypi/example-transitive@5.0.2",
+      "scope": "required",
+      "properties": [
+        {
+          "name": "psb:dependency-kind",
+          "value": "transitive"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:generic/example-release@1.4.0",
+      "dependsOn": [
+        "pkg:pypi/example-direct@2.1.0"
+      ]
+    },
+    {
+      "ref": "pkg:pypi/example-direct@2.1.0",
+      "dependsOn": [
+        "pkg:pypi/example-transitive@5.0.2"
+      ]
+    },
+    {
+      "ref": "pkg:pypi/example-transitive@5.0.2",
+      "dependsOn": []
+    }
+  ],
+  "compositions": [
+    {
+      "aggregate": "complete",
+      "assemblies": [
+        "pkg:generic/example-release@1.4.0"
+      ]
+    }
+  ]
+}

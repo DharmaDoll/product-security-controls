@@ -1,0 +1,1 @@
+PASS Trivy v0.72.0 immutable release, publisher checksum, and Sigstore identity verified

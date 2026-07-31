@@ -1,0 +1,29 @@
+{
+  "schema": "psb-secondary-scanner-decision/v1",
+  "primary": {
+    "name": "trivy",
+    "version": "0.72.0"
+  },
+  "candidate": {
+    "name": "checkov",
+    "version": "3.3.8",
+    "distribution": "checkov-3.3.8.tar.gz",
+    "sha256": "a65e5cda0337e7770436eeadabb1f65c6ce4ad7f5b145a7f801bfdf14f1aea05"
+  },
+  "fixtures": [
+    {
+      "id": "IAC-PUBLIC-STORAGE",
+      "trivy": "detected",
+      "checkov": "detected",
+      "unique_candidate_value": false
+    },
+    {
+      "id": "IAC-UNENCRYPTED-STORAGE",
+      "trivy": "detected",
+      "checkov": "detected",
+      "unique_candidate_value": false
+    }
+  ],
+  "decision": "not-adopted",
+  "reason": "The first slice found no unique blocking coverage that justified a second scanner dependency. PSB-IAC-001 remains the owner of organization-specific resolved-plan policy."
+}

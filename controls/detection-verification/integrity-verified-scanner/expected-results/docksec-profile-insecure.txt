@@ -1,0 +1,18 @@
+FAIL DockSec tool version is not the reviewed release
+FAIL DockSec source is not pinned to the reviewed commit
+FAIL DockSec wheel filename is not exact
+FAIL DockSec wheel SHA-256 is not valid
+FAIL DockSec is assigned authoritative scanner ownership
+FAIL DockSec replaces the reviewed primary scanner
+FAIL DockSec replacement flag is enabled
+FAIL DockSec adoption has no reviewed unique-value boundary
+FAIL upstream DockSec Action is accepted despite unsafe bootstrap
+FAIL DockSec gate is not deterministic AI-free and fail-closed
+FAIL DockSec runtime does not require a locked verified toolchain
+FAIL DockSec prohibited-operation set is incomplete
+FAIL DockSec evidence schema is not reviewed
+FAIL raw DockSec output is retained as ordinary gate evidence
+FAIL AI output is retained as authoritative gate evidence
+FAIL DockSec evidence exposes more than the target basename
+FAIL DockSec evidence severity inventory is incomplete
+REJECTED 17 DockSec adapter policy violation(s)

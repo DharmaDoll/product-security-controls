@@ -1,0 +1,10 @@
+FINDING vulnerability CVE-2099-0001 HIGH fixtures/vulnerable/package-lock.json
+BLOCKED 1 blocking finding(s)
+FINDING container-misconfiguration DS-0002 HIGH fixtures/container/Dockerfile
+BLOCKED 1 blocking finding(s)
+FINDING iac-misconfiguration AVD-AWS-0086 HIGH fixtures/iac/public-storage.tf
+BLOCKED 1 blocking finding(s)
+FINDING secret synthetic-api-token HIGH fixtures/secrets/synthetic.env
+BLOCKED 1 blocking finding(s)
+FINDING sbom-vulnerability CVE-2099-0002 CRITICAL fixtures/sbom/bom.cdx.json
+BLOCKED 1 blocking finding(s)

@@ -17,12 +17,13 @@ REQUIRED_CONTROLS = {
     "PSB-BUILD-003",
     "PSB-SOURCE-002",
     "PSB-IAC-001",
-}
-PLANNED_CONTROLS = {
-    "PSB-CICD-006",
     "PSB-DETECT-001",
     "PSB-REL-002",
     "PSB-REL-003",
+    "PSB-CONTAINER-001",
+}
+PLANNED_CONTROLS = {
+    "PSB-CICD-006",
 }
 REQUIRED_RULES = {
     "encryption",
@@ -178,6 +179,34 @@ def check_ci_composition(policy: dict[str, Any], _: list[dict[str, Any]]) -> lis
         issues.append("implemented control composition is incomplete")
     if set(ci.get("planned_controls", [])) != PLANNED_CONTROLS:
         issues.append("planned gates are absent or represented as implemented")
+    expected_feedback = {
+        "control": "PSB-DETECT-001",
+        "adapter": "docksec",
+        "role": "optional-developer-remediation-orchestrator",
+        "gate": "scan-only-offline-structured-findings",
+        "ai_remediation": "optional-non-blocking",
+        "tool_failure": "error",
+        "upstream_action": "rejected-by-project-policy",
+    }
+    if ci.get("container_feedback") != expected_feedback:
+        issues.append(
+            "container feedback is not deterministic AI-independent and fail-closed"
+        )
+    expected_sbom_inventory = {
+        "control": "PSB-REL-003",
+        "format": "CycloneDX-1.7",
+        "artifact_binding": "sha256-release-manifest",
+        "publication": "immutable-no-downgrade",
+        "adapter": "dependency-track-4.14.3-normalized",
+        "project_binding": "pre-created-uuid-exact-version",
+        "upload_permission": "BOM_UPLOAD",
+        "success": "BOM_PROCESSED",
+        "failure": "ERROR",
+    }
+    if ci.get("sbom_inventory") != expected_sbom_inventory:
+        issues.append(
+            "SBOM inventory composition is not artifact-bound least-privilege and fail-closed"
+        )
     return issues
 
 

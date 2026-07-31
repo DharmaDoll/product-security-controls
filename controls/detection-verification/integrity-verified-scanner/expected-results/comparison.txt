@@ -1,0 +1,1 @@
+PASS Checkov 3.3.8 comparison recorded; candidate not adopted (no unique first-slice coverage)

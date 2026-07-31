@@ -1,0 +1,10 @@
+{
+  "schema": "psb-scanner-exception/v1",
+  "id": "EXAMPLE-2026-001",
+  "rule_id": "CVE-2099-0001",
+  "target": "fixtures/vulnerable/package-lock.json",
+  "owner": "example-team",
+  "justification": "Synthetic time-bound example used only by the control test.",
+  "approved_by": "product-security",
+  "expires_at": "2026-08-15T00:00:00Z"
+}

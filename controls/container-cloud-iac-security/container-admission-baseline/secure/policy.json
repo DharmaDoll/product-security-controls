@@ -1,0 +1,61 @@
+{
+  "schema": "psb-container-admission-policy/v1",
+  "policy_version": "2026-07-30.1",
+  "trusted_registries": [
+    "registry.example.com"
+  ],
+  "allowed_workload_kinds": [
+    "Deployment"
+  ],
+  "allowed_volume_types": [
+    "emptyDir",
+    "configMap",
+    "secret",
+    "projected",
+    "downwardAPI",
+    "persistentVolumeClaim"
+  ],
+  "security_context": {
+    "minimum_run_as_user": 10000,
+    "allow_privileged": false,
+    "allow_privilege_escalation": false,
+    "require_read_only_root_filesystem": true,
+    "required_capability_drop": [
+      "ALL"
+    ],
+    "allowed_capability_add": [],
+    "required_seccomp_profile": "RuntimeDefault"
+  },
+  "resources": {
+    "required_requests": [
+      "cpu",
+      "memory"
+    ],
+    "required_limits": [
+      "cpu",
+      "memory"
+    ],
+    "maximum_cpu_millicores": 1000,
+    "maximum_memory_mib": 512,
+    "maximum_pids": 256
+  },
+  "network": {
+    "require_default_deny_ingress": true,
+    "require_default_deny_egress": true
+  },
+  "provenance": {
+    "required": true,
+    "consumer_verifier_control": "PSB-REL-001",
+    "subject_digest_algorithm": "sha256",
+    "artifact_media_type": "application/vnd.oci.image.manifest.v1+json"
+  },
+  "admission": {
+    "failure_policy": "Fail",
+    "unavailable_result": "deny",
+    "operations": [
+      "CREATE",
+      "UPDATE"
+    ],
+    "maximum_timeout_seconds": 10
+  }
+}

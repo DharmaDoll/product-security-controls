@@ -19,8 +19,28 @@
     "template": "reusable-workflow",
     "immutable_reference": true,
     "permissions": "explicit-job-minimum",
-    "implemented_controls": ["PSB-CICD-001", "PSB-CICD-003", "PSB-BUILD-001", "PSB-BUILD-003", "PSB-SOURCE-002", "PSB-IAC-001"],
-    "planned_controls": ["PSB-CICD-006", "PSB-DETECT-001", "PSB-REL-002", "PSB-REL-003"]
+    "implemented_controls": ["PSB-CICD-001", "PSB-CICD-003", "PSB-BUILD-001", "PSB-BUILD-003", "PSB-SOURCE-002", "PSB-IAC-001", "PSB-DETECT-001", "PSB-REL-002", "PSB-REL-003", "PSB-CONTAINER-001"],
+    "planned_controls": ["PSB-CICD-006"],
+    "container_feedback": {
+      "control": "PSB-DETECT-001",
+      "adapter": "docksec",
+      "role": "optional-developer-remediation-orchestrator",
+      "gate": "scan-only-offline-structured-findings",
+      "ai_remediation": "optional-non-blocking",
+      "tool_failure": "error",
+      "upstream_action": "rejected-by-project-policy"
+    },
+    "sbom_inventory": {
+      "control": "PSB-REL-003",
+      "format": "CycloneDX-1.7",
+      "artifact_binding": "sha256-release-manifest",
+      "publication": "immutable-no-downgrade",
+      "adapter": "dependency-track-4.14.3-normalized",
+      "project_binding": "pre-created-uuid-exact-version",
+      "upload_permission": "BOM_UPLOAD",
+      "success": "BOM_PROCESSED",
+      "failure": "ERROR"
+    }
   },
   "deployment_identity": {
     "type": "oidc",

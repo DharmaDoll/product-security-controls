@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.oci.image.manifest.v1+json",
+  "config": {
+    "mediaType": "application/vnd.oci.image.config.v1+json",
+    "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "size": 512
+  },
+  "layers": [
+    {
+      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+      "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "size": 1024
+    }
+  ],
+  "annotations": {
+    "org.opencontainers.image.source": "https://github.com/example/payments",
+    "org.opencontainers.image.revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  }
+}

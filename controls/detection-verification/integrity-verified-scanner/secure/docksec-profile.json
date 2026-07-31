@@ -1,0 +1,67 @@
+{
+  "schema": "psb-docksec-adapter-policy/v1",
+  "tool": {
+    "name": "docksec",
+    "version": "2026.7.5",
+    "source_commit": "4ddcb5285f437c0e84a42c748b0f61f56543e344",
+    "distribution": {
+      "repository": "https://pypi.org/project/docksec/2026.7.5/",
+      "filename": "docksec-2026.7.5-py3-none-any.whl",
+      "sha256": "7f8781db7651216556c86c71ab45527bc484801b974ff264fe0ebe7f70a6f5fb",
+      "trusted_publishing": false
+    }
+  },
+  "adoption": {
+    "role": "optional-developer-remediation-orchestrator",
+    "primary_scanner": "trivy",
+    "replaces_primary_scanner": false,
+    "unique_value": [
+      "contextual-dockerfile-remediation",
+      "compose-service-correlation"
+    ],
+    "upstream_github_action": "rejected-by-project-policy"
+  },
+  "gate": {
+    "mode": "scan-only",
+    "network": "offline",
+    "output": "json",
+    "fail_on": "HIGH",
+    "cache": "bypass",
+    "decision_source": "structured-scanner-findings",
+    "ai_remediation": "optional-non-blocking",
+    "exit_mapping": {
+      "0": "clean",
+      "1": "finding",
+      "2": "error",
+      "3": "error"
+    }
+  },
+  "runtime": {
+    "installation": "organization-built-locked-environment",
+    "docksec_distribution_integrity": "required",
+    "transitive_dependency_lock": "required",
+    "external_scanner_integrity": "required",
+    "automatic_external_tool_installer": "forbidden",
+    "github_action_reference": "full-commit-sha-only"
+  },
+  "prohibited": [
+    "--no-redact",
+    "--ai-only",
+    "install-skill",
+    "blocking-ai-score",
+    "broad-or-unowned-ignore"
+  ],
+  "evidence": {
+    "schema": "psb-docksec-gate-result/v1",
+    "retain_raw_output": false,
+    "retain_ai_output_as_gate_evidence": false,
+    "target_path": "basename-only",
+    "severity_counts": [
+      "CRITICAL",
+      "HIGH",
+      "MEDIUM",
+      "LOW",
+      "UNKNOWN"
+    ]
+  }
+}

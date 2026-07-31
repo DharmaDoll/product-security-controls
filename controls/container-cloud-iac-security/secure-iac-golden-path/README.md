@@ -105,14 +105,33 @@ reusable workflowは次のcontrolを組み合わせます。表の状態を保�
 | Platform-authenticated provenance generation | `PSB-BUILD-003` | implemented |
 | Local secret prevention | `PSB-SOURCE-002` | implemented |
 | Resolved IaC plan policy gate | `PSB-IAC-001` | implemented here |
+| Pinned Trivy/SCA/IaC scan profile | `PSB-DETECT-001` | implemented |
+| Dockerfile／Compose remediation feedback | `PSB-DETECT-001` DockSec profile | implemented as optional non-blocking feedback |
+| Provenance distribution | `PSB-REL-002` | implemented |
+| OCI provenance and workload admission | `PSB-CONTAINER-001` | implemented |
 | Cloud OIDC federation profile | `PSB-CICD-006` | planned |
-| Pinned Trivy/SCA/IaC scan profile | `PSB-DETECT-001` | planned |
-| Provenance distribution | `PSB-REL-002` | planned |
-| SBOM generation and publication | `PSB-REL-003` | planned |
+| Artifact-bound CycloneDX SBOM generation and publication | `PSB-REL-003` | implemented |
+| SBOM portfolio and continuous analysis | `PSB-REL-003` Dependency-Track adapter | implemented as normalized fail-closed composition |
 
-artifact signing generationも未実装です。`PSB-REL-001`はconsumer側の署名・
+Artifact signing generationは未実装です。`PSB-REL-001`はconsumer側の署名・
 provenance検証であり、Cosign等によるsigning stepそのものと重複させません。
 新しいsigning controlを実装するまではgolden pathの達成済み機能として扱いません。
+
+DockSecはGolden Pathの独立したcontrolではなく、`PSB-DETECT-001`のoptional
+adapterです。release gateは固定・ロック済みCLI環境で
+`--scan-only --offline --fail-on high --json --no-cache`を実行し、status `2`
+または`3`を`ERROR`としてblockします。AI説明は別の非blocking feedbackであり、
+scoreや提案だけでdeployを許可しません。review済みupstream Actionは内部でmutable
+downloadと`curl | sh`を使用するため、full commit SHAへ固定しても採用しません。
+
+SBOM jobは`PSB-REL-003`をそのままcompositionします。Release artifactの実byte列と
+CycloneDX root component、release manifestをSHA-256で結び付け、direct／transitive
+component、relationship、complete compositionを検証してから公開します。その後、
+事前作成したDependency-Track project UUIDとexact release versionへ
+`BOM_UPLOAD`だけを持つidentityで登録し、API受付ではなく`BOM_PROCESSED`まで確認
+します。`BOM_PROCESSING_FAILED`、`BOM_VALIDATION_FAILED`、timeout、stale analyzer
+dataはすべて`ERROR`です。Golden Pathはこのcontrolを再実装せず、独立した
+`make verify-control CONTROL=PSB-REL-003`の証跡を要求します。
 
 OIDCの`id-token: write`はworkflow全体へ付与せず、protected deploy jobだけへ
 明示的に付与し、cloud側trust policyでrepository、ref、environment、audience、
@@ -176,3 +195,7 @@ plan未取得、unknown valueをcleanとして扱ってはいけません。
 - provider hookは全変更経路を必ずしも覆いません。
 - drift scanner自体の停止や権限不足はcleanではなくERRORです。
 - golden pathは例外をゼロにせず、例外を狭く、owned、justified、expiringにします。
+- DockSec profileは開発者の修正体験を改善しますが、organization-built lock済み
+  environment、Trivy／Hadolint integrity、DB freshnessのproduction証跡は外部です。
+- Dependency-Track compositionは4.14.3 normalized fixture contractであり、live API、
+  project ACL、notification delivery、analyzer freshness、5系migrationの証跡は外部です。

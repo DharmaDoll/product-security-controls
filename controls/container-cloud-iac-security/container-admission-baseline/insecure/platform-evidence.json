@@ -1,0 +1,25 @@
+{
+  "schema": "psb-container-platform-evidence/v1",
+  "status": "completed",
+  "policy_version": "latest",
+  "admission_controller": {
+    "enforced": false,
+    "failure_policy": "Ignore",
+    "unavailable_result": "allow",
+    "operations": [
+      "CREATE"
+    ],
+    "resources": [
+      "deployments.apps"
+    ],
+    "timeout_seconds": 30
+  },
+  "runtime": {
+    "pids_limit_enforced": false,
+    "pids_limit": 0
+  },
+  "network_policy": {
+    "enforcement_available": false
+  },
+  "fixture": true
+}

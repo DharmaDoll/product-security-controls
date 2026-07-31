@@ -28,7 +28,7 @@ verification:
   commands:
     - make verify-control CONTROL=PSB-IAC-001
   expected:
-    - secure module plan CI provider and drift policy passes all 12 checks
+    - secure module plan CI provider drift and artifact-bound SBOM inventory composition passes all 12 checks
     - insecure direct resource fail-open gate static credential and destructive remediation are rejected in 12 distinct rows
     - malformed policy or plan input returns ERROR rather than a clean result
 checks:
@@ -127,22 +127,23 @@ checks:
     mapping_status: reviewed
   - id: IAC-006
     title: Reusable CI composes implemented security controls
-    required_state: immutable reusable workflow with explicit minimum permissions and separate implemented and planned capabilities
+    required_state: immutable reusable workflow with explicit minimum permissions separate implemented and planned capabilities AI-independent container feedback and artifact-bound fail-closed SBOM inventory
     responsible_role: ci-platform
     applies_to:
       - reusable-ci-workflow
       - ci-quality-gate
     context:
       threat_actor: template maintainer introducing drift or application team copying and weakening security jobs
-      attack_or_failure_scenario: repositories run divergent mutable or over-privileged pipelines and claim planned scanners SBOM or signing as active
-      why_required: central immutable composition reduces adoption effort while explicit capability status prevents documentation from overstating actual enforcement
+      attack_or_failure_scenario: repositories run divergent mutable or over-privileged pipelines claim planned controls as active allow AI remediation output to control releases or upload unbound SBOMs to ambiguous projects while treating asynchronous failure as clean
+      why_required: central immutable composition reduces adoption effort while explicit capability status deterministic DockSec semantics and direct PSB-REL-003 evidence prevent documentation AI feedback or upload acceptance from overstating actual enforcement
     verification:
       type: hybrid
       method: verify composition metadata then verify each referenced implemented control independently
-      expected: required implemented controls are present planned controls stay marked planned and reusable workflow policy is immutable and least privileged
+      expected: required implemented controls include PSB-REL-003 planned controls stay marked planned reusable workflow policy is immutable and least privileged DockSec remains optional and AI-independent and Dependency-Track requires exact project BOM_UPLOAD and BOM_PROCESSED semantics
       evidence:
         - sanitized composition verifier output
         - referenced control verifier outputs
+        - PSB-REL-003 artifact SBOM and processing receipt evidence
     mapping_status: reviewed
   - id: IAC-007
     title: Deployment identity is short lived and job scoped
@@ -342,7 +343,10 @@ limitations:
   - CloudFormation Hooks and similar controls may cover only selected provisioning paths resource types operations accounts and regions.
   - Drift detection cannot prove continuous compliance when the scanner lacks permission coverage or availability.
   - Automatic remediation can cause outages or destroy evidence and is restricted to reviewed reversible actions.
-  - Planned Trivy SCA SBOM provenance distribution signing and OIDC profiles remain gaps until their dedicated controls are implemented and verified.
+  - Trivy scanning provenance and SBOM distribution and OCI workload admission now have dedicated E3 controls but live organization adapters remain external evidence.
+  - DockSec is composed only as the optional PSB-DETECT-001 remediation adapter; its AI output has no gate authority and its locked production toolchain remains external evidence.
+  - Artifact signing generation and OIDC profiles remain gaps until their dedicated controls are implemented and verified.
+  - Dependency-Track 4.14.3 is represented by a normalized offline adapter contract; live API project ACL webhook analyzer freshness and version 5 migration remain organization evidence.
   - Framework mappings are supporting relationships and do not establish cloud security certification or compliance.
 status: prototype
 owner: product-security

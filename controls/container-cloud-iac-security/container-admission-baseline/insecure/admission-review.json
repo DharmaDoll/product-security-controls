@@ -1,0 +1,89 @@
+{
+  "apiVersion": "admission.k8s.io/v1",
+  "kind": "AdmissionReview",
+  "request": {
+    "uid": "00000000-0000-4000-8000-000000000002",
+    "operation": "CREATE",
+    "resource": {
+      "group": "apps",
+      "version": "v1",
+      "resource": "deployments"
+    },
+    "namespace": "payments",
+    "name": "payments-api-insecure",
+    "object": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "payments-api-insecure",
+        "namespace": "payments",
+        "labels": {
+          "app.kubernetes.io/name": "payments-api"
+        }
+      },
+      "spec": {
+        "replicas": 1,
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "payments-api"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "payments-api"
+            }
+          },
+          "spec": {
+            "automountServiceAccountToken": true,
+            "hostNetwork": true,
+            "hostPID": true,
+            "hostIPC": true,
+            "securityContext": {
+              "runAsNonRoot": false,
+              "runAsUser": 0,
+              "seccompProfile": {
+                "type": "Unconfined"
+              }
+            },
+            "containers": [
+              {
+                "name": "api",
+                "image": "docker.io/example/payments:latest",
+                "securityContext": {
+                  "runAsNonRoot": false,
+                  "runAsUser": 0,
+                  "allowPrivilegeEscalation": true,
+                  "privileged": true,
+                  "readOnlyRootFilesystem": false,
+                  "capabilities": {
+                    "drop": [],
+                    "add": [
+                      "SYS_ADMIN"
+                    ]
+                  }
+                },
+                "resources": {},
+                "volumeMounts": [
+                  {
+                    "name": "runtime-socket",
+                    "mountPath": "/var/run/docker.sock"
+                  }
+                ]
+              }
+            ],
+            "volumes": [
+              {
+                "name": "runtime-socket",
+                "hostPath": {
+                  "path": "/var/run/docker.sock",
+                  "type": "Socket"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

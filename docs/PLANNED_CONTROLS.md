@@ -10,6 +10,7 @@ completion evidence for each planned control.
 
 Planning status:
 
+- `implemented`: a complete E3 control package is present and verified;
 - `ready`: scope and prerequisite inputs are available;
 - `prototype`: the first executable vertical slice exists while explicitly
   listed expansion work remains;
@@ -34,9 +35,16 @@ PSB-CICD-004 ──> PSB-CICD-005 ──> PSB-CICD-006
        │
        └────────> PSB-DETECT-001 ──> reusable Golden Path integration
 
-PSB-REL-002 + PSB-DETECT-001 ──> PSB-REL-003
+PSB-REL-002 + PSB-DETECT-001 ──> PSB-REL-003 ──> Golden Path + PSB-GOV-001
 
 PSB-DETECT-001 + PSB-IAC-001 ──> PSB-CONTAINER-001
+PSB-BUILD-003 + PSB-REL-002 + PSB-REL-001 ──> image provenance admission
+
+PSB-CICD-006 ────────────────> PSB-CONTAINER-002 (live identity adapter)
+
+PSB-SOURCE-001 + PSB-BUILD-001 ──> PSB-CONTAINER-003 boundary review
+
+PSB-CONTAINER-001 + PSB-CONTAINER-003 ──> PSB-CONTAINER-004
 
 PSB-GOV-002 ──> shared exception enforcement across later controls
 
@@ -47,9 +55,11 @@ PSB-AI-004 ──────────────────┘
 
 Within one priority, complete one E3 vertical slice before starting the next.
 The application-checklist import still requires its organization-owned source.
-`PSB-CICD-005` is implemented. The next independently executable P1 control is
-`PSB-DETECT-001`; implementing it also unblocks the planned SBOM and container
-profiles. `PSB-CICD-006` is now ready because both CI/CD dependencies exist.
+`PSB-CICD-005`, `PSB-DETECT-001`, `PSB-REL-003`, and `PSB-CONTAINER-001` are
+implemented. Artifact-bound SBOM publication now composes into the Golden Path
+and a Dependency-Track portfolio query adapter extends `PSB-GOV-001`; the
+container admission result unblocks later registry and runtime compositions.
+`PSB-CICD-006` is also ready because both CI/CD dependencies exist.
 
 ## Prerequisite: application checklist reconciliation
 
@@ -377,7 +387,8 @@ including tenant separation and denial by default.
 
 ### PSB-DETECT-001 — Integrity-verified security scanner execution
 
-Status: `ready`  
+Status: `implemented` — E3 offline vertical slice
+
 Domain: `detection-verification`
 
 #### Goal
@@ -438,6 +449,30 @@ many scanners.
 - secret values are redacted from console and saved evidence;
 - `make verify-control CONTROL=PSB-DETECT-001` reaches E3 with no production
   registry, cloud, or credential dependency.
+
+#### Implemented evidence
+
+- Trivy `v0.72.0` release, Linux archive, publisher checksum file, and
+  Sigstore bundle identities are pinned; the explicit fetch script verifies
+  checksum and publisher workflow identity before extraction.
+- affected Trivy `0.69.4` through `0.69.6`, tampered bytes, unavailable
+  scanner, database mismatch, leaked secret evidence, malformed JSON, wildcard
+  exception, and expired exception are negative fixtures.
+- normalized offline results cover vulnerability, container
+  misconfiguration, IaC misconfiguration, secret, and CycloneDX SBOM
+  vulnerability categories without retaining matched secret values.
+- Checkov `3.3.8` is pinned in a comparison record but is not adopted because
+  the first slice found no unique blocking coverage.
+- DockSec `2026.7.5` is adopted only as an optional developer-remediation
+  orchestrator because contextual Dockerfile guidance and Compose correlation
+  are a documented unique value. Its deterministic gate runs scan-only and
+  offline, maps usage or runtime failure to `ERROR`, removes LLM credentials,
+  and rejects AI output as authoritative evidence.
+- the upstream DockSec Action is not adopted because the reviewed fixed source
+  still downloads mutable Hadolint and executes a network-fetched Trivy
+  installer through a shell pipeline;
+- production database freshness, live registry integration, application
+  SAST/DAST, and embedded-malware detection remain explicit limitations.
 
 ## P2: exposure reduction and release completeness
 
@@ -521,8 +556,9 @@ Planning source:
 
 ### PSB-REL-003 — SBOM generation, binding, and publication
 
-Status: `dependency-required` on `PSB-REL-002` and scanner semantics from
-`PSB-DETECT-001`  
+Status: `implemented` — E3 artifact binding, completeness, publication, and
+Dependency-Track processing slice
+
 Domain: `release-integrity`
 
 #### Goal
@@ -531,22 +567,41 @@ Generate a complete machine-readable SBOM, bind it to the exact release
 artifact, publish it with integrity metadata, and detect consumer-side mismatch
 or incompleteness.
 
-#### First runnable slice
+#### Implemented slice
 
 Generate a CycloneDX fixture from a locked sample, record artifact and SBOM
 digests in a release manifest, and verify required direct/transitive components,
 identifiers, relationships, and composition completeness.
+
+The slice also pins a Dependency-Track 4.14.3 adapter contract, pre-binds an
+exact project UUID and release version, restricts the upload identity to
+`BOM_UPLOAD`, requires `BOM_PROCESSED`, and keeps processing failure,
+validation failure, timeout, analyzer outage, stale vulnerability data, and
+parser failure distinct from clean. `PSB-GOV-001` separately consumes a
+read-only exact CVE/PURL portfolio response with complete pagination and links
+it back to build evidence.
 
 #### Acceptance criteria
 
 - the SBOM corresponds to the released artifact, not merely the source tree;
 - missing transitive components and artifact mismatch fail validation;
 - publication and no-downgrade semantics align with `PSB-REL-002`;
+- upload acceptance is not processing success and every error path exits `2`;
+- Dependency-Track project UUID, version, SBOM serial, digest, component count,
+  composition, and fresh analyzer state match the exact release;
+- Golden Path composes the control without duplicating its implementation;
 - an SBOM is evidence, not proof that dependencies are vulnerability-free.
+
+Planning and implementation source:
+
+- [`REF-REL-001`](SECURITY_GUIDANCE_SOURCES.md#ref-rel-001) supplies the
+  versioned API, permission, and event semantics. Dependency-Track remains a
+  tool reference rather than a framework mapping source.
 
 ### PSB-CONTAINER-001 — Container runtime baseline
 
-Status: `dependency-required` on `PSB-DETECT-001` and `PSB-IAC-001`  
+Status: `implemented` — E3 offline admission and provenance-composition slice
+
 Domain: `container-cloud-iac-security`
 
 #### Goal
@@ -555,19 +610,339 @@ Require immutable image identity, non-root execution, minimal Linux
 capabilities, read-only filesystems, bounded resources, and admission
 enforcement before a workload runs.
 
+#### Source and control allocation
+
+The duplicate-free source and ownership matrix is maintained in
+[`CONTAINER_SECURITY_SOURCE_ALLOCATION.md`](CONTAINER_SECURITY_SOURCE_ALLOCATION.md).
+
+- NIST SP 800-190 supplies product-neutral Section 4 mapping candidates through
+  the `nist-sp-800-190` registry;
+- SLSA v1.2 applies to the container image as a build artifact: existing
+  `PSB-BUILD-002..003` own hosted build and authentic provenance,
+  `PSB-REL-002` owns provenance distribution, and `PSB-REL-001` owns consumer
+  authenticity and subject-digest verification;
+- CIS Docker Benchmark v1.8.0 remains an `input-required` framework candidate
+  until an official authorized PDF, digest, recommendation inventory, and
+  reuse terms are reviewed;
+- `REF-CONTAINER-001` supplies OWASP implementation examples and MUST NOT
+  become a framework mapping;
+- `PSB-DETECT-001` owns image and runtime vulnerability scanning;
+- `PSB-CODE-001` owns secrets excluded from images;
+- `PSB-CONTAINER-002` owns registry access and lifecycle;
+- `PSB-CONTAINER-003` owns host and daemon hardening;
+- `PSB-CONTAINER-004` owns post-admission runtime behavioral monitoring.
+
 #### First runnable slice
 
 Provide insecure and secure Kubernetes workload fixtures plus an admission
 decision verifier for digest pinning, security context, capabilities, privilege,
-host namespaces, host paths, seccomp, and resource limits.
+host namespaces, host paths, runtime sockets, read-only root filesystems,
+seccomp, and resource limits.
+
+#### SLSA image-provenance integration slice
+
+After the basic workload-policy slice, compose the implemented
+`PSB-REL-001` verifier at the admission boundary:
+
+1. resolve the admitted image to an exact OCI manifest digest;
+2. obtain the provenance distributed by `PSB-REL-002`;
+3. verify provenance authenticity, approved builder and source expectations,
+   and exact subject-digest equality through `PSB-REL-001`;
+4. reject missing, invalid, unrelated, downgraded, or unverifiable provenance;
+5. bind the verified decision to the exact deployment revision and image
+   digest without trusting a mutable tag or a user-supplied pass flag.
+
+This slice may map its atomic consumer-verification check to SLSA v1.2
+`build-l2#consumer-validates-authenticity` and `build-provenance`. Digest
+pinning alone does not earn either mapping. Provenance generation and
+distribution mappings stay with `PSB-BUILD-003` and `PSB-REL-002`.
 
 #### Acceptance criteria
 
-- mutable tags and privileged or host-mounted workloads are rejected;
+- mutable tags and privileged, host-mounted, host-namespace, or runtime-socket
+  workloads are rejected;
+- non-root, no privilege escalation, capability drop, read-only root
+  filesystem, seccomp, and resource limits are verified independently;
 - admission error is distinct from allow;
 - image vulnerability scanning remains `PSB-DETECT-001`;
 - signature or provenance admission is added only with implemented release
-  evidence, not by assertion.
+  evidence, not by assertion;
+- provenance admission rejects a statement whose subject digest is not the
+  exact admitted OCI manifest digest and reports verifier unavailability as
+  `ERROR`;
+- container admission evidence may support the SLSA consumer requirement but
+  does not establish a SLSA level or replace the cumulative Build L2
+  assessment;
+- NIST mappings are attached only to atomic checks with direct evidence;
+- no CIS profile or OWASP compliance claim is inferred from the first slice.
+
+#### Implemented evidence
+
+- an API-native `admission.k8s.io/v1` Deployment fixture covers init and
+  application containers without requiring a live cluster;
+- exact trusted OCI manifest digest, non-root execution, no privilege
+  escalation, capability drop, host-boundary isolation, read-only filesystem,
+  RuntimeDefault seccomp, CPU, memory, PID, and default-deny network outcomes
+  are evaluated independently;
+- `PSB-REL-001` is rerun as part of the admission decision and binds signed
+  SLSA provenance to the exact OCI manifest bytes rather than a user-supplied
+  pass flag;
+- weak policy, unsafe workload, provenance mismatch, manifest substitution,
+  platform outage, unavailable verifier, and malformed input are negative
+  fixtures with distinct deny and error states;
+- live API server, registry, CNI, runtime, multiple-image evidence bundles,
+  RBAC, and narrow application allow-policy adapters remain limitations.
+
+### PSB-CONTAINER-002 — Container registry security
+
+Status: `ready` for an offline E3 policy slice; live identity adapters follow
+`PSB-CICD-006`
+Domain: `container-cloud-iac-security`
+
+#### Goal
+
+Protect private and release container registries with authenticated encrypted
+transport, repository-scoped least privilege, short-lived workload identity,
+immutable release references, auditable writes and reads of sensitive images,
+and explicit stale-image quarantine or removal.
+
+#### Boundary and non-goals
+
+- `PSB-CONTAINER-001` owns whether a workload may run an image.
+- `PSB-REL-001..002` own artifact signature, provenance verification, and
+  publication evidence.
+- `PSB-CICD-006` owns cloud or registry workload identity federation.
+- `PSB-DETECT-001` owns image vulnerability scanner execution. Embedded
+  malware detection remains a documented future scanner slice and is not
+  claimed by the implemented control.
+- This control owns registry transport, authorization, mutation protection,
+  audit, retention, quarantine, and lifecycle evidence.
+- Registry retention and access may preserve SLSA provenance, but SLSA
+  generation, distribution, and consumer validation remain release-integrity
+  evidence and are not remapped to this control.
+
+#### Threat or failure scenario
+
+An external attacker, compromised developer credential, or over-privileged CI
+identity pushes or replaces an image, reads a sensitive repository, connects
+over an untrusted channel, or keeps a revoked or stale image deployable. A
+registry API, audit collector, or lifecycle evaluator failure is then reported
+as a clean registry.
+
+#### Assumptions
+
+- the first slice uses a provider-neutral policy and evidence schema;
+- a live registry adapter can expose exact repository, actor, action, digest,
+  timestamp, and policy state without returning credentials;
+- public anonymous pull is a separately reviewed use case and never implies
+  anonymous push, delete, or administration.
+
+#### First runnable slice
+
+Provide secure and insecure provider-neutral registry-policy fixtures plus an
+offline verifier for:
+
+- TLS-only endpoints and explicit trusted registry identities;
+- repository- and action-scoped pull, push, delete, and administration roles;
+- denial of anonymous or cross-repository writes;
+- immutable release references and protected deletion;
+- exact image digest, actor, repository, action, and timestamp audit records;
+- explicit deprecation, quarantine, retention, and removal state;
+- `ERROR` for missing, malformed, stale, or unavailable evidence.
+
+Use synthetic identities and digests only. A later adapter may normalize OCI
+Distribution, cloud registry, or GitHub Container Registry evidence without
+changing the control outcome.
+
+#### Provisional source allocation
+
+- NIST SP 800-190: `4.2.1`, `4.2.2`, and `4.2.3`;
+- OWASP Docker Security Cheat Sheet: supporting registry and supply-chain
+  examples only, not framework mappings;
+- CIS Docker Benchmark: exact recommendation mappings remain `input-required`
+  until the authorized v1.8.0 source is reviewed.
+
+#### Acceptance criteria
+
+- an insecure endpoint, anonymous write, broad wildcard identity,
+  cross-repository push, mutable release replacement, unaudited write, or
+  indefinitely deployable stale image is rejected;
+- read access for sensitive images and every write or administrative action
+  has attributable, redacted audit evidence;
+- a lifecycle policy distinguishes active, deprecated, quarantined, and
+  removed images without treating scanner failure as quarantine evidence;
+- fixture evidence reaches E3 with positive, negative, malformed, and
+  unavailable cases;
+- no registry vendor feature is presented as proof of complete registry or
+  NIST coverage.
+
+### PSB-CONTAINER-003 — Container host and daemon hardening
+
+Status: `ready` for a provider-neutral E3 configuration slice; CIS mapping is
+`input-required`
+Domain: `container-cloud-iac-security`
+
+#### Goal
+
+Reduce container escape and host takeover impact by minimizing and patching the
+container host, constraining daemon and runtime administration, protecting
+runtime sockets and files, enforcing user and kernel isolation, and producing
+host audit evidence.
+
+#### Boundary and non-goals
+
+- `PSB-SOURCE-001` owns developer-endpoint container socket and workspace
+  exposure.
+- `PSB-BUILD-001` owns the untrusted CI build sandbox.
+- `PSB-CONTAINER-001` owns workload security context and admission.
+- This control owns production or shared container host OS, Docker/containerd/
+  CRI-O daemon configuration, management ingress, runtime files, patch state,
+  and host audit policy.
+- Workload behavior after admission remains `PSB-CONTAINER-004`.
+- SLSA does not define production container host hardening; do not map these
+  checks to a SLSA Build level.
+
+#### Threat or failure scenario
+
+An attacker controlling a container, stolen operator identity, exposed remote
+API, or misconfigured automation reaches a privileged runtime socket, weak
+daemon, vulnerable shared kernel, writable runtime files, or unnecessary host
+service and obtains node-level control. A host assessment that cannot observe
+the daemon or kernel incorrectly reports a pass.
+
+#### Assumptions
+
+- the first slice targets Linux hosts and Linux container runtimes;
+- Windows container hosts and managed control planes remain `NOT_CHECKED`
+  until a provider-specific adapter defines equivalent evidence;
+- host inspection is read-only and does not change daemon, kernel, firewall,
+  or audit settings.
+
+#### First runnable slice
+
+Provide secure and insecure normalized host-policy fixtures plus a read-only
+offline verifier for:
+
+- dedicated minimal container hosts and prohibited mixed workloads;
+- supported host OS, kernel, runtime, and daemon patch baselines;
+- no unauthenticated TCP daemon, public management endpoint, or workload-mounted
+  runtime socket;
+- rootless or user-namespace isolation where supported, with documented
+  exceptions rather than silent downgrade;
+- controlled ownership and restrictive permissions for daemon configuration,
+  runtime binaries, sockets, storage, and service units;
+- default seccomp plus SELinux or AppArmor enforcement state;
+- explicit operator RBAC, management-network restriction, and audit rules;
+- `NOT_CHECKED` for organization evidence not supplied and `ERROR` when the
+  assessment itself fails.
+
+#### Provisional source allocation
+
+- NIST SP 800-190: `4.3.1`, `4.3.5`, `4.5.1` through `4.5.5`, and
+  `4.6`;
+- OWASP Docker Security Cheat Sheet: Rules 0, 1, 10, and 11 as reference
+  examples;
+- CIS Docker Benchmark v1.8.0: primary Docker-specific requirement framework
+  after authorized source acquisition and recommendation review.
+
+#### Acceptance criteria
+
+- an exposed daemon API, mounted runtime socket, unsupported patch state,
+  general-purpose mixed host, writable protected runtime file, disabled
+  isolation profile, or unowned administrator role is rejected;
+- a justified platform limitation is a narrow, time-bound exception and never
+  an implicit pass;
+- host evidence is sanitized and distinguishes `PASS`, `FAIL`,
+  `NOT_CHECKED`, and `ERROR`;
+- positive, negative, malformed, unsupported, and unavailable fixture cases
+  reach E3;
+- the verifier does not claim the CIS Level 1 or Level 2 profile until every
+  in-scope recommendation and organization-owned evidence has been assessed.
+
+### PSB-CONTAINER-004 — Container runtime threat detection
+
+Status: `dependency-required` on the workload identity and admission contract
+from `PSB-CONTAINER-001`
+Domain: `container-cloud-iac-security`
+
+#### Goal
+
+Detect and support response to post-admission container behavior that violates
+the reviewed workload identity, process, filesystem, privilege, network, or
+resource baseline, without treating a missing sensor or incomplete event stream
+as clean.
+
+#### Boundary and non-goals
+
+- `PSB-DETECT-001` owns pre-deployment vulnerability, secret, image, and IaC
+  scanner execution.
+- `PSB-CONTAINER-001` owns preventive workload configuration and admission.
+- `PSB-CONTAINER-003` owns host and daemon hardening and host audit policy.
+- This control owns runtime event collection, workload-identity binding,
+  behavioral policy, alert delivery evidence, and bounded response handoff.
+- It does not replace application logging, a production SOC, or incident
+  command authorization.
+- SLSA provenance may supply trusted image identity to event correlation, but
+  runtime behavior and alert delivery are not SLSA Build requirements.
+
+#### Threat or failure scenario
+
+A malicious image, exploited application, or escaped process starts an
+unexpected executable, changes a protected file, opens a listener, reaches a
+forbidden destination, requests new privilege, accesses a runtime socket, or
+exhausts resources after passing admission. The sensor, collector, or alert
+route becomes unavailable and the absence of events is mistaken for safety.
+
+#### Assumptions
+
+- a runtime adapter can bind every event batch to the admitted workload and
+  exact image digest;
+- the offline slice evaluates synthetic events and does not install a
+  privileged host sensor;
+- destructive containment remains outside the automatic detector decision and
+  requires a separately authorized response path.
+
+#### First runnable slice
+
+Provide deterministic synthetic runtime events, a reviewed workload profile,
+and an offline evaluator for:
+
+- exact workload, image digest, namespace, node, and policy-version binding;
+- unexpected process and shell execution;
+- protected-file mutation and writes outside declared writable paths;
+- privilege, capability, namespace, sensitive mount, and runtime-socket access;
+- unexpected listeners and denied network destinations;
+- CPU, memory, process, restart, or connection abuse signals;
+- redacted alert evidence and an owned response route;
+- missing sequence, stale events, dropped telemetry, unknown schema, evaluator
+  failure, and alert-delivery failure as `ERROR`.
+
+No privileged runtime sensor is installed by the first slice. A later eBPF,
+audit, or managed-runtime adapter requires separate privilege, kernel,
+performance, integrity, and data-retention review.
+
+#### Provisional source allocation
+
+- NIST SP 800-190: `4.4.4`; image and runtime software vulnerability
+  detection under `4.1.1`, `4.1.3`, and `4.4.1` remains
+  `PSB-DETECT-001`;
+- OWASP Docker Security Cheat Sheet: Rule 6 runtime-monitoring examples;
+- CIS Docker Benchmark: logging and audit mappings only after the authorized
+  v1.8.0 recommendation inventory is reviewed.
+
+#### Acceptance criteria
+
+- every supported malicious behavior fixture creates the expected sanitized
+  alert with exact workload and policy identity;
+- expected application behavior does not alert under the reviewed profile;
+- dropped, stale, incomplete, malformed, or unavailable telemetry is `ERROR`,
+  never clean;
+- alert delivery to an owned receiver is tested independently from local
+  detection;
+- response output is dry-run or authorization-bound and cannot delete
+  workloads or evidence merely because one detector fired;
+- positive, negative, missing-sensor, malformed-event, and delivery-failure
+  cases reach E3.
 
 ### PSB-GOV-002 — Time-bound security exceptions
 

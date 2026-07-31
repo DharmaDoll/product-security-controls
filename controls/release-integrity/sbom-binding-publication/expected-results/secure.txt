@@ -1,0 +1,8 @@
+PASS SBM-001 CycloneDX identities are exact and machine readable
+PASS SBM-002 SBOM is bound to exact released bytes
+PASS SBM-003 direct transitive and relationship inventory is complete
+PASS SBM-004 SBOM publication is immutable prompt and no-downgrade
+PASS SBM-005 Dependency-Track upload is pre-bound and least privileged
+PASS SBM-006 Dependency-Track completed receipt matches the release
+PASS SBM-007 Dependency-Track evidence is sanitized and fresh
+ACCEPTED SBOM release and Dependency-Track processing

@@ -1,0 +1,28 @@
+{
+  "schema": "psb-release-verification-receipt/v1",
+  "tool": "trivy",
+  "version": "0.69.4",
+  "tag": "v0.69.4",
+  "release_immutable": false,
+  "asset": {
+    "name": "trivy.tar.gz",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "extracted_binary_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+  },
+  "checksum_file": {
+    "name": "latest.txt",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "signature_bundle": {
+    "name": "none",
+    "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "certificate_oidc_issuer": "any",
+    "certificate_identity": "any"
+  },
+  "verification": {
+    "publisher_checksum_verified": false,
+    "sigstore_bundle_verified": false,
+    "verified_at": "2026-07-30T00:00:00Z",
+    "fixture": true
+  }
+}

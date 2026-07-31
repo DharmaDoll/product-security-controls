@@ -1,0 +1,53 @@
+FAIL CNT-009 policy_version must be an immutable reviewed version
+FAIL CNT-001 trusted registry allowlist must be non-empty and exact
+FAIL CNT-005 allowed volume type set is incomplete or over-broad
+FAIL CNT-003 minimum runAsUser must be a non-root integer
+FAIL CNT-003 privileged containers are allowed by policy
+FAIL CNT-003 privilege escalation is allowed by policy
+FAIL CNT-006 read-only root filesystem is not required
+FAIL CNT-004 policy must require dropping ALL capabilities
+FAIL CNT-004 first-slice policy must add no capabilities
+FAIL CNT-006 policy must require RuntimeDefault seccomp
+FAIL CNT-007 CPU and memory requests must be required
+FAIL CNT-007 CPU and memory limits must be required
+FAIL CNT-007 maximum CPU policy must be 1 through 4000 millicores
+FAIL CNT-007 maximum memory policy must be 1 through 4096 MiB
+FAIL CNT-007 maximum PID policy must be between 1 and 256
+FAIL CNT-008 default-deny ingress is not required
+FAIL CNT-008 default-deny egress is not required
+FAIL CNT-002 authenticated provenance is not required
+FAIL CNT-002 consumer verifier must be PSB-REL-001
+FAIL CNT-002 provenance subject digest must use sha256
+FAIL CNT-002 provenance artifact must be an OCI image manifest
+FAIL CNT-009 admission failurePolicy must be Fail
+FAIL CNT-009 unavailable admission evaluator must deny
+FAIL CNT-009 admission must cover CREATE and UPDATE
+FAIL CNT-009 maximum admission timeout must be 1 through 10 seconds
+FAIL CNT-009 admission controller is not enforcing decisions
+FAIL CNT-009 admission operation coverage is incomplete
+FAIL CNT-001 containers/api image is not pinned to an exact sha256 digest
+FAIL CNT-001 first-slice evidence must cover exactly one unique admitted image identity
+FAIL CNT-003 service account token automount must be disabled
+FAIL CNT-003 pod runAsNonRoot must be true
+FAIL CNT-003 containers/api runAsNonRoot must be true
+FAIL CNT-003 containers/api privileged must be false
+FAIL CNT-003 containers/api allowPrivilegeEscalation must be false
+FAIL CNT-004 containers/api must drop ALL capabilities
+FAIL CNT-004 containers/api must add no capabilities
+FAIL CNT-005 pod hostNetwork must be explicitly false
+FAIL CNT-005 pod hostPID must be explicitly false
+FAIL CNT-005 pod hostIPC must be explicitly false
+FAIL CNT-005 volume runtime-socket exposes a host path
+FAIL CNT-005 containers/api mounts a container runtime socket
+FAIL CNT-006 containers/api root filesystem must be read-only
+FAIL CNT-007 containers/api has invalid CPU quantities
+FAIL CNT-007 containers/api has invalid memory quantities
+FAIL CNT-007 runtime PID limit is not enforced
+FAIL CNT-007 runtime PID limit is absent or exceeds policy
+FAIL CNT-008 network policy enforcement is unavailable
+FAIL CNT-008 network policy selector does not target the workload
+FAIL CNT-008 network policy must cover ingress and egress
+FAIL CNT-008 baseline network policy ingress is not default deny
+FAIL CNT-008 baseline network policy egress is not default deny
+FAIL CNT-002 provenance cannot be bound without one exact image identity
+DECISION DENY 52 violation(s)

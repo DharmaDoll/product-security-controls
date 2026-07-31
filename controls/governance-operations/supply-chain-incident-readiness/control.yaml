@@ -18,11 +18,15 @@ implementations:
     - insecure/inventory/incomplete.cdx.json
     - insecure/build-records.json
     - insecure/runbook.json
+    - insecure/dependency-track-policy.json
+    - insecure/dependency-track-response.json
   secure:
     - secure/inventory/application-a.cdx.json
     - secure/inventory/application-b.cdx.json
     - secure/build-records.json
     - secure/runbook.json
+    - secure/dependency-track-policy.json
+    - secure/dependency-track-response.json
 verification:
   commands:
     - make verify-control CONTROL=PSB-GOV-001
@@ -32,6 +36,8 @@ verification:
     - 証跡保全を先頭にしたowner approval付きdry-run planを生成する
     - 影響検出、該当なし、検証不能が異なる終了コードになる
     - 不完全inventoryとunsafe runbookが拒否される
+    - Dependency-Trackのexact CVE component portfolio結果がproject UUID version SBOM serial PURLとbuild evidenceへ相互照合される
+    - Dependency-Trackの不完全pagination outage stale inventory analyzer failureがERRORになる
 checks:
   - id: INC-001
     title: Exact package versions can be traced to affected products
@@ -121,6 +127,26 @@ checks:
       evidence:
         - negative-test output
     mapping_status: reviewed
+  - id: INC-006
+    title: Dependency-Track portfolio impact query is exact complete and evidence linked
+    required_state: exact CVE and component identity across all pages with fresh healthy inventory linked by project UUID version SBOM serial and PURL
+    responsible_role: incident-response
+    applies_to:
+      - dependency-track
+      - sbom-inventory
+      - incident-response
+    context:
+      threat_actor: compromised dependency publisher incomplete project ACL failed analyzer or responder relying on a first-page name-only search
+      attack_or_failure_scenario: an exact affected release is omitted or an unrelated project is included because the portfolio query is stale partial ambiguous or disconnected from build evidence
+      why_required: complete exact remote search broadens incident scope while bidirectional local evidence linkage prevents the analysis platform result from becoming an unaudited source of truth
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-GOV-001 and run a read-only organization Dependency-Track adapter
+      expected: exact linked results pass while incomplete pagination outage stale data query mismatch or orphaned project evidence fails closed
+      evidence:
+        - sanitized Dependency-Track impact response
+        - project UUID version SBOM serial and build-record linkage
+    mapping_status: reviewed
 mappings:
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
@@ -134,6 +160,7 @@ mappings:
       - INC-001
       - INC-002
       - INC-005
+      - INC-006
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: RV.2.1
@@ -146,6 +173,7 @@ mappings:
       - INC-001
       - INC-003
       - INC-005
+      - INC-006
   - framework: mitre-attack
     version: "v19.1"
     id: T1195.001
@@ -156,11 +184,14 @@ mappings:
     review_date: "2026-07-27"
     applies_to:
       - INC-001
+      - INC-006
 limitations:
   - SBOMの完全性と鮮度が不足するとfalse negativeが生じる。
   - Exact package version照合は侵害の事実を証明しない。
   - Reference runbookはdry-runのみで外部systemを変更しない。
   - Scanner inventoryまたはrecord読取失敗をcleanな結果として扱ってはいけない。
+  - Dependency-Track adapterは4.14.3のnormalized fixture contractでありlive API access project ACL pagination and analyzer freshness require organization evidence.
+  - Dependency-Track 5系はbreaking API distribution and notification changesを再レビューしてからadapter versionを更新する。
 status: prototype
 owner: product-security
 evidence_level: E3

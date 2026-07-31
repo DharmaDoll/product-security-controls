@@ -1,0 +1,306 @@
+id: PSB-CONTAINER-001
+title: Enforce a fail-closed container workload admission baseline
+domain: container-cloud-iac-security
+summary: Bind an exact OCI image and authenticated provenance to a non-root isolated resource-bounded Kubernetes workload before admission.
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - verify
+threats:
+  - id: CONTAINER-MUTABLE-OR-UNTRUSTED-IMAGE
+    description: An attacker or operator replaces a mutable image reference or presents provenance for a different OCI manifest.
+  - id: CONTAINER-HOST-BOUNDARY-ESCAPE
+    description: A privileged root capability-rich host-mounted or runtime-socket-connected workload crosses the container isolation boundary.
+  - id: CONTAINER-UNBOUNDED-RUNTIME
+    description: Missing CPU memory PID or network bounds enable denial of service uncontrolled communication persistence or lateral movement.
+  - id: CONTAINER-ADMISSION-FAIL-OPEN
+    description: Admission policy timeout unavailability malformed evidence or incomplete operation coverage is interpreted as an allow decision.
+implementations:
+  insecure:
+    - insecure/policy.json
+    - insecure/platform-evidence.json
+    - insecure/admission-review.json
+    - insecure/network-policy.json
+    - insecure/provenance.json
+  secure:
+    - secure/policy.json
+    - secure/platform-evidence.json
+    - secure/admission-review.json
+    - secure/network-policy.json
+    - secure/oci-manifest.json
+    - secure/provenance-policy.json
+    - secure/provenance.json
+    - secure/signature.b64
+    - secure/trusted-public-key.pem
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-CONTAINER-001
+  expected:
+    - every admitted image uses an exact trusted OCI manifest digest
+    - PSB-REL-001 re-verifies authenticated provenance and exact image subject binding
+    - root privilege escalation added capabilities host namespaces host paths host ports and runtime sockets are rejected
+    - read-only root filesystems RuntimeDefault seccomp CPU memory PID and default-deny network bounds are enforced
+    - CREATE and UPDATE admission failures remain deny or error rather than allow
+checks:
+  - id: CNT-001
+    title: Workload image uses an exact trusted OCI manifest digest
+    required_state: registry allowlist and sha256 digest match the exact reviewed OCI manifest bytes
+    responsible_role: developer
+    applies_to:
+      - kubernetes-workload
+      - oci-image
+    context:
+      threat_actor: registry attacker compromised publisher or operator reusing a mutable image tag
+      attack_or_failure_scenario: the admitted image bytes change after review or the workload points to a registry outside the approved trust boundary
+      why_required: digest pinning binds the deployment to immutable bytes while the registry allowlist prevents an identical-looking name from changing trust domains
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CONTAINER-001
+      expected: mutable untrusted and artifact-mismatched image references are denied
+      evidence:
+        - admitted image reference
+        - OCI manifest digest verifier output
+    mapping_status: reviewed
+  - id: CNT-002
+    title: Authenticated provenance is bound to the admitted OCI digest
+    required_state: PSB-REL-001 successfully verifies signature builder source and exact OCI manifest subject
+    responsible_role: release-manager
+    applies_to:
+      - oci-image
+      - slsa-provenance
+      - admission-decision
+    context:
+      threat_actor: forged release producer compromised build path or deployer attaching valid but unrelated provenance
+      attack_or_failure_scenario: admission trusts a user-supplied pass flag or provenance whose subject is not the exact manifest digest about to run
+      why_required: immutable image identity does not establish origin so consumer-side authenticity and subject verification must be rerun at the use boundary
+    verification:
+      type: automated
+      method: compose and execute the PSB-REL-001 verifier before returning allow
+      expected: invalid signature wrong subject substituted manifest and unavailable verifier deny or error
+      evidence:
+        - PSB-REL-001 verifier output
+        - provenance expectation policy
+    mapping_status: reviewed
+  - id: CNT-003
+    title: Containers run as non-root without privilege escalation
+    required_state: explicit non-root UID no privileged mode no privilege escalation and no automatic service account token
+    responsible_role: developer
+    applies_to:
+      - pod-security-context
+      - container-security-context
+    context:
+      threat_actor: malicious application code dependency or attacker who obtains code execution inside the workload
+      attack_or_failure_scenario: container execution starts as root elevates through setuid or receives an unnecessary Kubernetes API credential
+      why_required: a non-root identity and disabled escalation reduce the authority available after application compromise independently of filesystem and network controls
+    verification:
+      type: automated
+      method: evaluate pod init container application container and ephemeral container security contexts
+      expected: root privileged escalation and token-automount fixtures are denied
+      evidence:
+        - sanitized admission verifier output
+    mapping_status: reviewed
+  - id: CNT-004
+    title: Containers drop all Linux capabilities
+    required_state: capability drop contains exactly ALL and capability add is empty
+    responsible_role: developer
+    applies_to:
+      - container-security-context
+      - linux-capabilities
+    context:
+      threat_actor: compromised process attempting privileged kernel network mount or namespace operations
+      attack_or_failure_scenario: the workload retains or adds capabilities such as SYS_ADMIN that bypass ordinary non-root restrictions
+      why_required: Linux capabilities are a separate privilege channel so non-root UID alone does not constrain privileged kernel operations
+    verification:
+      type: automated
+      method: evaluate capabilities on every init application and ephemeral container
+      expected: missing ALL drop or any added capability is denied
+      evidence:
+        - sanitized admission verifier output
+    mapping_status: reviewed
+  - id: CNT-005
+    title: Workload is isolated from host namespaces paths ports and runtime sockets
+    required_state: host namespaces false no hostPath no runtime socket mount no hostPort and only allowlisted volume types
+    responsible_role: developer
+    applies_to:
+      - pod-spec
+      - container-runtime-boundary
+    context:
+      threat_actor: compromised workload attempting node takeover neighboring workload access or container-runtime control
+      attack_or_failure_scenario: host namespaces files or runtime APIs expose node-level authority that bypasses ordinary container isolation
+      why_required: host attachment can make other in-container restrictions irrelevant and therefore requires an independent deny check
+    verification:
+      type: automated
+      method: evaluate host flags volumes mounts and ports across the admitted pod template
+      expected: host namespaces host paths runtime sockets unknown volume types and host ports are denied
+      evidence:
+        - sanitized admission verifier output
+    mapping_status: reviewed
+  - id: CNT-006
+    title: Root filesystem is read-only and seccomp is RuntimeDefault
+    required_state: every container has readOnlyRootFilesystem true and the pod uses RuntimeDefault seccomp
+    responsible_role: developer
+    applies_to:
+      - container-filesystem
+      - seccomp-profile
+    context:
+      threat_actor: compromised application attempting persistence binary replacement or unexpected kernel system calls
+      attack_or_failure_scenario: writable image paths preserve attacker changes or an unconfined syscall surface increases container escape options
+      why_required: filesystem immutability and syscall filtering constrain different post-compromise actions and neither is supplied by non-root execution alone
+    verification:
+      type: automated
+      method: evaluate every container filesystem setting and pod seccomp profile
+      expected: writable root filesystems and unconfined or missing seccomp are denied
+      evidence:
+        - sanitized admission verifier output
+    mapping_status: reviewed
+  - id: CNT-007
+    title: CPU memory and process consumption are bounded
+    required_state: valid CPU and memory requests and limits within policy plus an enforced runtime PID limit
+    responsible_role: shared
+    applies_to:
+      - container-resources
+      - container-runtime
+    context:
+      threat_actor: faulty workload malicious request dependency bomb or compromised process exhausting shared node resources
+      attack_or_failure_scenario: an unbounded workload consumes CPU memory or process slots and degrades neighboring products or the node
+      why_required: scheduling requests do not cap usage and CPU or memory limits do not constrain fork bombs so all three resource dimensions need evidence
+    verification:
+      type: hybrid
+      method: evaluate workload quantities and platform-owned runtime PID evidence
+      expected: absent invalid inverted excessive or unenforced resource bounds are denied
+      evidence:
+        - workload resource verifier output
+        - runtime PID policy evidence
+    mapping_status: reviewed
+  - id: CNT-008
+    title: Workload has enforced default-deny ingress and egress
+    required_state: a namespace-matched NetworkPolicy selects the workload and denies both directions by default
+    responsible_role: ci-platform
+    applies_to:
+      - kubernetes-network-policy
+      - workload-network
+    context:
+      threat_actor: compromised workload probing neighbors establishing command and control or exfiltrating protected data
+      attack_or_failure_scenario: absent or ineffective network policy allows unrestricted east-west and outbound communication after application compromise
+      why_required: container process restrictions do not constrain network reachability so an enforced default-deny baseline limits lateral movement and exfiltration
+    verification:
+      type: hybrid
+      method: verify selector namespace ingress egress and platform enforcement evidence
+      expected: allow-all wrong-selector one-directional and unavailable-enforcement fixtures are denied
+      evidence:
+        - NetworkPolicy verifier output
+        - CNI enforcement evidence
+    mapping_status: reviewed
+  - id: CNT-009
+    title: Admission enforcement fails closed for create and update
+    required_state: immutable policy version failurePolicy Fail deny on outage complete operation scope and bounded timeout
+    responsible_role: ci-platform
+    applies_to:
+      - kubernetes-admission
+      - admission-controller
+    context:
+      threat_actor: admission service outage malformed evidence timeout configuration drift or operator using an uncovered update path
+      attack_or_failure_scenario: an unsafe workload is admitted because evaluation cannot complete or policy covers creation but not later mutation
+      why_required: secure workload rules provide no protection when the enforcement point can fail open or be bypassed on update
+    verification:
+      type: automated
+      method: compare reviewed policy and platform evidence and exercise unavailable and malformed cases
+      expected: incomplete finding and outage states return deny or error never allow
+      evidence:
+        - admission enforcement evidence
+        - error-state negative-test output
+    mapping_status: reviewed
+mappings:
+  - framework: slsa
+    version: "1.2"
+    id: build-l2#consumer-validates-authenticity
+    relationship: verifies
+    confidence: high
+    rationale: Admission reruns the implemented consumer-owned PSB-REL-001 signature and provenance verifier and binds its result to the exact OCI manifest digest being admitted; producer and platform requirements remain outside this control.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - CNT-002
+  - framework: slsa
+    version: "1.2"
+    id: build-provenance
+    relationship: verifies
+    confidence: high
+    rationale: The provenance subject digest builder source and build expectation are authenticated and compared with the exact admitted OCI artifact through PSB-REL-001 rather than trusting a deployment annotation.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - CNT-002
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.1.5
+    relationship: supports
+    confidence: high
+    rationale: Exact trusted-registry OCI digest admission and authenticated provenance verification prevent mutable or untrusted image identities from being treated as approved images.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - CNT-001
+      - CNT-002
+      - CNT-009
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.4.5
+    relationship: mitigates
+    confidence: high
+    rationale: Fail-closed admission permits only the exact reviewed image and authenticated provenance and rejects mutation or verifier outage paths that could introduce rogue containers.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - CNT-001
+      - CNT-002
+      - CNT-009
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.4.3
+    relationship: mitigates
+    confidence: high
+    rationale: Non-root privilege capability host-boundary filesystem seccomp and resource checks directly reject insecure container runtime configurations before workload admission.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - CNT-003
+      - CNT-004
+      - CNT-005
+      - CNT-006
+      - CNT-007
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.3.3
+    relationship: mitigates
+    confidence: high
+    rationale: A workload-selecting default-deny NetworkPolicy for ingress and egress limits unreviewed inter-container communication when the platform enforces NetworkPolicy.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - CNT-008
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.4.2
+    relationship: mitigates
+    confidence: high
+    rationale: Default-deny egress and ingress establish a bounded network baseline before narrower workload-specific allow policies are added.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - CNT-008
+limitations:
+  - Repository fixtures do not prove that a live Kubernetes API server admission controller CNI or runtime enforces the recorded settings.
+  - The first slice accepts exactly one unique image identity per workload evidence bundle; production adapters must provide separate provenance evidence for every distinct init application and ephemeral image.
+  - The default-deny NetworkPolicy fixture does not validate the narrower allow policies required for real application traffic.
+  - Resource quantity parsing intentionally supports ordinary CPU values and Ki Mi Gi memory units only and is not a complete Kubernetes quantity parser.
+  - Runtime PID enforcement is platform-owned evidence because standard workload resource fields do not provide a portable per-container PID limit.
+  - Service account RBAC projected token audience secret delivery and namespace policy require separate controls or later adapters.
+  - Image vulnerability and secret scanning remain PSB-DETECT-001 and PSB-CODE-001 responsibilities.
+  - Registry lifecycle host or daemon hardening and runtime behavioral monitoring remain PSB-CONTAINER-002 through PSB-CONTAINER-004.
+  - SLSA mappings apply only to CNT-002 actual PSB-REL-001 composition and do not establish a SLSA Build level.
+  - No CIS Docker Benchmark mapping is claimed because the authorized versioned benchmark source remains input-required.
+status: adopted
+owner: product-security
+evidence_level: E3

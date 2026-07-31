@@ -1,0 +1,218 @@
+id: PSB-REL-003
+title: Release artifactへSBOMを結び付けて公開・処理確認する
+domain: release-integrity
+summary: CycloneDX SBOMをexact release artifactへdigest-boundで公開し、Dependency-Trackのleast-privilege登録と非同期処理完了をfail-closedで検証する。
+check_context_version: "1.0"
+security_functions:
+  - detect
+  - verify
+  - govern
+threats:
+  - id: RELEASE-SBOM-MISMATCH
+    description: 別artifactまたはsource treeだけを表すSBOMがrelease evidenceとして配布され、consumerが誤ったcomponent inventoryを信頼する。
+  - id: RELEASE-SBOM-INCOMPLETE
+    description: transitive component、exact identifier、dependency relationshipまたはcompleteness stateが欠落し、影響調査でfalse negativeが生じる。
+  - id: SBOM-ANALYSIS-FAIL-OPEN
+    description: Dependency-Trackのupload受付、処理失敗、validation失敗、timeoutまたは古いvulnerability dataがcleanな分析結果として扱われる。
+  - id: SBOM-PLATFORM-OVERPRIVILEGE
+    description: CI用API keyがproject作成やsystem設定権限を持ち、誤ったprojectへの登録またはplatform compromiseのblast radiusが広がる。
+implementations:
+  insecure:
+    - insecure/artifact/release.bin
+    - insecure/bom.cdx.json
+    - insecure/release-manifest.json
+    - insecure/dependency-track-policy.json
+    - insecure/dependency-track-receipt.json
+  secure:
+    - secure/artifact/release.bin
+    - secure/bom.cdx.json
+    - secure/release-manifest.json
+    - secure/dependency-track-policy.json
+    - secure/dependency-track-receipt.json
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-REL-003
+  expected:
+    - CycloneDX identity direct and transitive components dependency relationships and complete composition are verified
+    - artifact bytes SBOM root hash release manifest artifact digest SBOM digest and serial number are one-to-one bound
+    - SBOM publication is immutable prompt retained and protected from downgrade
+    - Dependency-Track uses a pre-created exact project UUID and version TLS and BOM_UPLOAD-only identity
+    - only BOM_PROCESSED is success while processing validation timeout analyzer and parser failures return ERROR
+    - normalized evidence contains no API key SBOM body or secret-bearing request data
+checks:
+  - id: SBM-001
+    title: CycloneDX identities are exact and machine readable
+    required_state: CycloneDX 1.7 serial root identity and exact component PURLs
+    responsible_role: release-manager
+    applies_to:
+      - sbom
+      - release-artifact
+    context:
+      threat_actor: faulty SBOM generator package alias ambiguity or maintainer publishing non-exact component versions
+      attack_or_failure_scenario: consumers cannot distinguish the release or resolve a wildcard name to an exact ecosystem component
+      why_required: stable serials and exact PURLs make inventory joins reviewable and prevent name-only matching from silently selecting the wrong dependency
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-003
+      expected: non-CycloneDX invalid serial wildcard missing or mismatched PURL identities are rejected
+      evidence:
+        - sanitized SBM-001 verifier result
+        - generated CycloneDX SBOM
+    mapping_status: reviewed
+  - id: SBM-002
+    title: SBOM is bound to exact released bytes
+    required_state: artifact SHA-256 matches SBOM root hash and release manifest while manifest records exact SBOM digest and serial
+    responsible_role: release-manager
+    applies_to:
+      - release-artifact
+      - sbom
+      - release-manifest
+    context:
+      threat_actor: artifact substituter stale pipeline output or release operator attaching a source-only or different-build SBOM
+      attack_or_failure_scenario: a valid SBOM describes bytes other than the artifact downloaded by the consumer
+      why_required: independent digest equality turns publication proximity into a one-to-one evidence binding rather than assuming filenames or versions identify content
+    verification:
+      type: automated
+      method: recompute artifact and SBOM SHA-256 with make verify-control CONTROL=PSB-REL-003
+      expected: artifact root-hash manifest SBOM-digest or serial mismatch is rejected
+      evidence:
+        - sanitized SBM-002 verifier result
+        - release manifest digest record
+    mapping_status: reviewed
+  - id: SBM-003
+    title: Direct transitive and relationship inventory is complete
+    required_state: required direct and transitive exact PURLs graph edges and complete composition
+    responsible_role: release-manager
+    applies_to:
+      - sbom
+      - dependency-graph
+    context:
+      threat_actor: incomplete generator configuration unsupported package ecosystem or attacker relying on an omitted transitive dependency
+      attack_or_failure_scenario: impact analysis misses an affected library because it is absent or disconnected from the released application graph
+      why_required: component presence alone cannot establish reachability or declared completeness so graph edges and composition state must be assessed separately
+    verification:
+      type: automated
+      method: compare release expectations to CycloneDX components dependencies and compositions
+      expected: missing component edge or complete aggregate is rejected
+      evidence:
+        - sanitized SBM-003 verifier result
+        - component graph fixture
+    mapping_status: reviewed
+  - id: SBM-004
+    title: SBOM publication is immutable prompt retained and no-downgrade
+    required_state: mandatory immutable exact HTTPS SBOM location published within five minutes and retained at least one year
+    responsible_role: release-manager
+    applies_to:
+      - release-publication
+      - sbom-storage
+    context:
+      threat_actor: compromised release operator mutable storage lifecycle rule or failed asynchronous publication job
+      attack_or_failure_scenario: artifact consumers receive no SBOM receive a later replacement or lose inventory while the release remains supported
+      why_required: generation evidence is unusable unless the exact immutable SBOM remains discoverable throughout the consumer and incident-response window
+    verification:
+      type: automated
+      method: evaluate release manifest location timing retention immutability and protected-family state
+      expected: delayed mutable short-lived non-HTTPS optional or downgraded SBOM publication is rejected
+      evidence:
+        - sanitized SBM-004 verifier result
+        - release storage policy
+    mapping_status: reviewed
+  - id: SBM-005
+    title: Dependency-Track upload is pre-bound and least privileged
+    required_state: integrity-pinned server exact HTTPS endpoint pre-created project UUID exact version and BOM_UPLOAD-only secret-managed API identity
+    responsible_role: ci-platform
+    applies_to:
+      - dependency-track
+      - sbom-upload-job
+    context:
+      threat_actor: compromised CI job leaked API key malicious contributor or ambiguous auto-created project identity
+      attack_or_failure_scenario: upload automation writes to an unintended project creates portfolio objects or uses broad platform administration privilege
+      why_required: exact project binding and one-purpose permission constrain both inventory corruption and credential compromise beyond merely protecting the API key
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-REL-003 and inspect organization API-key assignment
+      expected: mutable server endpoint autoCreate literal key broad permission or ambiguous version is rejected
+      evidence:
+        - sanitized SBM-005 verifier result
+        - API team permission evidence without key value
+    mapping_status: reviewed
+  - id: SBM-006
+    title: Dependency-Track processing completion matches the release
+    required_state: BOM_PROCESSED receipt matches server release project UUID version SBOM serial digest component count and completeness
+    responsible_role: release-manager
+    applies_to:
+      - dependency-track
+      - sbom-processing-receipt
+    context:
+      threat_actor: asynchronous queue failure validation failure webhook mix-up or uploader treating an acceptance token as final analysis
+      attack_or_failure_scenario: release proceeds even though Dependency-Track rejected failed or processed a different project or SBOM
+      why_required: upload transport success proves only receipt while a bound completed event proves the expected inventory reached the analysis state
+    verification:
+      type: automated
+      method: verify normalized receipt and negative processing events with make verify-control CONTROL=PSB-REL-003
+      expected: only an exact BOM_PROCESSED receipt passes and validation processing timeout or mismatch cannot pass
+      evidence:
+        - sanitized SBM-006 receipt result
+        - normalized processing receipt
+    mapping_status: reviewed
+  - id: SBM-007
+    title: Dependency-Track evidence is sanitized and analysis data is fresh
+    required_state: metadata-only receipt with healthy vulnerability data no older than 24 hours and no credential or SBOM body
+    responsible_role: security
+    applies_to:
+      - dependency-track
+      - vulnerability-intelligence
+      - security-evidence
+    context:
+      threat_actor: failed analyzer stale mirror log collector or evidence exporter retaining API keys and internal component data
+      attack_or_failure_scenario: an outdated empty result is reported clean or evidence storage creates a second secret and inventory exposure
+      why_required: analysis correctness depends on current data while minimum sanitized evidence proves execution without duplicating sensitive request content
+    verification:
+      type: automated
+      method: inject stale unavailable and secret-bearing receipt fixtures with make verify-control CONTROL=PSB-REL-003
+      expected: stale or unavailable data returns ERROR and secret-bearing evidence is rejected
+      evidence:
+        - sanitized SBM-007 freshness result
+        - analyzer health metadata
+    mapping_status: reviewed
+mappings:
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PS.3.1
+    relationship: supports
+    confidence: high
+    rationale: Exact release artifactにdigest-boundの完全なSBOMを関連付け、immutable location、retention、processing receiptとともに保存することでrelease supporting dataの安全なarchiveを支援する。
+    reviewer: product-security
+    review_date: "2026-07-31"
+    applies_to:
+      - SBM-001
+      - SBM-002
+      - SBM-003
+      - SBM-004
+      - SBM-006
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: RV.1.1
+    relationship: supports
+    confidence: high
+    rationale: Exact PURLとcomponent relationshipを持つSBOMをDependency-Trackへ登録し、処理完了とvulnerability data freshnessをfail-closedで検証することで脆弱性識別に必要な情報収集を支援する。
+    reviewer: product-security
+    review_date: "2026-07-31"
+    applies_to:
+      - SBM-001
+      - SBM-003
+      - SBM-005
+      - SBM-006
+      - SBM-007
+limitations:
+  - Fixtures do not execute a package manager SBOM generator release API object store or live Dependency-Track instance.
+  - The normalized receipt is a project contract and requires a version-specific production adapter whose OpenAPI permission and event semantics are independently reviewed.
+  - Dependency-Track 4.14.3 fixture identity is not authorization to deploy it indefinitely; upgrades including version 5 require release integrity semantic diff migration and regression evidence.
+  - Exact PURLs and complete declared graphs can still omit vendored statically linked dynamically downloaded or runtime plugin components.
+  - Vulnerability matching depends on external data source PURL CPE alias and affected-range quality and can produce false positives or false negatives.
+  - An SBOM is evidence and does not prove the release is vulnerability-free secure SLSA compliant or formally compliant with any framework.
+  - This control is not a SLSA Build Level 2 requirement and does not replace provenance generation distribution authenticity or subject verification.
+status: prototype
+owner: product-security
+evidence_level: E3

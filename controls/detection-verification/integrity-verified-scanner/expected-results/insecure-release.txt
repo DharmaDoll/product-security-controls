@@ -1,0 +1,17 @@
+FAIL Trivy 0.69.4 is in the explicitly blocked release set
+FAIL version does not match the reviewed release policy
+FAIL tag does not match the reviewed release policy
+FAIL release immutable state does not match the reviewed release policy
+FAIL asset name does not match the reviewed release policy
+FAIL asset SHA-256 does not match the reviewed release policy
+FAIL extracted binary SHA-256 does not match the reviewed release policy
+FAIL checksum file name does not match the reviewed release policy
+FAIL checksum file SHA-256 does not match the reviewed release policy
+FAIL signature bundle name does not match the reviewed release policy
+FAIL signature bundle SHA-256 does not match the reviewed release policy
+FAIL certificate OIDC issuer does not match the reviewed release policy
+FAIL certificate identity does not match the reviewed release policy
+FAIL release is not recorded as immutable
+FAIL publisher checksum verification did not succeed
+FAIL Sigstore bundle verification did not succeed
+REJECTED 16 release integrity violation(s)

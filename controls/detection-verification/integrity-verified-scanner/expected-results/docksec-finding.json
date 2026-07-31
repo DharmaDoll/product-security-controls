@@ -1,0 +1,24 @@
+{
+  "decision": "finding",
+  "execution": {
+    "ai_used": false,
+    "cache": "bypass",
+    "mode": "scan-only",
+    "network": "offline",
+    "status": "completed",
+    "target": "fixture-finding.Dockerfile"
+  },
+  "scanner": {
+    "expected_distribution_sha256": "7f8781db7651216556c86c71ab45527bc484801b974ff264fe0ebe7f70a6f5fb",
+    "name": "docksec",
+    "version": "2026.7.5"
+  },
+  "schema": "psb-docksec-gate-result/v1",
+  "severity_counts": {
+    "CRITICAL": 0,
+    "HIGH": 1,
+    "LOW": 0,
+    "MEDIUM": 0,
+    "UNKNOWN": 0
+  }
+}

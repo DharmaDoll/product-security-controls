@@ -1,0 +1,12 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "fixtures/clean",
+  "ArtifactType": "filesystem",
+  "PSBTarget": "fixtures/clean",
+  "PSBScanCategories": [
+    "vulnerability",
+    "iac-misconfiguration",
+    "secret"
+  ],
+  "Results": []
+}

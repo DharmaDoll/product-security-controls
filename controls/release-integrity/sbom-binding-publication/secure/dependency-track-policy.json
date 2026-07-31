@@ -1,0 +1,27 @@
+{
+  "adapter_schema": "psb-dependency-track-policy/1.0",
+  "server": {
+    "release": "4.14.3",
+    "release_url": "https://github.com/DependencyTrack/dependency-track/releases/tag/4.14.3",
+    "apiserver_sha256": "11a5c85616b745803b5653016d9da2195f2e23ac66fe6a85d2ae2b4661d393a9"
+  },
+  "endpoint": "https://dependency-track.example.invalid/api/v1/bom",
+  "project_uuid": "44444444-4444-4444-8444-444444444444",
+  "project_version": "1.4.0",
+  "auto_create": false,
+  "api_key_source": "environment:DEPENDENCY_TRACK_API_KEY",
+  "api_permissions": [
+    "BOM_UPLOAD"
+  ],
+  "transport": "tls-server-authenticated",
+  "upload_response_semantics": "accepted-only",
+  "success_event": "BOM_PROCESSED",
+  "error_events": [
+    "BOM_PROCESSING_FAILED",
+    "BOM_VALIDATION_FAILED"
+  ],
+  "timeout_state": "ERROR",
+  "analyzer_unavailable_state": "ERROR",
+  "max_vulnerability_data_age_hours": 24,
+  "evidence": "sanitized-metadata-only"
+}

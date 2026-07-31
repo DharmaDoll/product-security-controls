@@ -141,6 +141,19 @@ requirement. It does not mean the producer, build platform, or consumer has
 passed a complete SLSA assessment, and it must not be presented as achievement
 of a SLSA level.
 
+Container images are build artifacts for SLSA purposes. Platform provenance
+generation remains `PSB-BUILD-003`, distribution remains `PSB-REL-002`, and
+consumer authenticity plus subject-digest verification remains
+`PSB-REL-001`. Implemented `PSB-CONTAINER-001` composes that consumer verifier
+into admission for the exact OCI manifest digest and maps only its atomic
+provenance check to the SLSA consumer requirement. Digest pinning without
+authenticated provenance is not a SLSA consumer-authenticity mapping.
+
+Do not map container registry operations, production host or daemon hardening,
+or runtime threat detection to SLSA Build levels. They can preserve or consume
+SLSA evidence, but the security outcomes belong to `PSB-CONTAINER-002..004`
+and are outside the SLSA Build track.
+
 ### NIST SSDF
 
 Use for secure software development lifecycle practices.
@@ -151,6 +164,41 @@ Relationship examples:
 - evidence-for
 
 Pin the exact publication/version and do not mix final and draft identifiers.
+
+### NIST SP 800-190
+
+Use the September 2017 final publication as product-neutral container
+implementation guidance. The registry indexes every Section 4 countermeasure
+identifier, but mappings should include only the narrow sections directly
+supported by an atomic control check.
+
+Relationship examples:
+
+- supports
+- verifies
+- evidence-for
+- mitigates
+
+Keep image scanning, workload admission, registry protection, host hardening,
+application security, and release integrity under separate control owners.
+Section 4 guidance is not a container-platform certification or proof of
+complete NIST coverage.
+
+The implemented owners are `PSB-DETECT-001` for image and runtime vulnerability
+scanning and `PSB-CONTAINER-001` for workload admission. Planned owners are
+`PSB-CONTAINER-002` for registry security, `PSB-CONTAINER-003` for host and
+daemon hardening, and `PSB-CONTAINER-004` for post-admission runtime behavior.
+
+The duplicate-free source and control boundary is recorded in
+[`CONTAINER_SECURITY_SOURCE_ALLOCATION.md`](CONTAINER_SECURITY_SOURCE_ALLOCATION.md).
+
+### CIS Docker Benchmark
+
+Treat CIS Docker Benchmark as a product-specific `requirement-framework`, not
+as general reference guidance. Version `1.8.0` is identified, but it remains
+`input-required`: no active registry or mapping may be created until an
+official authorized PDF, artifact digest, recommendation inventory, and reuse
+terms are reviewed. Do not derive content from third-party PDF mirrors.
 
 ### OpenSSF OSPS Baseline
 

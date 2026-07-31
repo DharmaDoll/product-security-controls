@@ -1,0 +1,10 @@
+PASS CNT-001 exact trusted OCI manifest digest verified
+PASS CNT-002 PSB-REL-001 authenticity and exact image subject binding verified
+PASS CNT-003 non-root and privilege-escalation protections verified
+PASS CNT-004 all Linux capabilities dropped with no additions
+PASS CNT-005 host namespaces paths ports and runtime sockets isolated
+PASS CNT-006 read-only root filesystem and RuntimeDefault seccomp verified
+PASS CNT-007 CPU memory and runtime PID bounds verified
+PASS CNT-008 workload-targeted default-deny ingress and egress verified
+PASS CNT-009 fail-closed CREATE and UPDATE admission enforcement verified
+DECISION ALLOW 9 control checks

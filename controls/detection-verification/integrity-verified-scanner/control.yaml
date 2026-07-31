@@ -1,0 +1,296 @@
+id: PSB-DETECT-001
+title: Execute integrity-verified security scanning with fail-closed evidence
+domain: detection-verification
+summary: Pin scanner release and data identity, detect vulnerability configuration secret and SBOM findings, and constrain optional DockSec remediation to an AI-independent fail-closed gate.
+check_context_version: "1.0"
+security_functions:
+  - detect
+  - verify
+threats:
+  - id: SCANNER-SUPPLY-CHAIN-COMPROMISE
+    description: A mutable compromised or substituted scanner release executes attacker-controlled code in a privileged CI or developer environment.
+  - id: STALE-OR-SUBSTITUTED-SCANNER-DATA
+    description: An unknown database or policy bundle changes detection behavior while results are presented as reproducible evidence.
+  - id: SCANNER-FAILURE-MISREAD-AS-CLEAN
+    description: Missing scanner data malformed output timeout or execution failure is interpreted as zero findings.
+  - id: SECURITY-EVIDENCE-LEAKS-SECRET
+    description: Scanner console or saved evidence retains a matched credential value and creates a second disclosure path.
+  - id: BROAD-OR-PERMANENT-SCANNER-EXCEPTION
+    description: A wildcard unowned or non-expiring ignore suppresses unrelated current and future findings.
+  - id: AI-REMEDIATION-MISUSED-AS-SECURITY-AUTHORITY
+    description: An LLM score recommendation or failed DockSec orchestration is treated as authoritative clean evidence and weakens the deterministic scanner gate.
+implementations:
+  insecure:
+    - insecure/policy.json
+    - insecure/release-receipt.json
+    - insecure/results/scanner-error.json
+    - insecure/results/secret-leak.json
+    - insecure/exception.json
+    - insecure/docksec-profile.json
+    - insecure/fixtures/container/Dockerfile
+  secure:
+    - secure/policy.json
+    - secure/release-receipt.json
+    - secure/database-metadata.json
+    - secure/results/clean.json
+    - secure/checkov-comparison.json
+    - secure/docksec-profile.json
+    - scripts/fetch-trivy.sh
+    - scripts/run-trivy-offline.sh
+    - scripts/run-docksec-scan-only.py
+    - scripts/normalize-trivy.py
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-DETECT-001
+  expected:
+    - Trivy release asset checksum file and Sigstore publisher identity are immutable and verified
+    - known affected releases and tampered artifacts are rejected
+    - scanner database and embedded check identity are recorded
+    - clean finding and scanner error states return 0 1 and 2 respectively
+    - vulnerability container IaC secret and CycloneDX SBOM fixtures produce blocking evidence
+    - normalized evidence omits matched secret values
+    - ignores require exact scope independent approval and expiry
+    - Checkov is not added without a documented coverage or assurance benefit
+    - DockSec is limited to a pinned optional remediation adapter whose scan-only gate is offline AI-free and fail-closed
+checks:
+  - id: DVS-001
+    title: Scanner release has immutable and publisher-verified identity
+    required_state: exact release asset checksum file and Sigstore publisher identity verified before execution
+    responsible_role: ci-platform
+    applies_to:
+      - scanner-toolchain
+      - ci-runner
+    context:
+      threat_actor: compromised release publisher account dependency distribution path or attacker substituting a scanner binary
+      attack_or_failure_scenario: the security scanner itself executes malicious or unreviewed code while holding access to source artifacts and CI resources
+      why_required: an untrusted scanner can become a higher-impact supply-chain entry point than the findings it is intended to detect
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DETECT-001
+      expected: reviewed Trivy identity passes while known affected releases failed receipts and tampered bytes are rejected
+      evidence:
+        - sanitized release verification receipt
+        - artifact digest negative-test output
+    mapping_status: reviewed
+  - id: DVS-002
+    title: Scanner database and policy bundle identities are recorded
+    required_state: result binds the exact vulnerability database digest schema and embedded check bundle identity
+    responsible_role: security
+    applies_to:
+      - vulnerability-database
+      - scanner-policy
+      - scan-evidence
+    context:
+      threat_actor: database mirror compromise accidental cache substitution or operator using unreviewed detection policy
+      attack_or_failure_scenario: the same source and scanner version produce different results because database or policy identity is missing
+      why_required: data identity is necessary to reproduce and explain a security decision independently of scanner binary identity
+    verification:
+      type: automated
+      method: verify normalized evidence against secure/database-metadata.json
+      expected: database digest mismatch and non-reviewed checks bundle return scanner error state 2
+      evidence:
+        - scanner database metadata
+        - normalized result metadata
+    mapping_status: reviewed
+  - id: DVS-003
+    title: Clean findings and scanner errors have distinct exit states
+    required_state: exit 0 means completed with no blocking findings exit 1 means findings and exit 2 means execution or evidence error
+    responsible_role: ci-platform
+    applies_to:
+      - ci-quality-gate
+      - scanner-wrapper
+    context:
+      threat_actor: scanner outage malformed input database failure timeout or integration mistake
+      attack_or_failure_scenario: a scan does not complete but the pipeline records a clean result and permits an unsafe release
+      why_required: fail-closed state separation prevents availability and integration failures from weakening the security gate
+    verification:
+      type: automated
+      method: exercise clean blocking unavailable database mismatch and malformed fixtures
+      expected: the fixtures return exactly 0 1 and 2 according to the documented contract
+      evidence:
+        - expected-results/clean.txt
+        - expected-results/findings.txt
+        - expected-results/errors.txt
+    mapping_status: reviewed
+  - id: DVS-004
+    title: Relevant artifact forms receive deterministic detection
+    required_state: isolated fixtures cover dependency image configuration IaC secret and CycloneDX SBOM findings
+    responsible_role: shared
+    applies_to:
+      - source-tree
+      - container-image
+      - infrastructure-as-code
+      - cyclonedx-sbom
+    context:
+      threat_actor: vulnerable dependency introducer malicious contributor compromised dependency or accidental insecure configuration
+      attack_or_failure_scenario: a release artifact or its source metadata contains a known vulnerability embedded secret or unsafe infrastructure configuration
+      why_required: one reviewed detection interface supplies consistent gate semantics across artifact forms without claiming application SAST or runtime protection
+    verification:
+      type: automated
+      method: run each isolated positive fixture through the normalized result verifier
+      expected: every fixture produces a category-specific blocking finding without external production dependencies
+      evidence:
+        - sanitized category finding output
+        - isolated insecure fixtures
+    mapping_status: reviewed
+  - id: DVS-005
+    title: Saved scanner evidence contains no matched secret value
+    required_state: normalized output retains rule category severity and target but drops match content line and snippet fields
+    responsible_role: security
+    applies_to:
+      - scanner-console
+      - scan-artifact
+      - sarif-or-json-evidence
+    context:
+      threat_actor: user with access to CI logs artifacts or security dashboards but not the original credential
+      attack_or_failure_scenario: secret detection copies the credential into a longer-lived and more widely visible evidence store
+      why_required: reporting a secret must not amplify the original exposure or create another credential rotation incident
+    verification:
+      type: automated
+      method: normalize a synthetic raw secret result and reject prohibited evidence fields recursively
+      expected: matched value is absent while the blocking rule identifier remains
+      evidence:
+        - sanitized normalized JSON
+        - secret-leak negative-test output
+    mapping_status: reviewed
+  - id: DVS-006
+    title: Scanner exceptions are exact owned approved and time-bound
+    required_state: exact rule and target independent approver meaningful justification and future expiry
+    responsible_role: security
+    applies_to:
+      - scanner-exception
+      - risk-acceptance
+    context:
+      threat_actor: contributor or operator suppressing current or future findings to bypass a release gate
+      attack_or_failure_scenario: wildcard or permanent ignores hide unrelated vulnerabilities and configuration defects after the original exception context changes
+      why_required: narrow expiring exceptions preserve accountability and limit the duration and blast radius of accepted risk
+    verification:
+      type: automated
+      method: verify secure broad and expired exception fixtures at a fixed evaluation time
+      expected: only exact independently approved unexpired exception is accepted
+      evidence:
+        - exception policy output
+    mapping_status: reviewed
+  - id: DVS-007
+    title: Secondary scanner and orchestrator dependencies require documented unique value
+    required_state: candidate comparisons record immutable identity common coverage unique value and a bounded adoption decision
+    responsible_role: security
+    applies_to:
+      - scanner-portfolio
+      - iac-scanning
+      - dockerfile
+      - compose-file
+    context:
+      threat_actor: dependency compromise or operational complexity introduced by unnecessary overlapping security tools
+      attack_or_failure_scenario: a second scanner or orchestrator is added without unique value and expands maintenance network and supply-chain risk
+      why_required: evidence-based tool selection rejects duplicate detection while permitting DockSec only for contextual Dockerfile remediation and Compose correlation that the primary raw scanner does not provide
+    verification:
+      type: automated
+      method: validate secure/checkov-comparison.json and secure/docksec-profile.json
+      expected: Checkov stays evaluation-only while DockSec receives only a pinned optional remediation role
+      evidence:
+        - pinned comparison decision
+        - pinned DockSec adoption profile
+    mapping_status: reviewed
+  - id: DVS-008
+    title: DockSec remediation is separated from the authoritative scanner gate
+    required_state: offline scan-only structured findings decide the gate while AI output is optional non-blocking and tool statuses 2 or 3 become ERROR
+    responsible_role: ci-platform
+    applies_to:
+      - container-security-feedback
+      - ci-quality-gate
+      - dockerfile
+      - compose-file
+    context:
+      threat_actor: untrusted repository content external LLM provider scanner outage or maintainer copying an unsafe upstream integration
+      attack_or_failure_scenario: AI advice receives release authority API credentials reach an untrusted job or DockSec usage and runtime failures are recorded as clean
+      why_required: an AI-free structured gate remains reproducible and fail-closed while developers can still receive separately reviewed remediation guidance
+    verification:
+      type: automated
+      method: exercise the pinned DockSec profile and synthetic CLI with clean finding usage-error runtime-error malformed-JSON AI-output and credential-environment cases
+      expected: only structured scan-only status 0 is clean status 1 blocks and every tool AI or evidence anomaly returns ERROR
+      evidence:
+        - sanitized DockSec gate result
+        - DockSec profile negative-test output
+        - scanner error-state output
+    mapping_status: reviewed
+mappings:
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: RV.1.1
+    relationship: supports
+    confidence: high
+    rationale: The control gathers reproducible vulnerability and configuration information with positive negative and scanner-error fixtures while preserving the identity of the scanner and its data.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - DVS-001
+      - DVS-002
+      - DVS-003
+      - DVS-004
+      - DVS-005
+      - DVS-008
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-VM-06.02
+    relationship: supports
+    confidence: medium
+    rationale: Automated security testing produces a blocking signal for reviewed categories and distinguishes findings from scanner execution failure but does not establish a complete application security testing policy.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - DVS-003
+      - DVS-004
+      - DVS-006
+      - DVS-008
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PW.4.1
+    relationship: supports
+    confidence: medium
+    rationale: The scanner is treated as a software component whose immutable release integrity is verified and whose overlapping secondary dependency is not adopted without reviewed security value.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - DVS-001
+      - DVS-007
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.1.1
+    relationship: supports
+    confidence: medium
+    rationale: The container and SBOM vulnerability fixtures demonstrate image component vulnerability detection with recorded scanner and database identity but do not prove registry-wide continuous coverage.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - DVS-002
+      - DVS-003
+      - DVS-004
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.4.1
+    relationship: supports
+    confidence: medium
+    rationale: Filesystem and SBOM vulnerability evidence can identify known vulnerabilities in container runtime software components while runtime deployment enforcement remains a separate control.
+    reviewer: product-security
+    review_date: "2026-07-30"
+    applies_to:
+      - DVS-002
+      - DVS-004
+limitations:
+  - Deterministic repository fixtures use a synthetic vulnerability database identity and are not current production vulnerability evidence.
+  - Operational scans must fetch and record a current OCI database digest through a separately reviewed update job before running offline.
+  - The committed release receipt is a sanitized test fixture; production evidence must come from successful checksum and cosign verification in the explicit fetch script.
+  - Trivy detection does not replace application SAST DAST manual review exploitability analysis or runtime behavioral monitoring.
+  - Embedded malware detection from NIST SP 800-190 section 4.1.3 is not implemented in this slice and is not mapped.
+  - IaC source scanning does not replace the organization-owned resolved-plan policy and provider-side enforcement in PSB-IAC-001.
+  - Checkov remains pinned comparison evidence rather than an installed runtime dependency until a reviewed fixture demonstrates unique value.
+  - DockSec is an optional orchestration and remediation layer and does not replace the integrity-verified Trivy result database identity exception policy or normalized evidence contract.
+  - The reviewed DockSec v2026.7.5 wheel was not uploaded with PyPI Trusted Publishing so its pinned digest dependency lock and semantic review remain required operational evidence.
+  - The upstream DockSec GitHub Action is not adopted because its reviewed Dockerfile downloads mutable Hadolint and installs Trivy through curl piped to a shell.
+  - AI remediation is not executed by the committed gate adapter and any separately enabled provider requires data classification egress credential and human-review controls.
+  - This control does not satisfy or assess a SLSA Build level because vulnerability detection and SLSA provenance answer different questions.
+status: adopted
+owner: product-security
+evidence_level: E3

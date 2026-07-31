@@ -32,6 +32,11 @@ EXPECTED_BASELINES = {
         "count": 1751,
         "known_id": "T1195.001",
     },
+    "nist-sp-800-190": {
+        "version": "SP 800-190 (September 2017)",
+        "count": 24,
+        "known_id": "4.4.3",
+    },
     "nist-ssdf": {
         "version": "1.1 (SP 800-218, 2022)",
         "count": 6,

@@ -58,11 +58,15 @@ controls/<domain>/<control>/
 | `PSB-DEPS-002` | install時のdependency code executionをdefault denyに制御 | E3 |
 | `PSB-DEPS-003` | frozen lockfileとartifact integrityを検証 | E3 |
 | `PSB-REL-001` | release署名とSLSA provenanceをconsumer expectationへ照合 | E3 |
+| `PSB-REL-002` | release artifactとprovenanceをdigest-boundで公開・配布 | E3 |
+| `PSB-REL-003` | artifact-bound CycloneDX SBOMを公開し、Dependency-Track処理完了までfail-closedで検証 | E3 |
 | `PSB-BUILD-001` | untrusted buildをcredential・deploy権限・broad egressから隔離 | E3 |
 | `PSB-BUILD-002` | 一貫したrelease buildを承認済みhosted platformへ限定 | E3 |
 | `PSB-BUILD-003` | platformがauthentic SLSA provenanceを自動生成 | E3 |
-| `PSB-GOV-001` | SBOMからsupply-chain incidentの影響範囲とdry-run対応planを生成 | E3 |
+| `PSB-GOV-001` | local SBOMとDependency-Trackのexact CVE/PURL検索から影響範囲とdry-run対応planを生成 | E3 |
 | `PSB-IAC-001` | versioned secure IaC module、resolved-plan PaC gate、provider enforcement、drift controlによるGolden Path | E3 |
+| `PSB-DETECT-001` | integrity検証済みTrivyと固定DB identityで脆弱性・container・IaC・secret・SBOMを検査し、DockSecの任意remediation profileをAI非依存gateへ限定してclean／finding／errorを分離 | E3 |
+| `PSB-CONTAINER-001` | exact OCI digestとSLSA provenanceをnon-root・host-isolated・resource/network-bounded workloadへfail-closed admissionで結合 | E3 |
 | `PSB-SOURCE-001` | MDM、EDR/XDR、strong authentication、secret guard、IDE feedback、sandboxを含む28のdeveloper endpoint guardrail | E3 |
 | `PSB-SOURCE-002` | リポジトリ所有のGit hooksで開発端末からの情報漏洩を予防 | E3 |
 | `PSB-SOURCE-003` | GitHub dorking、全履歴scan、公開面reviewでpublic repository露出を検証 | E3 |
@@ -179,6 +183,7 @@ Each control is mapped to applicable items from:
 - OWASP ASVS
 - SLSA
 - NIST SSDF
+- NIST SP 800-190 container implementation guidance
 - MITRE ATLAS
 - GitHub security guidance
 - OpenSSF OSPS Baseline
@@ -194,6 +199,7 @@ OWASP Top 10   → major application risk categories
 OWASP ASVS     → concrete application security verification requirements
 SLSA           → source and build integrity requirements
 NIST SSDF      → secure software development practices
+NIST SP 800-190 → application-container countermeasure guidance
 MITRE ATLAS    → adversary behavior targeting AI-enabled systems
 OpenSSF OSPS   → open source project security requirements
 CISA PSBP      → focused product security bad practices to avoid

@@ -11,6 +11,8 @@ Framework registries currently include:
 - `mitre-attack/` — MITRE ATT&CK Enterprise objects.
 - `mitre-atlas/` — MITRE ATLAS AI adversary tactics, techniques, mitigations,
   and case studies.
+- `nist-sp-800-190/` — NIST application-container countermeasure guidance
+  sections used by planned container controls.
 - `nist-ssdf/` — NIST SP 800-218 Secure Software Development Framework tasks
   referenced by controls.
 - `openssf-osps-baseline/` — OpenSSF OSPS Baseline project security assessment
@@ -58,3 +60,8 @@ For ATLAS, pin both values because the upstream data separates them:
 
 GitHub Docs does not publish a framework-style release number. Its registry
 therefore pins the upstream `github/docs` commit and records the review date.
+
+CIS Docker Benchmark v1.8.0 is allocated as a future
+`requirement-framework`, but no active registry exists until the official PDF
+and its applicable reuse terms are supplied and reviewed. Do not reconstruct
+its recommendations from third-party mirrors.

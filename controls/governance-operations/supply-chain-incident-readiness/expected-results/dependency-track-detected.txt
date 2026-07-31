@@ -1,0 +1,11 @@
+DETECTED compromised-lib@4.2.0 in 1 product(s) vulnerability=CVE-2026-4242
+AFFECTED repository=https://github.com/example/application-a build=build-application-a-300 artifact=registry.example.test/application-a@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa sbom=application-a.cdx.json dependency_track_project=66666666-6666-4666-8666-666666666666 project_version=3.0.0
+EVIDENCE provenance=sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb logs=sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc credentials=github-oidc:application-a-production
+PLAN 1 preserve-evidence owner=incident-response approval=required
+PLAN 2 suspend-workflows owner=build-platform approval=required
+PLAN 3 revoke-credentials owner=identity-security approval=required
+PLAN 4 quarantine-artifacts owner=release-engineering approval=required
+PLAN 5 pin-safe-version owner=dependency-owner approval=required
+PLAN 6 clean-rebuild owner=build-platform approval=required
+PLAN 7 notify-stakeholders owner=incident-commander approval=required
+RESULT dry-run no external actions executed

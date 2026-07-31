@@ -1,0 +1,164 @@
+{
+  "name": "nist-sp-800-190",
+  "publisher": "National Institute of Standards and Technology",
+  "role": "implementation-guidance",
+  "release": "NIST SP 800-190, September 2017",
+  "mapping_version": "SP 800-190 (September 2017)",
+  "review_date": "2026-07-30",
+  "source": {
+    "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf",
+    "landing_page": "https://csrc.nist.gov/pubs/sp/800/190/final",
+    "doi": "https://doi.org/10.6028/NIST.SP.800-190",
+    "sha256": "0ebad52c4a3aba971b3a707b056e57238d1c4ad8f212dffd461ff9f5fed1bdb6"
+  },
+  "coverage": {
+    "scope": "All countermeasure subsections in Section 4, including the unnumbered-subsection hardware countermeasures at 4.6",
+    "completeness": "complete-section-4-countermeasure-index"
+  },
+  "entries": [
+    {
+      "id": "4.1.1",
+      "title": "Image vulnerabilities",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.1.2",
+      "title": "Image configuration defects",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.1.3",
+      "title": "Embedded malware",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.1.4",
+      "title": "Embedded clear text secrets",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.1.5",
+      "title": "Use of untrusted images",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.2.1",
+      "title": "Insecure connections to registries",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.2.2",
+      "title": "Stale images in registries",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.2.3",
+      "title": "Insufficient authentication and authorization restrictions",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.3.1",
+      "title": "Unbounded administrative access",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.3.2",
+      "title": "Unauthorized access",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.3.3",
+      "title": "Poorly separated inter-container network traffic",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.3.4",
+      "title": "Mixing of workload sensitivity levels",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.3.5",
+      "title": "Orchestrator node trust",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.4.1",
+      "title": "Vulnerabilities within the runtime software",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.4.2",
+      "title": "Unbounded network access from containers",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.4.3",
+      "title": "Insecure container runtime configurations",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.4.4",
+      "title": "App vulnerabilities",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.4.5",
+      "title": "Rogue containers",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.5.1",
+      "title": "Large attack surface",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.5.2",
+      "title": "Shared kernel",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.5.3",
+      "title": "Host OS component vulnerabilities",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.5.4",
+      "title": "Improper user access rights",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.5.5",
+      "title": "Host file system tampering",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    },
+    {
+      "id": "4.6",
+      "title": "Hardware Countermeasures",
+      "type": "countermeasure-section",
+      "source_url": "https://doi.org/10.6028/NIST.SP.800-190"
+    }
+  ]
+}

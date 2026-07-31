@@ -1,0 +1,18 @@
+{
+  "receipt_schema": "psb-dependency-track-receipt/1.0",
+  "server_release": "unknown",
+  "project_uuid": "55555555-5555-4555-8555-555555555555",
+  "project_version": "latest",
+  "bom_serial_number": "urn:uuid:99999999-9999-4999-8999-999999999999",
+  "bom_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "event": "BOM_PROCESSED",
+  "processed_at": "2026-07-31T00:04:00Z",
+  "component_count": 1,
+  "composition": "unknown",
+  "vulnerability_data": {
+    "status": "healthy",
+    "updated_at": "2026-07-31T00:00:00Z",
+    "evaluated_at": "2026-07-31T00:05:00Z"
+  },
+  "contains_secrets": true
+}

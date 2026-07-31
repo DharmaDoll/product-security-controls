@@ -1,0 +1,21 @@
+{
+  "response_schema": "psb-dependency-track-impact-response/1.0",
+  "status": "ERROR",
+  "query": {
+    "package": "compromised-lib",
+    "version": "4.2.0",
+    "vulnerability_id": "CVE-2026-4242"
+  },
+  "pagination": {
+    "complete": false,
+    "pages_scanned": 0,
+    "total_pages": 0,
+    "returned_count": 0
+  },
+  "analysis_health": {
+    "status": "unavailable",
+    "inventory_updated_at": "2026-07-30T12:00:00Z",
+    "evaluated_at": "2026-07-31T00:00:00Z"
+  },
+  "projects": []
+}

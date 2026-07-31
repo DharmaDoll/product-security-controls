@@ -36,6 +36,10 @@
 - compromised build service;
 - artifact substitution;
 - poisoned scanner database;
+- compromised or substituted security scanner release;
+- scanner timeout, missing database, or malformed evidence being interpreted
+  as a clean security result;
+- scanner evidence copying matched credentials into CI logs or artifacts;
 - unverified external downloads.
 
 ### Public source and information exposure threats
@@ -83,6 +87,14 @@ evidence.
 - insecure self-hosted runners;
 - unsigned or unverifiable releases;
 - missing provenance;
+- SBOMが別artifact、source tree、または誤ったrelease versionを表す一方で、
+  release inventoryとして信頼されること;
+- direct／transitive component、exact PURL、relationship、completenessの欠落に
+  より、vulnerabilityまたはincident impact searchがfalse negativeになること;
+- Dependency-Trackのupload受付を分析完了と誤認し、processing failure、
+  validation failure、timeout、stale analyzer dataをcleanとして扱うこと;
+- auto-created project、broad API key、不完全pagination、project ACL gapにより
+  SBOMが誤ったportfolioへ登録されるか、影響製品が検索結果から欠落すること;
 - mutable container tags.
 
 The
@@ -106,6 +118,34 @@ mapping or a claim of complete coverage.
   evidence;
 - reusable CI templates claiming planned scanning, SBOM, signing, provenance
   distribution, or OIDC controls as already implemented.
+
+### Container and runtime threats
+
+- vulnerable, malicious, stale, mutable, or untrusted images reaching a
+  workload;
+- clear-text secrets, unnecessary software, or unsafe configuration embedded
+  in an image;
+- root, privileged, capability-rich, or privilege-escalating containers
+  crossing the workload isolation boundary;
+- host namespaces, paths, runtime sockets, or a shared kernel exposing the
+  node and neighboring workloads;
+- unbounded network access, writable filesystems, or missing resource limits
+  increasing persistence, lateral movement, exfiltration, and denial-of-service
+  impact;
+- admission-policy findings, unknown values, or evaluation failures being
+  interpreted as an allow decision;
+- registry, orchestrator, host OS, runtime, and application responsibilities
+  being collapsed into one checklist whose evidence cannot identify the failed
+  trust boundary.
+
+The
+[container security source allocation](CONTAINER_SECURITY_SOURCE_ALLOCATION.md)
+assigns these outcomes across container admission, detection, secure coding,
+registry, host, runtime monitoring, and release controls without duplicating
+framework or reference-source roles. The previously unowned boundaries are
+reserved as `PSB-CONTAINER-002` for registry security,
+`PSB-CONTAINER-003` for host and daemon hardening, and `PSB-CONTAINER-004` for
+post-admission runtime detection.
 
 ### AI-assisted development threats
 

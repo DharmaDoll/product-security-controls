@@ -1,0 +1,41 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:33333333-3333-4333-8333-333333333333",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "bom-ref": "pkg:generic/example-release@1.4.0",
+      "name": "example-release",
+      "version": "1.4.0",
+      "purl": "pkg:generic/example-release@1.4.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "example-direct",
+      "name": "example-direct",
+      "version": "*",
+      "scope": "required"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:generic/example-release@1.4.0",
+      "dependsOn": []
+    }
+  ],
+  "compositions": [
+    {
+      "aggregate": "incomplete"
+    }
+  ]
+}

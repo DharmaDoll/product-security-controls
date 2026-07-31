@@ -1,0 +1,83 @@
+{
+  "schema": "psb-scanner-policy/v1",
+  "tool": {
+    "name": "trivy",
+    "version": "0.72.0",
+    "tag": "v0.72.0",
+    "release_immutable": true,
+    "blocked_versions": [
+      "0.69.4",
+      "0.69.5",
+      "0.69.6"
+    ],
+    "asset": {
+      "name": "trivy_0.72.0_Linux-64bit.tar.gz",
+      "sha256": "bbb64b9695866ce4a7a8f5c9592002c5961cab378577fa3f8a040df362b9b2ea",
+      "extracted_binary_sha256": "0e69edd134a3c338baa1a6806920773615d682b18cbc6a0cba2a3b658ef9b63e"
+    },
+    "checksum_file": {
+      "name": "trivy_0.72.0_checksums.txt",
+      "sha256": "ebe9d19a774b950e240b1017a038e9b5a002ea068e02023369ff6d241c10c580"
+    },
+    "signature_bundle": {
+      "name": "trivy_0.72.0_Linux-64bit.tar.gz.sigstore.json",
+      "sha256": "fccbe7d4877af44f27e205528626dfeb3ff6efac57c22061f1fccb59e8a80007",
+      "certificate_oidc_issuer": "https://token.actions.githubusercontent.com",
+      "certificate_identity": "https://github.com/aquasecurity/trivy/.github/workflows/reusable-release.yaml@refs/tags/v0.72.0"
+    }
+  },
+  "execution": {
+    "network": "disabled-by-default",
+    "required_flags": [
+      "--offline-scan",
+      "--skip-db-update",
+      "--skip-java-db-update",
+      "--skip-check-update",
+      "--skip-vex-repo-update",
+      "--skip-version-check",
+      "--disable-telemetry"
+    ],
+    "supported_categories": [
+      "vulnerability",
+      "container-misconfiguration",
+      "iac-misconfiguration",
+      "secret",
+      "sbom-vulnerability"
+    ],
+    "blocking_severities": [
+      "HIGH",
+      "CRITICAL"
+    ]
+  },
+  "evidence": {
+    "schema": "psb-scanner-result/v1",
+    "allowed_finding_fields": [
+      "id",
+      "category",
+      "severity",
+      "target",
+      "blocking"
+    ],
+    "prohibited_fields": [
+      "match",
+      "secret",
+      "value",
+      "content",
+      "code",
+      "line",
+      "snippet"
+    ]
+  },
+  "exceptions": {
+    "required_fields": [
+      "id",
+      "rule_id",
+      "target",
+      "owner",
+      "justification",
+      "approved_by",
+      "expires_at"
+    ],
+    "wildcards_forbidden": true
+  }
+}

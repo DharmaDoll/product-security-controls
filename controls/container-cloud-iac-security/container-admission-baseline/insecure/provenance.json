@@ -1,0 +1,37 @@
+{
+  "_type": "https://in-toto.io/Statement/v1",
+  "subject": [
+    {
+      "name": "registry.example.com/payments",
+      "digest": {
+        "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    }
+  ],
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "predicate": {
+    "buildDefinition": {
+      "buildType": "https://build.example.test/types/oci-image/v1",
+      "externalParameters": {
+        "repository": "https://github.com/example/payments",
+        "ref": "refs/tags/v1.0.0"
+      },
+      "resolvedDependencies": [
+        {
+          "uri": "git+https://github.com/example/payments",
+          "digest": {
+            "gitCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        }
+      ]
+    },
+    "runDetails": {
+      "builder": {
+        "id": "https://builder.example.test/hosted/v1"
+      },
+      "metadata": {
+        "invocationId": "synthetic-container-build-0001"
+      }
+    }
+  }
+}

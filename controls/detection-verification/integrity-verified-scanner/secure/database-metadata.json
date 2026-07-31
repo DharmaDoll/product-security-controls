@@ -1,0 +1,11 @@
+{
+  "schema": "psb-scanner-database/v1",
+  "scanner": "trivy",
+  "repository": "ghcr.io/aquasecurity/trivy-db",
+  "schema_version": 2,
+  "digest": "sha256:6dfb5ed5d680ed8d5b840eff11567c5f622f1c0709c472379f89b9d62c338f55",
+  "downloaded_at": "2026-07-30T00:00:00Z",
+  "valid_until": "2026-07-31T00:00:00Z",
+  "fixture": true,
+  "note": "Deterministic synthetic identity for offline control tests; replace with the actual OCI digest and timestamps for operational scans."
+}

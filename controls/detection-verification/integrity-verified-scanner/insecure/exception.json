@@ -1,0 +1,10 @@
+{
+  "schema": "psb-scanner-exception/v1",
+  "id": "EXAMPLE-PERMANENT",
+  "rule_id": "*",
+  "target": "**",
+  "owner": "nobody",
+  "justification": "Ignore scanner noise.",
+  "approved_by": "self",
+  "expires_at": "2099-01-01T00:00:00Z"
+}

@@ -1,0 +1,4 @@
+ERROR DockSec execution failed with upstream status 2
+ERROR DockSec execution failed with upstream status 3
+ERROR DockSec stdout is not one JSON object
+ERROR DockSec scan-only output unexpectedly contains AI analysis

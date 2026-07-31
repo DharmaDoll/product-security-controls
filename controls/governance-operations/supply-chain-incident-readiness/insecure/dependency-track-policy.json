@@ -1,0 +1,17 @@
+{
+  "adapter_schema": "psb-dependency-track-impact-policy/1.0",
+  "server": {
+    "release": "latest",
+    "apiserver_sha256": ""
+  },
+  "endpoint": "http://dependency-track.example.invalid/api/v1?token=synthetic",
+  "api_key_source": "literal:synthetic-example-key",
+  "api_permissions": [
+    "SYSTEM_CONFIGURATION"
+  ],
+  "query_mode": "name-only",
+  "pagination": "first-page-only",
+  "unavailable_state": "CLEAN",
+  "max_inventory_age_hours": 0,
+  "evidence": "full-response-and-key"
+}

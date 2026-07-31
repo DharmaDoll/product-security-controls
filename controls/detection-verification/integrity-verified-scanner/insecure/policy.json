@@ -1,0 +1,24 @@
+{
+  "schema": "psb-scanner-policy/v1",
+  "tool": {
+    "name": "trivy",
+    "version": "0.69.4",
+    "tag": "v0.69.4",
+    "release_immutable": false,
+    "blocked_versions": [],
+    "asset": {
+      "name": "trivy.tar.gz",
+      "sha256": "unverified"
+    },
+    "checksum_file": {
+      "name": "latest.txt",
+      "sha256": "unverified"
+    },
+    "signature_bundle": {
+      "name": "none",
+      "sha256": "unverified",
+      "certificate_oidc_issuer": "any",
+      "certificate_identity": "any"
+    }
+  }
+}

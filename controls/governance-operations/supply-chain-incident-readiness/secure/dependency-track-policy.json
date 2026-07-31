@@ -1,0 +1,18 @@
+{
+  "adapter_schema": "psb-dependency-track-impact-policy/1.0",
+  "server": {
+    "release": "4.14.3",
+    "apiserver_sha256": "sha256:11a5c85616b745803b5653016d9da2195f2e23ac66fe6a85d2ae2b4661d393a9"
+  },
+  "endpoint": "https://dependency-track.example.invalid/api/v1",
+  "api_key_source": "environment:DEPENDENCY_TRACK_READ_API_KEY",
+  "api_permissions": [
+    "VIEW_PORTFOLIO",
+    "VIEW_VULNERABILITY"
+  ],
+  "query_mode": "exact-component-and-vulnerability",
+  "pagination": "all-pages-required",
+  "unavailable_state": "ERROR",
+  "max_inventory_age_hours": 24,
+  "evidence": "sanitized-metadata-only"
+}

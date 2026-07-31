@@ -1,0 +1,26 @@
+{
+  "adapter_schema": "psb-dependency-track-policy/1.0",
+  "server": {
+    "release": "latest",
+    "release_url": "https://example.invalid/latest",
+    "apiserver_sha256": ""
+  },
+  "endpoint": "http://dependency-track.example.invalid/api/v1/bom?autoCreate=true",
+  "project_uuid": "",
+  "project_version": "latest",
+  "auto_create": true,
+  "api_key_source": "literal:synthetic-example-key",
+  "api_permissions": [
+    "BOM_UPLOAD",
+    "PROJECT_CREATION_UPLOAD",
+    "SYSTEM_CONFIGURATION"
+  ],
+  "transport": "plaintext",
+  "upload_response_semantics": "success",
+  "success_event": "BOM_PROCESSED",
+  "error_events": [],
+  "timeout_state": "CLEAN",
+  "analyzer_unavailable_state": "CLEAN",
+  "max_vulnerability_data_age_hours": 0,
+  "evidence": "full-request-and-api-key"
+}

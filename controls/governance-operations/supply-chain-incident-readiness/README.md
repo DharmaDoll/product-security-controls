@@ -13,6 +13,10 @@ credential失効、clean rebuild、通知のrunbookをdry-runで生成できる�
 - build、artifact digest、provenance、log digest、credential identifierの記録
 - repository-owned incident runbook
 - package／version exact matchによる影響検索
+- Dependency-Trackのexact component PURL／CVE portfolio query結果と、local SBOM
+  serial、project UUID／version、build recordの相互照合
+- 全page取得、inventory freshness、analyzer health、query failureを検証する
+  read-only adapter contract
 - external actionを実行しないdry-run plan
 
 fixtureのpackage、repository、artifact、credential identifierはすべてsyntheticです。
@@ -35,6 +39,33 @@ python3 controls/governance-operations/supply-chain-incident-readiness/scripts/r
   --runbook controls/governance-operations/supply-chain-incident-readiness/secure/runbook.json \
   --dry-run
 ```
+
+Dependency-Trackのportfolio全体からCVEとexact componentを検索し、repository-owned
+evidenceへ照合する場合:
+
+```bash
+python3 controls/governance-operations/supply-chain-incident-readiness/scripts/respond.py \
+  --package compromised-lib \
+  --version 4.2.0 \
+  --inventory-dir controls/governance-operations/supply-chain-incident-readiness/secure/inventory \
+  --records controls/governance-operations/supply-chain-incident-readiness/secure/build-records.json \
+  --runbook controls/governance-operations/supply-chain-incident-readiness/secure/runbook.json \
+  --dependency-track-policy controls/governance-operations/supply-chain-incident-readiness/secure/dependency-track-policy.json \
+  --dependency-track-response controls/governance-operations/supply-chain-incident-readiness/secure/dependency-track-response.json \
+  --vulnerability-id CVE-2026-4242 \
+  --dry-run
+```
+
+Fixtureはnetworkへ接続せず、Dependency-Track API結果を
+`psb-dependency-track-impact-response/1.0`へ正規化して検証します。Production
+adapterは全pageを取得し、query、snapshot時刻、analysis health、project UUID、
+project version、SBOM serial、component PURL、vulnerability IDだけを出力します。
+API key、SBOM本文、脆弱性の非公開detail、内部endpointは証跡へ含めません。
+
+Upload用の`BOM_UPLOAD` identityとは分離し、調査adapterには
+`VIEW_PORTFOLIO`と`VIEW_VULNERABILITY`だけを割り当てます。不完全pagination、
+API outage、stale inventory、analyzer failure、query mismatchは「該当なし」ではなく
+終了コード`2`です。
 
 | 終了コード | 意味 |
 | --- | --- |
@@ -65,9 +96,15 @@ python3 controls/governance-operations/supply-chain-incident-readiness/scripts/r
 - credential identifierは失効対象を示すだけで、実際のsecret値を保存しない
 - containmentや失効は可用性へ影響するため自動実行しない
 - SBOM scanner、inventory、record storeの失敗をcleanと扱ってはいけない
+- Dependency-Trackのportfolio access範囲が狭い、pageが欠落する、project ACLが
+  不完全、またはvulnerability dataが古い場合はfalse negativeが生じる
+- Dependency-Track 4.14.3 fixtureを5系へ移行する場合、breaking API、
+  distribution、permission、notification semanticsを再レビューする
 
 ## 公式リファレンス
 
 - [CycloneDX 1.7 JSON Reference](https://cyclonedx.org/docs/1.7/json/)
 - [NIST SP 800-61 Rev. 3](https://csrc.nist.gov/pubs/sp/800/61/r3/final)
 - [NIST SSDF 1.1](https://csrc.nist.gov/pubs/sp/800/218/final)
+- [Dependency-Track REST API](https://docs.dependencytrack.org/integrations/rest-api/)
+- [Dependency-Track users and permissions](https://docs.dependencytrack.org/administration/users-and-permissions/)

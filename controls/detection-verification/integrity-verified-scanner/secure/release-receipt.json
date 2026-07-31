@@ -1,0 +1,28 @@
+{
+  "schema": "psb-release-verification-receipt/v1",
+  "tool": "trivy",
+  "version": "0.72.0",
+  "tag": "v0.72.0",
+  "release_immutable": true,
+  "asset": {
+    "name": "trivy_0.72.0_Linux-64bit.tar.gz",
+    "sha256": "bbb64b9695866ce4a7a8f5c9592002c5961cab378577fa3f8a040df362b9b2ea",
+    "extracted_binary_sha256": "0e69edd134a3c338baa1a6806920773615d682b18cbc6a0cba2a3b658ef9b63e"
+  },
+  "checksum_file": {
+    "name": "trivy_0.72.0_checksums.txt",
+    "sha256": "ebe9d19a774b950e240b1017a038e9b5a002ea068e02023369ff6d241c10c580"
+  },
+  "signature_bundle": {
+    "name": "trivy_0.72.0_Linux-64bit.tar.gz.sigstore.json",
+    "sha256": "fccbe7d4877af44f27e205528626dfeb3ff6efac57c22061f1fccb59e8a80007",
+    "certificate_oidc_issuer": "https://token.actions.githubusercontent.com",
+    "certificate_identity": "https://github.com/aquasecurity/trivy/.github/workflows/reusable-release.yaml@refs/tags/v0.72.0"
+  },
+  "verification": {
+    "publisher_checksum_verified": true,
+    "sigstore_bundle_verified": true,
+    "verified_at": "2026-07-30T00:00:00Z",
+    "fixture": true
+  }
+}

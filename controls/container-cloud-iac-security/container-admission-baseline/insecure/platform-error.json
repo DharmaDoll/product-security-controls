@@ -1,0 +1,6 @@
+{
+  "schema": "psb-container-platform-evidence/v1",
+  "status": "error",
+  "reason": "admission_controller_unavailable",
+  "fixture": true
+}
