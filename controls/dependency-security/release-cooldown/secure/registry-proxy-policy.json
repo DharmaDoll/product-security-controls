@@ -1,0 +1,47 @@
+{
+  "schema": "psb-registry-proxy-policy/1.0",
+  "mode": "managed-security-registry-proxy",
+  "managed_distribution": "mdm-and-ci-template",
+  "direct_registry_egress": "denied",
+  "fallback": "denied",
+  "outage_state": "ERROR",
+  "credential_handling": "keychain-or-runtime-injection",
+  "publish_path": "separate-explicit-upstream",
+  "cooldown": {
+    "enforcement": "repository-owned-pre-resolution-verifier",
+    "minimum_release_age_hours": 168,
+    "proxy_minimum_age_claim": "not-relied-upon"
+  },
+  "proxy_capabilities": [
+    "malicious-package-blocking",
+    "download-tracking",
+    "breach-notification"
+  ],
+  "client_configs": [
+    {
+      "ecosystem": "npm",
+      "path": "clients/npmrc",
+      "endpoint": "https://npm.security-proxy.example.invalid"
+    },
+    {
+      "ecosystem": "pip",
+      "path": "clients/pip.conf",
+      "endpoint": "https://pypi.security-proxy.example.invalid/simple"
+    },
+    {
+      "ecosystem": "go",
+      "path": "clients/go.env",
+      "endpoint": "https://go.security-proxy.example.invalid"
+    },
+    {
+      "ecosystem": "composer",
+      "path": "clients/composer.json",
+      "endpoint": "https://composer.security-proxy.example.invalid"
+    }
+  ],
+  "canary": {
+    "kind": "synthetic-provider-test-package",
+    "expected": "blocked-before-artifact-download",
+    "real_malware": false
+  }
+}

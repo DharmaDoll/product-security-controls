@@ -1,6 +1,12 @@
 {
   "require_frozen": true,
   "require_manifest_digest": true,
-  "allowed_registries": ["https://registry.example.test"],
+  "allowed_registries": ["https://npm.security-proxy.example.invalid"],
+  "registry_route": {
+    "mode": "managed-security-proxy",
+    "direct_fallback": false,
+    "outage_state": "ERROR",
+    "credentials": "external-runtime-injection"
+  },
   "allowed_integrity_algorithms": ["sha256"]
 }

@@ -32,8 +32,8 @@ def main() -> int:
         raise SystemExit("invalid assessment source")
     datetime.fromisoformat(document["generated_at"])
     results = document["results"]
-    if len(results) != 28:
-        raise SystemExit("assessment must contain all 28 checks")
+    if len(results) != 29:
+        raise SystemExit("assessment must contain all 29 checks")
     if len({result["check_id"] for result in results}) != len(results):
         raise SystemExit("duplicate assessment check id")
     for result in results:

@@ -85,6 +85,23 @@ def validate_registry_url(value: Any, label: str) -> str:
     return url.rstrip("/")
 
 
+def validate_proxy_endpoint(value: Any, label: str) -> str:
+    url = require_nonempty_text(value, label)
+    parsed = urlparse(url)
+    if (
+        parsed.scheme != "https"
+        or not parsed.hostname
+        or parsed.username
+        or parsed.password
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise InputError(
+            f"{label} must be an HTTPS endpoint without credentials, query, or fragment"
+        )
+    return url.rstrip("/")
+
+
 def validate_exact_identifier(value: Any, label: str, pattern: re.Pattern[str]) -> str:
     text = require_nonempty_text(value, label)
     if "*" in text or not pattern.fullmatch(text):
@@ -214,8 +231,180 @@ def artifact_integrity(path: Path) -> str:
     return f"sha256:{digest.hexdigest()}"
 
 
+def resolve_client_config(policy_path: Path, raw_path: Any, label: str) -> Path:
+    relative = Path(require_nonempty_text(raw_path, label))
+    if relative.is_absolute():
+        raise InputError(f"{label} must be relative to the proxy policy")
+    root = policy_path.parent.resolve()
+    resolved = (root / relative).resolve()
+    try:
+        resolved.relative_to(root)
+    except ValueError as error:
+        raise InputError(f"{label} escapes the proxy policy directory") from error
+    if not resolved.is_file():
+        raise InputError(f"{label} does not exist: {relative}")
+    return resolved
+
+
+def read_text(path: Path, label: str) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as error:
+        raise InputError(f"cannot read {label} {path}: {error}") from error
+
+
+def validate_client_config(
+    ecosystem: str, path: Path, endpoint: str
+) -> list[str]:
+    findings: list[str] = []
+    text = read_text(path, f"{ecosystem} client config")
+    if ecosystem == "npm":
+        values = [
+            line.split("=", 1)[1].strip().rstrip("/")
+            for line in text.splitlines()
+            if line.strip().startswith("registry=")
+        ]
+        if values != [endpoint]:
+            findings.append("npm registry does not use the exact managed proxy")
+    elif ecosystem == "pip":
+        index_values = []
+        extra_values = []
+        for raw_line in text.splitlines():
+            line = raw_line.strip()
+            if line.startswith("index-url") and "=" in line:
+                index_values.append(line.split("=", 1)[1].strip().rstrip("/"))
+            if line.startswith("extra-index-url") and "=" in line:
+                extra_values.append(line.split("=", 1)[1].strip())
+        if index_values != [endpoint]:
+            findings.append("pip index-url does not use the exact managed proxy")
+        if extra_values:
+            findings.append("pip extra-index-url creates a dependency-confusion fallback")
+    elif ecosystem == "go":
+        values = [
+            line.split("=", 1)[1].strip().rstrip("/")
+            for line in text.splitlines()
+            if line.strip().startswith("GOPROXY=")
+        ]
+        if values != [endpoint]:
+            findings.append("GOPROXY does not use only the exact managed proxy")
+        if any(
+            "direct" in value.split(",") or "direct" in value.split("|")
+            for value in values
+        ):
+            findings.append("GOPROXY permits a direct fallback")
+    elif ecosystem == "composer":
+        try:
+            value = json.loads(text)
+        except json.JSONDecodeError as error:
+            raise InputError(f"cannot parse composer client config {path}: {error}") from error
+        if not isinstance(value, dict):
+            raise InputError("composer client config must be a JSON object")
+        repositories = value.get("repositories")
+        if not isinstance(repositories, list):
+            raise InputError("composer repositories must be a list")
+        proxy_rows = [
+            item
+            for item in repositories
+            if isinstance(item, dict) and item.get("url") == endpoint
+        ]
+        if len(proxy_rows) != 1 or proxy_rows[0].get("canonical") is not True:
+            findings.append("Composer proxy is missing or is not canonical")
+        packagist_disabled = any(
+            isinstance(item, dict) and item.get("packagist.org") is False
+            for item in repositories
+        )
+        if not packagist_disabled:
+            findings.append("Composer permits direct Packagist fallback")
+    else:
+        raise InputError(f"unsupported proxy client ecosystem: {ecosystem}")
+    return findings
+
+
+def validate_proxy_policy(
+    policy_path: Path,
+    value: dict[str, Any],
+    minimum_release_age_hours: int,
+    allowed_registries: set[str],
+) -> list[str]:
+    findings: list[str] = []
+    if value.get("schema") != "psb-registry-proxy-policy/1.0":
+        findings.append("proxy policy schema is unsupported")
+    if value.get("mode") != "managed-security-registry-proxy":
+        findings.append("dependency proxy is optional or unmanaged")
+    if value.get("managed_distribution") != "mdm-and-ci-template":
+        findings.append("dependency proxy configuration is not centrally distributed")
+    if value.get("direct_registry_egress") != "denied":
+        findings.append("public registry egress can bypass the proxy")
+    if value.get("fallback") != "denied":
+        findings.append("package manager can fall back around the proxy")
+    if value.get("outage_state") != "ERROR":
+        findings.append("proxy outage can appear clean or use a fallback")
+    if value.get("credential_handling") != "keychain-or-runtime-injection":
+        findings.append("proxy credential handling can persist plaintext credentials")
+    if value.get("publish_path") != "separate-explicit-upstream":
+        findings.append("read-only install proxy and package publication are not separated")
+
+    cooldown = value.get("cooldown")
+    if not isinstance(cooldown, dict):
+        raise InputError("proxy policy.cooldown must be an object")
+    if cooldown.get("enforcement") != "repository-owned-pre-resolution-verifier":
+        findings.append("proxy blocklist is incorrectly treated as release cooldown")
+    if cooldown.get("minimum_release_age_hours") != minimum_release_age_hours:
+        findings.append("proxy profile cooldown does not match repository policy")
+    if cooldown.get("proxy_minimum_age_claim") != "not-relied-upon":
+        findings.append("undocumented proxy minimum-age behavior is relied upon")
+
+    expected_capabilities = {
+        "malicious-package-blocking",
+        "download-tracking",
+        "breach-notification",
+    }
+    raw_capabilities = value.get("proxy_capabilities")
+    if not isinstance(raw_capabilities, list):
+        raise InputError("proxy policy.proxy_capabilities must be a list")
+    if set(raw_capabilities) != expected_capabilities:
+        findings.append("proxy blocking tracking and notification capabilities are incomplete")
+
+    clients = value.get("client_configs")
+    if not isinstance(clients, list):
+        raise InputError("proxy policy.client_configs must be a list")
+    expected_ecosystems = {"npm", "pip", "go", "composer"}
+    seen: set[str] = set()
+    endpoints: set[str] = set()
+    for index, client in enumerate(clients):
+        label = f"proxy policy.client_configs[{index}]"
+        if not isinstance(client, dict):
+            raise InputError(f"{label} must be an object")
+        ecosystem = require_nonempty_text(client.get("ecosystem"), f"{label}.ecosystem")
+        if ecosystem in seen:
+            raise InputError(f"{label} duplicates ecosystem {ecosystem}")
+        seen.add(ecosystem)
+        endpoint = validate_proxy_endpoint(client.get("endpoint"), f"{label}.endpoint")
+        endpoints.add(endpoint)
+        config_path = resolve_client_config(
+            policy_path, client.get("path"), f"{label}.path"
+        )
+        findings.extend(validate_client_config(ecosystem, config_path, endpoint))
+    if seen != expected_ecosystems:
+        findings.append("npm pip Go and Composer proxy profiles are all required")
+    if not allowed_registries <= endpoints:
+        findings.append("cooldown registry allowlist is not routed through a client proxy")
+
+    canary = value.get("canary")
+    if not isinstance(canary, dict):
+        raise InputError("proxy policy.canary must be an object")
+    if (
+        canary.get("kind") != "synthetic-provider-test-package"
+        or canary.get("expected") != "blocked-before-artifact-download"
+        or canary.get("real_malware") is not False
+    ):
+        findings.append("proxy path is not verified with a harmless blocking canary")
+    return findings
+
+
 def verify(
     policy_path: Path,
+    proxy_policy_path: Path,
     lockfile_path: Path,
     metadata_path: Path,
     as_of: datetime,
@@ -230,6 +419,14 @@ def verify(
         exceptions,
         findings,
     ) = load_policy(policy, as_of)
+    findings.extend(
+        validate_proxy_policy(
+            proxy_policy_path,
+            load_json(proxy_policy_path, "proxy policy"),
+            minimum_hours,
+            allowed_registries,
+        )
+    )
     effective_minimum = max(minimum_hours, REFERENCE_MINIMUM_HOURS)
 
     dependencies = lockfile.get("dependencies")
@@ -330,6 +527,7 @@ def verify(
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--policy", required=True, type=Path)
+    parser.add_argument("--proxy-policy", required=True, type=Path)
     parser.add_argument("--lockfile", required=True, type=Path)
     parser.add_argument("--metadata", required=True, type=Path)
     parser.add_argument("--as-of", required=True)
@@ -338,7 +536,11 @@ def main() -> int:
     try:
         as_of = parse_timestamp(args.as_of, "--as-of")
         dependencies, used_exceptions, findings = verify(
-            args.policy, args.lockfile, args.metadata, as_of
+            args.policy,
+            args.proxy_policy,
+            args.lockfile,
+            args.metadata,
+            as_of,
         )
     except InputError as error:
         print(f"ERROR {error}", file=sys.stderr)

@@ -10,6 +10,8 @@ manifest、lockfile、registry、exact version、artifact integrityの一致を�
 `DEPENDENCY-LOCKFILE-INTEGRITY-BYPASS`では、攻撃者または誤設定がlockfileを
 書き換える、未承認registryへ向ける、version rangeを残す、またはartifactを差し替える
 ことで、reviewされたdependency graphと実際のbuild inputを乖離させます。
+public registryへのdirect fallbackも、`PSB-DEPS-001`で定めたmanaged proxyの検査と
+取得履歴を迂回するため拒否します。
 
 ## 実装
 
@@ -17,7 +19,8 @@ manifest、lockfile、registry、exact version、artifact integrityの一致を�
 
 - `manifest.json`: direct dependencyのexact version
 - `lockfile.json`: frozen flag、manifest SHA-256、registry、artifact SHA-256
-- `policy.json`: HTTPS registry allowlist、許可hash algorithm、frozen必須
+- `policy.json`: managed HTTPS proxy、direct fallback拒否、proxy障害時`ERROR`、
+  runtime credential injection、許可hash algorithm、frozen必須
 - `artifacts/`: network downloadを行わないsynthetic package artifact
 
 実環境では同じ不変条件を次へ変換します。
@@ -30,8 +33,9 @@ manifest、lockfile、registry、exact version、artifact integrityの一致を�
 | Python | lock toolのfrozen syncと`pip --require-hashes` |
 
 検証器は、manifestとlockfileのdependency集合が完全一致し、versionがexactであり、
-registryがcredentialなしHTTPS originのallowlistに入り、実artifactのSHA-256が
-lockfileと一致することを確認します。
+registryがcredentialなしHTTPS managed proxyのallowlistに入り、実artifactのSHA-256が
+lockfileと一致することを確認します。lockfileのorigin固定はclientのnetwork強制を
+代替しないため、`PSB-DEPS-001`のMDM／CI profileとegress denyも適用します。
 
 ## 検証
 
@@ -42,7 +46,8 @@ make verify-control CONTROL=PSB-DEPS-003
 終了コードは`0=適合`、`1=policy違反`、`2=入力欠落・parse不能・読取失敗`です。
 
 negative testは、非frozen install、manifest hash不一致、version range、未承認registry、
-integrity欠落、artifact改ざん、JSON破損を検証します。
+direct fallback、clean-on-outage、embedded credential、integrity欠落、artifact改ざん、
+JSON破損を検証します。
 
 ## 運用上の注意
 
@@ -51,6 +56,7 @@ integrity欠落、artifact改ざん、JSON破損を検証します。
 - cache hitでもartifact integrity検証を省略しない
 - URL/VCS/local path dependencyは、commitとartifact hashを固定する別profileが必要
 - scannerまたはlockfile parserの失敗をcleanと扱わない
+- proxy障害時にpublic registryへfallbackせず、`ERROR`として止める
 
 ## 制限事項
 

@@ -1,7 +1,7 @@
 {
   "minimum_release_age_hours": 168,
   "allowed_registries": [
-    "https://registry.example.invalid"
+    "https://npm.security-proxy.example.invalid"
   ],
   "require_integrity": true,
   "max_exception_hours": 72,

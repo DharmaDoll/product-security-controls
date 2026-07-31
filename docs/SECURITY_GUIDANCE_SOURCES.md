@@ -921,6 +921,57 @@ Disposition and limitations:
 - the pinned documentation source records reviewed semantics but does not pin
   a Kubernetes cluster version or prove that a cluster adopted them.
 
+<a id="ref-deps-001"></a>
+
+### REF-DEPS-001 — Takumi Guard dependency registry proxy
+
+- Status: `adopted-partially`
+- Type: package registry proxy product documentation
+- Publisher: Flatt Security / Shisho Cloud
+- Live URLs:
+  - [Takumi Guard documentation](https://shisho.dev/docs/t/guard/)
+  - [Quickstart and organization deployment](https://shisho.dev/docs/t/guard/quickstart/)
+  - [Go proxy configuration](https://shisho.dev/docs/t/guard/quickstart/golang/)
+  - [npm proxy configuration](https://shisho.dev/docs/t/guard/quickstart/npm/)
+  - [Limitations](https://shisho.dev/docs/t/guard/limitation/)
+- Immutable public documentation snapshot: not identified; retain the live URLs
+  and review date, and re-review product behavior before production adoption
+- Repository review date: `2026-07-31`
+- Related controls:
+  - `PSB-DEPS-001` — managed proxy routing and independent release cooldown;
+  - `PSB-DEPS-003` — lockfile origin binding to the managed proxy;
+  - `PSB-SOURCE-001` — MDM-distributed endpoint configuration and egress
+    enforcement.
+
+Adopted contribution:
+
+- package-manager traffic is routed through a managed proxy for
+  malicious-package blocking, download tracking, and breach notification;
+- npm, pip, Go, and Composer receive centrally distributed client profiles;
+- Go `direct` fallbacks and equivalent public-registry bypasses are prohibited;
+- read-only install routing is separated from explicit login and publication;
+- proxy failure is an error and is not converted to a clean direct install;
+- the blocking path is tested only with a harmless provider canary.
+
+Rejected or separate contribution:
+
+- the provider blocklist is not treated as a release-age cooldown because the
+  reviewed documentation does not specify the repository's 168-hour
+  minimum-age guarantee;
+- no global developer setting is silently modified by this repository;
+- plaintext proxy credentials, real-malware test installation, and
+  developer-optional routing are rejected;
+- provider Actions or installers are not adopted without immutable pinning,
+  integrity verification, permission review, and offline negative fixtures.
+
+Disposition and limitations:
+
+- Takumi Guard is an implementation example, not a framework mapping or the
+  canonical control boundary;
+- blocklist coverage cannot establish that every malicious package is blocked;
+- local fixtures cannot prove MDM deployment, live provider availability, or
+  actual public-registry egress denial.
+
 <a id="ref-detect-001"></a>
 
 ### REF-DETECT-001 — Trivy release integrity and offline execution guidance
@@ -1135,6 +1186,8 @@ The reviewed collaboration history contained:
 - implementation sources selected while delivering and extending
   `PSB-DETECT-001` and the SBOM consumption path, recorded as
   `REF-DETECT-001..002` and `REF-REL-001`;
+- dependency registry proxy documentation selected for the managed acquisition
+  path in `PSB-DEPS-001`, recorded as `REF-DEPS-001`;
 - Kubernetes platform guidance selected while delivering
   `PSB-CONTAINER-001`, recorded as `REF-CONTAINER-002`;
 - three substantial user-supplied source texts or tables, recorded as

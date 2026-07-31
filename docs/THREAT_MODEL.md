@@ -32,6 +32,8 @@
 - compromised maintainers;
 - typosquatting;
 - dependency confusion;
+- package-manager configuration drift or direct fallback bypassing a managed
+  registry proxy and its blocking, tracking, and notification controls;
 - mutable workflow dependencies;
 - compromised build service;
 - artifact substitution;

@@ -1,0 +1,45 @@
+{
+  "schema": "psb-registry-proxy-policy/1.0",
+  "mode": "developer-optional-proxy",
+  "managed_distribution": "developer-discretion",
+  "direct_registry_egress": "allowed",
+  "fallback": "public-registry",
+  "outage_state": "CLEAN",
+  "credential_handling": "plaintext-project-file",
+  "publish_path": "same-proxy-implicit",
+  "cooldown": {
+    "enforcement": "proxy-blocklist-assumed-equivalent",
+    "minimum_release_age_hours": 0,
+    "proxy_minimum_age_claim": "assumed"
+  },
+  "proxy_capabilities": [
+    "malicious-package-blocking"
+  ],
+  "client_configs": [
+    {
+      "ecosystem": "npm",
+      "path": "clients/npmrc",
+      "endpoint": "https://npm.security-proxy.example.invalid"
+    },
+    {
+      "ecosystem": "pip",
+      "path": "clients/pip.conf",
+      "endpoint": "https://pypi.security-proxy.example.invalid/simple"
+    },
+    {
+      "ecosystem": "go",
+      "path": "clients/go.env",
+      "endpoint": "https://go.security-proxy.example.invalid"
+    },
+    {
+      "ecosystem": "composer",
+      "path": "clients/composer.json",
+      "endpoint": "https://composer.security-proxy.example.invalid"
+    }
+  ],
+  "canary": {
+    "kind": "unreviewed-live-package",
+    "expected": "best-effort-warning",
+    "real_malware": false
+  }
+}

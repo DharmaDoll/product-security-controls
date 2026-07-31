@@ -5,7 +5,7 @@
   "dependencies": {
     "stable-lib": {
       "version": "1.4.0",
-      "registry": "https://registry.example.test",
+      "registry": "https://npm.security-proxy.example.invalid",
       "integrity": "sha256:dd5d6dede803244a125d3fc855c6e759d5ae1c820edef8713b1972b8578b521d",
       "artifact": "artifacts/stable-lib-1.4.0.pkg"
     }

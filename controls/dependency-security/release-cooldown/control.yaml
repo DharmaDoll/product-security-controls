@@ -1,7 +1,7 @@
 id: PSB-DEPS-001
-title: 依存パッケージの公開直後採用をrelease cooldownで制御
+title: managed registry proxyとrelease cooldownで依存パッケージ採用を制御
 domain: dependency-security
-summary: 新しいdependency versionの採用を一定期間遅延し、公開直後のsupply-chain compromiseへの露出を減らす。
+summary: 依存取得をmanaged proxyへ固定し、新しいdependency versionの採用を一定期間遅延して、registry迂回と公開直後のsupply-chain compromiseへの露出を減らす。
 check_context_version: "1.0"
 security_functions:
   - prevent
@@ -11,18 +11,30 @@ threats:
     description: 侵害されたmaintainerまたはregistryから公開された直後のmalicious versionを開発端末やCIが自動採用する。
   - id: DEPENDENCY-COOLDOWN-BYPASS
     description: allowlist外registry、integrity欠落、広すぎる例外、またはmetadata検証失敗によってcooldownが迂回される。
+  - id: DEPENDENCY-PROXY-BYPASS
+    description: 開発者設定のdrift、direct fallback、またはpublic registryへの直接通信により、managed security proxyの検査と追跡が迂回される。
 implementations:
   insecure:
     - insecure/cooldown-policy.json
     - insecure/lockfile.json
     - insecure/registry-metadata.json
     - insecure/artifacts/brand-new-lib-9.9.9.artifact
+    - insecure/registry-proxy-policy.json
+    - insecure/clients/npmrc
+    - insecure/clients/pip.conf
+    - insecure/clients/go.env
+    - insecure/clients/composer.json
   secure:
     - secure/cooldown-policy.json
     - secure/lockfile.json
     - secure/registry-metadata.json
     - secure/artifacts/stable-lib-1.4.0.artifact
     - secure/artifacts/urgent-security-fix-2.0.1.artifact
+    - secure/registry-proxy-policy.json
+    - secure/clients/npmrc
+    - secure/clients/pip.conf
+    - secure/clients/go.env
+    - secure/clients/composer.json
 verification:
   commands:
     - make verify-control CONTROL=PSB-DEPS-001
@@ -32,6 +44,8 @@ verification:
     - cooldownが短すぎるpolicy、公開直後version、allowlist外registry、integrity欠落が拒否される
     - lockfile artifactのsha256がmetadataおよび実ファイルと一致する
     - metadata欠落、JSON破損、artifact読取失敗がcleanな結果と区別される
+    - npm、pip、Go、Composerがmanaged registry proxyだけを使用し、direct fallbackを持たない
+    - proxy障害はERRORとなり、malicious-package blocklistを168時間cooldownの代替として扱わない
 checks:
   - id: COOL-001
     title: New dependency releases observe the minimum cooldown
@@ -136,6 +150,45 @@ checks:
       evidence:
         - negative-test output
     mapping_status: unmapped
+  - id: COOL-007
+    title: Managed dependency proxy is mandatory and fail closed
+    required_state: centrally distributed proxy-only routes with no direct fallback and ERROR on outage
+    responsible_role: security
+    applies_to:
+      - developer-endpoint
+      - dependency-registry
+    context:
+      threat_actor: malicious package publisher or local process attempting to bypass registry inspection
+      attack_or_failure_scenario: package-manager drift direct fallback or public-registry egress avoids proxy blocking tracking and notification
+      why_required: a centrally enforced proxy route turns an optional developer setting into a consistent dependency acquisition guardrail
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-DEPS-001 and inspect MDM or CI distribution plus public-registry egress policy
+      expected: npm pip Go and Composer use only the managed proxy; direct fallback is denied and proxy failure is ERROR
+      evidence:
+        - sanitized verifier output
+        - managed configuration export
+        - egress policy evidence
+    mapping_status: reviewed
+  - id: COOL-008
+    title: Proxy malware blocking does not replace release cooldown
+    required_state: repository-owned 168-hour pre-resolution verifier remains authoritative
+    responsible_role: repository-admin
+    applies_to:
+      - dependency-update
+      - dependency-registry
+    context:
+      threat_actor: newly malicious publisher whose release is not yet present in provider blocklists
+      attack_or_failure_scenario: teams treat proxy allow or block results as proof that a newly published version completed an observation period
+      why_required: malware intelligence and package age answer different questions and both controls are required
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DEPS-001
+      expected: policy retains the 168-hour repository verifier and explicitly does not rely on undocumented proxy minimum-age behavior
+      evidence:
+        - sanitized verifier output
+        - proxy capability review
+    mapping_status: reviewed
 mappings:
   - framework: mitre-attack
     version: "v19.1"
@@ -149,6 +202,8 @@ mappings:
       - COOL-001
       - COOL-002
       - COOL-003
+      - COOL-007
+      - COOL-008
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: PW.4.1
@@ -163,6 +218,8 @@ mappings:
       - COOL-003
       - COOL-004
       - COOL-005
+      - COOL-007
+      - COOL-008
 limitations:
   - 7日のcooldownは運用baselineであり、packageが安全になることを保証する時間ではない。
   - 待機期間を過ぎたmalware、長期潜伏、typosquatting、dependency confusionは別controlが必要である。
@@ -170,6 +227,8 @@ limitations:
   - 緊急security updateでは期限付きexact version例外が必要になる場合がある。
   - Cooldownはlockfile、integrity、dependency review、SCA、registry制限と組み合わせる必要がある。
   - Metadata取得または検証器の失敗をcleanな結果として扱ってはいけない。
+  - Proxy blocklistは既知またはproviderが検知したpackageに依存し、malicious packageをすべて遮断できるとは限らない。
+  - このlocal fixtureはMDM適用状態、public registryへの実network egress拒否、またはproxy serviceの可用性を単独では証明しない。
 status: prototype
 owner: product-security
 evidence_level: E3

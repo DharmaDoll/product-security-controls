@@ -159,6 +159,10 @@ EXTERNAL_CHECKS = {
         "external-idp-evidence",
         "phishing-resistant authentication requires IdP policy evidence",
     ),
+    "DEH-011": (
+        "external-dependency-proxy-evidence",
+        "managed dependency proxy requires MDM and network enforcement evidence",
+    ),
     "END-005": (
         "approved-scanner-evidence",
         "workspace secret absence requires an approved complete scan",

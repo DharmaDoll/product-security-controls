@@ -20,7 +20,9 @@ Implement four complete controls:
 
 1. GitHub Actions immutable SHA pinning — implemented as `PSB-CICD-001`
 2. Dependency lockfile and update cooldown — cooldown implemented as
-   `PSB-DEPS-001`; install-time code execution default-deny is implemented as
+   `PSB-DEPS-001`, including managed proxy-only npm／pip／Go／Composer profiles
+   and an independent 168-hour verifier; install-time code execution
+   default-deny is implemented as
    `PSB-DEPS-002`; normalized frozen lockfile and artifact integrity verification
    is implemented as `PSB-DEPS-003`
 3. Secure secret handling in an application

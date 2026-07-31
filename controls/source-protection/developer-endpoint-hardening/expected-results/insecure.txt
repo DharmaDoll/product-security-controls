@@ -11,6 +11,7 @@ FAIL repository_secret_scan: expected=required actual=disabled
 FAIL docker_socket_exposed: expected=false actual=true
 FAIL package_install_isolation: expected=required actual=host-unrestricted
 FAIL dependency_update_guard: expected=release-cooldown-and-security-updates actual=immediate-unreviewed
+FAIL dependency_registry_proxy: expected=mdm-enforced-no-direct-fallback actual=developer-optional-direct-fallback
 FAIL local_debug_services: expected=disabled actual=enabled
 FAIL developer_egress_control: expected=allowlist actual=unrestricted
 FAIL phishing_resistant_mfa: expected=required actual=optional
@@ -26,4 +27,4 @@ FAIL managed_development_environment: expected=required-for-high-risk actual=loc
 FAIL sandbox_runtime_monitoring: expected=required actual=disabled
 FAIL endpoint_configuration_management: expected=mdm-enforced actual=developer-discretion
 FAIL physical_device_protection: expected=required actual=none
-REJECTED insecure policy: 28 control checks failed
+REJECTED insecure policy: 29 control checks failed

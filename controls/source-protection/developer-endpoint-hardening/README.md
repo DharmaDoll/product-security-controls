@@ -207,6 +207,8 @@ Additional examples:
 - isolated package installation and controlled dependency-update timing;
 - dependency resolveとupdateに`PSB-DEPS-001`のrepository-owned cooldown
   policyを適用し、通常installではcommitted lockfileを使用する;
+- `PSB-DEPS-001`のproxy-only client profileをMDM／CI templateで配布し、
+  npm、pip、Go、Composerのdirect registry fallbackとpublic-registry egressを拒否する;
 - dependency install時は`PSB-DEPS-002`でlifecycle scriptとsource buildを
   default denyにし、必要な実行だけをreview済みの時限例外に限定する;
 - 通常installでは`PSB-DEPS-003`のfrozen graph、registry、artifact integrityを

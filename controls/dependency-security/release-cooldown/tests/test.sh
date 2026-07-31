@@ -8,6 +8,7 @@ trap 'rm -rf "$temporary_directory"' EXIT
 
 python3 "$control/scripts/verify.py" \
   --policy "$control/secure/cooldown-policy.json" \
+  --proxy-policy "$control/secure/registry-proxy-policy.json" \
   --lockfile "$control/secure/lockfile.json" \
   --metadata "$control/secure/registry-metadata.json" \
   --as-of "$as_of" >"$temporary_directory/secure.txt"
@@ -16,6 +17,7 @@ diff -u "$control/expected-results/secure.txt" "$temporary_directory/secure.txt"
 set +e
 python3 "$control/scripts/verify.py" \
   --policy "$control/insecure/cooldown-policy.json" \
+  --proxy-policy "$control/insecure/registry-proxy-policy.json" \
   --lockfile "$control/insecure/lockfile.json" \
   --metadata "$control/insecure/registry-metadata.json" \
   --as-of "$as_of" >"$temporary_directory/insecure.txt"
@@ -30,6 +32,7 @@ diff -u "$control/expected-results/insecure.txt" "$temporary_directory/insecure.
 set +e
 python3 "$control/scripts/verify.py" \
   --policy "$control/tests/fixtures/expired-policy.json" \
+  --proxy-policy "$control/secure/registry-proxy-policy.json" \
   --lockfile "$control/secure/lockfile.json" \
   --metadata "$control/secure/registry-metadata.json" \
   --as-of "$as_of" >"$temporary_directory/expired.txt"
@@ -50,6 +53,7 @@ printf '%s\n' "tampered bytes" \
 set +e
 python3 "$control/scripts/verify.py" \
   --policy "$temporary_directory/tampered/cooldown-policy.json" \
+  --proxy-policy "$temporary_directory/tampered/registry-proxy-policy.json" \
   --lockfile "$temporary_directory/tampered/lockfile.json" \
   --metadata "$temporary_directory/tampered/registry-metadata.json" \
   --as-of "$as_of" >"$temporary_directory/tampered.txt"
@@ -65,6 +69,7 @@ grep -F "stable-lib@1.4.0 artifact sha256 does not match lockfile" \
 set +e
 python3 "$control/scripts/verify.py" \
   --policy "$control/secure/cooldown-policy.json" \
+  --proxy-policy "$control/secure/registry-proxy-policy.json" \
   --lockfile "$control/secure/lockfile.json" \
   --metadata "$temporary_directory/missing-metadata.json" \
   --as-of "$as_of" >"$temporary_directory/missing.txt" 2>&1
@@ -79,6 +84,7 @@ printf '%s\n' '{"packages":' >"$temporary_directory/malformed-metadata.json"
 set +e
 python3 "$control/scripts/verify.py" \
   --policy "$control/secure/cooldown-policy.json" \
+  --proxy-policy "$control/secure/registry-proxy-policy.json" \
   --lockfile "$control/secure/lockfile.json" \
   --metadata "$temporary_directory/malformed-metadata.json" \
   --as-of "$as_of" >"$temporary_directory/malformed.txt" 2>&1
@@ -89,8 +95,23 @@ test "$malformed_status" -eq 2 || {
   exit 1
 }
 
+set +e
+python3 "$control/scripts/verify.py" \
+  --policy "$control/secure/cooldown-policy.json" \
+  --proxy-policy "$control/tests/fixtures/malformed-proxy-policy.json" \
+  --lockfile "$control/secure/lockfile.json" \
+  --metadata "$control/secure/registry-metadata.json" \
+  --as-of "$as_of" >"$temporary_directory/malformed-proxy.txt" 2>&1
+malformed_proxy_status=$?
+set -e
+test "$malformed_proxy_status" -eq 2 || {
+  echo "expected malformed proxy policy exit 2, got $malformed_proxy_status" >&2
+  exit 1
+}
+
 echo "PASS stable and exact-exception dependencies accepted"
 echo "PASS zero cooldown fresh version unapproved registry and missing integrity rejected"
 echo "PASS expired cooldown exception rejected"
 echo "PASS tampered artifact rejected"
 echo "PASS missing and malformed metadata fail closed"
+echo "PASS managed registry proxy enforced and malformed proxy policy fails closed"

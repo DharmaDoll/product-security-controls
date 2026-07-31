@@ -1,4 +1,4 @@
-# PSB-DEPS-001: 依存パッケージのrelease cooldown
+# PSB-DEPS-001: managed registry proxyとrelease cooldown
 
 ## セキュリティ上の問題
 
@@ -42,6 +42,11 @@ package managerによるresolveそのものの強制境界にはしません。
 cooldownは公開直後の自動採用を遅らせますが、悪意あるversionそのものを安全化する
 ものではありません。
 
+もう1つの失敗シナリオは`DEPENDENCY-PROXY-BYPASS`です。各開発者がregistryを
+任意設定すると、攻撃者または設定driftによってpublic registryへのdirect fallbackが
+選ばれ、malicious-package検査、download追跡、事後通知を迂回できます。このcontrolは
+client経路をmanaged security proxyへ固定します。
+
 ## 実装例
 
 ### 安全な例
@@ -62,6 +67,14 @@ cooldownは公開直後の自動採用を遅らせますが、悪意あるversio
   - versionごとの公開日時とintegrity
 - `artifacts/`
   - checksum検証用のsynthetic artifact
+- `registry-proxy-policy.json`
+  - MDM／CI templateによる中央配布
+  - public registryへのdirect egressとfallbackを拒否
+  - proxy障害を`ERROR`として扱う
+  - install用read-only proxyとpublish経路を分離
+  - proxyのblocklistをcooldownの代替にしない
+- `clients/`
+  - npm、pip、Go、Composerのproxy-only client profile
 
 安全なfixtureには、公開から7日以上経過した通常dependencyと、緊急security fixを
 想定した、owner・理由・承認者・開始時刻・失効時刻付きのexact version例外が
@@ -75,6 +88,10 @@ cooldownは公開直後の自動採用を遅らせますが、悪意あるversio
 - allowlist外registry
 - integrity欠落
 - 公開から24時間しか経過していないversion
+- developer任意のproxy設定とpublic registry fallback
+- `pip`の`extra-index-url`、Goの`,direct`、ComposerのPackagist fallback
+- proxy blocklistをrelease cooldownと誤認するpolicy
+- plaintext credentialと、provider承認済みの無害なcanaryを指定しない動作確認
 
 fixtureで使用するpackage名、registry、artifactはすべてsyntheticです。
 
@@ -89,6 +106,7 @@ make verify-control CONTROL=PSB-DEPS-001
 ```bash
 python3 controls/dependency-security/release-cooldown/scripts/verify.py \
   --policy controls/dependency-security/release-cooldown/secure/cooldown-policy.json \
+  --proxy-policy controls/dependency-security/release-cooldown/secure/registry-proxy-policy.json \
   --lockfile controls/dependency-security/release-cooldown/secure/lockfile.json \
   --metadata controls/dependency-security/release-cooldown/secure/registry-metadata.json \
   --as-of 2026-07-27T00:00:00Z
@@ -103,6 +121,32 @@ python3 controls/dependency-security/release-cooldown/scripts/verify.py \
 | `2` | metadata欠落、JSON破損、artifact読取失敗などで検証不能 |
 
 registry metadataの取得やscanner実行に失敗した場合は、cleanな結果として扱いません。
+
+## Managed registry proxy
+
+`secure/clients/`はproduction endpointを変更するinstallerではなく、組織ごとのURLへ
+置換してMDM、configuration management、devcontainer、またはCI templateから配布する
+ためのsampleです。repository cloneだけでglobal package-manager設定を書き換えることは
+ありません。
+
+Takumi Guardは、この構成で想定するproviderの一例です。公式documentationでは
+package registry proxyによるmalicious-package blocking、install tracking、
+breach notificationと、organization configuration／MDM／CIによる配布が説明されています。
+Goでは`,direct`または`|direct`を付けるとproxyを迂回するため、このsampleは単一proxy
+だけを許可します。npmのinstall proxyはread-onlyなので、login／publishは承認された
+upstreamを明示する別経路にします。
+
+一方、参照したTakumi Guardの公式documentationには「公開後168時間未満のpackageを
+拒否する」というminimum-age保証はありません。このため役割を分離します。
+
+- managed proxy: known-malicious packageのblocking、取得履歴、事後通知
+- repository-owned verifier: 公開時刻に基づく168時間cooldown
+- network／endpoint policy: public registryへのdirect egressとclient fallbackの拒否
+
+providerが許可したpackageでもcooldownを通過したことにはなりません。逆にproxyが
+利用不能な場合もpublic registryへfallbackせず、検証不能な`ERROR`として扱います。
+block pathの確認にはproviderが用意する無害なtest packageだけを使い、実malwareを
+取得・実行してはいけません。
 
 ## 例外
 
@@ -130,6 +174,8 @@ wildcard、package全体、期限なし、未使用の例外は許可しませ�
 5. install scriptやbuild pluginが実行される前に検証を完了する
 6. package manager cacheをcooldownの迂回手段として扱わない
 7. endpoint側のnetwork、credential、sandbox policyも独立して適用する
+8. proxy-only client profileを中央配布し、public registry egressをdenyする
+9. proxy outageをcleanまたはdirect fallbackとして扱わない
 
 `PSB-SOURCE-001`のdeveloper endpoint hardeningは、dependency resolveをこのcontrolへ
 委譲します。cooldownのロジックをendpoint policyやGit hookへ重複実装しません。
@@ -152,3 +198,10 @@ integrationでは、許可したregistryからHTTPSで取得し、取得失敗�
 
 cooldownはlockfile、hash／integrity、dependency review、SCA、registry制限、
 install script制御と組み合わせる必要があります。
+
+## 参考資料
+
+- [Takumi Guard documentation](https://shisho.dev/docs/t/guard/)
+- [Takumi Guard quickstart](https://shisho.dev/docs/t/guard/quickstart/)
+- [Takumi Guard for Go](https://shisho.dev/docs/t/guard/quickstart/golang/)
+- [Takumi Guard limitations](https://shisho.dev/docs/t/guard/limitation/)

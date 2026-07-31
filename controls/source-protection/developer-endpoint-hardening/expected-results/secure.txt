@@ -11,6 +11,7 @@ PASS repository_secret_scan=required
 PASS docker_socket_exposed=false
 PASS package_install_isolation=required
 PASS dependency_update_guard=release-cooldown-and-security-updates
+PASS dependency_registry_proxy=mdm-enforced-no-direct-fallback
 PASS local_debug_services=disabled
 PASS developer_egress_control=allowlist
 PASS phishing_resistant_mfa=required

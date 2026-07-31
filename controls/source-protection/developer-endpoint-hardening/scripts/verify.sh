@@ -44,6 +44,7 @@ check_value repository_secret_scan required
 check_value docker_socket_exposed false
 check_value package_install_isolation required
 check_value dependency_update_guard release-cooldown-and-security-updates
+check_value dependency_registry_proxy mdm-enforced-no-direct-fallback
 check_value local_debug_services disabled
 check_value developer_egress_control allowlist
 check_value phishing_resistant_mfa required

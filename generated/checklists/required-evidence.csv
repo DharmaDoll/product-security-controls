@@ -145,6 +145,11 @@ PSB-DEPS-001,PSB-DEPS-001-COOL-003,repository-admin,automated,negative-test outp
 PSB-DEPS-001,PSB-DEPS-001-COOL-004,repository-admin,automated,sanitized verifier output
 PSB-DEPS-001,PSB-DEPS-001-COOL-005,developer,automated,sanitized verifier output
 PSB-DEPS-001,PSB-DEPS-001-COOL-006,repository-admin,automated,negative-test output
+PSB-DEPS-001,PSB-DEPS-001-COOL-007,security,hybrid,sanitized verifier output
+PSB-DEPS-001,PSB-DEPS-001-COOL-007,security,hybrid,managed configuration export
+PSB-DEPS-001,PSB-DEPS-001-COOL-007,security,hybrid,egress policy evidence
+PSB-DEPS-001,PSB-DEPS-001-COOL-008,repository-admin,automated,sanitized verifier output
+PSB-DEPS-001,PSB-DEPS-001-COOL-008,repository-admin,automated,proxy capability review
 PSB-DEPS-002,PSB-DEPS-002-INS-001,developer,automated,sanitized verifier output
 PSB-DEPS-002,PSB-DEPS-002-INS-002,developer,automated,sanitized verifier output
 PSB-DEPS-002,PSB-DEPS-002-INS-002,developer,automated,approved build exception
@@ -251,6 +256,10 @@ PSB-SOURCE-001,PSB-SOURCE-001-DEH-009,security,external-evidence,IdP policy and 
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-010,developer,hybrid,sanitized assessment result
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-010,developer,hybrid,sanitized negative-test output
 PSB-SOURCE-001,PSB-SOURCE-001-DEH-010,developer,hybrid,repository required-check evidence
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-011,security,hybrid,sanitized assessment result
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-011,security,hybrid,PSB-DEPS-001 verifier output
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-011,security,hybrid,MDM configuration export
+PSB-SOURCE-001,PSB-SOURCE-001-DEH-011,security,hybrid,public-registry egress denial evidence
 PSB-SOURCE-001,PSB-SOURCE-001-END-001,shared,hybrid,sanitized assessment result
 PSB-SOURCE-001,PSB-SOURCE-001-END-001,shared,hybrid,MDM compliance record
 PSB-SOURCE-001,PSB-SOURCE-001-END-002,shared,hybrid,sanitized assessment result

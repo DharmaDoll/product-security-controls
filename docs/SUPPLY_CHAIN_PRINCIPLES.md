@@ -6,7 +6,7 @@
 | 原則 | Goal | Control |
 | --- | --- | --- |
 | 1. install時の任意code実行を止める | lifecycle scriptとsource buildをdefault denyにする | `PSB-DEPS-002` |
-| 2. release後の猶予を置く | 公開直後versionの通常採用を遅延する | `PSB-DEPS-001` |
+| 2. 取得経路を固定しrelease後の猶予を置く | managed registry proxyを強制し、公開直後versionの通常採用を独立したcooldownで遅延する | `PSB-DEPS-001` |
 | 3. lockfileで完全性を担保する | manifest、frozen graph、registry、artifact hashを一致させる | `PSB-DEPS-003` |
 | 4. 信頼signalを検証する | 署名、provenance、builder、source、artifactをconsumer expectationへ照合する | `PSB-REL-001` |
 | 5. 権限とnetworkを最小化する | untrusted buildをcredentialとdeploy trust boundaryから隔離する | `PSB-BUILD-001` |
@@ -16,6 +16,8 @@
 
 ```text
 release cooldown
+      ↓
+managed registry proxy (no direct fallback)
       ↓
 install execution default deny
       ↓
@@ -36,6 +38,8 @@ cooldownを通過したmalicious packageはinstall script controlやSCAで扱い
 ## 共通運用要件
 
 - dependency updateと通常installを分離する
+- package-manager client profileを中央配布し、public registryへのdirect fallbackを禁止する
+- malicious-package blocklistをrelease cooldownまたはartifact integrityの代替にしない
 - package manager、tool、GitHub Actionをimmutable versionへ固定する
 - network取得とexternal verifier failureを明示し、cleanへ変換しない
 - exceptionはexact target、owner、別承認者、理由、期限を持つ

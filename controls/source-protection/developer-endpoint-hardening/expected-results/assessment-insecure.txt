@@ -9,6 +9,7 @@ NOT_CHECKED PSB-SOURCE-001-DEH-007 external-dependency-evidence: dependency upda
 NOT_CHECKED PSB-SOURCE-001-DEH-008 external-egress-evidence: developer egress enforcement requires managed network evidence
 NOT_CHECKED PSB-SOURCE-001-DEH-009 external-idp-evidence: phishing-resistant authentication requires IdP policy evidence
 FAIL PSB-SOURCE-001-DEH-010 sensitive-file-guard-disabled: the active pre-commit path does not establish the sensitive-data guard
+NOT_CHECKED PSB-SOURCE-001-DEH-011 external-dependency-proxy-evidence: managed dependency proxy requires MDM and network enforcement evidence
 FAIL PSB-SOURCE-001-END-001 disk-encryption-not-detected: the workspace block-device chain does not include encryption
 FAIL PSB-SOURCE-001-END-002 screen-lock-disabled: GNOME screen locking or its idle delay is disabled
 FAIL PSB-SOURCE-001-END-003 automatic-updates-disabled: the detected automatic-update policy is disabled
@@ -27,4 +28,4 @@ NOT_CHECKED PSB-SOURCE-001-END-015 external-managed-environment-evidence: high-r
 NOT_CHECKED PSB-SOURCE-001-END-016 external-runtime-monitoring-evidence: sandbox restrictions and telemetry require runtime control evidence
 NOT_CHECKED PSB-SOURCE-001-END-017 external-mdm-evidence: central endpoint enforcement requires MDM or equivalent evidence
 NOT_CHECKED PSB-SOURCE-001-END-018 external-physical-protection-evidence: physical device protection requires organization policy and response evidence
-SUMMARY PASS=0 FAIL=10 NOT_CHECKED=18 ERROR=0 N/A=0
+SUMMARY PASS=0 FAIL=10 NOT_CHECKED=19 ERROR=0 N/A=0

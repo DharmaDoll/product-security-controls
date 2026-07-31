@@ -54,7 +54,7 @@ controls/<domain>/<control>/
 | `PSB-CICD-003` | pinned zizmorでworkflowをblock判定し、trusted branchのSARIFを記録 | E3 |
 | `PSB-CICD-004` | workflowをdeny-allにし、job目的ごとの明示的な最小`GITHUB_TOKEN`権限を強制 | E3 |
 | `PSB-CICD-005` | fork／未信頼PRをcredential-free jobへ隔離し、privileged処理を新しいtrusted runへ分離 | E3 |
-| `PSB-DEPS-001` | 依存パッケージの公開直後採用を7日間のcooldownで制御 | E3 |
+| `PSB-DEPS-001` | managed registry proxyを強制し、公開直後dependencyの採用を独立した7日間cooldownで制御 | E3 |
 | `PSB-DEPS-002` | install時のdependency code executionをdefault denyに制御 | E3 |
 | `PSB-DEPS-003` | frozen lockfileとartifact integrityを検証 | E3 |
 | `PSB-REL-001` | release署名とSLSA provenanceをconsumer expectationへ照合 | E3 |

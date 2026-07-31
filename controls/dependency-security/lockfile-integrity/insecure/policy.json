@@ -2,5 +2,11 @@
   "require_frozen": false,
   "require_manifest_digest": false,
   "allowed_registries": ["http://registry.example.test"],
+  "registry_route": {
+    "mode": "direct-public",
+    "direct_fallback": true,
+    "outage_state": "CLEAN",
+    "credentials": "embedded-in-url"
+  },
   "allowed_integrity_algorithms": ["sha1"]
 }

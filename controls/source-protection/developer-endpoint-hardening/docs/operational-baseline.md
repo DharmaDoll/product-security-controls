@@ -26,6 +26,7 @@ outcomes and evidence, not on a specific vendor or tool.
 | DEH-008 | Boundary control and identity | Control network and site access | `developer_egress_control=allowlist` | prevent | Managed egress, SWG/CASB, DNS/proxy policy, or equivalent controls for unauthorized storage and repositories |
 | DEH-009 | Boundary control and identity | Centralize authentication and require phishing-resistant MFA | `phishing_resistant_mfa=required` | prevent | IdP/SSO lifecycle control with FIDO2/passkey or equivalent phishing-resistant authentication |
 | DEH-010 | PII protection | Detect sensitive data files before commit | `sensitive_data_file_guard=required` | detect, prevent | Size, format, extension, and content-aware checks for staged data files |
+| DEH-011 | Supply-chain routing | Enforce a managed dependency registry proxy | `dependency_registry_proxy=mdm-enforced-no-direct-fallback` | prevent, detect | MDM／CI-distributed npm, pip, Go, and Composer profiles plus public-registry egress denial; `PSB-DEPS-001` verifies the sample |
 
 All requirements are assigned the input phase label "Phase 2: common
 guardrails." Prioritization must still be risk-based when an organization
@@ -54,7 +55,7 @@ assertions.
 ## Verification and evidence
 
 `scripts/verify.sh` validates the policy values for both fixtures. The secure
-fixture must produce 28 passing checks. The insecure fixture must produce 28
+fixture must produce 29 passing checks. The insecure fixture must produce 29
 failed checks and exit non-zero. `tests/test.sh` compares both complete outputs
 with `expected-results/`.
 
@@ -68,6 +69,7 @@ evidence should include, as applicable:
 - protected-branch evidence for mandatory repository-side scanning;
 - sandbox isolation and package-install telemetry;
 - dependency update policy, cooldown, and vulnerability exception records;
+- managed dependency proxy configuration and public-registry egress denial;
 - managed egress policy and access logs;
 - negative test fixtures for secret and sensitive-data detection.
 - approved application inventory and EDR or XDR coverage;

@@ -25,11 +25,11 @@ verification:
   commands:
     - make verify-control CONTROL=PSB-SOURCE-001
   expected:
-    - secure endpoint policy passes all 28 required checks, including all ten imported operational requirements
-    - insecure endpoint policy is rejected with a non-zero result and 28 failed checks
+    - secure endpoint policy passes all 29 required checks, including all ten imported operational requirements
+    - insecure endpoint policy is rejected with a non-zero result and 29 failed checks
     - complete verifier output matches the sanitized expected evidence
     - policy validation failure is distinct from a clean result
-    - read-only Linux assessment emits all 28 check states without host identifiers or matched secret values
+    - read-only Linux assessment emits all 29 check states without host identifiers or matched secret values
     - FAIL NOT_CHECKED and assessment execution ERROR use distinct exit states
 assessment:
   command: assessment/assess.py
@@ -226,6 +226,27 @@ checks:
         - sanitized assessment result
         - sanitized negative-test output
         - repository required-check evidence
+    mapping_status: reviewed
+  - id: DEH-011
+    title: Dependency registry proxy configuration is centrally enforced
+    required_state: MDM-managed proxy-only routes with no direct registry fallback
+    responsible_role: security
+    applies_to:
+      - developer-endpoint
+      - dependency-registry
+    context:
+      threat_actor: malicious package publisher local malware or process bypassing registry inspection
+      attack_or_failure_scenario: developer-controlled package-manager settings drift to a public registry or use direct fallback around the managed proxy
+      why_required: central distribution and egress enforcement make blocking tracking and notification consistent across developer endpoints
+    verification:
+      type: hybrid
+      method: run make assess-control CONTROL=PSB-SOURCE-001 then verify PSB-DEPS-001 and inspect MDM plus egress policy
+      expected: supported package managers use the managed proxy only and proxy outage cannot become a clean direct install
+      evidence:
+        - sanitized assessment result
+        - PSB-DEPS-001 verifier output
+        - MDM configuration export
+        - public-registry egress denial evidence
     mapping_status: reviewed
   - id: END-001
     title: Full-disk encryption is enforced
@@ -619,6 +640,16 @@ mappings:
       - END-016
       - END-017
       - END-018
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PW.4.1
+    relationship: supports
+    confidence: medium
+    rationale: Managed proxy-only package acquisition constrains third-party component sources and preserves reviewable acquisition evidence.
+    reviewer: product-security
+    review_date: "2026-07-31"
+    applies_to:
+      - DEH-011
 limitations:
   - This control validates a declared policy; it does not prove that an unmanaged endpoint actually enforces every setting.
   - MDM, EDR, IdP, SWG or CASB, CI scanning, disk encryption, patch compliance, and remote-wipe evidence require organization-specific integrations.

@@ -89,6 +89,18 @@ def verify(policy_path: Path, manifest_path: Path, lockfile_path: Path) -> list[
     if policy.get("allowed_integrity_algorithms") != ["sha256"]:
         findings.append("policy.allowed_integrity_algorithms must be exactly [sha256]")
 
+    registry_route = policy.get("registry_route")
+    if not isinstance(registry_route, dict):
+        raise InputError("policy.registry_route must be an object")
+    if registry_route.get("mode") != "managed-security-proxy":
+        findings.append("dependency registry route must use a managed security proxy")
+    if registry_route.get("direct_fallback") is not False:
+        findings.append("dependency registry route permits direct fallback")
+    if registry_route.get("outage_state") != "ERROR":
+        findings.append("dependency registry proxy outage is not an ERROR")
+    if registry_route.get("credentials") != "external-runtime-injection":
+        findings.append("dependency registry credentials are not externally injected")
+
     raw_registries = policy.get("allowed_registries")
     if not isinstance(raw_registries, list) or not raw_registries:
         raise InputError("policy.allowed_registries must be a non-empty list")

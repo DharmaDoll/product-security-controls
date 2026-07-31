@@ -1,5 +1,23 @@
 FAIL policy.minimum_release_age_hours is 0; reference minimum is 168
+FAIL dependency proxy is optional or unmanaged
+FAIL dependency proxy configuration is not centrally distributed
+FAIL public registry egress can bypass the proxy
+FAIL package manager can fall back around the proxy
+FAIL proxy outage can appear clean or use a fallback
+FAIL proxy credential handling can persist plaintext credentials
+FAIL read-only install proxy and package publication are not separated
+FAIL proxy blocklist is incorrectly treated as release cooldown
+FAIL undocumented proxy minimum-age behavior is relied upon
+FAIL proxy blocking tracking and notification capabilities are incomplete
+FAIL npm registry does not use the exact managed proxy
+FAIL pip index-url does not use the exact managed proxy
+FAIL pip extra-index-url creates a dependency-confusion fallback
+FAIL GOPROXY does not use only the exact managed proxy
+FAIL GOPROXY permits a direct fallback
+FAIL Composer proxy is missing or is not canonical
+FAIL Composer permits direct Packagist fallback
+FAIL proxy path is not verified with a harmless blocking canary
 FAIL brand-new-lib@9.9.9 uses unapproved registry https://registry-typo.example.invalid
 FAIL brand-new-lib@9.9.9 has missing or invalid sha256 integrity
 FAIL brand-new-lib@9.9.9 age is 24 hours; minimum is 168
-REJECTED 4 cooldown finding(s)
+REJECTED 22 cooldown finding(s)

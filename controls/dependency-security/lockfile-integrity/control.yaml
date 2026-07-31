@@ -1,7 +1,7 @@
 id: PSB-DEPS-003
 title: lockfileと取得artifactの完全性を強制する
 domain: dependency-security
-summary: Frozen dependency graphとmanifest、registry、exact version、artifact integrityの一致を検証する。
+summary: Frozen dependency graphとmanifest、managed proxy origin、exact version、artifact integrityの一致を検証する。
 check_context_version: "1.0"
 security_functions:
   - prevent
@@ -29,6 +29,7 @@ verification:
     - artifact SHA-256がlockfileと一致する
     - version range、lockfile書換え、artifact改ざんが拒否される
     - 入力欠落またはparse失敗がcleanな結果と区別される
+    - lockfileのregistry originがmanaged security proxyへ固定され、direct fallbackとclean-on-outageが拒否される
 checks:
   - id: LOCK-001
     title: Manifest and frozen lockfile dependency graphs match
@@ -48,19 +49,19 @@ checks:
         - sanitized verifier output
     mapping_status: reviewed
   - id: LOCK-002
-    title: Dependency registries use a credential-free HTTPS allowlist
-    required_state: approved HTTPS registry origins only
+    title: Dependency origin is bound to the managed security proxy
+    required_state: approved credential-free HTTPS proxy only with no direct fallback and ERROR on outage
     responsible_role: repository-admin
     applies_to:
       - dependency-registry
     context:
       threat_actor: dependency-confusion publisher network attacker or credential-bearing registry misconfiguration
-      attack_or_failure_scenario: packages resolve from an unapproved origin or registry access leaks credentials
-      why_required: a credential-free HTTPS origin allowlist constrains both package source and transport trust
+      attack_or_failure_scenario: packages resolve from an unapproved origin direct fallback bypasses inspection or registry access leaks credentials
+      why_required: binding lockfile origin to a credential-free HTTPS managed proxy constrains source transport and the enforced inspection path
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-003
-      expected: unapproved registries and credential-bearing URLs are rejected
+      expected: unapproved origins direct fallback clean-on-outage and embedded credentials are rejected
       evidence:
         - sanitized verifier output
     mapping_status: reviewed
@@ -147,6 +148,7 @@ limitations:
   - 実package manager固有lockfileには個別adapterが必要である。
   - Registry、package manager、review済みlockfile自体の侵害は別controlが必要である。
   - 検証器または入力読取失敗をcleanな結果として扱ってはいけない。
+  - Local fixtureはendpointの実network egress制御またはmanaged proxyの可用性を証明しない。
 status: prototype
 owner: product-security
 evidence_level: E3

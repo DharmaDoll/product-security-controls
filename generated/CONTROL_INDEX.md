@@ -14,7 +14,7 @@ Generated control catalog. Do not edit manually.
 | PSB-CICD-004 | cicd-security | Enforce explicit least-privilege GitHub Actions permissions | 6 | prototype | E3 |
 | PSB-CICD-005 | cicd-security | Isolate fork and untrusted pull-request workflows from privileged CI | 6 | prototype | E3 |
 | PSB-CONTAINER-001 | container-cloud-iac-security | Enforce a fail-closed container workload admission baseline | 9 | adopted | E3 |
-| PSB-DEPS-001 | dependency-security | 依存パッケージの公開直後採用をrelease cooldownで制御 | 6 | prototype | E3 |
+| PSB-DEPS-001 | dependency-security | managed registry proxyとrelease cooldownで依存パッケージ採用を制御 | 8 | prototype | E3 |
 | PSB-DEPS-002 | dependency-security | install時の任意コード実行をdefault denyにする | 5 | prototype | E3 |
 | PSB-DEPS-003 | dependency-security | lockfileと取得artifactの完全性を強制する | 5 | prototype | E3 |
 | PSB-DETECT-001 | detection-verification | Execute integrity-verified security scanning with fail-closed evidence | 8 | adopted | E3 |
@@ -23,7 +23,7 @@ Generated control catalog. Do not edit manually.
 | PSB-REL-001 | release-integrity | release署名とProvenanceを期待値に照合する | 5 | prototype | E3 |
 | PSB-REL-002 | release-integrity | Release artifactとprovenanceを一対一で公開・配布する | 5 | prototype | E3 |
 | PSB-REL-003 | release-integrity | Release artifactへSBOMを結び付けて公開・処理確認する | 7 | prototype | E3 |
-| PSB-SOURCE-001 | source-protection | Harden developer endpoints and local trust boundaries | 28 | prototype | E3 |
+| PSB-SOURCE-001 | source-protection | Harden developer endpoints and local trust boundaries | 29 | prototype | E3 |
 | PSB-SOURCE-002 | source-protection | リポジトリ所有の開発者向けGit hooksセキュリティベースライン | 14 | prototype | E3 |
 | PSB-SOURCE-003 | source-protection | 公開リポジトリ露出とGitHub dorking検証 | 13 | reference | E3 |
 | PSB-SOURCE-004 | source-protection | Govern source access credential lifecycle | 12 | prototype | E3 |

@@ -1,0 +1,12 @@
+{
+  "repositories": [
+    {
+      "type": "composer",
+      "canonical": false,
+      "url": "https://composer.security-proxy.example.invalid"
+    },
+    {
+      "packagist.org": true
+    }
+  ]
+}
