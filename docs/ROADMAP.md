@@ -68,7 +68,7 @@ Add:
 - GitHub Actions static analysis — implemented as `PSB-CICD-003`;
 - minimal permissions;
 - fork-safe workflows;
-- dependency review;
+- dependency review — implemented as `PSB-DEPS-004`;
 - OIDC;
 - runner hardening;
 - verified downloads;
@@ -320,8 +320,9 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    GitHub dorking scenarios, current/history secret detection, non-code surface
    evidence, and credential-first remediation — implemented ahead of the
    remaining P2 backlog.
-3. `PSB-DEPS-004` — dependency review that blocks unreviewed risk changes and
-   fails closed when advisory or policy evaluation cannot run.
+3. `PSB-DEPS-004` — implemented at E3 with exact base-to-head graph delta,
+   direct/transitive edge context, source, vulnerability, license, provenance,
+   non-author approval, expiring exception, and fail-closed advisory evidence.
 4. `PSB-CICD-006` — short-lived, audience-bound OIDC federation without stored
    cloud credentials.
 5. `PSB-REL-003` — SBOM generation, artifact binding, publication,

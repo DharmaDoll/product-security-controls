@@ -18,6 +18,7 @@ Generated control catalog. Do not edit manually.
 | [PSB-DEPS-001](../controls/dependency-security/release-cooldown/README.md) | dependency-security | managed registry proxyとrelease cooldownで依存パッケージ採用を制御 | 8 | prototype | E3 |
 | [PSB-DEPS-002](../controls/dependency-security/install-script-execution/README.md) | dependency-security | install時の任意コード実行をdefault denyにする | 5 | prototype | E3 |
 | [PSB-DEPS-003](../controls/dependency-security/lockfile-integrity/README.md) | dependency-security | lockfileと取得artifactの完全性を強制する | 5 | prototype | E3 |
+| [PSB-DEPS-004](../controls/dependency-security/dependency-change-review/README.md) | dependency-security | Review dependency graph changes before merge | 9 | adopted | E3 |
 | [PSB-DETECT-001](../controls/detection-verification/integrity-verified-scanner/README.md) | detection-verification | Execute integrity-verified security scanning with fail-closed evidence | 8 | adopted | E3 |
 | [PSB-GOV-001](../controls/governance-operations/supply-chain-incident-readiness/README.md) | governance-operations | supply-chain incidentのbuild artifactと稼働deployment影響を即時特定する | 7 | prototype | E3 |
 | [PSB-IAC-001](../controls/container-cloud-iac-security/secure-iac-golden-path/README.md) | container-cloud-iac-security | Provide a secure IaC golden path with policy enforcement | 12 | prototype | E3 |

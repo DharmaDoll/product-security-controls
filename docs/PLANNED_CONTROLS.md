@@ -57,8 +57,8 @@ PSB-AI-004 ──────────────────┘
 
 Within one priority, complete one E3 vertical slice before starting the next.
 The application-checklist import still requires its organization-owned source.
-`PSB-CICD-005`, `PSB-DETECT-001`, `PSB-REL-003`, `PSB-REL-004`, and
-`PSB-CONTAINER-001`, and `PSB-CONTAINER-004` are implemented.
+`PSB-CICD-005`, `PSB-DEPS-004`, `PSB-DETECT-001`, `PSB-REL-003`,
+`PSB-REL-004`, `PSB-CONTAINER-001`, and `PSB-CONTAINER-004` are implemented.
 Lifecycle-linked artifact-bound SBOM publication now composes into the Golden
 Path, a Dependency-Track plus deployment-inventory query adapter extends
 `PSB-GOV-001`, and supplier SBOM trust now has a separate signed identity,
@@ -509,7 +509,7 @@ fixtures for alternate encodings, second-order input, and direct sink calls.
 
 ### PSB-DEPS-004 — Dependency change review
 
-Status: `ready`  
+Status: `implemented` — E3 provider-neutral graph-delta review slice
 Domain: `dependency-security`
 
 #### Goal
@@ -517,11 +517,12 @@ Domain: `dependency-security`
 Block dependency graph changes that introduce unreviewed vulnerabilities,
 licenses, provenance gaps, source changes, or policy exceptions.
 
-#### First runnable slice
+#### Implemented runnable slice
 
-Compare base and proposed lockfiles plus pinned advisory metadata. Produce a
-review decision for new package, version, source, transitive edge, vulnerability
-and license risk. Treat advisory or policy-engine unavailability as error.
+The control compares normalized base and proposed lock graphs plus pinned
+advisory metadata. It produces a review decision for new package, version,
+source, transitive edge, vulnerability, license, provenance, approval, and
+exception risk. Advisory or policy-engine unavailability is an error.
 
 #### Acceptance criteria
 
@@ -529,6 +530,9 @@ and license risk. Treat advisory or policy-engine unavailability as error.
 - frozen lockfile and artifact integrity remain delegated to `PSB-DEPS-003`;
 - an unavailable advisory source cannot approve a change;
 - every allow decision has sanitized evidence and every exception expires.
+
+Implemented by
+[`controls/dependency-security/dependency-change-review/`](../controls/dependency-security/dependency-change-review/).
 
 ### PSB-CICD-006 — Audience-bound cloud OIDC federation
 

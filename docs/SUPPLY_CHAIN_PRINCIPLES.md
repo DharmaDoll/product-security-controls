@@ -1,16 +1,17 @@
-# Software supply-chain security: 6つの実装原則
+# Software supply-chain security: 7つの実装原則
 
 このprojectでは、software supply-chain securityを単一scannerではなく、侵害前の予防から
-事後対応まで連続する6つのcontrolとして扱います。
+事後対応まで連続する7つのcontrolとして扱います。
 
 | 原則 | Goal | Control |
 | --- | --- | --- |
 | 1. install時の任意code実行を止める | lifecycle scriptとsource buildをdefault denyにする | `PSB-DEPS-002` |
 | 2. 取得経路を固定しrelease後の猶予を置く | managed registry proxyを強制し、公開直後versionの通常採用を独立したcooldownで遅延する | `PSB-DEPS-001` |
 | 3. lockfileで完全性を担保する | manifest、frozen graph、registry、artifact hashを一致させる | `PSB-DEPS-003` |
-| 4. 信頼signalを検証する | 署名、provenance、builder、source、artifactをconsumer expectationへ照合する | `PSB-REL-001` |
-| 5. 権限とnetworkを最小化する | untrusted buildをcredentialとdeploy trust boundaryから隔離する | `PSB-BUILD-001` |
-| 6. lifecycle inventoryから事後に即応する | commit、artifact、deploymentを別SBOM observationで結び、稼働影響とevidence-first response planを生成する | `PSB-REL-003`, `PSB-GOV-001` |
+| 4. dependency差分をreviewする | direct／transitive graph変更をadvisory、license、source、provenance、承認へ照合する | `PSB-DEPS-004` |
+| 5. 信頼signalを検証する | 署名、provenance、builder、source、artifactをconsumer expectationへ照合する | `PSB-REL-001` |
+| 6. 権限とnetworkを最小化する | untrusted buildをcredentialとdeploy trust boundaryから隔離する | `PSB-BUILD-001` |
+| 7. lifecycle inventoryから事後に即応する | commit、artifact、deploymentを別SBOM observationで結び、稼働影響とevidence-first response planを生成する | `PSB-REL-003`, `PSB-GOV-001` |
 
 ## Controlの連鎖
 
@@ -22,6 +23,8 @@ managed registry proxy (no direct fallback)
 install execution default deny
       ↓
 frozen lockfile + artifact integrity
+      ↓
+dependency graph change review
       ↓
 signature + provenance expectations
       ↓

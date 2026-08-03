@@ -1088,6 +1088,53 @@ Disposition and limitations:
 - local fixtures cannot prove MDM deployment, live provider availability, or
   actual public-registry egress denial.
 
+<a id="ref-deps-002"></a>
+
+### REF-DEPS-002 — GitHub dependency review guidance
+
+- Status: `adopted-partially`
+- Type: official source-platform dependency review documentation
+- Publisher: GitHub
+- Live documentation:
+  - [Dependency review concepts](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependency-review)
+  - [Configure the dependency review action](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/configure-dependency-review-action)
+- Immutable documentation snapshot: not identified; re-review live option and
+  event semantics before a production adapter upgrade
+- Repository review date: `2026-07-31`
+- Related controls:
+  - `PSB-DEPS-004` — provider-neutral dependency graph delta and risk decision;
+  - `PSB-CICD-001` — immutable Action identity if the GitHub adapter is used;
+  - `PSB-CICD-004` and `PSB-CICD-005` — least privilege and untrusted PR
+    boundaries.
+
+Adopted contribution:
+
+- compare dependency changes between the pull-request base and head state;
+- evaluate introduced vulnerability severity, dependency scope, and license
+  policy before merge;
+- make the resulting status check required when used as a merge gate.
+
+Extended repository requirements:
+
+- retain direct and transitive package plus edge context;
+- bind the decision to exact base/head graph and policy identities;
+- review source registry, immutable source commit, provenance, non-author
+  approval, and exact expiring exceptions in addition to vulnerability and
+  license results;
+- treat unavailable, partial, stale, and malformed provider evidence as
+  `ERROR`, never as an empty safe diff.
+
+Disposition and limitations:
+
+- GitHub dependency review is an optional adapter, not a framework mapping or
+  mandatory product;
+- repository tests use synthetic provider-neutral fixtures and do not add or
+  execute the Dependency Review Action;
+- any future Action integration requires a full commit SHA, minimal
+  permissions, safe pull-request context, and provider availability evidence;
+- advisory coverage and ecosystem support can be incomplete, and no clean
+  result proves that dependency code is non-malicious.
+
 <a id="ref-detect-001"></a>
 
 ### REF-DETECT-001 — Trivy release integrity and offline execution guidance

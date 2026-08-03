@@ -5,7 +5,7 @@
 このページは、実装済みcontrolを目的別に探すための入口です。
 `control.yaml`を正本として`make generate-index`で生成されます。
 
-現在、**25 controls / 230 atomic checks**を収録しています。
+現在、**26 controls / 239 atomic checks**を収録しています。
 
 ## 使い方
 
@@ -24,7 +24,7 @@
 | [Secure Design](#domain-secure-design) | 脅威モデリング、trust boundary、abuse caseなど、実装前の設計判断。 | 0 | 0 |
 | [Secure Coding](#domain-secure-coding) | 認証・認可、入力処理、secret、暗号など、application実装の安全性。 | 0 | 0 |
 | [Source Protection](#domain-source-protection) | 開発端末、Git、repository、source access credential、公開露出の保護。 | 4 | 68 |
-| [Dependency Security](#domain-dependency-security) | registry、cooldown、install script、lockfile、artifact integrityの保護。 | 3 | 18 |
+| [Dependency Security](#domain-dependency-security) | registry、cooldown、install script、lockfile、artifact integrityの保護。 | 4 | 27 |
 | [CI/CD Security](#domain-cicd-security) | workflow dependency、command injection、権限、未信頼PR境界の保護。 | 5 | 27 |
 | [Build Security](#domain-build-security) | build隔離、hosted build、credential境界、provenance生成の保護。 | 3 | 16 |
 | [Container / Cloud / IaC Security](#domain-container-cloud-iac-security) | IaC Golden Path、container admission、runtime、cloud control planeの保護。 | 3 | 33 |
@@ -73,6 +73,7 @@ registry、cooldown、install script、lockfile、artifact integrityの保護。
 | [PSB-DEPS-001](dependency-security/release-cooldown/README.md) | 依存取得をmanaged proxyへ固定し、新しいdependency versionの採用を一定期間遅延して、registry迂回と公開直後のsupply-chain compromiseへの露出を減らす。 | `prevent`, `verify` | 8 | `prototype` / `E3` |
 | [PSB-DEPS-002](dependency-security/install-script-execution/README.md) | dependency install時のlifecycle scriptとsource buildを既定で拒否し、必要な実行だけを限定承認する。 | `prevent`, `verify` | 5 | `prototype` / `E3` |
 | [PSB-DEPS-003](dependency-security/lockfile-integrity/README.md) | Frozen dependency graphとmanifest、managed proxy origin、exact version、artifact integrityの一致を検証する。 | `prevent`, `verify` | 5 | `prototype` / `E3` |
+| [PSB-DEPS-004](dependency-security/dependency-change-review/README.md) | Bind the exact base-to-head dependency delta to fresh advisory license source provenance approval and time-bound exception evidence. | `prevent`, `detect`, `verify` | 9 | `adopted` / `E3` |
 
 <a id="domain-cicd-security"></a>
 

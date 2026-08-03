@@ -32,6 +32,12 @@
 - compromised maintainers;
 - typosquatting;
 - dependency confusion;
+- direct or transitive dependency graph changes hiding a new package, source,
+  edge, known vulnerability, incompatible license, or provenance gap;
+- partial, stale, malformed, or unavailable dependency advisory evidence being
+  interpreted as a risk-free change;
+- dependency authors self-approving changes or using broad permanent
+  exceptions that suppress unrelated future findings;
 - package-manager configuration drift or direct fallback bypassing a managed
   registry proxy and its blocking, tracking, and notification controls;
 - mutable workflow dependencies;
