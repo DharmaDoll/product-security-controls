@@ -253,6 +253,12 @@ Dependency-Track exact CVE/PURL portfolio adapter that requires complete
 pagination and links project UUID/version and SBOM serials back to build
 evidence.
 
+Add product-vulnerability response capabilities that compose the existing
+impact lookup with CISA KEV, CVSS v4.0, and FIRST PSIRT guidance. The first
+executable boundary is planned as `PSB-GOV-003`; the broader FIRST maturity and
+service inventory remains a separate organization-owned assessment profile so
+repository fixtures cannot claim that a live PSIRT is mature.
+
 ## Prioritized control backlog
 
 This section is the ordering source for new control packages. Phase sections
@@ -356,6 +362,10 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    remains dependent on `PSB-CONTAINER-003`.
 11. `PSB-GOV-002` — narrow, owned, justified, and time-bound security exceptions
    with expiry enforcement.
+12. `PSB-GOV-003` — exact product-vulnerability triage that combines validated
+    CVSS v4 vectors, fresh complete CISA KEV evidence, product/artifact/
+    deployment applicability, accountable PSIRT ownership, and policy-bound
+    remediation priority without treating source failure as low risk.
 
 ### P3 — Extended application and AI development security
 
@@ -421,8 +431,24 @@ Add the following only with a concrete implementation and automated evidence:
   Activation is `input-required` until an official authorized PDF, SHA-256,
   recommendation inventory, and reuse terms are reviewed; do not use
   third-party PDF mirrors;
-- CIS Software Supply Chain Security Benchmark controls that add unique,
-  automatable checks beyond the pinned GitHub security guidance;
+- CIS Software Supply Chain Security provider profiles. The official discovery
+  page listed CIS GitHub Benchmark `1.2.0` and CIS GitLab Benchmark `1.0.1` on
+  `2026-08-04`; both remain `input-required` until authorized official PDFs,
+  SHA-256 values, recommendation inventories, and reuse terms are reviewed.
+  The general 2022 Guide and provider Benchmarks must not be treated as
+  interchangeable, and only unique automatable checks beyond existing GitHub,
+  SSDF, SLSA, and OSPS coverage may be added;
+- NIST SP 800-204D final, February 2024, as cross-control integration guidance
+  for developer environment, SCM, build, repository, evidence, commit, and
+  CD/GitOps trust boundaries. Maintain a reconciliation view rather than a
+  duplicate framework registry; exact SSDF mappings continue to use the
+  existing `nist-ssdf` registry;
+- FIRST PSIRT Services Framework 1.1 and the PSIRT Maturity Document as sources
+  for an organization-owned capability profile after `PSB-GOV-003`; missing
+  live evidence remains `NOT_CHECKED` and no maturity level is inferred from
+  repository fixtures;
+- FIRST CVSS v4.0 specification revision 1.2 and the live CISA KEV catalog as
+  data semantics for `PSB-GOV-003`, not as compliance frameworks;
 - AWS security guidance as an AWS provider profile when AWS-specific IAM,
   CI/CD, artifact, or deployment controls exist;
 - Google Cloud software supply-chain guidance and Binary Authorization as a

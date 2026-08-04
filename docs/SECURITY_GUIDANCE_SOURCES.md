@@ -748,6 +748,105 @@ Disposition and limitations:
 - the pinned source is a review baseline only; future source changes require
   semantic diff review before the reconciliation is advanced.
 
+<a id="ref-cicd-012"></a>
+
+### REF-CICD-012 — NIST SP 800-204D software supply-chain integration guidance
+
+- Status: `reviewed`
+- Type: official software supply-chain security integration guidance for
+  DevSecOps CI/CD pipelines
+- Publisher: National Institute of Standards and Technology (NIST)
+- Publication identity: NIST SP 800-204D, final, February 2024
+- Official publication page:
+  [NIST SP 800-204D](https://csrc.nist.gov/pubs/sp/800/204/d/final)
+- DOI: [10.6028/NIST.SP.800-204D](https://doi.org/10.6028/NIST.SP.800-204D)
+- Final PDF:
+  [NIST.SP.800-204D.pdf](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-204D.pdf)
+- Repository review date: `2026-08-04`
+- Related controls and plans:
+  - `PSB-SOURCE-001` for the developer-environment trust boundary;
+  - `PSB-CICD-001..006` for SCM and pipeline dependency, expression,
+    permission, untrusted-input, and identity boundaries;
+  - `PSB-DEPS-001..004`, `PSB-BUILD-001..003`, and `PSB-REL-001..004` for
+    dependency, build, evidence, provenance, and SBOM outcomes;
+  - `PSB-IAC-001` and `PSB-CONTAINER-001` for deployment policy and admission.
+
+Adopted planning contribution:
+
+- use the publication as a cross-control integration review for developer
+  environment risk, SCM interaction, secure build, repository pull/push,
+  evidence-generation integrity, secure commits, and CD/GitOps boundaries;
+- reconcile each selected strategy to an existing executable check, an
+  explicitly planned control, or a documented gap instead of creating one
+  oversized CI/CD control;
+- retain the publication's Appendix A relationship to SSDF as supporting
+  rationale while continuing to map exact SSDF tasks only through the pinned
+  `nist-ssdf` registry;
+- verify that artifact, actor, step, repository, and evidence identities stay
+  linked across the pipeline rather than treating individually passing tools
+  as an integrated secure supply chain.
+
+Disposition and limitations:
+
+- SP 800-204D is guidance, not a new `control.yaml` identifier namespace in
+  this repository;
+- its scope is cloud-native DevSecOps CI/CD integration and does not replace
+  product-specific threat modeling, secure design, or enterprise vulnerability
+  management;
+- the publication explicitly leaves evolving SBOM and attestation artifact
+  specifications to their respective standards, so SLSA, CycloneDX, and SPDX
+  identities remain independently versioned;
+- a future reconciliation must cite section-level text and executable evidence
+  before claiming that a strategy is addressed.
+
+<a id="ref-cicd-013"></a>
+
+### REF-CICD-013 — CIS Software Supply Chain Security Guide and Benchmarks
+
+- Status: `input-required`
+- Type: official consensus guide plus provider-specific CIS Benchmark family
+- Publisher: Center for Internet Security (CIS); the 2022 guide was developed
+  with Aqua Security
+- Official guide:
+  [CIS Software Supply Chain Security Guide](https://www.cisecurity.org/insights/white-papers/cis-software-supply-chain-security-guide)
+- Guide publication date: `2022-08-31`
+- Official benchmark page:
+  [CIS Software Supply Chain Security](https://www.cisecurity.org/benchmark/Software-Supply-Chain-Security)
+- Versions displayed by the official page on `2026-08-04`:
+  - CIS GitHub Benchmark `1.2.0`;
+  - CIS GitLab Benchmark `1.0.1`.
+- Repository review date: `2026-08-04`
+- Required source input before mapping:
+  - authorized official PDFs for the selected provider and exact version;
+  - SHA-256 for each reviewed PDF;
+  - recommendation identifiers, profiles, applicability, and automated/manual
+    ownership;
+  - license and reuse terms for repository metadata and generated views.
+- Related controls and plans:
+  - `PSB-SOURCE-002..004`, `PSB-CICD-001..006`, `PSB-DEPS-001..004`,
+    `PSB-BUILD-001..003`, and `PSB-REL-001..004`;
+  - the planned NIST SP 800-204D cross-control reconciliation.
+
+Potential contribution:
+
+- compare provider-specific repository, branch, identity, workflow, runner,
+  dependency, build, and release recommendations with existing atomic checks;
+- add only unique, automatable outcomes or explicit organization-owned
+  evidence gaps;
+- generate separate GitHub and GitLab adoption profiles so a recommendation
+  for one platform is never applied to the other by name similarity.
+
+Disposition and limitations:
+
+- the 2022 general Guide and current provider Benchmarks are related but not
+  interchangeable sources;
+- no CIS requirement is mapped and no benchmark coverage is claimed while the
+  authorized versioned PDFs and recommendation inventories are absent;
+- the official discovery page is mutable and its displayed latest versions are
+  update signals, not immutable evidence;
+- third-party mirrors, paraphrased recommendation lists, and product names in
+  the general Guide must not be used as framework identifiers.
+
 <a id="ref-build-001"></a>
 
 ### REF-BUILD-001 — cicd-sensor
@@ -818,6 +917,160 @@ Planned adoption boundary:
   `NOT_CHECKED` or `ERROR`, never a passing aggregate score;
 - a score is prioritization input, not proof that a project, dependency, or
   release is secure.
+
+<a id="ref-gov-002"></a>
+
+### REF-GOV-002 — CISA Known Exploited Vulnerabilities Catalog
+
+- Status: `adopted-partially`
+- Type: official live vulnerability-exploitation prioritization data source
+- Publisher: Cybersecurity and Infrastructure Security Agency (CISA)
+- Official catalog:
+  [Known Exploited Vulnerabilities Catalog](https://www.cisa.gov/known-exploited-vulnerabilities-catalog)
+- Machine-readable feeds:
+  - [JSON](https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json);
+  - [CSV](https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.csv);
+  - [JSON Schema](https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities_schema.json).
+- Source type: continuously updated; no static catalog version
+- Repository review date: `2026-08-04`
+- Related controls and plans:
+  - `PSB-GOV-001` for exact product, component, artifact, and deployment impact
+    lookup;
+  - planned `PSB-GOV-003` for product vulnerability triage and response
+    priority;
+  - `PSB-DETECT-001` and `PSB-DEPS-004` as finding and dependency-change
+    sources, not KEV applicability authorities.
+
+Adopted planning contribution:
+
+- make an exact CVE match in a fresh, complete KEV snapshot a priority signal
+  for an affected product case;
+- retain catalog version metadata, collection time, item count, source digest,
+  schema identity, and successful complete retrieval as evidence;
+- separate `listed`, `not-listed`, and `catalog-unavailable` states;
+- bind any due-date decision to an organization-owned remediation policy rather
+  than silently adopting a federal-agency deadline as a universal SLA.
+
+Disposition and limitations:
+
+- absence from KEV does not mean a vulnerability is unexploited, low risk, or
+  inapplicable to the product;
+- catalog entries identify exploited CVEs but do not prove that a particular
+  artifact or deployment is affected; `PSB-GOV-001` supplies that join;
+- the live feed is external evidence, so stale, partial, malformed, schema-
+  changed, or unavailable retrieval must be `ERROR`, never an empty clean set;
+- KEV is a data source and prioritization input, not a compliance framework.
+
+<a id="ref-gov-003"></a>
+
+### REF-GOV-003 — FIRST PSIRT Maturity Document
+
+- Status: `adopted-partially`
+- Type: official PSIRT operational capability and maturity guidance
+- Publisher: Forum of Incident Response and Security Teams (FIRST)
+- Official source:
+  [PSIRT Maturity Document](https://www.first.org/standards/frameworks/psirts/psirt_maturity_document)
+- Version state: the official page does not declare an independent document
+  version; treat it as mutable guidance and record the assessment review date
+- Repository review date: `2026-08-04`
+- Related plans:
+  - planned `PSB-GOV-003` for the executable vulnerability triage subset;
+  - a later organization-owned PSIRT capability profile for maturity levels 1,
+    2, and 3.
+
+Adopted planning contribution:
+
+- preserve separate evidence for charter, sponsorship, stakeholders, intake,
+  qualification, analysis, remediation, disclosure, product inventory,
+  communication, training, and metrics;
+- start with the Basic capability outcomes and keep Intermediate and Advanced
+  outcomes cumulative and visible as gaps;
+- require organization evidence for operational claims instead of treating
+  repository fixtures as proof that a PSIRT exists or is mature.
+
+Disposition and limitations:
+
+- the maturity guidance is not a substitute for the more detailed PSIRT
+  Services Framework service/function inventory;
+- the source itself notes that capability maturity is not the same as capacity
+  or an organizational maturity model such as SIM3;
+- no maturity level is claimed until a dated organization assessment supplies
+  current evidence for every required outcome;
+- the mutable source must be snapshotted and integrity-recorded before a
+  machine-readable maturity profile is activated.
+
+<a id="ref-gov-004"></a>
+
+### REF-GOV-004 — FIRST PSIRT Services Framework 1.1
+
+- Status: `adopted-partially`
+- Type: official PSIRT service, function, and outcome framework
+- Publisher: Forum of Incident Response and Security Teams (FIRST)
+- Version: `1.1`
+- Official source:
+  [PSIRT Services Framework 1.1](https://www.first.org/standards/frameworks/psirts/psirt_services_framework_v1.1)
+- Repository review date: `2026-08-04`
+- Related plans:
+  - planned `PSB-GOV-003` for vulnerability intake, analysis, prioritization,
+    remediation ownership, and response evidence;
+  - a later PSIRT capability profile for service-area assessment.
+
+Adopted planning contribution:
+
+- use stable service, function, and sub-function identities when building the
+  future assessment inventory;
+- keep product inventory, stakeholder communication, vulnerability discovery,
+  triage, remediation, disclosure, and post-incident improvement evidence
+  distinguishable;
+- reconcile service outcomes with existing release, SBOM impact, exception,
+  and incident-readiness controls before adding new control boundaries.
+
+Disposition and limitations:
+
+- service availability is organization-owned evidence and commonly requires
+  `NOT_CHECKED` rather than a repository-generated pass;
+- a service-framework relationship is not automatically a control mapping or
+  proof of service quality, timeliness, capacity, or maturity;
+- the future profile must record which functions are in scope, not applicable,
+  externally provided, or unsupported instead of copying all source text.
+
+<a id="ref-gov-005"></a>
+
+### REF-GOV-005 — FIRST CVSS v4.0 Specification
+
+- Status: `adopted-partially`
+- Type: official vulnerability technical-severity scoring specification and
+  machine-readable vector format
+- Publisher: Forum of Incident Response and Security Teams (FIRST)
+- Standard version: CVSS `4.0`
+- Specification document revision: `1.2`, dated `2024-06-18`
+- Official sources:
+  - [CVSS v4.0 Specification Document](https://www.first.org/cvss/v4.0/specification-document);
+  - [CVSS v4.0 data representations](https://www.first.org/cvss/data-representations);
+  - [CVSS v4.0 implementation guide](https://www.first.org/cvss/v4.0/implementation-guide).
+- Repository review date: `2026-08-04`
+- Related plan: `PSB-GOV-003`
+
+Adopted planning contribution:
+
+- validate canonical CVSS 4.0 vector syntax, required Base metrics, ordering,
+  duplicate metrics, and stored score/vector consistency;
+- preserve Base, Threat, Environmental, and Supplemental metric provenance
+  instead of reducing the case to one untraceable numeric value;
+- combine technical severity with product applicability, KEV status, asset
+  exposure, compensating controls, and organization policy for response
+  priority.
+
+Disposition and limitations:
+
+- CVSS measures technical severity and is not by itself a risk score,
+  remediation SLA, exploit prediction, or proof of product applicability;
+- mutable Threat and Environmental observations require actor, collection
+  time, and reassessment evidence;
+- implementation must use a reviewed, pinned calculator or independently
+  tested algorithm and malformed-vector fixtures; documentation alone cannot
+  produce E3 evidence;
+- CVSS is not used as a `control.yaml` compliance relationship.
 
 <a id="ref-source-001"></a>
 

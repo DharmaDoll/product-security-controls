@@ -132,6 +132,27 @@ mapping or a claim of complete coverage.
 - reusable CI templates claiming planned scanning, SBOM, signing, provenance
   distribution, or OIDC controls as already implemented.
 
+### Product vulnerability response and PSIRT threats
+
+- a stale, partial, malformed, schema-changed, or unavailable CISA KEV feed
+  being interpreted as proof that no known exploitation exists;
+- absence from KEV or a low CVSS Base score being treated as proof of low risk
+  without product applicability, active deployment, exposure, threat, or
+  environmental evidence;
+- an invalid, duplicate-metric, non-canonical, or untraceable CVSS v4 vector
+  driving remediation priority or customer communication;
+- a scanner CVE finding being assigned to the wrong product, release,
+  artifact, or deployment because component and lifecycle identity are not
+  joined to `PSB-GOV-001` evidence;
+- vulnerability intake, qualification, analysis, owner assignment,
+  remediation, disclosure, or post-incident learning lacking an accountable
+  PSIRT service and time-bounded case state;
+- repository fixtures or a checklist answer being presented as proof of PSIRT
+  maturity, capacity, response timeliness, or stakeholder communication;
+- separate CI/CD security checks passing while actor, step, artifact,
+  repository, evidence, and deployment identities are not linked across the
+  complete software supply chain.
+
 ### Container and runtime threats
 
 - vulnerable, malicious, stale, mutable, or untrusted images reaching a

@@ -50,6 +50,9 @@ PSB-CONTAINER-003 ──> PSB-CONTAINER-004 live sensor adoption
 
 PSB-GOV-002 ──> shared exception enforcement across later controls
 
+PSB-GOV-001 + PSB-DETECT-001 + PSB-GOV-002 ──> PSB-GOV-003
+PSB-GOV-003 ──> organization-owned FIRST PSIRT capability profile
+
 PSB-AI-001 ──> PSB-AI-002 ──┐
                              ├──> PSB-AI-003
 PSB-AI-004 ──────────────────┘
@@ -1054,6 +1057,85 @@ remediation ticket. Generate active, expiring, expired, and invalid views.
 - each control can reference the same exception interface without embedding a
   duplicate exception model.
 
+### PSB-GOV-003 — Exploited-vulnerability prioritization and PSIRT case readiness
+
+Status: `dependency-required` on `PSB-GOV-002`; `PSB-GOV-001` and
+`PSB-DETECT-001` are implemented
+
+Domain: `governance-operations`
+
+#### Goal
+
+Turn a vulnerability observation into an accountable product-response case by
+binding exact CVE identity, affected product and release, artifact and active
+deployment evidence, a validated CVSS v4 vector, fresh complete CISA KEV
+status, remediation policy, owner, due decision, and disclosure state.
+
+#### Boundary and non-goals
+
+- `PSB-DETECT-001` owns scanner execution and finding/error semantics.
+- `PSB-GOV-001` owns component-to-product-to-artifact-to-deployment impact
+  lookup and evidence preservation.
+- `PSB-GOV-002` owns risk acceptance and expiring exception evidence.
+- This control owns triage inputs, priority decision, accountable case state,
+  and response routing; it does not implement a ticketing or notification
+  product.
+- FIRST PSIRT maturity and the full Services Framework remain a separate
+  organization assessment; one passing case fixture does not prove PSIRT
+  maturity, capacity, or SLA performance.
+
+#### First runnable slice
+
+1. Normalize a synthetic product-vulnerability case with exact CVE, product,
+   version, artifact digest, deployment identity, discovery source, owner, and
+   policy identity.
+2. Validate canonical CVSS 4.0 vectors, required Base metrics, ordering,
+   duplicates, and score/vector consistency using a pinned implementation or
+   independently tested algorithm.
+3. Consume an offline CISA KEV snapshot fixture with schema identity,
+   collection time, catalog metadata, item count, source digest, and complete
+   retrieval evidence.
+4. Distinguish `listed`, `not-listed`, `not-applicable`, `finding`, and
+   evaluation `ERROR`; absence from KEV never produces an automatic low-risk
+   decision.
+5. Apply an organization-owned priority policy that considers validated
+   technical severity, KEV status, product applicability, active deployment,
+   exposure, compensating controls, and remediation support state.
+6. Require a PSIRT or delegated product-security owner, triage timestamp,
+   remediation decision, communication route, and separately governed
+   exception when risk is accepted.
+7. Emit sanitized evidence without vulnerability exploit content, customer
+   data, internal endpoints, or report-submitter identity.
+
+#### Acceptance criteria
+
+- `make verify-control CONTROL=PSB-GOV-003` exercises secure, vulnerable,
+  not-listed, stale, partial, malformed, invalid-vector, identity-mismatch,
+  unowned, and unavailable-policy fixtures offline;
+- a KEV-listed and applicable active product case cannot be lowered solely by
+  a CVSS Base score or hand-entered priority;
+- a not-listed CVE remains assessed from the other evidence and cannot be
+  called unexploited;
+- invalid or inconsistent CVSS evidence and stale, partial, schema-changed, or
+  unavailable KEV evidence return `ERROR` rather than a low priority;
+- product applicability cites exact `PSB-GOV-001` evidence and cannot be
+  inferred from package name alone;
+- CISA due dates are retained as source data but become organization deadlines
+  only through an explicit reviewed policy;
+- exception handling composes `PSB-GOV-002` rather than adding another ignore
+  format;
+- row-level mappings remain provisional until the executable slice and source
+  relationships are reviewed.
+
+#### Planning sources
+
+- [`REF-GOV-002`](SECURITY_GUIDANCE_SOURCES.md#ref-gov-002) — CISA KEV;
+- [`REF-GOV-003`](SECURITY_GUIDANCE_SOURCES.md#ref-gov-003) — FIRST PSIRT
+  Maturity Document;
+- [`REF-GOV-004`](SECURITY_GUIDANCE_SOURCES.md#ref-gov-004) — FIRST PSIRT
+  Services Framework 1.1;
+- [`REF-GOV-005`](SECURITY_GUIDANCE_SOURCES.md#ref-gov-005) — CVSS v4.0.
+
 ## P3: extended application and AI development security
 
 ### Application controls with IDs assigned after reconciliation
@@ -1586,6 +1668,49 @@ Every planned control must:
 The phase roadmap also names outcomes that do not yet have a prioritized
 control ID. They remain visible here so they are not accidentally absorbed into
 an unrelated oversized control.
+
+### Software supply-chain integration reconciliation
+
+Goal: verify that security identities and decisions remain connected across
+developer environment, SCM, dependency intake, build, evidence generation,
+repository operations, release, and CD/GitOps rather than counting isolated
+passing tools.
+
+Disposition: use NIST SP 800-204D final, February 2024
+([`REF-CICD-012`](SECURITY_GUIDANCE_SOURCES.md#ref-cicd-012)) as section-level
+integration guidance. Generate a reconciliation with `implemented`, `planned`,
+`gap`, and `out-of-scope` dispositions. Do not create a second SSDF registry or
+copy Appendix A mappings; exact SSDF relationships remain in the pinned
+`nist-ssdf` registry and require row-level implementation evidence.
+
+### CIS software supply-chain provider profiles
+
+Goal: reconcile authorized CIS GitHub and GitLab Benchmark recommendations
+with existing controls and expose only provider-applicable, non-duplicate
+adoption checks.
+
+Disposition: source registration is complete as
+[`REF-CICD-013`](SECURITY_GUIDANCE_SOURCES.md#ref-cicd-013), but activation is
+`input-required`. Obtain the official CIS GitHub Benchmark `1.2.0` and CIS
+GitLab Benchmark `1.0.1` PDFs observed on `2026-08-04`, record SHA-256 and reuse
+terms, inventory every recommendation, and reconcile it with GitHub guidance,
+SSDF, SLSA, OSPS, and existing control checks. Keep the 2022 general Guide
+separate from provider Benchmark identifiers.
+
+### FIRST PSIRT capability profile
+
+Goal: assess charter, sponsorship, stakeholders, product inventory,
+vulnerability intake, qualification, analysis, remediation, disclosure,
+post-incident improvement, training, and metrics without converting missing
+organization evidence into a pass.
+
+Disposition: build the profile after `PSB-GOV-003` establishes the case and
+priority evidence contract. Use PSIRT Services Framework 1.1 as the detailed
+service/function inventory and the mutable PSIRT Maturity Document as the
+cumulative Basic, Intermediate, and Advanced view. Snapshot the maturity
+source with integrity metadata first. Results must distinguish `PASS`, `FAIL`,
+`NOT_CHECKED`, `ERROR`, and reviewed `N/A`; a repository fixture is never a
+live PSIRT maturity claim.
 
 ### CI runner hardening
 
