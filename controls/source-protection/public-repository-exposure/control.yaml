@@ -1,7 +1,7 @@
 id: PSB-SOURCE-003
 title: 公開リポジトリ露出とGitHub dorking検証
 domain: source-protection
-summary: 対象限定のGitHub検索、全Git履歴scan、公開面の証跡を組み合わせて情報露出を検出・是正する。
+summary: 対象を限定したGitHub検索、到達可能な全Git履歴のスキャン、公開範囲の証跡を組み合わせ、情報露出を検出して是正する。
 check_context_version: "1.0"
 security_functions:
   - detect

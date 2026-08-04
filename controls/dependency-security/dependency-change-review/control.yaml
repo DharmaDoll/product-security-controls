@@ -1,7 +1,7 @@
 id: PSB-DEPS-004
 title: Review dependency graph changes before merge
 domain: dependency-security
-summary: Bind the exact base-to-head dependency delta to fresh advisory license source provenance approval and time-bound exception evidence.
+summary: baseからheadまでの正確な依存関係差分を、最新の脆弱性アドバイザリ、ライセンス、取得元、来歴情報、承認、期限付き例外の証跡へ結び付ける。
 check_context_version: "1.0"
 security_functions:
   - prevent

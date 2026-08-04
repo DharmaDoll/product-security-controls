@@ -1,7 +1,7 @@
 id: PSB-BUILD-002
 title: 一貫したrelease buildを承認済みhosted platformで実行する
 domain: build-security
-summary: Producerが目標SLSA levelに適したhosted build platformを選定し、release artifactをversioned definitionと承認済みparameterで一貫してbuildしたことを検証する。
+summary: 供給者が目標とするSLSAレベルに適したホステッドビルド基盤を選び、バージョン管理された定義と承認済みパラメーターからリリース成果物を一貫して生成したことを検証する。
 check_context_version: "1.0"
 security_functions:
   - prevent

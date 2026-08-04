@@ -1,7 +1,7 @@
 id: PSB-REL-003
 title: SBOM lifecycle observationsをrelease artifactへ結び付けて一元管理する
 domain: release-integrity
-summary: Source build deploymentのCycloneDX observationsを別identityとauthorityで関連付け、exact release artifactのSBOM公開とDependency-Track処理完了をfail-closedで検証する。
+summary: ソース、ビルド、デプロイのCycloneDX観測結果を別々のIDと権限で関連付け、正確なリリース成果物のSBOM公開とDependency-Track処理完了をフェイルクローズで検証する。
 check_context_version: "1.0"
 security_functions:
   - detect

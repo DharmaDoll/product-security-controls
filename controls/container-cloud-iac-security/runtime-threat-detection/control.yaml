@@ -1,7 +1,7 @@
 id: PSB-CONTAINER-004
 title: Detect workload-bound container runtime threats without treating telemetry failure as clean
 domain: container-cloud-iac-security
-summary: Normalize Falco or Sysdig runtime events, bind them to admitted workload identity, verify telemetry health, and hand detections to an authorization-bound response.
+summary: FalcoまたはSysdigのランタイムイベントを正規化して許可済みワークロードIDへ結び付け、テレメトリーの健全性を検証し、検出結果を権限管理された対応処理へ引き渡す。
 check_context_version: "1.0"
 security_functions:
   - detect

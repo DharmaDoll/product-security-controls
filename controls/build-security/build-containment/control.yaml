@@ -1,7 +1,7 @@
 id: PSB-BUILD-001
 title: dependency buildを権限・credential・networkから隔離する
 domain: build-security
-summary: Untrusted buildをdeploy権限から分離し、ephemeral sandbox、least privilege、default-deny egress、telemetryを検証する。
+summary: 未信頼のビルドをデプロイ権限から分離し、一時的なサンドボックス、最小権限、外向き通信のデフォルト拒否、監視状態を検証する。
 check_context_version: "1.0"
 security_functions:
   - prevent

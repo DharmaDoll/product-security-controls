@@ -1,7 +1,7 @@
 id: PSB-SOURCE-001
 title: Harden developer endpoints and local trust boundaries
 domain: source-protection
-summary: Protect developer source code, credentials, and local development tools with enforceable endpoint policy requirements.
+summary: 強制可能なエンドポイントポリシーにより、開発者のソースコード、認証情報、ローカル開発ツールを保護する。
 check_context_version: "1.0"
 security_functions:
   - prevent

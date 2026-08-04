@@ -1,7 +1,7 @@
 id: PSB-REL-001
 title: release署名とProvenanceを期待値に照合する
 domain: release-integrity
-summary: Artifact署名とSLSA provenanceをconsumer-owned signer、builder、source、build expectationへ照合する。
+summary: 成果物署名とSLSA来歴情報を、利用者が管理する署名者、ビルダー、ソース、ビルドの期待値へ照合する。
 check_context_version: "1.0"
 security_functions:
   - prevent

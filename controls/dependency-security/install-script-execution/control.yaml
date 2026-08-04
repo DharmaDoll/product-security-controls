@@ -1,7 +1,7 @@
 id: PSB-DEPS-002
 title: install時の任意コード実行をdefault denyにする
 domain: dependency-security
-summary: dependency install時のlifecycle scriptとsource buildを既定で拒否し、必要な実行だけを限定承認する。
+summary: 依存パッケージ導入時のライフサイクルスクリプトとソースビルドを既定で拒否し、必要な実行だけを範囲を限定して承認する。
 check_context_version: "1.0"
 security_functions:
   - prevent

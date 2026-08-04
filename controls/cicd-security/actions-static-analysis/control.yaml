@@ -1,7 +1,7 @@
 id: PSB-CICD-003
 title: Statically analyze GitHub Actions workflows with a pinned scanner
 domain: cicd-security
-summary: Detect actionable workflow weaknesses with pinned zizmor checks while separating untrusted pull-request gating from privileged SARIF upload.
+summary: バージョンを固定したzizmorで対処可能なワークフローの弱点を検出し、未信頼PRの判定処理と権限を伴うSARIF送信を分離する。
 check_context_version: "1.0"
 security_functions:
   - detect

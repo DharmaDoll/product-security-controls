@@ -55,12 +55,12 @@
 
 開発端末、Git、repository、source access credential、公開露出の保護。
 
-| Control | Outcome | Security functions | Checks | Maturity / Evidence |
+| Control | 達成する状態 | Security functions | Checks | Maturity / Evidence |
 |---|---|---|---:|---|
-| [PSB-SOURCE-001](source-protection/developer-endpoint-hardening/README.md) | Protect developer source code, credentials, and local development tools with enforceable endpoint policy requirements. | `prevent`, `detect`, `verify` | 29 | `prototype` / `E3` |
-| [PSB-SOURCE-002](source-protection/git-hooks-baseline/README.md) | commit前とpushで導入される全履歴から情報漏洩の可能性を検出する。 | `prevent`, `detect`, `verify` | 14 | `prototype` / `E3` |
-| [PSB-SOURCE-003](source-protection/public-repository-exposure/README.md) | 対象限定のGitHub検索、全Git履歴scan、公開面の証跡を組み合わせて情報露出を検出・是正する。 | `detect`, `verify`, `respond`, `govern` | 13 | `reference` / `E3` |
-| [PSB-SOURCE-004](source-protection/source-access-credential-lifecycle/README.md) | Limit the privilege persistence exposure and misuse of OAuth tokens PATs SSH keys and source-platform automation credentials. | `prevent`, `detect`, `verify`, `respond`, `govern` | 12 | `prototype` / `E3` |
+| [PSB-SOURCE-001](source-protection/developer-endpoint-hardening/README.md) | 強制可能なエンドポイントポリシーにより、開発者のソースコード、認証情報、ローカル開発ツールを保護する。 | `prevent`, `detect`, `verify` | 29 | `prototype` / `E3` |
+| [PSB-SOURCE-002](source-protection/git-hooks-baseline/README.md) | コミット前とプッシュ前に、追加される内容と到達可能なGit履歴を検査し、情報漏洩につながる変更を検出する。 | `prevent`, `detect`, `verify` | 14 | `prototype` / `E3` |
+| [PSB-SOURCE-003](source-protection/public-repository-exposure/README.md) | 対象を限定したGitHub検索、到達可能な全Git履歴のスキャン、公開範囲の証跡を組み合わせ、情報露出を検出して是正する。 | `detect`, `verify`, `respond`, `govern` | 13 | `reference` / `E3` |
+| [PSB-SOURCE-004](source-protection/source-access-credential-lifecycle/README.md) | OAuthトークン、PAT、SSH鍵、ソース管理基盤の自動化用認証情報について、権限、存続期間、露出、悪用可能性を制限する。 | `prevent`, `detect`, `verify`, `respond`, `govern` | 12 | `prototype` / `E3` |
 
 <a id="domain-dependency-security"></a>
 
@@ -68,12 +68,12 @@
 
 registry、cooldown、install script、lockfile、artifact integrityの保護。
 
-| Control | Outcome | Security functions | Checks | Maturity / Evidence |
+| Control | 達成する状態 | Security functions | Checks | Maturity / Evidence |
 |---|---|---|---:|---|
-| [PSB-DEPS-001](dependency-security/release-cooldown/README.md) | 依存取得をmanaged proxyへ固定し、新しいdependency versionの採用を一定期間遅延して、registry迂回と公開直後のsupply-chain compromiseへの露出を減らす。 | `prevent`, `verify` | 8 | `prototype` / `E3` |
-| [PSB-DEPS-002](dependency-security/install-script-execution/README.md) | dependency install時のlifecycle scriptとsource buildを既定で拒否し、必要な実行だけを限定承認する。 | `prevent`, `verify` | 5 | `prototype` / `E3` |
-| [PSB-DEPS-003](dependency-security/lockfile-integrity/README.md) | Frozen dependency graphとmanifest、managed proxy origin、exact version、artifact integrityの一致を検証する。 | `prevent`, `verify` | 5 | `prototype` / `E3` |
-| [PSB-DEPS-004](dependency-security/dependency-change-review/README.md) | Bind the exact base-to-head dependency delta to fresh advisory license source provenance approval and time-bound exception evidence. | `prevent`, `detect`, `verify` | 9 | `adopted` / `E3` |
+| [PSB-DEPS-001](dependency-security/release-cooldown/README.md) | 依存パッケージの取得を管理対象プロキシへ固定し、新バージョンの採用を一定期間遅らせて、レジストリ迂回と公開直後のサプライチェーン攻撃への露出を減らす。 | `prevent`, `verify` | 8 | `prototype` / `E3` |
+| [PSB-DEPS-002](dependency-security/install-script-execution/README.md) | 依存パッケージ導入時のライフサイクルスクリプトとソースビルドを既定で拒否し、必要な実行だけを範囲を限定して承認する。 | `prevent`, `verify` | 5 | `prototype` / `E3` |
+| [PSB-DEPS-003](dependency-security/lockfile-integrity/README.md) | 固定された依存関係グラフとマニフェスト、管理対象プロキシの取得元、正確なバージョン、成果物の完全性が一致することを検証する。 | `prevent`, `verify` | 5 | `prototype` / `E3` |
+| [PSB-DEPS-004](dependency-security/dependency-change-review/README.md) | baseからheadまでの正確な依存関係差分を、最新の脆弱性アドバイザリ、ライセンス、取得元、来歴情報、承認、期限付き例外の証跡へ結び付ける。 | `prevent`, `detect`, `verify` | 9 | `adopted` / `E3` |
 
 <a id="domain-cicd-security"></a>
 
@@ -81,14 +81,14 @@ registry、cooldown、install script、lockfile、artifact integrityの保護。
 
 workflow dependency、command injection、権限、未信頼PR境界の保護。
 
-| Control | Outcome | Security functions | Checks | Maturity / Evidence |
+| Control | 達成する状態 | Security functions | Checks | Maturity / Evidence |
 |---|---|---|---:|---|
-| [PSB-CICD-001](cicd-security/action-sha-pinning/README.md) | Prevent reviewed workflow dependencies from silently changing through mutable Git references. | `prevent`, `verify` | 6 | `prototype` / `E3` |
-| [PSB-CICD-002](cicd-security/actions-command-injection/README.md) | Keep attacker-influenced GitHub Actions expressions out of generated runner shell scripts. | `prevent`, `verify` | 4 | `prototype` / `E3` |
-| [PSB-CICD-003](cicd-security/actions-static-analysis/README.md) | Detect actionable workflow weaknesses with pinned zizmor checks while separating untrusted pull-request gating from privileged SARIF upload. | `detect`, `verify` | 5 | `adopted` / `E3` |
-| [PSB-CICD-004](cicd-security/actions-least-privilege/README.md) | Deny implicit GITHUB_TOKEN privileges and bind each job to an exact reviewed permission set, trusted ref condition, and protected environment where required. | `prevent`, `verify` | 6 | `prototype` / `E3` |
-| [PSB-CICD-005](cicd-security/untrusted-pr-boundary/README.md) | Keep attacker-controlled pull-request code on credential-free hosted jobs and require privileged work to start as a separate trusted run. | `prevent`, `verify` | 6 | `prototype` / `E3` |
-| [PSB-CICD-006](cicd-security/audience-bound-oidc-federation/README.md) | Verify signed GitHub Actions workload identity against exact immutable claims and issue only short-lived resource-bound cloud credentials without stored cloud keys. | `prevent`, `verify` | 8 | `prototype` / `E3` |
+| [PSB-CICD-001](cicd-security/action-sha-pinning/README.md) | レビュー済みのワークフロー依存関係が、可変のGit参照によって気付かないうちに変更されることを防ぐ。 | `prevent`, `verify` | 6 | `prototype` / `E3` |
+| [PSB-CICD-002](cicd-security/actions-command-injection/README.md) | 攻撃者の影響を受けるGitHub Actionsの式が、runnerの生成するシェルスクリプトへ直接埋め込まれることを防ぐ。 | `prevent`, `verify` | 4 | `prototype` / `E3` |
+| [PSB-CICD-003](cicd-security/actions-static-analysis/README.md) | バージョンを固定したzizmorで対処可能なワークフローの弱点を検出し、未信頼PRの判定処理と権限を伴うSARIF送信を分離する。 | `detect`, `verify` | 5 | `adopted` / `E3` |
+| [PSB-CICD-004](cicd-security/actions-least-privilege/README.md) | 暗黙のGITHUB_TOKEN権限を拒否し、各ジョブをレビュー済みの権限セット、信頼するGit参照の条件、必要な保護環境へ厳密に結び付ける。 | `prevent`, `verify` | 6 | `prototype` / `E3` |
+| [PSB-CICD-005](cicd-security/untrusted-pr-boundary/README.md) | 攻撃者が制御できるPRコードを認証情報のないホステッドジョブへ隔離し、権限を伴う処理は別の信頼済み実行として開始させる。 | `prevent`, `verify` | 6 | `prototype` / `E3` |
+| [PSB-CICD-006](cicd-security/audience-bound-oidc-federation/README.md) | 署名済みGitHub ActionsワークロードIDを不変かつ厳密なOIDCクレームと照合し、保存済みクラウド鍵を使わず、対象リソースに限定した短期認証情報だけを発行する。 | `prevent`, `verify` | 8 | `prototype` / `E3` |
 
 <a id="domain-build-security"></a>
 
@@ -96,11 +96,11 @@ workflow dependency、command injection、権限、未信頼PR境界の保護。
 
 build隔離、hosted build、credential境界、provenance生成の保護。
 
-| Control | Outcome | Security functions | Checks | Maturity / Evidence |
+| Control | 達成する状態 | Security functions | Checks | Maturity / Evidence |
 |---|---|---|---:|---|
-| [PSB-BUILD-001](build-security/build-containment/README.md) | Untrusted buildをdeploy権限から分離し、ephemeral sandbox、least privilege、default-deny egress、telemetryを検証する。 | `prevent`, `detect`, `verify` | 6 | `prototype` / `E3` |
-| [PSB-BUILD-002](build-security/hosted-consistent-build/README.md) | Producerが目標SLSA levelに適したhosted build platformを選定し、release artifactをversioned definitionと承認済みparameterで一貫してbuildしたことを検証する。 | `prevent`, `verify` | 5 | `prototype` / `E3` |
-| [PSB-BUILD-003](build-security/platform-provenance-generation/README.md) | Hosted build platformがartifact digest、build process、top-level inputを含むprovenanceをcontrol planeで自動生成し、platform-owned identityで認証したことを検証する。 | `prevent`, `verify` | 5 | `prototype` / `E3` |
+| [PSB-BUILD-001](build-security/build-containment/README.md) | 未信頼のビルドをデプロイ権限から分離し、一時的なサンドボックス、最小権限、外向き通信のデフォルト拒否、監視状態を検証する。 | `prevent`, `detect`, `verify` | 6 | `prototype` / `E3` |
+| [PSB-BUILD-002](build-security/hosted-consistent-build/README.md) | 供給者が目標とするSLSAレベルに適したホステッドビルド基盤を選び、バージョン管理された定義と承認済みパラメーターからリリース成果物を一貫して生成したことを検証する。 | `prevent`, `verify` | 5 | `prototype` / `E3` |
+| [PSB-BUILD-003](build-security/platform-provenance-generation/README.md) | ホステッドビルド基盤が、成果物ダイジェスト、ビルド手順、主要入力を含む来歴情報を制御プレーンで自動生成し、基盤所有のIDで認証したことを検証する。 | `prevent`, `verify` | 5 | `prototype` / `E3` |
 
 <a id="domain-container-cloud-iac-security"></a>
 
@@ -108,11 +108,11 @@ build隔離、hosted build、credential境界、provenance生成の保護。
 
 IaC Golden Path、container admission、runtime、cloud control planeの保護。
 
-| Control | Outcome | Security functions | Checks | Maturity / Evidence |
+| Control | 達成する状態 | Security functions | Checks | Maturity / Evidence |
 |---|---|---|---:|---|
-| [PSB-CONTAINER-001](container-cloud-iac-security/container-admission-baseline/README.md) | Bind an exact OCI image and authenticated provenance to a non-root isolated resource-bounded Kubernetes workload before admission. | `prevent`, `verify` | 9 | `adopted` / `E3` |
-| [PSB-CONTAINER-004](container-cloud-iac-security/runtime-threat-detection/README.md) | Normalize Falco or Sysdig runtime events, bind them to admitted workload identity, verify telemetry health, and hand detections to an authorization-bound response. | `detect`, `verify`, `respond` | 12 | `adopted` / `E3` |
-| [PSB-IAC-001](container-cloud-iac-security/secure-iac-golden-path/README.md) | Combine versioned secure-by-default infrastructure modules resolved-plan policy gates provider enforcement and drift control. | `prevent`, `detect`, `verify`, `govern` | 12 | `prototype` / `E3` |
+| [PSB-CONTAINER-001](container-cloud-iac-security/container-admission-baseline/README.md) | 正確なOCIイメージと認証済みの来歴情報を、非root・隔離済み・リソース制限済みのKubernetesワークロードへ結び付けてから受け入れる。 | `prevent`, `verify` | 9 | `adopted` / `E3` |
+| [PSB-CONTAINER-004](container-cloud-iac-security/runtime-threat-detection/README.md) | FalcoまたはSysdigのランタイムイベントを正規化して許可済みワークロードIDへ結び付け、テレメトリーの健全性を検証し、検出結果を権限管理された対応処理へ引き渡す。 | `detect`, `verify`, `respond` | 12 | `adopted` / `E3` |
+| [PSB-IAC-001](container-cloud-iac-security/secure-iac-golden-path/README.md) | バージョン管理されたセキュアな既定値のインフラモジュール、解決済み実行計画のポリシーゲート、クラウド側の強制、ドリフト管理を組み合わせる。 | `prevent`, `detect`, `verify`, `govern` | 12 | `prototype` / `E3` |
 
 <a id="domain-release-integrity"></a>
 
@@ -120,12 +120,12 @@ IaC Golden Path、container admission、runtime、cloud control planeの保護�
 
 署名、provenance、SBOM、supplier artifact、配布時の完全性。
 
-| Control | Outcome | Security functions | Checks | Maturity / Evidence |
+| Control | 達成する状態 | Security functions | Checks | Maturity / Evidence |
 |---|---|---|---:|---|
-| [PSB-REL-001](release-integrity/signature-provenance-verification/README.md) | Artifact署名とSLSA provenanceをconsumer-owned signer、builder、source、build expectationへ照合する。 | `prevent`, `verify` | 5 | `prototype` / `E3` |
-| [PSB-REL-002](release-integrity/provenance-publication-distribution/README.md) | Producerが各release artifactへdigest-bound provenanceをimmutableかつconsumer-accessibleな場所で同時公開し、保持とno-downgradeを検証する。 | `prevent`, `verify`, `govern` | 5 | `prototype` / `E3` |
-| [PSB-REL-003](release-integrity/sbom-binding-publication/README.md) | Source build deploymentのCycloneDX observationsを別identityとauthorityで関連付け、exact release artifactのSBOM公開とDependency-Track処理完了をfail-closedで検証する。 | `detect`, `verify`, `govern` | 9 | `prototype` / `E3` |
-| [PSB-REL-004](release-integrity/supplier-sbom-trust/README.md) | 署名済みsupplier SBOMをexact product artifact signer lifecycleとconsumer policyへ照合し、不一致を通常portfolioの外へ隔離する。 | `prevent`, `verify`, `govern` | 8 | `prototype` / `E3` |
+| [PSB-REL-001](release-integrity/signature-provenance-verification/README.md) | 成果物署名とSLSA来歴情報を、利用者が管理する署名者、ビルダー、ソース、ビルドの期待値へ照合する。 | `prevent`, `verify` | 5 | `prototype` / `E3` |
+| [PSB-REL-002](release-integrity/provenance-publication-distribution/README.md) | 供給者が各リリース成果物へダイジェストで結び付けた来歴情報を、不変かつ利用者が参照できる場所へ同時公開し、保持とダウングレード防止を検証する。 | `prevent`, `verify`, `govern` | 5 | `prototype` / `E3` |
+| [PSB-REL-003](release-integrity/sbom-binding-publication/README.md) | ソース、ビルド、デプロイのCycloneDX観測結果を別々のIDと権限で関連付け、正確なリリース成果物のSBOM公開とDependency-Track処理完了をフェイルクローズで検証する。 | `detect`, `verify`, `govern` | 9 | `prototype` / `E3` |
+| [PSB-REL-004](release-integrity/supplier-sbom-trust/README.md) | 署名済みの供給者SBOMを正確な製品、成果物、署名者のライフサイクル、利用者ポリシーへ照合し、不一致を通常の管理対象から隔離する。 | `prevent`, `verify`, `govern` | 8 | `prototype` / `E3` |
 
 <a id="domain-ai-development-security"></a>
 
@@ -133,9 +133,9 @@ IaC Golden Path、container admission、runtime、cloud control planeの保護�
 
 AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。
 
-| Control | Outcome | Security functions | Checks | Maturity / Evidence |
+| Control | 達成する状態 | Security functions | Checks | Maturity / Evidence |
 |---|---|---|---:|---|
-| [PSB-AI-004](ai-development-security/ai-coding-agent-runtime-hardening/README.md) | Enforce and verify least-privilege filesystem network extension high-impact action and bypass boundaries for AI coding agents through one outcome policy and product adapters. | `prevent`, `detect`, `verify`, `govern` | 26 | `prototype` / `E3` |
+| [PSB-AI-004](ai-development-security/ai-coding-agent-runtime-hardening/README.md) | 共通ポリシーと製品別アダプターにより、AIコーディングエージェントのファイルシステム、ネットワーク、拡張機能、高影響操作、バイパス経路を最小権限に制限して検証する。 | `prevent`, `detect`, `verify`, `govern` | 26 | `prototype` / `E3` |
 
 <a id="domain-detection-verification"></a>
 
@@ -143,9 +143,9 @@ AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。
 
 脆弱性、secret、container、IaCなどを検出・検証する共通基盤。
 
-| Control | Outcome | Security functions | Checks | Maturity / Evidence |
+| Control | 達成する状態 | Security functions | Checks | Maturity / Evidence |
 |---|---|---|---:|---|
-| [PSB-DETECT-001](detection-verification/integrity-verified-scanner/README.md) | Pin scanner release and data identity, detect vulnerability configuration secret and SBOM findings, and constrain optional DockSec remediation to an AI-independent fail-closed gate. | `detect`, `verify` | 8 | `adopted` / `E3` |
+| [PSB-DETECT-001](detection-verification/integrity-verified-scanner/README.md) | スキャナーのリリースとデータIDを固定して脆弱性、設定不備、シークレット、SBOMの問題を検出し、任意のDockSec修正支援をAI判定に依存しないフェイルクローズ方式のゲートへ制限する。 | `detect`, `verify` | 8 | `adopted` / `E3` |
 
 <a id="domain-governance-operations"></a>
 
@@ -153,9 +153,9 @@ AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。
 
 例外、ownership、証跡、影響調査、継続運用とincident readiness。
 
-| Control | Outcome | Security functions | Checks | Maturity / Evidence |
+| Control | 達成する状態 | Security functions | Checks | Maturity / Evidence |
 |---|---|---|---:|---|
-| [PSB-GOV-001](governance-operations/supply-chain-incident-readiness/README.md) | SBOMとbuild evidenceから汚染packageをrepository build artifact deploymentへ逆引きし、承認付きdry-run response planを生成する。 | `detect`, `respond`, `verify`, `govern` | 7 | `prototype` / `E3` |
+| [PSB-GOV-001](governance-operations/supply-chain-incident-readiness/README.md) | SBOMとビルド証跡から汚染パッケージの影響をリポジトリ、ビルド、成果物、デプロイ先へ逆引きし、承認付きドライラン対応計画を生成する。 | `detect`, `respond`, `verify`, `govern` | 7 | `prototype` / `E3` |
 
 ## 表示の意味
 

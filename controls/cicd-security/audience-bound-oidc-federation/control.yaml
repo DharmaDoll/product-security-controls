@@ -1,7 +1,7 @@
 id: PSB-CICD-006
 title: Enforce audience-bound cloud OIDC federation
 domain: cicd-security
-summary: Verify signed GitHub Actions workload identity against exact immutable claims and issue only short-lived resource-bound cloud credentials without stored cloud keys.
+summary: 署名済みGitHub ActionsワークロードIDを不変かつ厳密なOIDCクレームと照合し、保存済みクラウド鍵を使わず、対象リソースに限定した短期認証情報だけを発行する。
 check_context_version: "1.0"
 security_functions:
   - prevent

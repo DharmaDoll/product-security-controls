@@ -1,7 +1,7 @@
 id: PSB-DEPS-001
 title: managed registry proxyとrelease cooldownで依存パッケージ採用を制御
 domain: dependency-security
-summary: 依存取得をmanaged proxyへ固定し、新しいdependency versionの採用を一定期間遅延して、registry迂回と公開直後のsupply-chain compromiseへの露出を減らす。
+summary: 依存パッケージの取得を管理対象プロキシへ固定し、新バージョンの採用を一定期間遅らせて、レジストリ迂回と公開直後のサプライチェーン攻撃への露出を減らす。
 check_context_version: "1.0"
 security_functions:
   - prevent

@@ -1,7 +1,7 @@
 id: PSB-CICD-002
 title: Prevent GitHub Actions command injection from direct expression interpolation
 domain: cicd-security
-summary: Keep attacker-influenced GitHub Actions expressions out of generated runner shell scripts.
+summary: 攻撃者の影響を受けるGitHub Actionsの式が、runnerの生成するシェルスクリプトへ直接埋め込まれることを防ぐ。
 check_context_version: "1.0"
 security_functions:
   - prevent

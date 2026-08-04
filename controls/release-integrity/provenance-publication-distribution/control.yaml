@@ -1,7 +1,7 @@
 id: PSB-REL-002
 title: Release artifactとprovenanceを一対一で公開・配布する
 domain: release-integrity
-summary: Producerが各release artifactへdigest-bound provenanceをimmutableかつconsumer-accessibleな場所で同時公開し、保持とno-downgradeを検証する。
+summary: 供給者が各リリース成果物へダイジェストで結び付けた来歴情報を、不変かつ利用者が参照できる場所へ同時公開し、保持とダウングレード防止を検証する。
 check_context_version: "1.0"
 security_functions:
   - prevent

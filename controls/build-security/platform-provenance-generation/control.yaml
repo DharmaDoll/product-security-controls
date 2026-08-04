@@ -1,7 +1,7 @@
 id: PSB-BUILD-003
 title: Build platformがauthentic provenanceを自動生成する
 domain: build-security
-summary: Hosted build platformがartifact digest、build process、top-level inputを含むprovenanceをcontrol planeで自動生成し、platform-owned identityで認証したことを検証する。
+summary: ホステッドビルド基盤が、成果物ダイジェスト、ビルド手順、主要入力を含む来歴情報を制御プレーンで自動生成し、基盤所有のIDで認証したことを検証する。
 check_context_version: "1.0"
 security_functions:
   - prevent

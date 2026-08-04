@@ -1,7 +1,7 @@
 id: PSB-DETECT-001
 title: Execute integrity-verified security scanning with fail-closed evidence
 domain: detection-verification
-summary: Pin scanner release and data identity, detect vulnerability configuration secret and SBOM findings, and constrain optional DockSec remediation to an AI-independent fail-closed gate.
+summary: スキャナーのリリースとデータIDを固定して脆弱性、設定不備、シークレット、SBOMの問題を検出し、任意のDockSec修正支援をAI判定に依存しないフェイルクローズ方式のゲートへ制限する。
 check_context_version: "1.0"
 security_functions:
   - detect

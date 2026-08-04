@@ -1,7 +1,7 @@
 id: PSB-CICD-001
 title: Pin external GitHub Actions and reusable workflows to immutable commits
 domain: cicd-security
-summary: Prevent reviewed workflow dependencies from silently changing through mutable Git references.
+summary: レビュー済みのワークフロー依存関係が、可変のGit参照によって気付かないうちに変更されることを防ぐ。
 check_context_version: "1.0"
 security_functions:
   - prevent

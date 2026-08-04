@@ -1,7 +1,7 @@
 id: PSB-CONTAINER-001
 title: Enforce a fail-closed container workload admission baseline
 domain: container-cloud-iac-security
-summary: Bind an exact OCI image and authenticated provenance to a non-root isolated resource-bounded Kubernetes workload before admission.
+summary: 正確なOCIイメージと認証済みの来歴情報を、非root・隔離済み・リソース制限済みのKubernetesワークロードへ結び付けてから受け入れる。
 check_context_version: "1.0"
 security_functions:
   - prevent

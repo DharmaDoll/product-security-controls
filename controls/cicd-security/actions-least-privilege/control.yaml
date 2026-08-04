@@ -1,7 +1,7 @@
 id: PSB-CICD-004
 title: Enforce explicit least-privilege GitHub Actions permissions
 domain: cicd-security
-summary: Deny implicit GITHUB_TOKEN privileges and bind each job to an exact reviewed permission set, trusted ref condition, and protected environment where required.
+summary: 暗黙のGITHUB_TOKEN権限を拒否し、各ジョブをレビュー済みの権限セット、信頼するGit参照の条件、必要な保護環境へ厳密に結び付ける。
 check_context_version: "1.0"
 security_functions:
   - prevent

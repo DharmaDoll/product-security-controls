@@ -1,7 +1,7 @@
 id: PSB-GOV-001
 title: supply-chain incidentのbuild artifactと稼働deployment影響を即時特定する
 domain: governance-operations
-summary: SBOMとbuild evidenceから汚染packageをrepository build artifact deploymentへ逆引きし、承認付きdry-run response planを生成する。
+summary: SBOMとビルド証跡から汚染パッケージの影響をリポジトリ、ビルド、成果物、デプロイ先へ逆引きし、承認付きドライラン対応計画を生成する。
 check_context_version: "1.0"
 security_functions:
   - detect

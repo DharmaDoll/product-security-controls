@@ -1,7 +1,7 @@
 id: PSB-REL-004
 title: supplier SBOMを検証してからportfolioへ受け入れる
 domain: release-integrity
-summary: 署名済みsupplier SBOMをexact product artifact signer lifecycleとconsumer policyへ照合し、不一致を通常portfolioの外へ隔離する。
+summary: 署名済みの供給者SBOMを正確な製品、成果物、署名者のライフサイクル、利用者ポリシーへ照合し、不一致を通常の管理対象から隔離する。
 check_context_version: "1.0"
 security_functions:
   - prevent

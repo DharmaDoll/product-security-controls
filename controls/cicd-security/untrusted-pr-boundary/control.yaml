@@ -1,7 +1,7 @@
 id: PSB-CICD-005
 title: Isolate fork and untrusted pull-request workflows from privileged CI
 domain: cicd-security
-summary: Keep attacker-controlled pull-request code on credential-free hosted jobs and require privileged work to start as a separate trusted run.
+summary: 攻撃者が制御できるPRコードを認証情報のないホステッドジョブへ隔離し、権限を伴う処理は別の信頼済み実行として開始させる。
 check_context_version: "1.0"
 security_functions:
   - prevent

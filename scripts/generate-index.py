@@ -179,7 +179,7 @@ def render_control_catalog(controls: list[dict[str, Any]]) -> str:
             continue
         lines.extend(
             [
-                "| Control | Outcome | Security functions | Checks | Maturity / Evidence |",
+                "| Control | 達成する状態 | Security functions | Checks | Maturity / Evidence |",
                 "|---|---|---|---:|---|",
             ]
         )

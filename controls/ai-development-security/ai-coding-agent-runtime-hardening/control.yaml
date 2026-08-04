@@ -1,7 +1,7 @@
 id: PSB-AI-004
 title: Harden AI coding agent runtime authority
 domain: ai-development-security
-summary: Enforce and verify least-privilege filesystem network extension high-impact action and bypass boundaries for AI coding agents through one outcome policy and product adapters.
+summary: 共通ポリシーと製品別アダプターにより、AIコーディングエージェントのファイルシステム、ネットワーク、拡張機能、高影響操作、バイパス経路を最小権限に制限して検証する。
 check_context_version: "1.0"
 security_functions:
   - prevent

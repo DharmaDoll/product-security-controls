@@ -1,7 +1,7 @@
 id: PSB-IAC-001
 title: Provide a secure IaC golden path with policy enforcement
 domain: container-cloud-iac-security
-summary: Combine versioned secure-by-default infrastructure modules resolved-plan policy gates provider enforcement and drift control.
+summary: バージョン管理されたセキュアな既定値のインフラモジュール、解決済み実行計画のポリシーゲート、クラウド側の強制、ドリフト管理を組み合わせる。
 check_context_version: "1.0"
 security_functions:
   - prevent

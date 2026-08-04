@@ -1,7 +1,7 @@
 id: PSB-SOURCE-004
 title: Govern source access credential lifecycle
 domain: source-protection
-summary: Limit the privilege persistence exposure and misuse of OAuth tokens PATs SSH keys and source-platform automation credentials.
+summary: OAuthトークン、PAT、SSH鍵、ソース管理基盤の自動化用認証情報について、権限、存続期間、露出、悪用可能性を制限する。
 check_context_version: "1.0"
 security_functions:
   - prevent

@@ -1,7 +1,7 @@
 id: PSB-SOURCE-002
 title: リポジトリ所有の開発者向けGit hooksセキュリティベースライン
 domain: source-protection
-summary: commit前とpushで導入される全履歴から情報漏洩の可能性を検出する。
+summary: コミット前とプッシュ前に、追加される内容と到達可能なGit履歴を検査し、情報漏洩につながる変更を検出する。
 check_context_version: "1.0"
 security_functions:
   - prevent

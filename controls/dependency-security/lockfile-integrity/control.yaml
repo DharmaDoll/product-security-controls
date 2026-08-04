@@ -1,7 +1,7 @@
 id: PSB-DEPS-003
 title: lockfileと取得artifactの完全性を強制する
 domain: dependency-security
-summary: Frozen dependency graphとmanifest、managed proxy origin、exact version、artifact integrityの一致を検証する。
+summary: 固定された依存関係グラフとマニフェスト、管理対象プロキシの取得元、正確なバージョン、成果物の完全性が一致することを検証する。
 check_context_version: "1.0"
 security_functions:
   - prevent
