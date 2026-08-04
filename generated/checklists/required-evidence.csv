@@ -124,6 +124,21 @@ PSB-CICD-005,PSB-CICD-005-PRB-004,repository-admin,automated,negative-test outpu
 PSB-CICD-005,PSB-CICD-005-PRB-005,repository-admin,automated,sanitized verifier output
 PSB-CICD-005,PSB-CICD-005-PRB-005,repository-admin,automated,branch protection evidence
 PSB-CICD-005,PSB-CICD-005-PRB-006,ci-platform,automated,negative-test output
+PSB-CICD-006,PSB-CICD-006-OIDC-001,ci-platform,automated,sanitized verifier output
+PSB-CICD-006,PSB-CICD-006-OIDC-001,ci-platform,automated,synthetic public key and signed-token fixture
+PSB-CICD-006,PSB-CICD-006-OIDC-002,ci-platform,automated,exact trust-policy fixture
+PSB-CICD-006,PSB-CICD-006-OIDC-002,ci-platform,automated,signed wrong-audience and wrong-repository negative output
+PSB-CICD-006,PSB-CICD-006-OIDC-003,ci-platform,automated,signed fork and mutable-workflow fixtures
+PSB-CICD-006,PSB-CICD-006-OIDC-003,ci-platform,automated,sanitized verifier output
+PSB-CICD-006,PSB-CICD-006-OIDC-004,ci-platform,automated,signed expired-token fixture
+PSB-CICD-006,PSB-CICD-006-OIDC-004,ci-platform,automated,replay-state negative output
+PSB-CICD-006,PSB-CICD-006-OIDC-005,repository-admin,hybrid,workflow verifier output
+PSB-CICD-006,PSB-CICD-006-OIDC-005,repository-admin,hybrid,GitHub Environment protection evidence
+PSB-CICD-006,PSB-CICD-006-OIDC-006,repository-admin,hybrid,sanitized secret-name inventory
+PSB-CICD-006,PSB-CICD-006-OIDC-006,repository-admin,hybrid,workflow scan output
+PSB-CICD-006,PSB-CICD-006-OIDC-007,ci-platform,hybrid,sanitized exchange receipt
+PSB-CICD-006,PSB-CICD-006-OIDC-007,ci-platform,hybrid,provider role and audit evidence
+PSB-CICD-006,PSB-CICD-006-OIDC-008,ci-platform,automated,negative-test output
 PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-001,developer,automated,admitted image reference
 PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-001,developer,automated,OCI manifest digest verifier output
 PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-002,release-manager,automated,PSB-REL-001 verifier output

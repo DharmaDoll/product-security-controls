@@ -13,6 +13,7 @@ Generated control catalog. Do not edit manually.
 | [PSB-CICD-003](../controls/cicd-security/actions-static-analysis/README.md) | cicd-security | Statically analyze GitHub Actions workflows with a pinned scanner | 5 | adopted | E3 |
 | [PSB-CICD-004](../controls/cicd-security/actions-least-privilege/README.md) | cicd-security | Enforce explicit least-privilege GitHub Actions permissions | 6 | prototype | E3 |
 | [PSB-CICD-005](../controls/cicd-security/untrusted-pr-boundary/README.md) | cicd-security | Isolate fork and untrusted pull-request workflows from privileged CI | 6 | prototype | E3 |
+| [PSB-CICD-006](../controls/cicd-security/audience-bound-oidc-federation/README.md) | cicd-security | Enforce audience-bound cloud OIDC federation | 8 | prototype | E3 |
 | [PSB-CONTAINER-001](../controls/container-cloud-iac-security/container-admission-baseline/README.md) | container-cloud-iac-security | Enforce a fail-closed container workload admission baseline | 9 | adopted | E3 |
 | [PSB-CONTAINER-004](../controls/container-cloud-iac-security/runtime-threat-detection/README.md) | container-cloud-iac-security | Detect workload-bound container runtime threats without treating telemetry failure as clean | 12 | adopted | E3 |
 | [PSB-DEPS-001](../controls/dependency-security/release-cooldown/README.md) | dependency-security | managed registry proxyとrelease cooldownで依存パッケージ採用を制御 | 8 | prototype | E3 |

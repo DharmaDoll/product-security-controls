@@ -87,14 +87,15 @@ contract, resolved Terraform plan decision gate, fail-closed policy behavior,
 explicit composition of implemented versus planned CI capabilities,
 provider-side bypass enforcement requirements, continuous drift detection,
 and bounded corrective action. `PSB-DETECT-001`, `PSB-REL-002`,
-`PSB-REL-003`, `PSB-CONTAINER-001`, and `PSB-CONTAINER-004` are now
-implemented components.
+`PSB-REL-003`, `PSB-CONTAINER-001`, `PSB-CONTAINER-004`, and
+`PSB-CICD-006` are now implemented components. The OIDC control adds signed
+exact-claim federation, stored-key removal, and bounded credential receipts.
 `PSB-REL-003` adds distinct source/build/deployment observations,
 artifact-bound CycloneDX publication, and a normalized Dependency-Track
 processing receipt. `PSB-REL-004` adds signed supplier product/artifact
 identity, signer lifecycle, least-privilege intake, and fail-closed
-quarantine. Artifact signing generation and cloud OIDC profiles remain
-incomplete.
+quarantine. Artifact signing generation and provider-specific live OIDC
+adapters remain incomplete.
 
 Also add source-protection controls for public repository exposure, including
 GitHub dorking scenarios, secret discovery in current and historical content,
@@ -330,7 +331,9 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    direct/transitive edge context, source, vulnerability, license, provenance,
    non-author approval, expiring exception, and fail-closed advisory evidence.
 4. `PSB-CICD-006` — short-lived, audience-bound OIDC federation without stored
-   cloud credentials.
+   cloud credentials — implemented at E3 with signed JWT, immutable repository
+   identity, exact audience/context/reusable-workflow claims, replay rejection,
+   stored-secret inventory, and bounded exchange receipt fixtures.
 5. `PSB-REL-003` — SBOM generation, artifact binding, publication,
    completeness checks, consumer-side mismatch handling, and fail-closed
    Dependency-Track processing — implemented with nine atomic checks,

@@ -5,7 +5,7 @@
 このページは、実装済みcontrolを目的別に探すための入口です。
 `control.yaml`を正本として`make generate-index`で生成されます。
 
-現在、**26 controls / 239 atomic checks**を収録しています。
+現在、**27 controls / 247 atomic checks**を収録しています。
 
 ## 使い方
 
@@ -25,7 +25,7 @@
 | [Secure Coding](#domain-secure-coding) | 認証・認可、入力処理、secret、暗号など、application実装の安全性。 | 0 | 0 |
 | [Source Protection](#domain-source-protection) | 開発端末、Git、repository、source access credential、公開露出の保護。 | 4 | 68 |
 | [Dependency Security](#domain-dependency-security) | registry、cooldown、install script、lockfile、artifact integrityの保護。 | 4 | 27 |
-| [CI/CD Security](#domain-cicd-security) | workflow dependency、command injection、権限、未信頼PR境界の保護。 | 5 | 27 |
+| [CI/CD Security](#domain-cicd-security) | workflow dependency、command injection、権限、未信頼PR境界の保護。 | 6 | 35 |
 | [Build Security](#domain-build-security) | build隔離、hosted build、credential境界、provenance生成の保護。 | 3 | 16 |
 | [Container / Cloud / IaC Security](#domain-container-cloud-iac-security) | IaC Golden Path、container admission、runtime、cloud control planeの保護。 | 3 | 33 |
 | [Release Integrity](#domain-release-integrity) | 署名、provenance、SBOM、supplier artifact、配布時の完全性。 | 4 | 27 |
@@ -88,6 +88,7 @@ workflow dependency、command injection、権限、未信頼PR境界の保護。
 | [PSB-CICD-003](cicd-security/actions-static-analysis/README.md) | Detect actionable workflow weaknesses with pinned zizmor checks while separating untrusted pull-request gating from privileged SARIF upload. | `detect`, `verify` | 5 | `adopted` / `E3` |
 | [PSB-CICD-004](cicd-security/actions-least-privilege/README.md) | Deny implicit GITHUB_TOKEN privileges and bind each job to an exact reviewed permission set, trusted ref condition, and protected environment where required. | `prevent`, `verify` | 6 | `prototype` / `E3` |
 | [PSB-CICD-005](cicd-security/untrusted-pr-boundary/README.md) | Keep attacker-controlled pull-request code on credential-free hosted jobs and require privileged work to start as a separate trusted run. | `prevent`, `verify` | 6 | `prototype` / `E3` |
+| [PSB-CICD-006](cicd-security/audience-bound-oidc-federation/README.md) | Verify signed GitHub Actions workload identity against exact immutable claims and issue only short-lived resource-bound cloud credentials without stored cloud keys. | `prevent`, `verify` | 8 | `prototype` / `E3` |
 
 <a id="domain-build-security"></a>
 

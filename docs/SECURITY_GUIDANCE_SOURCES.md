@@ -235,7 +235,7 @@ Disposition:
   - `PSB-IAC-001` — secure IaC Golden Path;
   - `PSB-DETECT-001` — implemented integrity-verified scanner execution;
   - `PSB-CONTAINER-001` — implemented OCI provenance and workload admission;
-  - `PSB-CICD-006` — planned cloud OIDC federation;
+  - `PSB-CICD-006` — implemented provider-neutral signed cloud OIDC federation;
   - `PSB-REL-002` — implemented provenance distribution;
   - `PSB-REL-003` — implemented SBOM lifecycle and artifact-bound distribution.
 
@@ -634,8 +634,8 @@ Disposition and limitations:
   - `PSB-CICD-004` — restrict `id-token: write` to the exchange job;
   - `PSB-CICD-005` — keep untrusted PR code out of credentialed jobs;
   - `PSB-BUILD-001` — separate untrusted build from credentialed deployment;
-  - `PSB-CICD-006` — planned exact audience, subject, repository, workflow,
-    environment, and cloud trust claims;
+  - `PSB-CICD-006` — implemented exact audience, subject, immutable repository,
+    workflow, environment, replay, and bounded cloud credential contract;
   - future package-registry Trusted Publishing profile — not yet reserved.
 
 Adopted contribution:
@@ -654,8 +654,8 @@ Disposition and limitations:
   separate adoption boundaries and must not be collapsed into one control;
 - exact claim support, credential lifetime, and cleanup behavior vary by
   provider and require current official documentation plus provider fixtures;
-- the article informs `PSB-CICD-006` but does not make that planned control
-  implemented.
+- the article informs `PSB-CICD-006`; the implemented offline contract does not
+  make any provider-specific live federation configuration verified.
 
 <a id="ref-cicd-010"></a>
 

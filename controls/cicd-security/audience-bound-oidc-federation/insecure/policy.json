@@ -1,0 +1,47 @@
+{
+  "schema_version": "psb-oidc-federation-policy/v1",
+  "policy_revision": "oidc-policy-broad",
+  "expected_claims": {
+    "iss": "https://token.actions.githubusercontent.com",
+    "aud": "https://cloud.example.invalid/*",
+    "sub": "repo:example-org/*",
+    "repository": "example-org/*",
+    "repository_id": "*",
+    "repository_owner_id": "123456",
+    "environment": "*",
+    "ref": "refs/heads/*",
+    "ref_type": "branch",
+    "event_name": "pull_request",
+    "workflow_ref": "example-org/*",
+    "job_workflow_ref": "example-org/platform-workflows/.github/workflows/deploy.yml@main",
+    "job_workflow_sha": "2222222222222222222222222222222222222222",
+    "runner_environment": "self-hosted"
+  },
+  "token": {
+    "algorithm": "RS256",
+    "key_id": "synthetic-github-oidc-2026-08",
+    "trusted_public_key": "trust/oidc-public.pem",
+    "max_lifetime_seconds": 86400,
+    "max_age_seconds": 86400,
+    "clock_skew_seconds": 300
+  },
+  "workflow_contract": {
+    "exchange_job": "deploy",
+    "required_if": "github.event_name == 'push' && github.ref == 'refs/heads/main'",
+    "environment": "production",
+    "permissions": {
+      "contents": "read",
+      "id-token": "write"
+    }
+  },
+  "credential_contract": {
+    "role": "projects/example/roles/administrator",
+    "max_ttl_seconds": 43200,
+    "allowed_actions": [
+      "*"
+    ],
+    "allowed_resources": [
+      "*"
+    ]
+  }
+}

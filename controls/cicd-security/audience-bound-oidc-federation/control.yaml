@@ -1,0 +1,255 @@
+id: PSB-CICD-006
+title: Enforce audience-bound cloud OIDC federation
+domain: cicd-security
+summary: Verify signed GitHub Actions workload identity against exact immutable claims and issue only short-lived resource-bound cloud credentials without stored cloud keys.
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - verify
+threats:
+  - id: CICD-OIDC-OVERBROAD-TRUST
+    description: A valid token from a fork pull request different repository or mutable reusable workflow matches an organization-wide cloud trust policy and obtains deployment authority.
+  - id: CICD-OIDC-CREDENTIAL-EXPOSURE
+    description: Long-lived stored cloud keys or an overbroad exchanged credential are stolen by compromised workflow code and reused beyond the intended deployment.
+  - id: CICD-OIDC-REPLAY-OR-FAIL-OPEN
+    description: An expired replayed malformed or unevaluable token is accepted or an exchange failure is interpreted as a clean skipped deployment check.
+implementations:
+  insecure:
+    - insecure/workflow.yml
+    - insecure/policy.json
+    - insecure/token.jwt
+    - insecure/trust/oidc-public.pem
+    - insecure/secret-inventory.json
+    - insecure/replay-state.json
+    - insecure/credential-receipt.json
+  secure:
+    - secure/workflow.yml
+    - secure/policy.json
+    - secure/token.jwt
+    - secure/trust/oidc-public.pem
+    - secure/secret-inventory.json
+    - secure/replay-state.json
+    - secure/credential-receipt.json
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-CICD-006
+  expected:
+    - a correctly signed synthetic GitHub OIDC token passes only when every issuer audience subject stable repository ref environment and workflow condition is exact
+    - correctly signed fork pull-request wrong-audience wrong-repository mutable-workflow expired and replayed tokens are rejected
+    - id-token write is present only on the protected exchange job and static cloud credential names are absent from workflow and repository secret inventory
+    - exchanged credentials have a maximum 15-minute lifetime and exact role action resource token JTI audience subject and policy bindings
+    - invalid signature denied exchange missing cryptographic verification and incomplete evidence never produce a clean result
+checks:
+  - id: OIDC-001
+    title: OIDC JWT signature and protected header are verified
+    required_state: trusted RS256 key ID and signature validate the exact compact JWT signing input
+    responsible_role: ci-platform
+    applies_to:
+      - github-actions-oidc-jwt
+      - cloud-identity-provider
+    context:
+      threat_actor: network intermediary compromised pipeline component or attacker fabricating a workload token
+      attack_or_failure_scenario: cloud federation evaluates attacker-controlled claims without authenticating the issuer signature and approved key
+      why_required: claim matching has no security value unless the claims are cryptographically bound to the trusted issuer key and algorithm
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-006
+      expected: the authentic fixture passes while signature tampering is a finding and unavailable OpenSSL is an error
+      evidence:
+        - sanitized verifier output
+        - synthetic public key and signed-token fixture
+    mapping_status: reviewed
+  - id: OIDC-002
+    title: Issuer audience subject and immutable repository identity are exact
+    required_state: exact issuer audience immutable-ID subject repository repository ID owner ID and protected environment with no wildcard
+    responsible_role: ci-platform
+    applies_to:
+      - cloud-oidc-trust-policy
+      - github-repository-identity
+    context:
+      threat_actor: fork owner namespace squatter malicious organization repository or trust-policy maintainer using a convenience wildcard
+      attack_or_failure_scenario: a valid GitHub-issued token from a different workload matches a broad cloud role trust condition
+      why_required: signature validity proves GitHub issued the token but exact stable identity and audience decide whether this particular workload is authorized
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-006
+      expected: wrong audience repository stable ID environment and wildcard policy values are rejected
+      evidence:
+        - exact trust-policy fixture
+        - signed wrong-audience and wrong-repository negative output
+    mapping_status: reviewed
+  - id: OIDC-003
+    title: Deploy context and reusable workflow identity are immutable and exact
+    required_state: exact trusted branch push event caller workflow source commit hosted runner and full-SHA reusable workflow
+    responsible_role: ci-platform
+    applies_to:
+      - github-actions-deploy-context
+      - reusable-workflow
+    context:
+      threat_actor: pull-request contributor compromised caller or maintainer replacing a branch-referenced reusable workflow
+      attack_or_failure_scenario: unreviewed code reaches the same cloud role through a PR ref another workflow or a reusable workflow changed after trust review
+      why_required: repository trust alone does not distinguish trusted deployment code from other workflows and events within the repository
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-006
+      expected: fork PR mutable reusable workflow non-push wrong ref and workflow identity cases are rejected
+      evidence:
+        - signed fork and mutable-workflow fixtures
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: OIDC-004
+    title: OIDC token is current short lived and single use
+    required_state: valid nbf iat exp maximum 10-minute lifetime freshness window and previously unused JTI
+    responsible_role: ci-platform
+    applies_to:
+      - github-actions-oidc-jwt
+      - replay-ledger
+    context:
+      threat_actor: attacker replaying a token captured from logs runner memory network telemetry or a compromised step
+      attack_or_failure_scenario: a previously issued or expired token remains exchangeable after its intended job and decision window
+      why_required: short lifetime limits exposure duration while atomic single-use enforcement addresses replay inside that remaining window
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-006
+      expected: current unused token passes while expired stale future and consumed JTI cases are rejected
+      evidence:
+        - signed expired-token fixture
+        - replay-state negative output
+    mapping_status: reviewed
+  - id: OIDC-005
+    title: Token issuance is isolated to the protected exchange job
+    required_state: workflow deny-all and exact contents read plus id-token write only on the trusted-ref protected-environment deploy job
+    responsible_role: repository-admin
+    applies_to:
+      - github-actions-workflow
+      - protected-deploy-job
+      - github-environment
+    context:
+      threat_actor: compromised test dependency pull-request code or maintainer granting OIDC permission at workflow scope
+      attack_or_failure_scenario: code outside the reviewed exchange job requests a valid JWT and exchanges it against the cloud role
+      why_required: exact cloud claims reduce who can exchange tokens while job isolation reduces which executed code can obtain one in the first place
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-CICD-006 and review GitHub Environment protection through repository evidence
+      expected: broad defaults multiple id-token jobs missing ref guard missing environment and wrong audience request are rejected
+      evidence:
+        - workflow verifier output
+        - GitHub Environment protection evidence
+    mapping_status: reviewed
+  - id: OIDC-006
+    title: Stored cloud credentials are absent
+    required_state: workflow and fresh complete repository secret inventory contain no static AWS Azure GCP or generic cloud credential
+    responsible_role: repository-admin
+    applies_to:
+      - github-actions-secret
+      - workflow-environment
+    context:
+      threat_actor: compromised Action malicious step repository maintainer or attacker reading accidentally exposed workflow configuration
+      attack_or_failure_scenario: a long-lived cloud key remains available after OIDC adoption and can be stolen and reused independently of exact token claims
+      why_required: OIDC reduces durable credential risk only when legacy keys and fallback secrets are actually removed
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-CICD-006 and collect a current repository and environment secret-name inventory
+      expected: recognized static cloud credential names are findings while unavailable or stale inventory is an error
+      evidence:
+        - sanitized secret-name inventory
+        - workflow scan output
+    mapping_status: reviewed
+  - id: OIDC-007
+    title: Exchanged cloud credential is short lived and least privilege
+    required_state: successful exchange receipt bound to token JTI audience subject policy revision exact role action resource and maximum 15-minute TTL
+    responsible_role: ci-platform
+    applies_to:
+      - cloud-temporary-credential
+      - cloud-iam-role
+      - deployment-resource
+    context:
+      threat_actor: compromised deploy step or cloud IAM maintainer assigning administrator or wildcard permissions for convenience
+      attack_or_failure_scenario: a correctly authenticated workload receives authority that can modify unrelated resources or remains useful long after deployment
+      why_required: strong workload authentication cannot compensate for an overprivileged or long-lived authorization decision downstream
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-CICD-006 and compare the provider role policy and audit event with the receipt contract
+      expected: wildcard action resource TTL over 15 minutes binding mismatch credential material and denied exchange are rejected
+      evidence:
+        - sanitized exchange receipt
+        - provider role and audit evidence
+    mapping_status: reviewed
+  - id: OIDC-008
+    title: Federation verification fails closed
+    required_state: malformed missing stale incomplete or cryptographically unevaluable input returns error and denied exchange returns a finding
+    responsible_role: ci-platform
+    applies_to:
+      - oidc-federation-verifier
+      - deployment-quality-gate
+    context:
+      threat_actor: verifier outage malformed evidence stale secret inventory or pipeline logic treating skipped exchange as success
+      attack_or_failure_scenario: the deployment proceeds or records clean evidence even though identity trust or issuance could not be evaluated
+      why_required: an explicit error state prevents telemetry and verifier failure from silently bypassing the cloud identity gate
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CICD-006
+      expected: unavailable OpenSSL and incomplete inventory return exit 2 while denied exchange returns exit 1
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
+mappings:
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHAS-CONCEPT-OIDC
+    relationship: verifies
+    confidence: high
+    rationale: The control verifies the signed GitHub workload token exact cloud trust relationship short-lived exchange and removal of duplicated long-lived cloud secrets described by the OIDC concept guidance.
+    reviewer: product-security
+    review_date: "2026-08-04"
+    applies_to:
+      - OIDC-001
+      - OIDC-002
+      - OIDC-004
+      - OIDC-006
+      - OIDC-007
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHAS-REF-OIDC
+    relationship: verifies
+    confidence: high
+    rationale: Exact audience subject repository stable IDs environment ref workflow and reusable-workflow claims plus job-level id-token permission directly exercise the documented GitHub OIDC trust inputs.
+    reviewer: product-security
+    review_date: "2026-08-04"
+    applies_to:
+      - OIDC-002
+      - OIDC-003
+      - OIDC-004
+      - OIDC-005
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-AC-04.02
+    relationship: supports
+    confidence: high
+    rationale: Exchange-job isolation and exact downstream role action resource and lifetime constraints support least privilege for CI deployment credentials without asserting complete pipeline access-control coverage.
+    reviewer: product-security
+    review_date: "2026-08-04"
+    applies_to:
+      - OIDC-005
+      - OIDC-007
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1552.001
+    relationship: mitigates
+    confidence: medium
+    rationale: Removing long-lived cloud credentials from workflow text and repository secrets reduces credentials-in-files opportunities but does not claim compliance or eliminate runtime token theft.
+    reviewer: product-security
+    review_date: "2026-08-04"
+    applies_to:
+      - OIDC-006
+limitations:
+  - The first slice is a provider-neutral offline contract and does not validate AWS Azure GCP or another provider-specific trust-policy syntax or live configuration.
+  - Production validation must use issuer discovery and rotating JWKS with authenticated transport while the committed public key is synthetic test material only.
+  - Repository and environment secret inventory and GitHub Environment protection require separately collected current API evidence.
+  - The static JSON replay fixture demonstrates the decision contract but production single-use enforcement requires an atomic durable provider-side ledger.
+  - A malicious step in the approved deploy job can still steal the OIDC or exchanged credential during its short lifetime so build separation egress restriction and runtime monitoring remain necessary.
+  - Provider claim support minimum credential TTL session cleanup and audit fields vary and require a reviewed provider adapter.
+  - Package registry Trusted Publishing is a separate future adoption profile and is not covered by this cloud deployment control.
+status: prototype
+owner: product-security
+evidence_level: E3

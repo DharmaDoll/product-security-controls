@@ -19,8 +19,8 @@
     "template": "reusable-workflow",
     "immutable_reference": true,
     "permissions": "explicit-job-minimum",
-    "implemented_controls": ["PSB-CICD-001", "PSB-CICD-003", "PSB-BUILD-001", "PSB-BUILD-003", "PSB-SOURCE-002", "PSB-IAC-001", "PSB-DETECT-001", "PSB-REL-002", "PSB-REL-003", "PSB-CONTAINER-001"],
-    "planned_controls": ["PSB-CICD-006"],
+    "implemented_controls": ["PSB-CICD-001", "PSB-CICD-003", "PSB-CICD-006", "PSB-BUILD-001", "PSB-BUILD-003", "PSB-SOURCE-002", "PSB-IAC-001", "PSB-DETECT-001", "PSB-REL-002", "PSB-REL-003", "PSB-CONTAINER-001"],
+    "planned_controls": [],
     "container_feedback": {
       "control": "PSB-DETECT-001",
       "adapter": "docksec",
@@ -43,11 +43,16 @@
     }
   },
   "deployment_identity": {
+    "control": "PSB-CICD-006",
     "type": "oidc",
     "job": "deploy-only",
     "audience": "https://cloud.example.invalid/golden-path",
     "ttl_minutes": 15,
-    "stored_cloud_keys": false
+    "stored_cloud_keys": false,
+    "exact_trust_claims": ["iss", "aud", "sub", "repository_id", "repository_owner_id", "ref", "environment", "job_workflow_ref"],
+    "reusable_workflow_ref": "example-org/platform-workflows/.github/workflows/deploy.yml@2222222222222222222222222222222222222222",
+    "replay": "single-use-jti",
+    "credential_scope": "exact-role-action-resource"
   },
   "provider_enforcement": {
     "mode": "fail",

@@ -120,7 +120,7 @@ reusable workflowは次のcontrolを組み合わせます。表の状態を保�
 | Dockerfile／Compose remediation feedback | `PSB-DETECT-001` DockSec profile | implemented as optional non-blocking feedback |
 | Provenance distribution | `PSB-REL-002` | implemented |
 | OCI provenance and workload admission | `PSB-CONTAINER-001` | implemented |
-| Cloud OIDC federation profile | `PSB-CICD-006` | planned |
+| Cloud OIDC federation profile | `PSB-CICD-006` | implemented as signed exact-claim offline E3 contract |
 | Source／Build／Deployment SBOM identity plus artifact-bound Build SBOM publication | `PSB-REL-003` | implemented |
 | SBOM portfolio and continuous analysis | `PSB-REL-003` Dependency-Track adapter | implemented as normalized fail-closed composition |
 
@@ -148,9 +148,10 @@ Deployment observationはartifact配置のoperational evidenceとして別serial
 Golden Pathが1つのSBOMへ上書きしないことも同controlへ委譲します。
 
 OIDCの`id-token: write`はworkflow全体へ付与せず、protected deploy jobだけへ
-明示的に付与し、cloud側trust policyでrepository、ref、environment、audience、
-reusable workflow identityを限定します。権限を付けただけではcloud accessは
-安全になりません。
+明示的に付与します。`PSB-CICD-006`をcompositionし、cloud側trust policyで
+immutable repository identity、ref、environment、audience、full-SHA reusable
+workflow、JTIを限定します。provider別live federationとaudit evidenceは導入先で
+追加し、権限を付けただけでcloud accessを安全と判断しません。
 
 ## Provider enforcement and drift
 

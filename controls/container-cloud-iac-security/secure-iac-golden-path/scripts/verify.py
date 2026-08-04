@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any, Callable
 
@@ -13,6 +14,7 @@ APPROVED_REGIONS = {"ap-northeast-1", "asia-northeast1", "japaneast"}
 REQUIRED_CONTROLS = {
     "PSB-CICD-001",
     "PSB-CICD-003",
+    "PSB-CICD-006",
     "PSB-BUILD-001",
     "PSB-BUILD-003",
     "PSB-SOURCE-002",
@@ -22,9 +24,7 @@ REQUIRED_CONTROLS = {
     "PSB-REL-003",
     "PSB-CONTAINER-001",
 }
-PLANNED_CONTROLS = {
-    "PSB-CICD-006",
-}
+PLANNED_CONTROLS: set[str] = set()
 REQUIRED_RULES = {
     "encryption",
     "private-network",
@@ -213,6 +213,8 @@ def check_ci_composition(policy: dict[str, Any], _: list[dict[str, Any]]) -> lis
 def check_identity(policy: dict[str, Any], _: list[dict[str, Any]]) -> list[str]:
     identity = object_at(policy, "deployment_identity", "policy")
     issues = []
+    if identity.get("control") != "PSB-CICD-006":
+        issues.append("deployment identity is not composed with PSB-CICD-006")
     if identity.get("type") != "oidc" or identity.get("job") != "deploy-only":
         issues.append("deployment does not use deploy-only OIDC")
     audience = identity.get("audience")
@@ -223,6 +225,25 @@ def check_identity(policy: dict[str, Any], _: list[dict[str, Any]]) -> list[str]
         issues.append("OIDC lifetime exceeds 15 minutes")
     if identity.get("stored_cloud_keys") is not False:
         issues.append("stored cloud keys remain enabled")
+    expected_claims = {
+        "iss",
+        "aud",
+        "sub",
+        "repository_id",
+        "repository_owner_id",
+        "ref",
+        "environment",
+        "job_workflow_ref",
+    }
+    if set(identity.get("exact_trust_claims", [])) != expected_claims:
+        issues.append("OIDC trust claims are not the exact PSB-CICD-006 set")
+    reusable = identity.get("reusable_workflow_ref")
+    if not isinstance(reusable, str) or not re.search(r"@[0-9a-f]{40}$", reusable):
+        issues.append("OIDC reusable workflow identity is mutable")
+    if identity.get("replay") != "single-use-jti":
+        issues.append("OIDC replay protection is absent")
+    if identity.get("credential_scope") != "exact-role-action-resource":
+        issues.append("exchanged cloud credential is not resource bounded")
     return issues
 
 

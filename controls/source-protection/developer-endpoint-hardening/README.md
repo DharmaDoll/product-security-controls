@@ -165,7 +165,7 @@ storage and use.
 - rotate or revoke an exposed credential before history rewriting or cache
   cleanup.
 
-Cloud workload federation in CI/CD remains a separate boundary planned as
+Cloud workload federation in CI/CD is a separate boundary implemented offline as
 `PSB-CICD-006`; endpoint use of cloud credentials still follows this baseline.
 
 ### 4. Shift-left workflow controls

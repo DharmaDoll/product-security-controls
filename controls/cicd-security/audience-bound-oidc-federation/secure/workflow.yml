@@ -1,0 +1,28 @@
+name: Protected cloud deployment
+
+on:
+  workflow_call:
+
+permissions: {}
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - run: make verify
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      OIDC_AUDIENCE: "https://cloud.example.invalid/deploy"
+      CLOUD_ROLE: "projects/example/roles/secure-app-deployer"
+    steps:
+      - run: cloud-federation-login --audience "$OIDC_AUDIENCE" --role "$CLOUD_ROLE"
+      - run: deploy-immutable-release

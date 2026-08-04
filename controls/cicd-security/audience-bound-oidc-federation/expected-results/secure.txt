@@ -1,0 +1,7 @@
+PASS PSB-CICD-006/OIDC-001 signed JWT envelope is authentic
+PASS PSB-CICD-006/OIDC-002 issuer audience subject and immutable repository identity are exact
+PASS PSB-CICD-006/OIDC-003 trusted deploy context and reusable workflow identity are exact
+PASS PSB-CICD-006/OIDC-004 token is current short lived and unused
+PASS PSB-CICD-006/OIDC-005 OIDC issuance is isolated to the protected exchange job
+PASS PSB-CICD-006/OIDC-006 stored cloud credentials are absent
+PASS PSB-CICD-006/OIDC-007 downstream credential is bounded and exchange succeeded

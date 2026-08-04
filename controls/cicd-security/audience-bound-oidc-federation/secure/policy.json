@@ -1,0 +1,47 @@
+{
+  "schema_version": "psb-oidc-federation-policy/v1",
+  "policy_revision": "oidc-policy-2026-08-04",
+  "expected_claims": {
+    "iss": "https://token.actions.githubusercontent.com",
+    "aud": "https://cloud.example.invalid/deploy",
+    "sub": "repo:example-org@123456/secure-app@987654:environment:production",
+    "repository": "example-org/secure-app",
+    "repository_id": "987654",
+    "repository_owner_id": "123456",
+    "environment": "production",
+    "ref": "refs/heads/main",
+    "ref_type": "branch",
+    "event_name": "push",
+    "workflow_ref": "example-org/secure-app/.github/workflows/deploy.yml@refs/heads/main",
+    "job_workflow_ref": "example-org/platform-workflows/.github/workflows/deploy.yml@2222222222222222222222222222222222222222",
+    "job_workflow_sha": "2222222222222222222222222222222222222222",
+    "runner_environment": "github-hosted"
+  },
+  "token": {
+    "algorithm": "RS256",
+    "key_id": "synthetic-github-oidc-2026-08",
+    "trusted_public_key": "trust/oidc-public.pem",
+    "max_lifetime_seconds": 600,
+    "max_age_seconds": 600,
+    "clock_skew_seconds": 30
+  },
+  "workflow_contract": {
+    "exchange_job": "deploy",
+    "required_if": "github.event_name == 'push' && github.ref == 'refs/heads/main'",
+    "environment": "production",
+    "permissions": {
+      "contents": "read",
+      "id-token": "write"
+    }
+  },
+  "credential_contract": {
+    "role": "projects/example/roles/secure-app-deployer",
+    "max_ttl_seconds": 900,
+    "allowed_actions": [
+      "deployments.release"
+    ],
+    "allowed_resources": [
+      "projects/example/services/secure-app"
+    ]
+  }
+}

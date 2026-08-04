@@ -345,7 +345,7 @@ limitations:
   - Automatic remediation can cause outages or destroy evidence and is restricted to reviewed reversible actions.
   - Trivy scanning provenance and SBOM distribution and OCI workload admission now have dedicated E3 controls but live organization adapters remain external evidence.
   - DockSec is composed only as the optional PSB-DETECT-001 remediation adapter; its AI output has no gate authority and its locked production toolchain remains external evidence.
-  - Artifact signing generation and OIDC profiles remain gaps until their dedicated controls are implemented and verified.
+  - Artifact signing generation remains a gap while the PSB-CICD-006 OIDC profile is composed as an offline signed exact-claim contract and provider-specific live federation remains external evidence.
   - Dependency-Track 4.14.3 is represented by a normalized offline adapter contract; live API project ACL webhook analyzer freshness and version 5 migration remain organization evidence.
   - Framework mappings are supporting relationships and do not establish cloud security certification or compliance.
 status: prototype

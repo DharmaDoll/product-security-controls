@@ -60,7 +60,7 @@ PSB-AI-004 ──────────────────┘
 
 Within one priority, complete one E3 vertical slice before starting the next.
 The application-checklist import still requires its organization-owned source.
-`PSB-CICD-005`, `PSB-DEPS-004`, `PSB-DETECT-001`, `PSB-REL-003`,
+`PSB-CICD-005`, `PSB-CICD-006`, `PSB-DEPS-004`, `PSB-DETECT-001`, `PSB-REL-003`,
 `PSB-REL-004`, `PSB-CONTAINER-001`, and `PSB-CONTAINER-004` are implemented.
 Lifecycle-linked artifact-bound SBOM publication now composes into the Golden
 Path, a Dependency-Track plus deployment-inventory query adapter extends
@@ -69,7 +69,8 @@ signer lifecycle, and quarantine boundary. The container admission identity
 now composes with Falco and Sysdig runtime event adapters. Live sensor
 installation and host-side enforcement remain dependent on
 `PSB-CONTAINER-003`.
-`PSB-CICD-006` is also ready because both CI/CD dependencies exist.
+The `PSB-CICD-006` provider-neutral E3 slice is implemented; live cloud-provider
+adapters remain organization evidence and a dependency for live identity use.
 
 ## Prerequisite: application checklist reconciliation
 
@@ -539,7 +540,7 @@ Implemented by
 
 ### PSB-CICD-006 — Audience-bound cloud OIDC federation
 
-Status: `ready` — `PSB-CICD-004` and `PSB-CICD-005` implemented
+Status: `implemented` — provider-neutral signed exact-claim E3 slice
 Domain: `cicd-security`
 
 #### Goal
@@ -548,11 +549,14 @@ Replace stored cloud keys with short-lived deployment credentials whose issuer,
 audience, subject, repository, ref, environment, and reusable workflow identity
 are explicitly trusted.
 
-#### First runnable slice
+#### Implemented runnable slice
 
 Use a provider-neutral trust-policy fixture and signed synthetic OIDC claims.
 Accept only the protected deploy job and reject fork, pull request, wrong
 audience, wrong repository, mutable ref, expired token, and replay cases.
+
+Implemented by
+[`controls/cicd-security/audience-bound-oidc-federation/`](../controls/cicd-security/audience-bound-oidc-federation/).
 
 #### Acceptance criteria
 
@@ -561,12 +565,13 @@ audience, wrong repository, mutable ref, expired token, and replay cases.
 - no static cloud credential is present in workflow or repository secrets;
 - exchange failure is not interpreted as a skipped clean deployment check.
 
-Planning source:
+Source and remaining adapter boundary:
 
 - [`REF-CICD-009`](SECURITY_GUIDANCE_SOURCES.md#ref-cicd-009) informs the
-  remaining credential-exposure, exact-claim, job-separation, and
-  provider-side authorization requirements. Package-registry Trusted
-  Publishing remains a separate future profile.
+  credential-exposure, exact-claim, job-separation, and provider-side
+  authorization requirements. Provider-specific live trust policy and audit
+  evidence remain adapters. Package-registry Trusted Publishing remains a
+  separate future profile.
 
 ### PSB-REL-003 — SBOM generation, binding, and publication
 

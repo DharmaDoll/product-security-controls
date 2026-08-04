@@ -1,0 +1,26 @@
+name: Broad cloud deployment
+
+on:
+  pull_request:
+
+permissions: write-all
+
+jobs:
+  test:
+    runs-on: self-hosted
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - run: make test
+
+  deploy:
+    runs-on: self-hosted
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      OIDC_AUDIENCE: "https://cloud.example.invalid/admin"
+      AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
+    steps:
+      - run: deploy-from-pull-request
