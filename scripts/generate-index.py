@@ -70,6 +70,18 @@ DOMAIN_CATALOG = (
     ),
 )
 
+FRAMEWORK_LABELS = {
+    "cisa-product-security-bad-practices": "CISA Product Security Bad Practices",
+    "github-security-guidance": "GitHub Security Guidance",
+    "mitre-attack": "MITRE ATT&CK",
+    "mitre-atlas": "MITRE ATLAS",
+    "nist-sp-800-190": "NIST SP 800-190",
+    "nist-ssdf": "NIST SSDF",
+    "openssf-osps-baseline": "OpenSSF OSPS Baseline",
+    "owasp-asvs": "OWASP ASVS",
+    "slsa": "SLSA",
+}
+
 
 def markdown_cell(value: object) -> str:
     return str(value).replace("\n", " ").replace("|", "\\|")
@@ -78,6 +90,25 @@ def markdown_cell(value: object) -> str:
 def control_readme_path(control: dict[str, Any], base: Path) -> str:
     readme = control["_directory"] / "README.md"
     return Path(os.path.relpath(readme, base)).as_posix()
+
+
+def framework_links(control: dict[str, Any]) -> str:
+    frameworks = {
+        mapping["framework"]
+        for mapping in control.get("mappings", [])
+        if isinstance(mapping, dict) and isinstance(mapping.get("framework"), str)
+    }
+    if not frameworks:
+        return "—"
+    ordered = sorted(
+        frameworks,
+        key=lambda framework: (FRAMEWORK_LABELS.get(framework, framework), framework),
+    )
+    return " / ".join(
+        f"[{FRAMEWORK_LABELS.get(framework, framework)}]"
+        f"(../generated/mappings/{framework}.md)"
+        for framework in ordered
+    )
 
 
 def render_flat_index(controls: list[dict[str, Any]]) -> str:
@@ -179,8 +210,8 @@ def render_control_catalog(controls: list[dict[str, Any]]) -> str:
             continue
         lines.extend(
             [
-                "| Control | 達成する状態 | Security functions | Checks | Maturity / Evidence |",
-                "|---|---|---|---:|---|",
+                "| Control | 達成する状態 | マッピング先 | Security functions | Checks | Maturity / Evidence |",
+                "|---|---|---|---|---:|---|",
             ]
         )
         for control in domain_controls:
@@ -194,6 +225,7 @@ def render_control_catalog(controls: list[dict[str, Any]]) -> str:
                     (
                         control_link,
                         markdown_cell(control["summary"]),
+                        framework_links(control),
                         functions,
                         str(len(control["checks"])),
                         maturity,
@@ -207,6 +239,9 @@ def render_control_catalog(controls: list[dict[str, Any]]) -> str:
             "",
             "## 表示の意味",
             "",
+            "- `マッピング先`: `control.yaml`に記録された標準、脅威分類、"
+            "実装ガイダンス。各リンクからrequirement ID、relationship、confidence、"
+            "対象checkを確認できます。mappingは準拠認定や完全なcoverageを意味しません。",
             "- `Security functions`: `prevent`、`detect`、`verify`、`respond`、"
             "`govern`のどの役割を持つか。",
             "- `Checks`: spreadsheetへ展開される原子的な確認行の数。",

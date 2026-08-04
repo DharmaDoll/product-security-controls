@@ -47,6 +47,36 @@ class GenerateIndexTest(unittest.TestCase):
                 self.assertIn(f'<a id="domain-{domain}"></a>', catalog)
                 self.assertIn(f"## {label}", catalog)
 
+    def test_human_catalog_lists_unique_framework_links(self) -> None:
+        catalog = generate_index.render_control_catalog(self.controls)
+        for control in self.controls:
+            with self.subTest(control=control["id"]):
+                expected = generate_index.framework_links(control)
+                self.assertIn(expected, catalog)
+                frameworks = {
+                    mapping["framework"] for mapping in control["mappings"]
+                }
+                for framework in frameworks:
+                    self.assertIn(
+                        f"../generated/mappings/{framework}.md",
+                        expected,
+                    )
+                    self.assertEqual(
+                        expected.count(f"../generated/mappings/{framework}.md"),
+                        1,
+                    )
+                    self.assertTrue(
+                        (
+                            REPOSITORY_ROOT
+                            / "generated"
+                            / "mappings"
+                            / f"{framework}.md"
+                        ).is_file()
+                    )
+
+    def test_framework_links_show_unmapped_state(self) -> None:
+        self.assertEqual(generate_index.framework_links({"mappings": []}), "—")
+
     def test_flat_index_control_links_resolve(self) -> None:
         index = generate_index.render_flat_index(self.controls)
         links = re.findall(r"\[[^\]]+\]\((\.\./controls/[^)]+/README\.md)\)", index)
