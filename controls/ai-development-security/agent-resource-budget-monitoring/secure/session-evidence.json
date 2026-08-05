@@ -1,0 +1,369 @@
+{
+  "schema_version": "psb-ai-resource-budget-evidence/v1",
+  "evidence_id": "PSB-AI-007-SECURE-2026-08-05",
+  "source_type": "synthetic-fixture",
+  "collection_status": "complete",
+  "evaluator_status": "completed",
+  "captured_at": "2026-08-05T12:00:30Z",
+  "policy_id": "PSB-AI-007-FIRST-SLICE",
+  "policy_revision": "2026-08-05.1",
+  "collector_health": {
+    "available": true,
+    "complete": true,
+    "sequence_gap": false,
+    "rejected_records": 0,
+    "providers": [
+      "claude-code",
+      "codex"
+    ]
+  },
+  "sessions": [
+    {
+      "session_id": "SESSION-NORMAL",
+      "provider": "claude-code",
+      "started_at": "2026-08-05T11:58:00Z",
+      "observed_at": "2026-08-05T12:00:00Z",
+      "first_sequence": 1,
+      "last_sequence": 5,
+      "event_count": 5,
+      "measurements": {
+        "input_tokens": 4000,
+        "output_tokens": 1000,
+        "cost_currency": "USD",
+        "cost_microunits": 100000,
+        "tool_calls": 3,
+        "high_impact_actions": 0,
+        "retries": 0,
+        "maximum_recursion_depth": 1,
+        "unknown_tool_denials": 0,
+        "approval_replays": 0,
+        "hook_failures": 0
+      },
+      "decision": {
+        "decision": "continue",
+        "reasons": [
+          "within-budget"
+        ],
+        "breaker_state": "closed",
+        "permitted_mode": "normal",
+        "evaluated_at": "2026-08-05T12:00:00Z"
+      },
+      "enforcement": {
+        "applied": true,
+        "applied_at": "2026-08-05T12:00:01Z",
+        "new_model_calls_allowed": true,
+        "side_effects_allowed": true,
+        "safe_summary_allowed": true
+      }
+    },
+    {
+      "session_id": "SESSION-WARNING",
+      "provider": "codex",
+      "started_at": "2026-08-05T11:56:40Z",
+      "observed_at": "2026-08-05T12:00:00Z",
+      "first_sequence": 1,
+      "last_sequence": 8,
+      "event_count": 8,
+      "measurements": {
+        "input_tokens": 18000,
+        "output_tokens": 5000,
+        "cost_currency": "USD",
+        "cost_microunits": 200000,
+        "tool_calls": 5,
+        "high_impact_actions": 0,
+        "retries": 1,
+        "maximum_recursion_depth": 2,
+        "unknown_tool_denials": 0,
+        "approval_replays": 0,
+        "hook_failures": 0
+      },
+      "decision": {
+        "decision": "restrict",
+        "reasons": [
+          "budget-warning"
+        ],
+        "breaker_state": "restricted",
+        "permitted_mode": "read-only",
+        "evaluated_at": "2026-08-05T12:00:00Z"
+      },
+      "enforcement": {
+        "applied": true,
+        "applied_at": "2026-08-05T12:00:01Z",
+        "new_model_calls_allowed": true,
+        "side_effects_allowed": false,
+        "safe_summary_allowed": true
+      }
+    },
+    {
+      "session_id": "SESSION-TOKEN-LIMIT",
+      "provider": "claude-code",
+      "started_at": "2026-08-05T11:55:00Z",
+      "observed_at": "2026-08-05T12:00:00Z",
+      "first_sequence": 1,
+      "last_sequence": 12,
+      "event_count": 12,
+      "measurements": {
+        "input_tokens": 21000,
+        "output_tokens": 9000,
+        "cost_currency": "USD",
+        "cost_microunits": 300000,
+        "tool_calls": 10,
+        "high_impact_actions": 0,
+        "retries": 1,
+        "maximum_recursion_depth": 2,
+        "unknown_tool_denials": 0,
+        "approval_replays": 0,
+        "hook_failures": 0
+      },
+      "decision": {
+        "decision": "block",
+        "reasons": [
+          "input-token-limit",
+          "output-token-limit",
+          "total-token-limit"
+        ],
+        "breaker_state": "open",
+        "permitted_mode": "none",
+        "evaluated_at": "2026-08-05T12:00:00Z"
+      },
+      "enforcement": {
+        "applied": true,
+        "applied_at": "2026-08-05T12:00:01Z",
+        "new_model_calls_allowed": false,
+        "side_effects_allowed": false,
+        "safe_summary_allowed": true
+      }
+    },
+    {
+      "session_id": "SESSION-COST-LIMIT",
+      "provider": "codex",
+      "started_at": "2026-08-05T11:57:00Z",
+      "observed_at": "2026-08-05T12:00:00Z",
+      "first_sequence": 1,
+      "last_sequence": 6,
+      "event_count": 6,
+      "measurements": {
+        "input_tokens": 5000,
+        "output_tokens": 1000,
+        "cost_currency": "USD",
+        "cost_microunits": 600000,
+        "tool_calls": 4,
+        "high_impact_actions": 0,
+        "retries": 0,
+        "maximum_recursion_depth": 1,
+        "unknown_tool_denials": 0,
+        "approval_replays": 0,
+        "hook_failures": 0
+      },
+      "decision": {
+        "decision": "block",
+        "reasons": [
+          "cost-limit"
+        ],
+        "breaker_state": "open",
+        "permitted_mode": "none",
+        "evaluated_at": "2026-08-05T12:00:00Z"
+      },
+      "enforcement": {
+        "applied": true,
+        "applied_at": "2026-08-05T12:00:01Z",
+        "new_model_calls_allowed": false,
+        "side_effects_allowed": false,
+        "safe_summary_allowed": true
+      }
+    },
+    {
+      "session_id": "SESSION-DURATION-LIMIT",
+      "provider": "claude-code",
+      "started_at": "2026-08-05T11:40:00Z",
+      "observed_at": "2026-08-05T12:00:00Z",
+      "first_sequence": 1,
+      "last_sequence": 7,
+      "event_count": 7,
+      "measurements": {
+        "input_tokens": 6000,
+        "output_tokens": 1000,
+        "cost_currency": "USD",
+        "cost_microunits": 150000,
+        "tool_calls": 5,
+        "high_impact_actions": 0,
+        "retries": 1,
+        "maximum_recursion_depth": 2,
+        "unknown_tool_denials": 0,
+        "approval_replays": 0,
+        "hook_failures": 0
+      },
+      "decision": {
+        "decision": "block",
+        "reasons": [
+          "duration-limit"
+        ],
+        "breaker_state": "open",
+        "permitted_mode": "none",
+        "evaluated_at": "2026-08-05T12:00:00Z"
+      },
+      "enforcement": {
+        "applied": true,
+        "applied_at": "2026-08-05T12:00:01Z",
+        "new_model_calls_allowed": false,
+        "side_effects_allowed": false,
+        "safe_summary_allowed": true
+      }
+    },
+    {
+      "session_id": "SESSION-TOOL-LIMIT",
+      "provider": "codex",
+      "started_at": "2026-08-05T11:52:00Z",
+      "observed_at": "2026-08-05T12:00:00Z",
+      "first_sequence": 1,
+      "last_sequence": 31,
+      "event_count": 31,
+      "measurements": {
+        "input_tokens": 10000,
+        "output_tokens": 2000,
+        "cost_currency": "USD",
+        "cost_microunits": 300000,
+        "tool_calls": 21,
+        "high_impact_actions": 2,
+        "retries": 4,
+        "maximum_recursion_depth": 5,
+        "unknown_tool_denials": 0,
+        "approval_replays": 0,
+        "hook_failures": 0
+      },
+      "decision": {
+        "decision": "block",
+        "reasons": [
+          "high-impact-action-limit",
+          "recursion-limit",
+          "retry-limit",
+          "tool-call-limit"
+        ],
+        "breaker_state": "open",
+        "permitted_mode": "none",
+        "evaluated_at": "2026-08-05T12:00:00Z"
+      },
+      "enforcement": {
+        "applied": true,
+        "applied_at": "2026-08-05T12:00:01Z",
+        "new_model_calls_allowed": false,
+        "side_effects_allowed": false,
+        "safe_summary_allowed": true
+      }
+    },
+    {
+      "session_id": "SESSION-ANOMALY",
+      "provider": "claude-code",
+      "started_at": "2026-08-05T11:58:00Z",
+      "observed_at": "2026-08-05T12:00:00Z",
+      "first_sequence": 1,
+      "last_sequence": 9,
+      "event_count": 9,
+      "measurements": {
+        "input_tokens": 4000,
+        "output_tokens": 1000,
+        "cost_currency": "USD",
+        "cost_microunits": 100000,
+        "tool_calls": 4,
+        "high_impact_actions": 0,
+        "retries": 0,
+        "maximum_recursion_depth": 1,
+        "unknown_tool_denials": 2,
+        "approval_replays": 1,
+        "hook_failures": 0
+      },
+      "decision": {
+        "decision": "block",
+        "reasons": [
+          "approval-replay",
+          "unknown-tool-denial-spike"
+        ],
+        "breaker_state": "open",
+        "permitted_mode": "none",
+        "evaluated_at": "2026-08-05T12:00:00Z"
+      },
+      "enforcement": {
+        "applied": true,
+        "applied_at": "2026-08-05T12:00:01Z",
+        "new_model_calls_allowed": false,
+        "side_effects_allowed": false,
+        "safe_summary_allowed": true
+      }
+    }
+  ],
+  "alerts": [
+    {
+      "session_id": "SESSION-WARNING",
+      "rule_ids": [
+        "budget-warning"
+      ],
+      "status": "delivered",
+      "emitted_at": "2026-08-05T12:00:01Z",
+      "delivered_at": "2026-08-05T12:00:11Z",
+      "delivery_latency_seconds": 10,
+      "receipt_verified": true
+    },
+    {
+      "session_id": "SESSION-TOKEN-LIMIT",
+      "rule_ids": [
+        "input-token-limit",
+        "output-token-limit",
+        "total-token-limit"
+      ],
+      "status": "delivered",
+      "emitted_at": "2026-08-05T12:00:01Z",
+      "delivered_at": "2026-08-05T12:00:13Z",
+      "delivery_latency_seconds": 12,
+      "receipt_verified": true
+    },
+    {
+      "session_id": "SESSION-COST-LIMIT",
+      "rule_ids": [
+        "cost-limit"
+      ],
+      "status": "delivered",
+      "emitted_at": "2026-08-05T12:00:01Z",
+      "delivered_at": "2026-08-05T12:00:15Z",
+      "delivery_latency_seconds": 14,
+      "receipt_verified": true
+    },
+    {
+      "session_id": "SESSION-DURATION-LIMIT",
+      "rule_ids": [
+        "duration-limit"
+      ],
+      "status": "delivered",
+      "emitted_at": "2026-08-05T12:00:01Z",
+      "delivered_at": "2026-08-05T12:00:17Z",
+      "delivery_latency_seconds": 16,
+      "receipt_verified": true
+    },
+    {
+      "session_id": "SESSION-TOOL-LIMIT",
+      "rule_ids": [
+        "high-impact-action-limit",
+        "recursion-limit",
+        "retry-limit",
+        "tool-call-limit"
+      ],
+      "status": "delivered",
+      "emitted_at": "2026-08-05T12:00:01Z",
+      "delivered_at": "2026-08-05T12:00:19Z",
+      "delivery_latency_seconds": 18,
+      "receipt_verified": true
+    },
+    {
+      "session_id": "SESSION-ANOMALY",
+      "rule_ids": [
+        "approval-replay",
+        "unknown-tool-denial-spike"
+      ],
+      "status": "delivered",
+      "emitted_at": "2026-08-05T12:00:01Z",
+      "delivered_at": "2026-08-05T12:00:21Z",
+      "delivery_latency_seconds": 20,
+      "receipt_verified": true
+    }
+  ],
+  "live_enforcement": "NOT_CHECKED"
+}

@@ -6,9 +6,9 @@
 |---|---|
 | セキュリティ上の問題 | GitHub OAuth token、PAT、SSH key、App credentialが長寿命・過剰権限・平文保管・未棚卸しだと、単一credential theftがsource改変や組織侵害へ拡大する。 |
 | 誰から、または何から守るか | Phishing、malware、悪意あるtool、local access、漏洩credentialの再利用、owner不在、rotation・revocation失敗から守る。 |
-| 何が対象か | Developerとautomationのsource-platform credential、OAuth・PAT・SSH・GitHub App、scope、repository access、保管、期限、利用証跡、incident response。 |
-| 何をするか | Automationは短命installation tokenやworkload identityを優先し、credentialをpurpose・owner・exact scope・保管・期限へbindして棚卸し、rotation、revokeを検証する。 |
-| 成功状態 | Credential classごとの最小権限・短寿命・hardwareまたはsecret-manager保護・利用monitoringが満たされ、orphan・stale・broad・malformed recordは拒否される。 |
+| 何が対象か | Developerとautomationのsource-platform credential、OAuth・PAT・SSH・GitHub App、IDEからGitHub MCPへのsecret delivery、scope、repository access、保管、期限、利用証跡、incident response。 |
+| 何をするか | Automationは短命installation token、GitHub MCPはOAuthを優先し、PAT fallbackをpurpose・owner・exact scope・秘密ストア・MCP子process・期限へbindして棚卸し、rotation、revokeを検証する。 |
+| 成功状態 | Credential classごとの最小権限・短寿命・hardwareまたはsecret-manager保護・利用monitoringに加え、GitHub MCPが既定read-onlyになり、orphan・stale・broad・平文・malformed recordは拒否される。 |
 | 対象外・残余リスク | Verifierはlive GitHub credentialを列挙・失効・実権限testせず、identity provider、developer endpoint、GitHub control plane自体の侵害を防がない。 |
 
 ## Security problem
@@ -39,6 +39,8 @@ it was created by `gh`.
   data, or releases beyond the developer's immediate task.
 - An abandoned token or SSH key remains usable after role change, offboarding,
   device loss, or an incident.
+- A malicious IDE extension, child process, or prompt-injected MCP tool obtains
+  a PAT from an ambient IDE or shell environment and reuses its GitHub access.
 - The target is the source-platform identity boundary: user OAuth grants, PATs,
   SSH keys, GitHub Apps, credential storage, and organization authorization.
 
@@ -54,6 +56,11 @@ CI/CD workload federation remains a separate control boundary.
 - `insecure/credential-policy.json` deliberately permits classic PATs,
   unrestricted resources, plaintext storage, indefinite lifetime, and missing
   review or audit controls.
+- `secure/github-mcp-*.json` demonstrates OAuth-first GitHub MCP authentication
+  and a metadata-only fine-grained PAT fallback delivered only to an exact
+  read-only MCP child process.
+- `insecure/github-mcp-*.json` deliberately hardcodes a token placeholder,
+  launches a floating image, enables every toolset, and has no lifecycle owner.
 
 The fixtures contain no token, private key, username, repository name, or
 production evidence. They are not applied to GitHub or the host.
@@ -77,6 +84,41 @@ Fine-grained does not automatically mean least privilege. Resource owner,
 repository selection, permission set, duration, and organization approval must
 all be reviewed.
 
+## GitHub MCPを開発者IDEで使う場合
+
+環境変数はsecret storeではなく、secretを必要なprocessへ渡す配送手段です。PATを
+`.bashrc`、`.zshrc`、`.env`、IDE JSON、Git remote URLへ保存したり、PATを持つ親shellから
+IDE全体を起動したりすると、別extensionや子processへGitHub authorityが広がります。
+
+このcontrolは次の順序を強制します。
+
+1. GitHub.comの対応IDEでは公式remote MCPのOAuthを第一選択にする。
+2. Local MCPでOAuthを利用できる場合も、user管理PATよりmemory-only OAuthを優先する。
+3. PATが不可避な組合せだけ、GitHub MCP専用fine-grained PATを発行する。
+4. PATはownerを1つ、repositoryを明示選択、permissionをread-only最小限、期限を90日以下に
+   し、Organization approvalとSSO policyへ接続する。
+5. PATはOS keychainまたは承認済みsecret managerへ置き、IDE設定には
+   `${input:github_token}`という参照だけを記録する。
+6. `GITHUB_PERSONAL_ACCESS_TOKEN`はexact MCP child processへだけ解決し、IDE parentや
+   全shell環境へexportしない。
+7. MCPは既定でread-onlyとし、`context,repos,pull_requests`だけを公開する。Write用途は
+   別profileとし、`PSB-AI-004`のexact tool authorizationと人間の承認を通す。
+
+OAuthの最小構成は[`secure/github-mcp-oauth.json`](secure/github-mcp-oauth.json)です。
+PAT fallbackの[`secure/github-mcp-pat-fallback.json`](secure/github-mcp-pat-fallback.json)は
+credential値を含まず、管理配布したexact commandへsecret参照だけを渡します。
+`password: true`は表示maskにすぎない可能性があるため、実際のIDEが入力をOS keychain等へ
+保存し、MCP childだけへ渡すことをlive endpoint evidenceで確認するまでは
+`NOT_CHECKED`です。
+
+Control境界は次のとおりです。
+
+| Control | GitHub MCPに対する責務 |
+|---|---|
+| `PSB-SOURCE-004` | OAuth／PAT選択、PAT権限・期限・秘密保管・rotation・revoke・audit。 |
+| `PSB-AI-002` | 公式MCP serverのcanonical source、immutable artifact、semantic review、revocation。 |
+| `PSB-AI-004` | Exact MCP command／URL、read-only toolset、write approval、runtime inventoryとaudit。 |
+
 ## Verification
 
 From the repository root:
@@ -91,6 +133,10 @@ The verifier:
 - rejects the insecure fixture with one finding for every atomic requirement;
 - reports malformed or unreadable input as `ERROR` with exit code `2`;
 - never reads or prints an actual credential.
+- accepts the OAuth-first and bounded PAT-fallback GitHub MCP fixtures;
+- rejects hardcoded ambient broad and mutable GitHub MCP configuration;
+- treats malformed or credential-bearing MCP evidence as `ERROR` with exit
+  code `2`, never as a clean configuration.
 
 Production adoption requires external evidence such as organization token
 policy, OAuth application grants, SSH-key inventory, audit-log records,
@@ -120,7 +166,21 @@ configuration. OAuth grants may be broader or longer-lived than desired even
 when local storage is protected. SSH commit signing and SSH authentication are
 different uses and must be governed separately.
 
+The exact managed command in the PAT sample is an organization deployment
+contract, not proof that the installed GitHub MCP binary is authentic. Bind it
+to a reviewed immutable artifact through `PSB-AI-002`. IDEs differ in secret
+input persistence and environment inheritance, so a static `${input:...}`
+reference cannot prove OS-keychain storage or child-only delivery. Live
+adoption remains `NOT_CHECKED` until endpoint evidence confirms both.
+
 Short lifetimes, hardware keys, approval workflows, and recurring access
 reviews add developer and administrator effort. Break-glass access must remain
 narrow, monitored, and time-bound. Framework mappings in `control.yaml` are
 supporting relationships, not a compliance claim.
+
+## References
+
+- [GitHub MCP Server setup](https://docs.github.com/en/copilot/how-tos/provide-context/use-mcp-in-your-ide/set-up-the-github-mcp-server)
+- [GitHub MCP Server README pinned at `3778a41476e31a072430cfee7c5d31c5f72def60`](https://github.com/github/github-mcp-server/blob/3778a41476e31a072430cfee7c5d31c5f72def60/README.md)
+- [GitHub MCP policies and governance pinned at `3778a41476e31a072430cfee7c5d31c5f72def60`](https://github.com/github/github-mcp-server/blob/3778a41476e31a072430cfee7c5d31c5f72def60/docs/policies-and-governance.md)
+- [REF-AI-004 GitHub MCP official authentication guidance](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-ai-004)

@@ -79,6 +79,10 @@
   protected backups crossing the development trust boundary;
 - AI agents, Skills, MCP servers, or editor integrations accessing credentials
   and files beyond the task's intended scope.
+- a GitHub PAT persisted in IDE JSON, a shell profile, a dotenv file, or the
+  parent IDE environment becoming ambient authority for unrelated extensions
+  and child processes, while an all-tool MCP turns credential theft or prompt
+  injection into repository mutation;
 
 Developer awareness is not a sufficient trust boundary. Endpoint and credential
 controls should use centrally enforced engineering guardrails such as MDM,
@@ -100,15 +104,67 @@ evidence.
   unexpected execution;
 - poisoned persistent memory or context changing future decisions;
 - unauthenticated, replayed, or over-privileged inter-agent delegation;
+- forged or stale agent identities, detached parent tasks, cross-tenant data,
+  child-budget amplification, onward delegation, or unbound responses causing
+  compromise to propagate across an agent chain;
 - failures, false signals, retries, and resource consumption cascading through
   autonomous workflows;
 - plausible explanations manipulating a human into approving a harmful action;
 - compromised or misaligned agents continuing outside intended goals or stop
-  conditions.
+  conditions;
+- application or developer LLM traffic bypassing an approved gateway and
+  sending secrets, PII, source, or regulated data to an unapproved provider,
+  region, model, tenant, or retention policy;
+- unsigned, mutable, malicious, or unsafe serialized model weights executing
+  loader code or entering production without model, dataset, training, and
+  fine-tuning provenance;
+- poisoned or unauthorized RAG documents entering a knowledge index, crossing
+  tenant or classification scope, and later becoming trusted retrieval
+  context;
+- incomplete, stale, unavailable, or non-reproducible AI TEVV and red-team
+  evidence being treated as a clean release decision;
+- stop, quarantine, fallback, or recovery controls depending on the same
+  compromised model, agent, tool, or mutable policy they are intended to
+  contain.
 
 These scenarios align with the OWASP Top 10 for Agentic Applications 2026
 risk categories and overlap with more specific MITRE ATLAS attack behaviors.
 Neither taxonomy is itself an enforcement boundary or proof of coverage.
+
+`PSB-AI-003` implements the first direct and indirect prompt-injection test
+boundary across repository documents, issue text, Web content, API responses,
+tool output, and direct prompts. It composes exact PSB-AI-001, PSB-AI-002, and
+PSB-AI-004 identities, requires denial before tool execution, and separately
+requires legitimate task completion. Its deterministic fixtures do not prove
+live model, delayed, multimodal, memory, or multi-agent containment.
+
+`PSB-AI-005` extends this boundary to durable memory. It rejects PSB-AI-003
+untrusted content and prohibited data before persistence, preserves exact
+user/session/task scope on write and read, bounds payload size and TTL, and
+requires expired payload deletion plus a sanitized tombstone. Local fixtures
+do not prove provider stores, caches, indexes, replicas, backups, encryption,
+residency, or live cross-tenant enforcement.
+
+`PSB-AI-006` owns the boundary between untrusted model output and an external
+side effect. It requires strict typed proposals, independent resource and
+parameter policy, one canonical request digest across PSB-AI-004 authorization,
+decision, execution, and result, single dispatch with replay denial, and
+quarantine of uncertain outcomes. Its local fixtures do not prove live agent,
+gateway, backend idempotency, application authorization, or rollback behavior.
+
+`PSB-AI-007` adds cumulative single-agent resource and anomaly containment. It
+binds PSB-AI-004 telemetry identity, derives token, integer cost, duration,
+tool, high-impact action, retry, recursion, unknown-tool, approval-replay, and
+hook-failure decisions, and verifies warning restriction, hard circuit
+breaking, and alert receipts. Local aggregates do not prove provider billing,
+atomic concurrent reservations, tenant or multi-agent budgets, or live alert
+response.
+
+Application-facing AI gateways, model and dataset supply-chain integrity,
+RAG corpus provenance, AI TEVV release gating, and independent kill-switch and
+recovery behavior remain planned boundaries. Coding-agent controls must not be
+used as evidence that these broader AI product and operations threats are
+covered.
 
 ### CI/CD and release threats
 

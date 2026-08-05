@@ -1,0 +1,44 @@
+{
+  "schema": "psb-github-mcp-auth-policy/v1",
+  "authentication_order": [
+    "classic-pat"
+  ],
+  "oauth": {
+    "remote_url": "http://github-mcp.invalid/",
+    "organization_app_approval": "disabled",
+    "sso": "optional"
+  },
+  "pat_fallback": {
+    "type": "classic",
+    "purpose": "shared-developer-token",
+    "resource_owner_count": 0,
+    "repository_selection": "all",
+    "permissions": "write-all",
+    "maximum_lifetime_days": 0,
+    "organization_approval": "disabled",
+    "shared_with_git_or_automation": true
+  },
+  "secret_delivery": {
+    "at_rest": "shell-profile",
+    "ide_secret_reference": "hardcoded-placeholder",
+    "target_environment": "ide-parent-and-all-children",
+    "prohibited_persistence": []
+  },
+  "runtime_authority": {
+    "default_mode": "write",
+    "toolsets": [
+      "all"
+    ],
+    "all_toolset": true,
+    "write_profile": "default-no-approval",
+    "unknown_tools": "allow"
+  },
+  "lifecycle_binding": {
+    "credential_control": "none",
+    "dependency_control": "none",
+    "runtime_control": "none",
+    "revocation_triggers": "manual-only",
+    "audit_events": "disabled"
+  },
+  "live_adoption": "claimed"
+}

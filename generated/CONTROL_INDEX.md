@@ -6,7 +6,12 @@ Generated control catalog. Do not edit manually.
 | --- | --- | --- | --- | --- | --- |
 | [PSB-AI-001](../controls/ai-development-security/repository-owned-ai-security-guidance/README.md) | ai-development-security | Pin and benchmark repository-owned AI security guidance | 7 | prototype | E3 |
 | [PSB-AI-002](../controls/ai-development-security/agent-extension-dependency-governance/README.md) | ai-development-security | Govern Skill MCP plugin and external prompt dependencies | 7 | prototype | E3 |
+| [PSB-AI-003](../controls/ai-development-security/prompt-document-injection-containment/README.md) | ai-development-security | Contain prompt and document injection across agent inputs | 10 | prototype | E3 |
 | [PSB-AI-004](../controls/ai-development-security/ai-coding-agent-runtime-hardening/README.md) | ai-development-security | Harden AI coding agent runtime authority | 26 | prototype | E3 |
+| [PSB-AI-005](../controls/ai-development-security/agent-memory-context-lifecycle/README.md) | ai-development-security | Enforce agent memory context and data lifecycle boundaries | 9 | prototype | E3 |
+| [PSB-AI-006](../controls/ai-development-security/agent-action-integrity-output-validation/README.md) | ai-development-security | Bind agent proposals authorization execution and outputs | 10 | prototype | E3 |
+| [PSB-AI-007](../controls/ai-development-security/agent-resource-budget-monitoring/README.md) | ai-development-security | Enforce agent resource budgets anomaly detection and circuit breaking | 11 | prototype | E3 |
+| [PSB-AI-008](../controls/ai-development-security/multi-agent-trust-delegation/README.md) | ai-development-security | Authenticate and constrain multi-agent delegation | 11 | prototype | E3 |
 | [PSB-BUILD-001](../controls/build-security/build-containment/README.md) | build-security | dependency buildを権限・credential・networkから隔離する | 6 | prototype | E3 |
 | [PSB-BUILD-002](../controls/build-security/hosted-consistent-build/README.md) | build-security | 一貫したrelease buildを承認済みhosted platformで実行する | 5 | prototype | E3 |
 | [PSB-BUILD-003](../controls/build-security/platform-provenance-generation/README.md) | build-security | Build platformがauthentic provenanceを自動生成する | 5 | prototype | E3 |
@@ -36,4 +41,4 @@ Generated control catalog. Do not edit manually.
 | [PSB-SOURCE-001](../controls/source-protection/developer-endpoint-hardening/README.md) | source-protection | Harden developer endpoints and local trust boundaries | 29 | prototype | E3 |
 | [PSB-SOURCE-002](../controls/source-protection/git-hooks-baseline/README.md) | source-protection | リポジトリ所有の開発者向けGit hooksセキュリティベースライン | 14 | prototype | E3 |
 | [PSB-SOURCE-003](../controls/source-protection/public-repository-exposure/README.md) | source-protection | 公開リポジトリ露出とGitHub dorking検証 | 13 | reference | E3 |
-| [PSB-SOURCE-004](../controls/source-protection/source-access-credential-lifecycle/README.md) | source-protection | Govern source access credential lifecycle | 12 | prototype | E3 |
+| [PSB-SOURCE-004](../controls/source-protection/source-access-credential-lifecycle/README.md) | source-protection | Govern source access credential lifecycle | 17 | prototype | E3 |

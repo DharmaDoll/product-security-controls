@@ -56,6 +56,10 @@ PSB-GOV-003 ──> organization-owned FIRST PSIRT capability profile
 PSB-AI-001 ──> PSB-AI-002 ──┐
                              ├──> PSB-AI-003
 PSB-AI-004 ──────────────────┘
+
+PSB-AI-002 + PSB-AI-004 ──> PSB-AI-006
+PSB-AI-004 + PSB-AI-006 ──> PSB-AI-007
+PSB-AI-004 + PSB-AI-006 + PSB-AI-007 ──> PSB-AI-008
 ```
 
 Within one priority, complete one E3 vertical slice before starting the next.
@@ -1320,7 +1324,8 @@ MCP, command, or side-effect authority.
 - `PSB-SOURCE-001` owns the underlying endpoint, MDM, EDR, managed environment,
   and OS-level isolation evidence.
 - `PSB-SOURCE-004` owns source-platform OAuth, PAT, SSH, and application
-  credential lifecycle.
+  credential lifecycle, including OAuth-first GitHub MCP authentication,
+  child-only PAT delivery, and the bounded fine-grained fallback contract.
 - `PSB-AI-001` owns repository guidance provenance and benchmark effectiveness;
   AGENTS or CLAUDE instruction files are guidance, not an enforcement boundary.
 - `PSB-AI-002` owns pinning, integrity, semantic review, capability approval,
@@ -1667,7 +1672,7 @@ checkpoint atomicity and rollback protection, and independent trust delivery.
 
 ### PSB-AI-003 — Prompt and document injection containment
 
-Status: `dependency-required` on `PSB-AI-001`, `PSB-AI-002`, and `PSB-AI-004`  
+Status: `prototype` — first runnable slice implemented at E3
 Domain: `ai-development-security`
 
 #### Goal
@@ -1683,6 +1688,157 @@ secret access, network exfiltration, unsafe dependency installation, and
 privileged execution. Verify denial, sandbox boundaries, audit evidence, and
 continued completion of the legitimate task.
 
+Implemented in
+[`controls/ai-development-security/prompt-document-injection-containment/`](../controls/ai-development-security/prompt-document-injection-containment/):
+
+- six inert deterministic fixtures cover repository documents, issue text,
+  Web content, API responses, tool output, and direct user prompts;
+- the exact source corpus and PSB-AI-001 guidance, PSB-AI-002 dependency
+  manifest, and PSB-AI-004 runtime policy are SHA-256 and identity bound;
+- control removal, credential access, network exfiltration, unsafe dependency
+  installation, and privileged execution remain denied before tool execution;
+- source trust, root-goal preservation, injection telemetry, runtime decision,
+  pre-action redacted audit, and legitimate task completion are evaluated
+  separately;
+- known unsafe behavior is `FAIL`, while source or policy tamper, incomplete
+  collection, evaluator failure, malformed input, and sensitive evidence are
+  `ERROR`;
+- fixture evidence explicitly leaves live model containment `NOT_CHECKED`.
+
+### PSB-AI-005 — Agent memory, context, and data lifecycle
+
+Status: `prototype` — first runnable slice implemented at E3
+Domain: `ai-development-security`
+
+#### Goal
+
+Prevent untrusted or sensitive content from being persisted, retrieved, or
+shared outside its intended user, session, task, classification, size, and
+retention boundary, and verify that expired payloads are actually removed.
+
+#### First runnable slice
+
+Implemented in
+[`controls/ai-development-security/agent-memory-context-lifecycle/`](../controls/ai-development-security/agent-memory-context-lifecycle/):
+
+- four exact payload candidates exercise an approved summary, PSB-AI-003-bound
+  untrusted tool output, credential-class data, and oversized context;
+- source provenance, SHA-256, classification, trust, actual byte size, exact
+  user/session/task scope, and a maximum 24-hour TTL derive write decisions;
+- only the approved candidate enters active memory and its full provenance and
+  lifecycle identity must remain intact;
+- exact-scope retrieval succeeds while separate user, session, task, and
+  tombstone cases deny without returning content or a payload digest;
+- expiry requires payload absence plus a content-free tombstone within a
+  five-minute deletion grace period;
+- policy violations are `FAIL`, while tamper, missing lifecycle coverage,
+  evaluator failure, malformed input, or sensitive evidence is `ERROR`;
+- provider-managed stores, caches, indexes, replicas, backups, encryption,
+  residency, and live deletion remain explicit `NOT_CHECKED` evidence.
+
+### PSB-AI-006 — Agent action integrity and output validation
+
+Status: `prototype` — first runnable slice implemented at E3
+Domain: `ai-development-security`
+
+#### Goal
+
+Treat model output as an untrusted proposal and preserve one exact action
+identity through schema validation, independent policy, high-impact
+authorization, execution, idempotency, result validation, and uncertain
+outcome reconciliation.
+
+#### First runnable slice
+
+Implemented in
+[`controls/ai-development-security/agent-action-integrity-output-validation/`](../controls/ai-development-security/agent-action-integrity-output-validation/):
+
+- four inert proposals cover allowed read, authorized source publication,
+  unknown-field free-form output, and wildcard target denial;
+- PSB-AI-002 tool inventory and PSB-AI-004 runtime policy are exact identity
+  and SHA-256 bound rather than reimplementing extension or approval controls;
+- strict action-specific fields, parameter types and bounds, resource scope,
+  freshness, and canonical request SHA-256 independently derive decisions;
+- the high-impact authorization, decision, execution envelope, result, and
+  replay decision retain the same request identity;
+- dispatch is single-attempt, a second attempt is denied under the stable
+  idempotency identity, and an unknown external result is quarantined without
+  automatic retry or authorization restoration;
+- known unsafe behavior is `FAIL`, while proposal or dependency tamper,
+  incomplete collection, evaluator failure, malformed input, and sensitive
+  evidence are `ERROR`;
+- provider, gateway, backend idempotency, and external side effects remain
+  explicit `NOT_CHECKED` adoption evidence.
+
+### PSB-AI-007 — Agent resource budget monitoring and circuit breaking
+
+Status: `prototype` — first runnable slice implemented at E3
+Domain: `ai-development-security`
+
+#### Goal
+
+Detect and stop cumulative single-agent resource abuse across token, cost,
+duration, tool calls, high-impact actions, retries, recursion, and
+security-anomaly signals without storing prompt or tool content.
+
+#### First runnable slice
+
+Implemented in
+[`controls/ai-development-security/agent-resource-budget-monitoring/`](../controls/ai-development-security/agent-resource-budget-monitoring/):
+
+- the exact PSB-AI-004 fleet telemetry policy and Claude Code／Codex provider
+  coverage are SHA-256 and identity bound;
+- seven deterministic sessions separately exercise normal usage, 80-percent
+  warning, token, cost, duration, tool／retry／recursion, and security-anomaly
+  decisions;
+- cost uses an exact currency and integer micro-units while wall-clock
+  duration is derived from timezone-aware timestamps;
+- warning removes side effects and retains read-only termination work, while
+  hard limits or unknown-tool／approval-replay anomalies stop new model calls
+  and side effects;
+- every restricted or blocked session requires a reason-bound verified alert
+  receipt within 120 seconds;
+- known unsafe continuation is `FAIL`, while policy tamper, sequence gaps,
+  incomplete collection, evaluator failure, malformed input, and sensitive
+  evidence are `ERROR`;
+- provider usage, billing, gateway, breaker, and receiver adoption remains
+  explicit `NOT_CHECKED` evidence.
+
+### PSB-AI-008 — Multi-agent trust and delegation
+
+Status: `prototype` — first runnable slice implemented at E3
+Domain: `ai-development-security`
+
+#### Goal
+
+Prevent one compromised or low-trust agent from forging another identity,
+amplifying capability, data, or resource authority, replaying work, or
+propagating an unreviewed delegation chain.
+
+#### First runnable slice
+
+Implemented in
+[`controls/ai-development-security/multi-agent-trust-delegation/`](../controls/ai-development-security/multi-agent-trust-delegation/):
+
+- an exact AI-006 parent request, two-agent trust manifest, public keys, and
+  AI-004／006／007 policies are SHA-256 and identity bound;
+- canonical delegation and response payloads are authenticated with Ed25519
+  public-key verification while private fixture keys are not retained;
+- one orchestrator-to-reviewer edge constrains purpose, capability, tenant,
+  repository, ref, path, data classification, token, tool-call, duration,
+  freshness, nonce, sequence, and hop;
+- child budget and signed response usage cannot exceed the parent edge and
+  delegation amounts respectively;
+- the reviewer cannot delegate onward, inherits no ambient credential, and
+  must execute in a dedicated context;
+- the signed response reverses exact agent identities and binds the original
+  delegation digest to the AI-006 result schema;
+- forged, privilege-amplified, cross-tenant, over-budget, replayed, onward,
+  shared-context, and adoption-overclaim fixtures are `FAIL`;
+- unavailable trust, cross-control, evaluator, crypto verifier, malformed, or
+  sensitive evidence is `ERROR`; live identity, transport, key custody,
+  replay ledger, isolation, and budget reservation remain `NOT_CHECKED`.
+
 ## OWASP AI Agent Security Cheat Sheet reconciliation
 
 The
@@ -1695,13 +1851,13 @@ not an immutable dependency.
 | OWASP practice area | Existing disposition | Remaining work |
 | --- | --- | --- |
 | Tool Security & Least Privilege | `PSB-AI-002` governs extension dependencies and `PSB-AI-004` enforces runtime capabilities and approvals. | Add executable per-resource and read-versus-write authorization fixtures rather than relying only on tool-name patterns. |
-| Input Validation & Prompt Injection Defense | `PSB-AI-003` owns prompt/document injection containment; `PSB-AI-004` supplies the runtime boundary. | Exercise retrieved documents, web content, issue text, API responses, and tool output as distinct untrusted sources. |
-| Memory & Context Security | Not owned by an existing planned control. | Define isolation, provenance, validation, sensitive-data exclusion, expiry, size limits, integrity, deletion, and poisoning tests. |
-| Human-in-the-Loop Controls | `PSB-AI-004` owns coding-agent action classification and approval enforcement. | Verify independent authorization, exact parameter binding, expiry, replay prevention, step-up requirements, idempotency, interruption, and bounded rollback. |
-| Output Validation & Guardrails | `PSB-AI-004` denies unauthorized actions and `PSB-AI-003` tests malicious influence. | Add structured tool-call schemas, parameter validation, sensitive-output handling, scope/rate limits, and fail-closed execution gates. |
-| Monitoring & Observability | `PSB-AI-004` now writes and verifies fixed-schema redacted allow, deny, and error hook evidence with local retention, export state, and fail-closed sink tests. | Add anomaly detection, approval-drift signals, cost/token/tool-call metrics, adopted export-ingestion evidence, and alert-delivery tests. |
-| Multi-Agent Security | Not owned by an existing planned control. | Define authenticated delegation, sender/recipient authorization, message validation, privilege ceilings, isolation, freshness/replay checks, and circuit breakers. |
-| Data Protection & Privacy | Credential paths and audit redaction are partial requirements in `PSB-AI-004`; endpoint and credential lifecycle remain `PSB-SOURCE-001` and `PSB-SOURCE-004`. | Define agent-context classification, minimization, encryption, residency where applicable, retention, deletion, and cross-user isolation. |
+| Input Validation & Prompt Injection Defense | `PSB-AI-003` now exercises repository documents, issue text, Web content, API responses, tool output, and direct prompts while `PSB-AI-004` supplies the runtime boundary. | Extend the same normalized corpus to live provider versions, multilingual and encoded inputs, delayed triggers, and non-text modalities without treating detection as authorization. |
+| Memory & Context Security | `PSB-AI-005` implements provenance-bound writes, classification, sensitive-data exclusion, byte and TTL limits, exact user/session/task isolation, retrieval denial, expiry, and payload deletion fixtures. | Add live provider, cache, vector-index, replica, backup, encryption, residency, and cross-tenant evidence; extend poisoning scenarios to delayed, encoded, and non-text inputs. |
+| Human-in-the-Loop Controls | `PSB-AI-004` owns approval issuance and atomic single-use enforcement; `PSB-AI-006` binds that receipt to independent policy, execution, idempotency, and uncertain-outcome handling. | Add live approval UI decision-quality and deceptive-explanation tests, step-up policy, interruption, and application-specific bounded rollback. |
+| Output Validation & Guardrails | `PSB-AI-006` implements strict proposal and result schemas, parameter and scope validation, canonical request identity, decision/execution binding, replay denial, and fail-closed reconciliation. | Add sensitive semantic-output classifiers, adopted provider and gateway adapters, per-action rate limits, and application-specific result schemas without treating model filtering as authorization. |
+| Monitoring & Observability | `PSB-AI-004` owns fixed-schema runtime audit and fleet ingestion; `PSB-AI-007` adds token, cost, duration, tool, retry, recursion and anomaly budgets, circuit breaking, and verified alert receipts. | Add live provider usage, tokenizer, billing, atomic concurrent reservations, organization receiver evidence, cross-session and tenant budgets, and adaptive-threshold review. |
+| Multi-Agent Security | `PSB-AI-008` implements signed identity, exact parent and trust edge, capability／tenant／data／budget ceilings, freshness, replay, one-hop, isolated runtime, fail-closed decision, and response binding fixtures. | Add live key enrollment and revocation, authenticated transport, atomic replay and budget ledgers, concurrent fan-out, multi-hop policy, rollback, recovery, and provider adapters. |
+| Data Protection & Privacy | `PSB-AI-005` owns context classification, minimization, isolation, retention, and deletion fixtures; audit redaction is shared with `PSB-AI-004` and `PSB-AI-006`; endpoint and credential lifecycle remain `PSB-SOURCE-001` and `PSB-SOURCE-004`. | Add live provider encryption, key ownership, residency, cache, index, replica, backup, deletion, and cross-tenant evidence. |
 | Secure Agent Testing & Adversarial Validation | `PSB-AI-001` owns baseline benchmarking, `PSB-AI-003` owns injection scenarios, and every control must reach E3 with negative tests. | Maintain an abuse-case reconciliation view covering tool misuse, privilege escalation, memory poisoning, exfiltration, approval bypass, runaway loops, and multi-agent chaining without duplicating control-local tests. |
 
 The sheet's additional risks map to the same gaps: memory poisoning belongs to
@@ -1719,15 +1875,15 @@ not duplicated into the registry.
 
 | Agentic risk | Current disposition | Evidence boundary or next owner |
 |---|---|---|
-| `ASI01` Agent Goal Hijack | Gap | `PSB-AI-003` must execute indirect prompt and document injection scenarios against the `PSB-AI-004` boundary. |
-| `ASI02` Tool Misuse and Exploitation | Implemented-partial | `PSB-AI-004` verifies typed actions, exact tools, bound authorization, fail-closed hooks, and side-effect reconciliation; approved malicious tools remain out of scope. |
-| `ASI03` Identity and Privilege Abuse | Implemented-partial | `PSB-AI-004` verifies credential denial, managed precedence, exact extension authority, authenticated approvals, and replay prevention; enterprise identity lifecycle remains deployment evidence. |
+| `ASI01` Agent Goal Hijack | Implemented-partial | `PSB-AI-003` executes six direct and indirect goal-hijack fixtures against PSB-AI-004 policy identities and verifies legitimate task continuation. Live model, delayed, multimodal, memory, and multi-agent evidence remain gaps. |
+| `ASI02` Tool Misuse and Exploitation | Implemented-partial | `PSB-AI-004` enforces runtime capabilities and approvals; `PSB-AI-006` independently validates typed proposal scope, exact authorization/execution identity, single dispatch, result schema, and uncertain outcomes. Approved malicious tools and live gateway enforcement remain out of scope. |
+| `ASI03` Identity and Privilege Abuse | Implemented-partial | `PSB-SOURCE-004` verifies OAuth-first GitHub MCP configuration, bounded fine-grained PAT fallback, child-only secret delivery, and read-only toolsets; `PSB-AI-004` verifies credential denial, managed precedence, exact extension authority, authenticated approvals, and replay prevention. Live IDE keychain, process inheritance, and enterprise identity lifecycle remain deployment evidence. |
 | `ASI04` Agentic Supply Chain Vulnerabilities | Implemented-partial | `PSB-AI-001` pins repository guidance; `PSB-AI-002` verifies external dependency provenance, semantic review, capabilities, benchmark, expiry, and revocation; `PSB-AI-004` detects runtime extension drift. Live publisher, remote MCP deployment, and revocation-source evidence remain gaps. |
-| `ASI05` Unexpected Code Execution | Implemented-partial | `PSB-AI-004` verifies isolation, bypass denial, pre-tool enforcement, hook failure containment, and command indirection; live sandbox exploit resistance remains unproven. |
-| `ASI06` Memory and Context Poisoning | Gap | Future memory/context lifecycle control plus `PSB-AI-003` injection scenarios. |
-| `ASI07` Insecure Inter-Agent Communication | Gap | Future authenticated delegation and message integrity control. |
-| `ASI08` Cascading Failures | Gap | Future bounded recursion, circuit breaker, rollback, and multi-agent failure-propagation control. |
-| `ASI09` Human-Agent Trust Exploitation | Gap | Parameter-bound approval exists in `PSB-AI-004`, but deceptive explanation and human decision-quality tests are not implemented. |
+| `ASI05` Unexpected Code Execution | Implemented-partial | `PSB-AI-004` verifies isolation, bypass denial, pre-tool enforcement, hook failure containment, and command indirection; `PSB-AI-006` rejects free-form actions and decision/execution substitution. Live sandbox exploit resistance remains unproven. |
+| `ASI06` Memory and Context Poisoning | Implemented-partial | `PSB-AI-005` verifies source-aware write admission, sensitive and poisoned candidate rejection, exact scope retrieval, bounded retention, and payload deletion using a PSB-AI-003-bound fixture. Live provider and non-text memory evidence remain gaps. |
+| `ASI07` Insecure Inter-Agent Communication | Implemented-partial | `PSB-AI-008` verifies Ed25519 agent identity, exact parent and sender-recipient edge, capability／tenant／data scope, freshness, replay, one-hop isolation, and signed response binding. Live key custody, transport, atomic ledger, dynamic discovery, and multi-hop evidence remain gaps. |
+| `ASI08` Cascading Failures | Implemented-partial | `PSB-AI-007` verifies single-agent budgets and circuit breaking; `PSB-AI-008` adds non-amplifying child budgets, replay denial, one-hop limits, and invalid-delegation stop semantics. Concurrent fan-out, tenant-wide reservation, rollback, and recovery remain gaps. |
+| `ASI09` Human-Agent Trust Exploitation | Implemented-partial | `PSB-AI-004` supplies parameter-bound authorization and `PSB-AI-006` prevents request substitution, replay, and silent approval restoration. Deceptive explanation, approval-UI comprehension, and human decision-quality tests remain gaps. |
 | `ASI10` Rogue Agents | Gap | Runtime containment and fleet telemetry are partial foundations; autonomous goal drift, stop, quarantine, and recovery evidence require a dedicated boundary. |
 
 `implemented-partial` means one or more control rows have a reviewed direct
@@ -1878,12 +2034,11 @@ Goal: prevent untrusted or sensitive content from being persisted, retrieved,
 or shared outside its intended user, session, task, classification, and
 retention boundary.
 
-Disposition: define a separate control boundary after `PSB-AI-004` establishes
-the runtime policy interface. Keep memory poisoning fixtures coordinated with
-`PSB-AI-003`, but place isolation, provenance, integrity, expiry, deletion, and
-data handling in this lifecycle control. Assign an ID after reviewing whether
-provider-managed memory can produce E3 local evidence or requires explicit
-`NOT_CHECKED` organization evidence.
+Disposition: implemented as `PSB-AI-005` at E3 for the provider-neutral local
+lifecycle contract. It coordinates poisoned source identity with `PSB-AI-003`
+while owning isolation, provenance, classification, size, expiry, retrieval,
+and deletion. Provider-managed memory evidence remains explicitly
+`NOT_CHECKED` until a trustworthy collector can observe live enforcement.
 
 ### High-impact agent action integrity and output validation
 
@@ -1892,10 +2047,13 @@ after independent schema, authorization, scope, approval, freshness, replay,
 and policy checks succeed.
 
 Disposition: implement coding-agent permission and approval adapters first in
-`PSB-AI-004`. Assign a separate ID when a provider-neutral execution-gate
-fixture can demonstrate decision/execution separation, parameter-bound
-approvals, structured tool calls, idempotency, and fail-closed behavior without
-duplicating application authorization or deployment controls.
+`PSB-AI-004`. The separate provider-neutral execution-gate contract is now
+implemented as `PSB-AI-006` at E3. It validates strict proposal and result
+schemas, independently derives action scope and freshness, binds the AI-004
+authorization and execution to one canonical request digest, rejects replay,
+and quarantines uncertain outcomes. Live provider, gateway, backend
+idempotency, application authorization, and rollback evidence remain outside
+the fixture boundary.
 
 ### Agent monitoring and resource-abuse limits
 
@@ -1904,10 +2062,13 @@ retry, recursion, duration, and tool-call consumption without logging
 credentials or sensitive context.
 
 Disposition: keep fixed-schema redacted hook audit, local retention/export
-state, and sink-failure behavior in `PSB-AI-004`; reserve a separate control
-boundary for anomaly rules, denial-of-wallet limits, organization-owned export
-ingestion, and alert delivery. Assign an ID after resource-abuse fixtures and
-organization-owned alert evidence are separated.
+state, and sink-failure behavior in `PSB-AI-004`. The separate cumulative
+resource and response boundary is implemented as `PSB-AI-007` at E3 with
+single-agent token, integer cost, duration, tool, high-impact action, retry,
+recursion, and anomaly limits plus warning restriction, circuit breaking, and
+alert receipts. Live provider usage, billing, atomic concurrency, organization
+receivers, cross-session, tenant, and multi-agent budgets remain follow-on
+evidence rather than fixture claims.
 
 ### Multi-agent trust and delegation
 
@@ -1921,6 +2082,84 @@ ceilings, freshness and replay checks, isolated execution, and circuit
 breakers. Assign an ID only when single-agent MCP delegation in
 `PSB-AI-002/004` is clearly separated from true agent-to-agent communication
 and cascading-failure tests.
+
+### AI application gateway and sensitive-data egress
+
+Goal: ensure application and developer LLM requests use an approved provider,
+model, tenant, region, workload identity, destination, classification, and
+retention policy without exposing secrets, PII, source, or regulated data.
+
+Disposition: keep separate from the coding-agent network and MCP boundary in
+`PSB-AI-004`. Define a provider-neutral policy decision and mandatory gateway
+enforcement contract with exact destination and workload identity, data
+minimization, classification-aware redaction or denial, bypass detection,
+sanitized telemetry, and fail-closed gateway health. DPoP, mTLS, VPN,
+LiteLLM, Model Armor, or another product is an adapter only. Assign an ID when
+the first secure and bypass fixtures can demonstrate enforcement without a
+live provider credential.
+
+### AI model, dataset, AIBOM, and RAG supply-chain integrity
+
+Goal: identify and verify the model, serialized weights, dataset, fine-tuning,
+embedding, RAG corpus, loader, license, source, digest, signer, and deployment
+relationships used by an AI product.
+
+Disposition: do not extend `PSB-REL-003` SBOM or `PSB-AI-002` agent extension
+records until model and data semantics are explicit. Plan a
+`dependency-security` control for immutable acquisition, AIBOM or ML-BOM
+identity, safe non-executing inspection, risky serialization rejection,
+malware and remote-code quarantine, provenance, signer lifecycle, and
+dependency handoff. Plan a separate `secure-design` or
+`ai-development-security` RAG boundary for source authorization, tenant and
+classification scope, content integrity, index deletion, retrieval provenance,
+and poisoning tests. Model and corpus scanner failure must be `ERROR`, never a
+clean result. Assign IDs only after stable interchange formats and safe inert
+fixtures are selected.
+
+### AI TEVV and adversarial release gate
+
+Goal: run threat-model-derived testing, evaluation, validation, verification,
+and red-team scenarios before an AI product release without treating tool or
+judge failure as a passing model.
+
+Disposition: create a `detection-verification` control only after the scenario
+contract is independent of Garak, Giskard, Counterfit, ART, or another tool.
+The first slice must pin tool and test-suite identities, preserve model and
+system-under-test version, separate deterministic security assertions from
+probabilistic metrics, define repeat count and threshold ownership, include
+known vulnerable and safe fixtures, sanitize prompts and outputs, and expose
+`PASS`, `FAIL`, `INCOMPLETE`, and `ERROR`. CI integration must not grant
+untrusted tests production credentials or network authority.
+
+### Rogue-agent stop, fallback, and AI incident recovery
+
+Goal: stop or isolate a compromised or misaligned agent, revoke its tool and
+model access, prevent cascading actions, and recover to a reviewed safe state
+with attributable evidence.
+
+Disposition: compose future monitoring and multi-agent controls rather than
+placing a kill-switch inside `PSB-AI-004`. The enforcement and recovery path
+must be independent of the model, repository, extension, and mutable policy it
+contains; require authenticated operator authority, exact agent and session
+scope, bounded automated containment, preserved evidence, tested fallback,
+re-enable approval, and unavailable-control `ERROR`. Connect live incident
+workflow to `PSB-GOV-001` only after AI asset and deployment identities are
+available.
+
+### AI governance, assurance metrics, and role-based education
+
+Goal: make AI inventory, risk ownership, policy adoption, exception debt,
+assessment evidence, training, and response readiness visible without
+converting technical fixture success into organizational assurance.
+
+Disposition: extend governance profiles and generated views rather than
+creating a documentation-only technical control. NIST AI RMF, ISO/IEC 42001,
+domestic AI guidance, AISI material, training curricula, security-champion
+programs, and KPI targets each require a pinned authoritative source and
+organization-owned evidence. Missing inventory, assessment, training, or KPI
+inputs remain `NOT_CHECKED`; illustrative percentages from
+[`REF-AI-003`](SECURITY_GUIDANCE_SOURCES.md#ref-ai-003) are not repository
+defaults.
 
 ## Plan maintenance
 

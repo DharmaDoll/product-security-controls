@@ -1,0 +1,25 @@
+{
+  "schema_version": "psb-ai-memory-lifecycle-evidence/v1",
+  "collection_status": "complete",
+  "evaluator_status": "completed",
+  "source_type": "synthetic-fixture",
+  "write_decisions": [
+    {"candidate_id":"MEM-CAND-001","decision":"allow","reason":"policy-match"},
+    {"candidate_id":"MEM-CAND-002","decision":"deny","reason":"untrusted-source"},
+    {"candidate_id":"MEM-CAND-003","decision":"deny","reason":"classification-prohibited"},
+    {"candidate_id":"MEM-CAND-004","decision":"deny","reason":"payload-too-large"}
+  ],
+  "active_records": [
+    {"candidate_id":"MEM-CAND-001","memory_id":"MEM-ACTIVE-001","payload_sha256":"f9985d8c420e04912fde02ec2af0300b0047e608675770840a5ee296589cebe4","classification":"internal","source_ref":"TASK-SUMMARY-001","source_trust":"trusted-user-approved","scope":{"user_id":"USER-A","session_id":"SESSION-A","task_id":"TASK-A"},"created_at":"2026-08-05T11:00:00Z","expires_at":"2026-08-06T11:00:00Z"}
+  ],
+  "tombstones": [
+    {"memory_id":"MEM-OLD-001","payload_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","scope":{"user_id":"USER-A","session_id":"SESSION-A","task_id":"TASK-A"},"expired_at":"2026-08-05T10:00:00Z","deleted_at":"2026-08-05T10:01:00Z","deletion_status":"completed","reason":"retention-expired","deleted_payload_path":"secure/deleted/MEM-OLD-001.payload"}
+  ],
+  "retrievals": [
+    {"id":"MEM-READ-001","memory_id":"MEM-ACTIVE-001","request_scope":{"user_id":"USER-A","session_id":"SESSION-A","task_id":"TASK-A"},"decision":"allow","reason":"exact-scope","returned_payload_sha256":"f9985d8c420e04912fde02ec2af0300b0047e608675770840a5ee296589cebe4"},
+    {"id":"MEM-READ-002","memory_id":"MEM-ACTIVE-001","request_scope":{"user_id":"USER-B","session_id":"SESSION-A","task_id":"TASK-A"},"decision":"deny","reason":"scope-mismatch","returned_payload_sha256":null},
+    {"id":"MEM-READ-003","memory_id":"MEM-ACTIVE-001","request_scope":{"user_id":"USER-A","session_id":"SESSION-B","task_id":"TASK-A"},"decision":"deny","reason":"scope-mismatch","returned_payload_sha256":null},
+    {"id":"MEM-READ-004","memory_id":"MEM-ACTIVE-001","request_scope":{"user_id":"USER-A","session_id":"SESSION-A","task_id":"TASK-B"},"decision":"deny","reason":"scope-mismatch","returned_payload_sha256":null},
+    {"id":"MEM-READ-005","memory_id":"MEM-OLD-001","request_scope":{"user_id":"USER-A","session_id":"SESSION-A","task_id":"TASK-A"},"decision":"deny","reason":"tombstoned","returned_payload_sha256":null}
+  ]
+}

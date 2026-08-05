@@ -1,0 +1,25 @@
+{
+  "schema_version": "psb-ai-signed-delegation-response-envelope/v1",
+  "key_id": "KEY-REVIEWER-2026-08",
+  "algorithm": "Ed25519",
+  "payload": {
+    "schema_version": "psb-ai-delegation-response/v1",
+    "response_id": "RESPONSE-001",
+    "delegation_id": "DELEGATION-001",
+    "delegation_payload_digest": "a58137253be27867ecf6be18c29124da79ae70ff589b1cbb1fca71e1a001486f",
+    "sender_agent_id": "AGENT-REVIEWER-001",
+    "recipient_agent_id": "AGENT-ORCHESTRATOR-001",
+    "status": "completed",
+    "result_schema": "psb-ai-006-bound-summary/v1",
+    "result_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "budget_used": {
+      "tokens": 2400,
+      "tool_calls": 2,
+      "duration_seconds": 70
+    },
+    "issued_at": "2026-08-05T12:01:30Z",
+    "nonce": "NONCE-RESPONSE-001",
+    "sequence": 12
+  },
+  "signature_base64": "Ng5dOvgIZrhFuL7NyRKKzK0ZQru9c4YrrBhceZVr8/oD66r0wye+e57Ak/QytkLyd2Tq2JBvt9UiaH1jXZNWCA=="
+}

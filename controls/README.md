@@ -5,7 +5,7 @@
 このページは、実装済みcontrolを目的別に探すための入口です。
 `control.yaml`を正本として`make generate-index`で生成されます。
 
-現在、**33 controls / 293 atomic checks**を収録しています。
+現在、**38 controls / 349 atomic checks**を収録しています。
 
 ## 使い方
 
@@ -23,13 +23,13 @@
 |---|---|---:|---:|
 | [Secure Design](#domain-secure-design) | 脅威モデリング、trust boundary、abuse caseなど、実装前の設計判断。 | 0 | 0 |
 | [Secure Coding](#domain-secure-coding) | 認証・認可、入力処理、secret、暗号など、application実装の安全性。 | 0 | 0 |
-| [Source Protection](#domain-source-protection) | 開発端末、Git、repository、source access credential、公開露出の保護。 | 4 | 68 |
+| [Source Protection](#domain-source-protection) | 開発端末、Git、repository、source access credential、公開露出の保護。 | 4 | 73 |
 | [Dependency Security](#domain-dependency-security) | registry、cooldown、install script、lockfile、artifact integrityの保護。 | 4 | 27 |
 | [CI/CD Security](#domain-cicd-security) | workflow dependency、command injection、権限、未信頼PR境界の保護。 | 6 | 35 |
 | [Build Security](#domain-build-security) | build隔離、hosted build、credential境界、provenance生成の保護。 | 3 | 16 |
 | [Container / Cloud / IaC Security](#domain-container-cloud-iac-security) | IaC Golden Path、container admission、runtime、cloud control planeの保護。 | 5 | 49 |
 | [Release Integrity](#domain-release-integrity) | 署名、provenance、SBOM、supplier artifact、配布時の完全性。 | 4 | 27 |
-| [AI Development Security](#domain-ai-development-security) | AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。 | 3 | 40 |
+| [AI Development Security](#domain-ai-development-security) | AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。 | 8 | 91 |
 | [Detection / Verification](#domain-detection-verification) | 脆弱性、secret、container、IaCなどを検出・検証する共通基盤。 | 1 | 8 |
 | [Governance / Operations](#domain-governance-operations) | 例外、ownership、証跡、影響調査、継続運用とincident readiness。 | 3 | 23 |
 
@@ -60,7 +60,7 @@
 | [PSB-SOURCE-001](source-protection/developer-endpoint-hardening/README.md) | 強制可能なエンドポイントポリシーにより、開発者のソースコード、認証情報、ローカル開発ツールを保護する。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) | `prevent`, `detect`, `verify` | 29 | `prototype` / `E3` |
 | [PSB-SOURCE-002](source-protection/git-hooks-baseline/README.md) | コミット前とプッシュ前に、追加される内容と到達可能なGit履歴を検査し、情報漏洩につながる変更を検出する。 | [CISA Product Security Bad Practices](../generated/mappings/cisa-product-security-bad-practices.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify` | 14 | `prototype` / `E3` |
 | [PSB-SOURCE-003](source-protection/public-repository-exposure/README.md) | 対象を限定したGitHub検索、到達可能な全Git履歴のスキャン、公開範囲の証跡を組み合わせ、情報露出を検出して是正する。 | [CISA Product Security Bad Practices](../generated/mappings/cisa-product-security-bad-practices.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `detect`, `verify`, `respond`, `govern` | 13 | `reference` / `E3` |
-| [PSB-SOURCE-004](source-protection/source-access-credential-lifecycle/README.md) | OAuthトークン、PAT、SSH鍵、ソース管理基盤の自動化用認証情報について、権限、存続期間、露出、悪用可能性を制限する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify`, `respond`, `govern` | 12 | `prototype` / `E3` |
+| [PSB-SOURCE-004](source-protection/source-access-credential-lifecycle/README.md) | OAuthトークン、PAT、SSH鍵、ソース管理基盤とGitHub MCPの認証情報について、権限、存続期間、保管、process delivery、悪用可能性を制限する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify`, `respond`, `govern` | 17 | `prototype` / `E3` |
 
 <a id="domain-dependency-security"></a>
 
@@ -139,7 +139,12 @@ AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。
 |---|---|---|---|---:|---|
 | [PSB-AI-001](ai-development-security/repository-owned-ai-security-guidance/README.md) | AGENTSとrepository-owned CodeGuard profileをcanonical source、SHA-256、semantic reviewへ固定し、同一条件のpaired benchmarkで安全性向上と回帰を別々に評価する。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify`, `govern` | 7 | `prototype` / `E3` |
 | [PSB-AI-002](ai-development-security/agent-extension-dependency-governance/README.md) | Skill、MCP server、plugin、外部promptをimmutable source、SHA-256、独立semantic review、最小権限、benchmark、期限、失効状態へ固定し、承認済みidentityをruntimeへ引き渡す。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify`, `govern` | 7 | `prototype` / `E3` |
+| [PSB-AI-003](ai-development-security/prompt-document-injection-containment/README.md) | Repository文書、issue、Web、API response、tool output、direct promptをuntrusted dataとして扱い、goal hijackによる危険操作を外部runtime boundaryで拒否しつつ本来のtaskを継続する。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify` | 10 | `prototype` / `E3` |
 | [PSB-AI-004](ai-development-security/ai-coding-agent-runtime-hardening/README.md) | 共通ポリシーと製品別アダプターにより、AIコーディングエージェントのファイルシステム、ネットワーク、拡張機能、高影響操作、バイパス経路を最小権限に制限して検証する。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify`, `govern` | 26 | `prototype` / `E3` |
+| [PSB-AI-005](ai-development-security/agent-memory-context-lifecycle/README.md) | Agent memoryへのwriteをsource provenance、classification、size、TTL、user／session／task scopeで制御し、cross-scope retrievalとpoisoned・sensitive persistenceを拒否して期限切れpayloadを削除する。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify`, `govern` | 9 | `prototype` / `E3` |
+| [PSB-AI-006](ai-development-security/agent-action-integrity-output-validation/README.md) | Untrusted model proposalをstrict typed requestへ変換し、policy、PSB-AI-004 authorization、execution、resultを同じdigestへ束縛してreplayと曖昧なside effectをfail closedにする。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify` | 10 | `prototype` / `E3` |
+| [PSB-AI-007](ai-development-security/agent-resource-budget-monitoring/README.md) | Agent sessionのtoken、cost、duration、tool call、retry、recursionとsecurity anomalyをmodel外で評価し、warning時のread-only制限と上限超過時のcircuit breakerをsanitized telemetryで検証する。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify`, `respond` | 11 | `prototype` / `E3` |
+| [PSB-AI-008](ai-development-security/multi-agent-trust-delegation/README.md) | Agent間delegationとresponseを署名identity、parent request、capability、tenant、data、budget、freshness、replay、hopへbindし、権限と障害のchain伝播をfail closedにする。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify`, `respond` | 11 | `prototype` / `E3` |
 
 <a id="domain-detection-verification"></a>
 

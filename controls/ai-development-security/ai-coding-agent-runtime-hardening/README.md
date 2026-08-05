@@ -408,6 +408,9 @@ testはglobal setting、user setting、hookを変更しません。
     tool追加をcapability changeとしてreviewします。
 12. read-onlyとbounded reversible writeは自動化し、high-impactだけをapproval gateへ
     routeします。unknownまたはdestructive toolを追加promptで救済しません。
+    GitHub MCPのOAuth／PAT選択とcredential lifecycleは`PSB-SOURCE-004`の
+    `secure/github-mcp-*.json`を使い、PATをIDEやshellのambient environmentへ置きません。
+    Exact MCP childへ渡したPATでもread-onlyとtool allow-listはこのcontrolで別に強制します。
 13. reviewed `pretool-gate.py`、policy、engine state、approval modulesをsampleの
     absolute pathへ管理配布し、
     file owner、permission、digestをfleet側で検証します。
@@ -830,6 +833,7 @@ multi-agent、cascading failure、human trust、rogue-agent behaviorには別の
 - [Codex plugin controls](https://learn.chatgpt.com/docs/enterprise/apps-and-connectors)
 - [REF-AI-001 Claude Code Hardening Cheatsheet](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-ai-001)
 - [REF-AI-002 OWASP AI Agent Security Cheat Sheet](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-ai-002)
+- [REF-AI-004 GitHub MCP official authentication guidance](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-ai-004)
 - [OWASP Top 10 for Agentic Applications 2026 registry](../../../frameworks/owasp-agentic-top10/README.md)
 
 The cheat sheets are reviewed design inputs, not framework mappings or

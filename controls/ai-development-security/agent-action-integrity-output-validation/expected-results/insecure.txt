@@ -1,0 +1,10 @@
+FAIL AAI-001 strict structured proposals reject unknown or free-form fields
+PASS AAI-002 canonical request digest binds normalized proposal content
+FAIL AAI-003 independent policy constrains action target parameters and freshness
+FAIL AAI-004 high-impact action uses an exact single-use PSB-AI-004 authorization
+FAIL AAI-005 decision and execution retain exact request identity
+FAIL AAI-006 idempotency prevents replay and duplicate dispatch
+FAIL AAI-007 tool results match strict schema request and resource identity
+FAIL AAI-008 uncertain outcomes quarantine without retry or authorization restoration
+PASS AAI-009 evidence is complete sanitized and evaluator-backed
+PASS AAI-010 fixture leaves live enforcement explicitly NOT_CHECKED

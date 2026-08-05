@@ -1,7 +1,7 @@
 id: PSB-SOURCE-004
 title: Govern source access credential lifecycle
 domain: source-protection
-summary: OAuthトークン、PAT、SSH鍵、ソース管理基盤の自動化用認証情報について、権限、存続期間、露出、悪用可能性を制限する。
+summary: OAuthトークン、PAT、SSH鍵、ソース管理基盤とGitHub MCPの認証情報について、権限、存続期間、保管、process delivery、悪用可能性を制限する。
 check_context_version: "1.0"
 security_functions:
   - prevent
@@ -18,18 +18,26 @@ threats:
     description: Unexpired unowned or unreviewed credentials remain usable after role change offboarding device loss or exposure.
   - id: SOURCE-CREDENTIAL-AUDIT-GAP
     description: Missing inventory and audit evidence prevent timely containment and determination of credential impact.
+  - id: SOURCE-MCP-CREDENTIAL-EXPOSURE
+    description: A developer IDE persists or broadly exports a GitHub PAT while an agent MCP tool inherits more source authority than its task requires.
 implementations:
   insecure:
     - insecure/credential-policy.json
+    - insecure/github-mcp-auth-policy.json
+    - insecure/github-mcp-oauth.json
+    - insecure/github-mcp-pat-fallback.json
   secure:
     - secure/credential-policy.json
+    - secure/github-mcp-auth-policy.json
+    - secure/github-mcp-oauth.json
+    - secure/github-mcp-pat-fallback.json
 verification:
   commands:
     - make verify-control CONTROL=PSB-SOURCE-004
   expected:
-    - secure metadata passes all 12 lifecycle checks without containing a credential value
-    - insecure metadata is rejected with 12 findings and exit code 1
-    - malformed input is reported as ERROR with exit code 2 rather than a clean result
+    - secure metadata passes all 12 general lifecycle checks and five GitHub MCP authentication checks without containing a credential value
+    - insecure metadata is rejected with 12 general findings and five GitHub MCP findings with exit code 1
+    - malformed or sensitive input is reported as ERROR with exit code 2 rather than a clean result
 checks:
   - id: SCL-001
     title: Automation avoids developer user tokens
@@ -257,6 +265,108 @@ checks:
         - credential exception register
         - sanitized expiry negative test
     mapping_status: reviewed
+  - id: SCL-013
+    title: GitHub MCP defaults to organization-approved OAuth
+    required_state: exact official remote OAuth or local memory-only OAuth is selected before any PAT fallback
+    responsible_role: shared
+    applies_to:
+      - developer-ide
+      - agent-mcp-server
+      - source-platform-identity
+    context:
+      threat_actor: infostealer malicious IDE extension or repository instruction seeking a reusable GitHub bearer credential
+      attack_or_failure_scenario: a developer creates and persists a PAT even though the approved GitHub MCP and IDE combination supports OAuth without a user-managed token
+      why_required: OAuth removes routine PAT creation and configuration while organization app approval SSO and granted scope policy remain independently enforceable
+    verification:
+      type: hybrid
+      method: run the GitHub MCP authentication verifier and inspect the organization-approved OAuth application and IDE authentication path
+      expected: exact GitHub remote endpoint has no configured authorization header or PAT and OAuth is the first supported authentication path
+      evidence:
+        - secure/github-mcp-oauth.json
+        - sanitized OAuth application approval record
+    mapping_status: reviewed
+  - id: SCL-014
+    title: GitHub MCP PAT fallback is dedicated and narrowly bounded
+    required_state: unavoidable PAT is fine-grained MCP-only one-owner explicit-repository read-only approved and expires within 90 days
+    responsible_role: shared
+    applies_to:
+      - developer-ide
+      - agent-mcp-server
+      - source-platform-identity
+    context:
+      threat_actor: attacker stealing an MCP token or agent abusing an inherited developer token
+      attack_or_failure_scenario: a classic shared all-repository or long-lived PAT lets one MCP compromise read or mutate unrelated source resources and remains useful after the task
+      why_required: a separate fine-grained resource-bound expiring token limits both blast radius and persistence when OAuth is unavailable
+    verification:
+      type: hybrid
+      method: compare the sanitized PAT grant and organization approval with secure/github-mcp-auth-policy.json
+      expected: PAT type purpose owner repositories permissions lifetime approval and non-sharing exactly match the fallback contract
+      evidence:
+        - sanitized fine-grained PAT grant
+        - organization PAT approval record
+        - GitHub MCP authentication verifier output
+    mapping_status: reviewed
+  - id: SCL-015
+    title: GitHub MCP PAT is stored securely and injected only into its child process
+    required_state: PAT rests in an OS keychain or approved secret manager and the IDE configuration contains only a protected input reference delivered to the MCP child
+    responsible_role: developer
+    applies_to:
+      - developer-endpoint
+      - developer-ide
+      - agent-mcp-server
+    context:
+      threat_actor: malicious IDE extension child process local user backup agent or accidental repository disclosure
+      attack_or_failure_scenario: a PAT in an IDE JSON shell profile dotenv file parent IDE environment or Git URL becomes readable outside the one MCP process that needs it
+      why_required: an environment variable is a delivery channel rather than protected storage and must not turn one MCP credential into ambient endpoint authority
+    verification:
+      type: hybrid
+      method: run the GitHub MCP authentication verifier and inspect sanitized IDE secret storage launch environment and prohibited persistence locations
+      expected: no credential literal exists and only GITHUB_PERSONAL_ACCESS_TOKEN in the exact MCP child resolves the protected input reference
+      evidence:
+        - secure/github-mcp-pat-fallback.json
+        - sanitized endpoint secret-delivery assessment
+        - negative sensitive-evidence test
+    mapping_status: reviewed
+  - id: SCL-016
+    title: GitHub MCP PAT fallback is read-only with an exact tool allow-list
+    required_state: exact managed MCP executable starts read-only with only context repos and pull_requests toolsets while write capability uses a separate approved profile
+    responsible_role: security
+    applies_to:
+      - developer-ide
+      - agent-mcp-server
+      - source-repository
+    context:
+      threat_actor: prompt-injected agent compromised MCP server or developer enabling every tool for convenience
+      attack_or_failure_scenario: a correctly protected PAT still authorizes issue source workflow or repository mutations because the MCP exposes all write tools by default
+      why_required: credential scope is only one boundary and the agent-visible tool surface must separately remove write and unknown capabilities before model invocation
+    verification:
+      type: hybrid
+      method: verify exact command arguments environment and toolsets then exercise PSB-AI-004 authorization for any separate write profile
+      expected: default profile exposes three reviewed toolsets in read-only mode and no unknown or write operation bypasses PSB-AI-004
+      evidence:
+        - secure/github-mcp-pat-fallback.json
+        - PSB-AI-004 capability verifier output
+    mapping_status: reviewed
+  - id: SCL-017
+    title: GitHub MCP authentication stays bound to credential dependency and runtime owners
+    required_state: PSB-SOURCE-004 owns credential lifecycle PSB-AI-002 owns MCP identity and PSB-AI-004 owns runtime authority with revocation and audit coverage explicit
+    responsible_role: security
+    applies_to:
+      - source-platform-identity
+      - agent-mcp-server
+      - governance-evidence
+    context:
+      threat_actor: attacker exploiting a lifecycle handoff gap or adopter presenting sample metadata as deployed protection
+      attack_or_failure_scenario: each team assumes another control verifies the token MCP binary tool authority revocation or audit and a synthetic fixture is reported as live enforcement
+      why_required: explicit ownership and NOT_CHECKED adoption prevent both ungoverned boundaries and unsupported claims that the endpoint is already protected
+    verification:
+      type: hybrid
+      method: verify exact control bindings and require external live evidence before replacing NOT_CHECKED
+      expected: lifecycle dependency and runtime evidence resolve to their owning controls and fixture-only adoption remains NOT_CHECKED
+      evidence:
+        - secure/github-mcp-auth-policy.json
+        - live adoption assessment when available
+    mapping_status: reviewed
 mappings:
   - framework: github-security-guidance
     version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
@@ -265,7 +375,7 @@ mappings:
     confidence: medium
     rationale: Credential selection phishing-resistant authentication protected storage review and revocation support secure GitHub account use without proving account security.
     reviewer: product-security
-    review_date: "2026-07-28"
+    review_date: "2026-08-05"
     applies_to:
       - SCL-001
       - SCL-002
@@ -279,6 +389,11 @@ mappings:
       - SCL-010
       - SCL-011
       - SCL-012
+      - SCL-013
+      - SCL-014
+      - SCL-015
+      - SCL-016
+      - SCL-017
   - framework: mitre-attack
     version: "v19.1"
     id: T1078
@@ -286,7 +401,7 @@ mappings:
     confidence: medium
     rationale: Least privilege bounded lifetime recurring review and prompt revocation reduce persistence and impact from stolen valid source-platform credentials.
     reviewer: product-security
-    review_date: "2026-07-28"
+    review_date: "2026-08-05"
     applies_to:
       - SCL-001
       - SCL-002
@@ -297,6 +412,10 @@ mappings:
       - SCL-008
       - SCL-009
       - SCL-010
+      - SCL-013
+      - SCL-014
+      - SCL-015
+      - SCL-016
   - framework: mitre-attack
     version: "v19.1"
     id: T1552.001
@@ -304,10 +423,11 @@ mappings:
     confidence: medium
     rationale: Approved credential helpers hardware protection and credential-free configuration reduce tokens and private keys exposed in files.
     reviewer: product-security
-    review_date: "2026-07-28"
+    review_date: "2026-08-05"
     applies_to:
       - SCL-006
       - SCL-008
+      - SCL-015
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: PS.3.1
@@ -315,7 +435,7 @@ mappings:
     confidence: medium
     rationale: Controlled development credentials and protected access to repositories support protection of code from unauthorized access and modification.
     reviewer: product-security
-    review_date: "2026-07-28"
+    review_date: "2026-08-05"
     applies_to:
       - SCL-001
       - SCL-002
@@ -329,6 +449,11 @@ mappings:
       - SCL-010
       - SCL-011
       - SCL-012
+      - SCL-013
+      - SCL-014
+      - SCL-015
+      - SCL-016
+      - SCL-017
   - framework: openssf-osps-baseline
     version: "2026.02.19"
     id: OSPS-AC-01.01
@@ -336,9 +461,23 @@ mappings:
     confidence: high
     rationale: Phishing-resistant MFA and centralized source-platform authentication directly support use of MFA for sensitive project actions.
     reviewer: product-security
-    review_date: "2026-07-28"
+    review_date: "2026-08-05"
     applies_to:
       - SCL-007
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI03
+    relationship: mitigates
+    confidence: high
+    rationale: OAuth-first authentication dedicated resource-bounded PAT fallback child-only secret delivery and read-only tool exposure reduce inherited credential delegated privilege and agent identity abuse without proving live endpoint adoption.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - SCL-013
+      - SCL-014
+      - SCL-015
+      - SCL-016
+      - SCL-017
 limitations:
   - The verifier checks policy metadata and fixtures but does not enumerate revoke or test live GitHub credentials.
   - OAuth PAT SSH and GitHub App capabilities differ and must be evaluated against the actual actor resource and operation.
@@ -347,6 +486,9 @@ limitations:
   - Organization SSO PAT approval audit retention and token lifetime controls depend on source-platform plan and configuration.
   - Revocation must include related sessions and downstream credentials and cannot be replaced by deleting source history.
   - The 90-day maximum is a reference upper bound and organizations should require shorter task-specific lifetimes where supported.
+  - Environment-variable delivery does not make a PAT secret; IDE host behavior must prove the value is resolved from protected storage and scoped to the MCP child process.
+  - The managed MCP command path is a deployment contract rather than proof of binary integrity; PSB-AI-002 must bind the installed artifact to a reviewed immutable identity.
+  - OAuth availability and token storage vary by IDE GitHub platform and enterprise policy and unsupported combinations must remain on the bounded fallback path.
 status: prototype
 owner: product-security
 evidence_level: E3

@@ -1,0 +1,5 @@
+ERROR MEM-CAND-001 payload digest mismatch
+ERROR PSB-AI-003 corpus binding digest mismatch
+ERROR lifecycle evidence contains forbidden evidence field $.raw_prompt
+ERROR memory lifecycle collection is incomplete
+ERROR memory lifecycle evaluator is unavailable

@@ -1,0 +1,6 @@
+FAIL PSB-SOURCE-004/SCL-013 GitHub MCP does not default to exact organization-approved OAuth
+FAIL PSB-SOURCE-004/SCL-014 PAT fallback is broad shared classic unapproved or unbounded
+FAIL PSB-SOURCE-004/SCL-015 PAT is persisted or delivered beyond the exact MCP child process
+FAIL PSB-SOURCE-004/SCL-016 MCP runtime command toolsets or write authority are not narrowly constrained
+FAIL PSB-SOURCE-004/SCL-017 MCP authentication lacks exact lifecycle control ownership or overclaims adoption
+REJECTED GitHub MCP authentication profile: 5 checks failed

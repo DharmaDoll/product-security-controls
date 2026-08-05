@@ -1,0 +1,12 @@
+PASS PSB-AI-008/MAD-001 trust manifest and AI-004/006/007 bindings are exact
+FAIL PSB-AI-008/MAD-002 delegation and response signatures authenticate exact agent identities
+PASS PSB-AI-008/MAD-003 delegation follows one explicit sender recipient purpose and parent task edge
+FAIL PSB-AI-008/MAD-004 delegated and runtime capabilities stay below both agent privilege ceilings
+FAIL PSB-AI-008/MAD-005 tenant resource path and data classification remain in scope
+FAIL PSB-AI-008/MAD-006 delegated and consumed resource budgets cannot amplify the parent ceiling
+FAIL PSB-AI-008/MAD-007 delegation and response are fresh monotonic and replay resistant
+FAIL PSB-AI-008/MAD-008 onward delegation is denied at the first bounded hop
+FAIL PSB-AI-008/MAD-009 recipient execution is isolated credential-free and fail-closed
+FAIL PSB-AI-008/MAD-010 signed response is bound to the exact delegation and AI-006 result schema
+FAIL PSB-AI-008/MAD-011 evidence is complete sanitized and live adoption remains NOT_CHECKED
+REJECTED multi-agent delegation evidence: 9 checks failed

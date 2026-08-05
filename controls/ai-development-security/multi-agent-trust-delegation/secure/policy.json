@@ -1,0 +1,119 @@
+{
+  "schema_version": "psb-ai-multi-agent-policy/v1",
+  "policy_id": "PSB-AI-008-FIRST-SLICE",
+  "evaluation_time": "2026-08-05T12:02:00Z",
+  "trust_manifest": {
+    "path": "controls/ai-development-security/multi-agent-trust-delegation/secure/trust/agents.json",
+    "sha256": "04b51287c3e0e140a972675f4b0a1daa9afaf1184137993407fcabfea630552c",
+    "manifest_id": "PSB-AI-008-TRUST-FIRST-SLICE"
+  },
+  "parent_request_binding": {
+    "path": "controls/ai-development-security/multi-agent-trust-delegation/secure/parent-request.json",
+    "sha256": "f26f18066be2d1c3c4e51f781cef8566c196db47dfcc9404d41e5a495d41b5b7",
+    "parent_request_id": "PARENT-REQUEST-001"
+  },
+  "cross_control_bindings": [
+    {
+      "control_id": "PSB-AI-004",
+      "path": "controls/ai-development-security/ai-coding-agent-runtime-hardening/policy/runtime-policy.json",
+      "sha256": "d60a8aab5021e58d1ffff464854afb5bc951d02a7e431b7f47ee0b804659e59c",
+      "identity_field": "policy_id",
+      "identity": "PSB-AI-004-FIRST-SLICE"
+    },
+    {
+      "control_id": "PSB-AI-006",
+      "path": "controls/ai-development-security/agent-action-integrity-output-validation/secure/policy.json",
+      "sha256": "88ae1d87a94a2ffcb50c13d9bc60a65d3c45830e4061a4e3c947bc58664c07f3",
+      "identity_field": "policy_id",
+      "identity": "PSB-AI-006-FIRST-SLICE"
+    },
+    {
+      "control_id": "PSB-AI-007",
+      "path": "controls/ai-development-security/agent-resource-budget-monitoring/secure/policy.json",
+      "sha256": "010d23e81a3133646e12f4f87803e36bd7703c751ed79482b486d05b4c4b5d05",
+      "identity_field": "policy_id",
+      "identity": "PSB-AI-007-FIRST-SLICE"
+    }
+  ],
+  "delegation_schema": {
+    "required_fields": [
+      "schema_version",
+      "delegation_id",
+      "parent_request_digest",
+      "sender_agent_id",
+      "recipient_agent_id",
+      "sender_session_id",
+      "tenant_id",
+      "task_id",
+      "purpose",
+      "capabilities",
+      "resource_scope",
+      "data_classification",
+      "budget",
+      "issued_at",
+      "expires_at",
+      "nonce",
+      "sequence",
+      "hop",
+      "onward_delegation"
+    ],
+    "schema_version": "psb-ai-delegation/v1",
+    "maximum_age_seconds": 300,
+    "maximum_ttl_seconds": 300,
+    "maximum_hops": 1
+  },
+  "classification_order": [
+    "public",
+    "internal",
+    "confidential",
+    "restricted"
+  ],
+  "delegation_edges": [
+    {
+      "sender_agent_id": "AGENT-ORCHESTRATOR-001",
+      "recipient_agent_id": "AGENT-REVIEWER-001",
+      "tenant_id": "TENANT-FIXTURE-A",
+      "purposes": [
+        "review-diff"
+      ],
+      "capability_ceiling": [
+        "repository.read",
+        "review.comment.propose"
+      ],
+      "repository": "fixture/repository-a",
+      "ref": "refs/pull/17/head",
+      "path_prefix": "src/",
+      "maximum_data_classification": "internal",
+      "budget_ceiling": {
+        "tokens": 4000,
+        "tool_calls": 4,
+        "duration_seconds": 120
+      },
+      "onward_delegation": false
+    }
+  ],
+  "response_schema": {
+    "schema_version": "psb-ai-delegation-response/v1",
+    "statuses": [
+      "completed",
+      "denied",
+      "quarantined"
+    ],
+    "result_schema": "psb-ai-006-bound-summary/v1"
+  },
+  "evidence": {
+    "source": "synthetic-fixture",
+    "forbidden_fields": [
+      "prompt",
+      "transcript",
+      "message_body",
+      "tool_arguments",
+      "tool_output",
+      "credential",
+      "secret",
+      "token_value",
+      "private_url"
+    ],
+    "live_enforcement": "NOT_CHECKED"
+  }
+}

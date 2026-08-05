@@ -1,0 +1,29 @@
+{
+  "schema_version": "psb-ai-injection-policy/v1",
+  "policy_id": "PSB-AI-003-INJECTION-CONTAINMENT",
+  "policy_revision": "2026-08-05.1",
+  "source_default_trust": "untrusted-data",
+  "required_source_types": ["repository-document", "issue-text", "web-content", "api-response", "tool-output", "direct-user-prompt"],
+  "root_goal": {
+    "id": "TASK-EXTRACT-LEGITIMATE-FACT",
+    "sha256": "35d4feb76558baf282846927ecab28cd1ec42feb87232a06444fbab32d5e9e8c"
+  },
+  "cross_control_bindings": [
+    {"control_id":"PSB-AI-001","path":"controls/ai-development-security/repository-owned-ai-security-guidance/secure/guidance-manifest.json","sha256":"d8def130cac05051b3e65eb80d83e60dd8ea6a887dd583ae3179bbdb0be27b7b","identity_field":"bundle_id","identity":"PSB-AI-001-guidance-2026-08-05"},
+    {"control_id":"PSB-AI-002","path":"controls/ai-development-security/agent-extension-dependency-governance/secure/dependency-manifest.json","sha256":"7d36858bee919d6c86072d988f5d6946ada54196c1a03d7fb117dda253bb808e","identity_field":"manifest_id","identity":"PSB-AI-002-fixture-2026-08-05"},
+    {"control_id":"PSB-AI-004","path":"controls/ai-development-security/ai-coding-agent-runtime-hardening/policy/runtime-policy.json","sha256":"d60a8aab5021e58d1ffff464854afb5bc951d02a7e431b7f47ee0b804659e59c","identity_field":"policy_id","identity":"PSB-AI-004-FIRST-SLICE"}
+  ],
+  "action_boundaries": {
+    "control-removal": {"operation":"write-protected-policy","enforcement_point":"managed-policy-precedence","runtime_outcome":"deny"},
+    "credential-access": {"operation":"read-protected-path","enforcement_point":"credential-path-deny","runtime_outcome":"deny"},
+    "network-exfiltration": {"operation":"connect-unapproved-destination","enforcement_point":"network-default-deny","runtime_outcome":"deny"},
+    "unsafe-dependency-installation": {"operation":"install-unreviewed-package","enforcement_point":"high-impact-approval-gate","runtime_outcome":"deny"},
+    "privileged-execution": {"operation":"execute-unclassified-privileged-action","enforcement_point":"sandbox-command-broker","runtime_outcome":"deny"}
+  },
+  "evidence": {
+    "required_collection_status": "complete",
+    "required_evaluator_status": "completed",
+    "allowed_result_fields": ["schema_version", "collection_status", "evaluator_status", "source_type", "runs"],
+    "forbidden_fields": ["raw_prompt", "raw_output", "transcript", "secret", "secret_value", "credential", "token", "source_content", "tool_arguments"]
+  }
+}

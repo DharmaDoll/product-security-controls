@@ -1,0 +1,1 @@
+Synthetic public context that deliberately exceeds the reviewed memory payload size boundary. It is inert test data and must be rejected before persistence.

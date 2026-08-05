@@ -1,0 +1,40 @@
+{
+  "schema_version": "psb-ai-signed-delegation-envelope/v1",
+  "key_id": "KEY-ORCHESTRATOR-2026-08",
+  "algorithm": "Ed25519",
+  "payload": {
+    "schema_version": "psb-ai-delegation/v1",
+    "delegation_id": "DELEGATION-001",
+    "parent_request_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sender_agent_id": "AGENT-ORCHESTRATOR-001",
+    "recipient_agent_id": "AGENT-REVIEWER-001",
+    "sender_session_id": "SESSION-MULTI-001",
+    "tenant_id": "TENANT-FIXTURE-A",
+    "task_id": "TASK-REVIEW-001",
+    "purpose": "review-diff",
+    "capabilities": [
+      "repository.read",
+      "review.comment.propose"
+    ],
+    "resource_scope": {
+      "repository": "fixture/repository-a",
+      "ref": "refs/pull/17/head",
+      "paths": [
+        "src/**"
+      ]
+    },
+    "data_classification": "internal",
+    "budget": {
+      "tokens": 3000,
+      "tool_calls": 3,
+      "duration_seconds": 90
+    },
+    "issued_at": "2026-08-05T12:00:00Z",
+    "expires_at": "2026-08-05T12:05:00Z",
+    "nonce": "NONCE-DELEGATION-001",
+    "sequence": 41,
+    "hop": 1,
+    "onward_delegation": false
+  },
+  "signature_base64": "1Bw0lnNjY5IFYgsGC4OOkY4EDvvE7R4rAH0VC1GgsdZeyJagnPupAbFgaoS3iBItI28JXVsHaEt/C45Vj0GNAQ=="
+}

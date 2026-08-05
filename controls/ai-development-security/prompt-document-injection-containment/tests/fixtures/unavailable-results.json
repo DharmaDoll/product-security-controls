@@ -1,0 +1,7 @@
+{
+  "schema_version": "psb-ai-injection-results/v1",
+  "collection_status": "failed",
+  "evaluator_status": "completed",
+  "source_type": "synthetic-fixture",
+  "runs": []
+}

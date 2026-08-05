@@ -1,0 +1,12 @@
+PASS ARB-001 telemetry contract and complete session identities are verified
+PASS ARB-002 input output and total token budgets are enforced
+PASS ARB-003 integer micro-unit cost budget is enforced
+PASS ARB-004 wall-clock session duration is bounded
+PASS ARB-005 tool-call and high-impact action budgets are enforced
+PASS ARB-006 automatic retry count is bounded
+PASS ARB-007 single-agent recursion depth is bounded
+PASS ARB-008 security anomaly thresholds trigger blocking
+PASS ARB-009 warning restriction circuit breaker and alerts are enforced
+PASS ARB-010 evidence is complete sanitized and evaluator-backed
+PASS ARB-011 fixture leaves live provider enforcement explicitly NOT_CHECKED
+NOT_CHECKED live provider usage collector budget gateway circuit breaker and receiver require adopted evidence

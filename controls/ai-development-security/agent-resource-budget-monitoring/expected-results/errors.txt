@@ -1,0 +1,7 @@
+ERROR PSB-AI-004 telemetry policy binding digest mismatch
+ERROR insecure base evidence digest mismatch
+ERROR resource budget evaluator is unavailable
+ERROR resource evidence collection is incomplete
+ERROR resource evidence contains forbidden evidence field $.raw_prompt
+ERROR resource evidence is unavailable or malformed: JSONDecodeError
+ERROR resource telemetry collection is unavailable or incomplete

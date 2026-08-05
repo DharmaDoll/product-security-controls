@@ -1,0 +1,167 @@
+{
+  "schema_version": "psb-ai-resource-budget-insecure-overlay/v1",
+  "evidence_id": "PSB-AI-007-INSECURE-2026-08-05",
+  "source_type": "synthetic-fixture",
+  "base_evidence_path": "secure/session-evidence.json",
+  "base_evidence_sha256": "2018dcba964455a7c5f63bc5d45f30b9e624484d41c646665528b11aa8c063b1",
+  "session_overrides": [
+    {
+      "session_id": "SESSION-WARNING",
+      "decision": {
+        "decision": "continue",
+        "reasons": [
+          "within-budget"
+        ],
+        "breaker_state": "closed",
+        "permitted_mode": "normal",
+        "evaluated_at": "2026-08-05T12:00:00Z"
+      },
+      "enforcement": {
+        "applied": true,
+        "applied_at": "2026-08-05T12:00:01Z",
+        "new_model_calls_allowed": true,
+        "side_effects_allowed": true,
+        "safe_summary_allowed": true
+      }
+    },
+    {
+      "session_id": "SESSION-TOKEN-LIMIT",
+      "decision": {
+        "decision": "continue",
+        "reasons": [
+          "within-budget"
+        ],
+        "breaker_state": "closed",
+        "permitted_mode": "normal",
+        "evaluated_at": "2026-08-05T12:00:00Z"
+      },
+      "enforcement": {
+        "applied": true,
+        "applied_at": "2026-08-05T12:00:01Z",
+        "new_model_calls_allowed": true,
+        "side_effects_allowed": true,
+        "safe_summary_allowed": true
+      }
+    },
+    {
+      "session_id": "SESSION-COST-LIMIT",
+      "decision": {
+        "decision": "continue",
+        "reasons": [
+          "within-budget"
+        ],
+        "breaker_state": "closed",
+        "permitted_mode": "normal",
+        "evaluated_at": "2026-08-05T12:00:00Z"
+      },
+      "enforcement": {
+        "applied": true,
+        "applied_at": "2026-08-05T12:00:01Z",
+        "new_model_calls_allowed": true,
+        "side_effects_allowed": true,
+        "safe_summary_allowed": true
+      }
+    },
+    {
+      "session_id": "SESSION-DURATION-LIMIT",
+      "decision": {
+        "decision": "continue",
+        "reasons": [
+          "within-budget"
+        ],
+        "breaker_state": "closed",
+        "permitted_mode": "normal",
+        "evaluated_at": "2026-08-05T12:00:00Z"
+      },
+      "enforcement": {
+        "applied": true,
+        "applied_at": "2026-08-05T12:00:01Z",
+        "new_model_calls_allowed": true,
+        "side_effects_allowed": true,
+        "safe_summary_allowed": true
+      }
+    },
+    {
+      "session_id": "SESSION-TOOL-LIMIT",
+      "decision": {
+        "decision": "continue",
+        "reasons": [
+          "within-budget"
+        ],
+        "breaker_state": "closed",
+        "permitted_mode": "normal",
+        "evaluated_at": "2026-08-05T12:00:00Z"
+      },
+      "enforcement": {
+        "applied": true,
+        "applied_at": "2026-08-05T12:00:01Z",
+        "new_model_calls_allowed": true,
+        "side_effects_allowed": true,
+        "safe_summary_allowed": true
+      }
+    },
+    {
+      "session_id": "SESSION-ANOMALY",
+      "decision": {
+        "decision": "continue",
+        "reasons": [
+          "within-budget"
+        ],
+        "breaker_state": "closed",
+        "permitted_mode": "normal",
+        "evaluated_at": "2026-08-05T12:00:00Z"
+      },
+      "enforcement": {
+        "applied": true,
+        "applied_at": "2026-08-05T12:00:01Z",
+        "new_model_calls_allowed": true,
+        "side_effects_allowed": true,
+        "safe_summary_allowed": true
+      }
+    }
+  ],
+  "alert_overrides": [
+    {
+      "session_id": "SESSION-WARNING",
+      "status": "suppressed",
+      "delivered_at": null,
+      "delivery_latency_seconds": null,
+      "receipt_verified": false
+    },
+    {
+      "session_id": "SESSION-TOKEN-LIMIT",
+      "status": "suppressed",
+      "delivered_at": null,
+      "delivery_latency_seconds": null,
+      "receipt_verified": false
+    },
+    {
+      "session_id": "SESSION-COST-LIMIT",
+      "status": "suppressed",
+      "delivered_at": null,
+      "delivery_latency_seconds": null,
+      "receipt_verified": false
+    },
+    {
+      "session_id": "SESSION-DURATION-LIMIT",
+      "status": "suppressed",
+      "delivered_at": null,
+      "delivery_latency_seconds": null,
+      "receipt_verified": false
+    },
+    {
+      "session_id": "SESSION-TOOL-LIMIT",
+      "status": "suppressed",
+      "delivered_at": null,
+      "delivery_latency_seconds": null,
+      "receipt_verified": false
+    },
+    {
+      "session_id": "SESSION-ANOMALY",
+      "status": "suppressed",
+      "delivered_at": null,
+      "delivery_latency_seconds": null,
+      "receipt_verified": false
+    }
+  ]
+}

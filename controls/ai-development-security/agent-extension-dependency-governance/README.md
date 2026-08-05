@@ -46,6 +46,12 @@ dependency ID + kind + canonical source + full commit + artifact SHA-256
 | `PSB-AI-003` | Repository文書、issue、Web、tool outputを使ったprompt／document injection scenario。 |
 | `PSB-AI-004` | 承認済みdependency identityと実際のinstalled runtime、filesystem、network、secret、tool、side effectの強制。 |
 
+GitHub公式MCPを使う場合もpublisher名だけでは承認しません。`PSB-AI-002`は
+[`REF-AI-004`](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-ai-004)のcanonical repository、
+review済みcommit／artifact、tool schema、update mechanismをdependency recordへ固定します。
+OAuth／PATの選択、PATのscope・保管・期限・失効は`PSB-SOURCE-004`、read-only、tool allow-list、
+write approvalは`PSB-AI-004`が所有します。
+
 AI-002の`runtime_handoff`はenforcementそのものではありません。AI-004 inventoryの
 `dependency_record_id`が参照する承認元を提供します。Fixtureでは既存AI-004の
 `EXT-FIXTURE-DOCS-001`、`EXT-FIXTURE-SOURCE-001`、`EXT-FIXTURE-SKILL-001`と一致させています。
@@ -153,6 +159,7 @@ PASS sanitized evidence contains no raw prompt output transcript token or secret
 - [OWASP Agentic Top 10 registry](../../../frameworks/owasp-agentic-top10/README.md)
 - [MITRE ATLAS registry](../../../frameworks/mitre-atlas/README.md)
 - [AI security参考資料](../../../docs/SECURITY_GUIDANCE_SOURCES.md)
+- [REF-AI-004 GitHub MCP official authentication guidance](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-ai-004)
 
 これらはattack behaviorとrisk categoryのmappingであり、formal complianceやagentic securityの
 完全coverageを意味しません。

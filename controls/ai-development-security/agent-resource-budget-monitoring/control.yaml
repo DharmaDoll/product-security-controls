@@ -1,0 +1,344 @@
+id: PSB-AI-007
+title: Enforce agent resource budgets anomaly detection and circuit breaking
+domain: ai-development-security
+summary: Agent sessionのtoken、cost、duration、tool call、retry、recursionとsecurity anomalyをmodel外で評価し、warning時のread-only制限と上限超過時のcircuit breakerをsanitized telemetryで検証する。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - verify
+  - respond
+threats:
+  - id: AI-DENIAL-OF-WALLET
+    description: Malicious or runaway requests consume unbounded model tokens and monetary budget.
+  - id: AI-AGENT-RESOURCE-LOOP
+    description: Tool calls retries recursion or duration continue beyond an accountable session boundary.
+  - id: AI-AGENT-ANOMALY-MISSED
+    description: Repeated unknown tools approval replay or hook failures are treated as routine failures rather than compromise signals.
+  - id: AI-CIRCUIT-BREAKER-BYPASS
+    description: A warning or block decision is logged but model calls and side effects continue.
+  - id: AI-RESOURCE-ALERT-FAILURE
+    description: Required alerts are suppressed stale or delivered without a verifiable receipt.
+  - id: AI-RESOURCE-EVIDENCE-FAILURE
+    description: Missing gapped malformed tampered sensitive or evaluator-failed usage evidence is interpreted as zero consumption.
+implementations:
+  insecure:
+    - insecure/session-evidence.json
+  secure:
+    - secure/policy.json
+    - secure/session-evidence.json
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-AI-007
+  expected:
+    - exact PSB-AI-004 telemetry policy and both provider classes are bound before resource evaluation
+    - normal warning token cost duration tool retry recursion and anomaly sessions produce independently derived decisions
+    - eighty-percent warning restricts side effects to read-only mode
+    - hard resource limits and security anomalies open the circuit breaker and stop new model calls and side effects
+    - every restrict or block decision produces a matching verified alert receipt within 120 seconds
+    - known unsafe continuation is FAIL while binding tamper collection gaps unavailable malformed evaluator-failed or sensitive evidence is ERROR
+    - synthetic fixture output leaves live provider collector gateway breaker and receiver enforcement NOT_CHECKED
+checks:
+  - id: ARB-001
+    title: Resource telemetry is bound to a complete reviewed provider contract
+    required_state: the exact PSB-AI-004 fleet telemetry policy is SHA-256 and identity bound both provider classes are present and all seven session sequences are complete
+    responsible_role: security
+    applies_to:
+      - resource-telemetry-contract
+      - claude-code-session
+      - codex-session
+      - session-sequence
+    context:
+      threat_actor: compromised endpoint collector or integration that omits one provider session or replaces the telemetry contract used for budget evaluation
+      attack_or_failure_scenario: missing usage events or an unreviewed field contract makes an incomplete session appear to consume no resources
+      why_required: every later threshold depends on trustworthy coverage and cannot distinguish zero usage from absent telemetry without an exact source and sequence boundary
+    verification:
+      type: automated
+      method: verify the AI-004 policy path digest schema and identity exact provider set required scenario set and contiguous per-session sequence counts
+      expected: seven exact scenarios across Claude Code and Codex pass while contract tamper missing identities or sequence gaps return ERROR
+      evidence:
+        - AI-004 telemetry policy digest result
+        - provider and scenario coverage
+        - contiguous sequence metadata
+    mapping_status: reviewed
+  - id: ARB-002
+    title: Input output and total token budgets are enforced
+    required_state: input tokens do not exceed 20000 output tokens do not exceed 8000 and their computed total does not exceed 28000 before another model call is allowed
+    responsible_role: shared
+    applies_to:
+      - model-usage
+      - session-token-budget
+      - model-call-gateway
+    context:
+      threat_actor: attacker prompt-injected agent or runaway reasoning loop generating repeated or oversized model requests
+      attack_or_failure_scenario: separately plausible input and output usage accumulates beyond the reviewed session ceiling and consumes quota or money indefinitely
+      why_required: cost estimates can lag or vary by model so direct input output and computed total token ceilings provide an immediate independent stop signal
+    verification:
+      type: automated
+      method: validate nonnegative integer counters compute total tokens compare all three maxima and inspect the bound block decision
+      expected: SESSION-TOKEN-LIMIT reports all three reasons opens the breaker and permits no new model call or side effect
+      evidence:
+        - token measurement and derived total
+        - token-limit breaker decision
+    mapping_status: reviewed
+  - id: ARB-003
+    title: Session cost uses one currency and integer micro-unit ceiling
+    required_state: cost is recorded in the policy currency as nonnegative integer micro-units and cannot exceed 500000 before new work is blocked
+    responsible_role: shared
+    applies_to:
+      - model-cost-budget
+      - provider-usage-meter
+      - billing-protection
+    context:
+      threat_actor: denial-of-wallet attacker billing estimate drift or implementation comparing floating values or different currencies
+      attack_or_failure_scenario: rounding currency ambiguity or delayed accounting lets the session exceed its monetary risk budget while token counts remain modest
+      why_required: a distinct exact monetary ceiling captures model price and non-token charges that token limits alone cannot represent
+    verification:
+      type: automated
+      method: require exact USD identity integer micro-units compare the policy maximum and independently derive the cost-limit decision
+      expected: SESSION-COST-LIMIT blocks at 600000 micro-units while currency mismatch or malformed values return ERROR
+      evidence:
+        - currency and integer cost measurement
+        - cost-limit breaker decision
+    mapping_status: reviewed
+  - id: ARB-004
+    title: Wall-clock session duration is bounded
+    required_state: observed time minus start time is nonnegative and at most 900 seconds before new model calls and side effects are stopped
+    responsible_role: shared
+    applies_to:
+      - agent-session-lifetime
+      - execution-duration
+      - credential-exposure-window
+    context:
+      threat_actor: nonterminating agent blocked tool timeout or workflow that remains active while holding credentials context and approval state
+      attack_or_failure_scenario: low-rate activity stays below token and call limits but extends the authority and exposure window indefinitely
+      why_required: cumulative counters do not bound idle waits slow loops or a session that retains risk without consuming many tokens
+    verification:
+      type: automated
+      method: parse timezone-aware start and observation times derive wall-clock seconds and compare the duration maximum and block state
+      expected: SESSION-DURATION-LIMIT derives 1200 seconds and opens the breaker
+      evidence:
+        - derived wall-clock duration
+        - duration-limit enforcement state
+    mapping_status: reviewed
+  - id: ARB-005
+    title: Tool calls and high-impact actions have separate ceilings
+    required_state: total tool calls do not exceed 20 and high-impact actions do not exceed one regardless of remaining token or cost budget
+    responsible_role: security
+    applies_to:
+      - agent-tool-loop
+      - high-impact-action-count
+      - external-side-effect
+    context:
+      threat_actor: compromised agent composing many approved tools or repeatedly reaching source deployment database or infrastructure boundaries
+      attack_or_failure_scenario: inexpensive short tool calls cause excessive external load or multiple sensitive actions while model resource counters appear normal
+      why_required: tool effects are not proportional to tokens or cost and high-impact operations require a stricter independent cumulative boundary
+    verification:
+      type: automated
+      method: compare total and high-impact counters with separate maxima and require both reasons in the SESSION-TOOL-LIMIT block
+      expected: 21 tool calls and two high-impact actions block without another tool dispatch
+      evidence:
+        - tool and high-impact counters
+        - tool-limit breaker decision
+    mapping_status: reviewed
+  - id: ARB-006
+    title: Automatic retries are bounded independently
+    required_state: no session performs more than three automatic retries and a fourth retry opens the breaker rather than restoring approval or changing request identity
+    responsible_role: developer
+    applies_to:
+      - agent-retry-loop
+      - transport-failure
+      - side-effect-reconciliation
+    context:
+      threat_actor: network failure retry automation or agent repeatedly interpreting unknown outcome as permission to try again
+      attack_or_failure_scenario: repeated attempts multiply cost load and side effects even though each individual request satisfies its action policy
+      why_required: idempotency limits duplicate mutation but does not bound resource consumption or upstream load from repeated failed and lookup requests
+    verification:
+      type: automated
+      method: compare the cumulative retry count with its dedicated maximum and require retry-limit in the blocking reasons
+      expected: SESSION-TOOL-LIMIT blocks at four retries while the insecure continue decision fails
+      evidence:
+        - retry counter
+        - retry-limit breaker result
+    mapping_status: reviewed
+  - id: ARB-007
+    title: Single-agent recursion depth is bounded
+    required_state: nested task or self-call depth does not exceed four and deeper execution is blocked without allocating another child context
+    responsible_role: developer
+    applies_to:
+      - agent-task-stack
+      - recursive-agent-call
+      - child-context-allocation
+    context:
+      threat_actor: injected recursive instruction malformed planner or agent creating nested subtasks without a reachable termination condition
+      attack_or_failure_scenario: each child appears valid but the stack grows until context cost or execution capacity is exhausted and responsibility is obscured
+      why_required: total call counts do not express nesting depth and a shallow numerical call budget can still permit dangerous recursive authority propagation
+    verification:
+      type: automated
+      method: validate the maximum observed single-agent depth and require recursion-limit before depth five continues
+      expected: SESSION-TOOL-LIMIT blocks at depth five while multi-agent delegation remains outside this row
+      evidence:
+        - maximum task-stack depth
+        - recursion-limit decision
+    mapping_status: reviewed
+  - id: ARB-008
+    title: Security anomaly counts trigger a fail-closed decision
+    required_state: two unknown-tool denials or one approval replay or hook failure blocks the session even when ordinary resource counters are below budget
+    responsible_role: security
+    applies_to:
+      - agent-security-anomaly
+      - unknown-tool-denial
+      - approval-replay
+      - hook-failure
+    context:
+      threat_actor: compromised or goal-hijacked agent probing tools replaying authority or attempting to execute while its policy hook is failing
+      attack_or_failure_scenario: repeated security denials are classified as harmless operational errors and the agent continues until a later attempt succeeds
+      why_required: resource thresholds measure quantity while these low-count events indicate intent or control failure and need an independent security stop condition
+    verification:
+      type: automated
+      method: compare normalized AI-004 signal counts with exact thresholds and derive sorted anomaly reasons independently of reported decision
+      expected: SESSION-ANOMALY blocks for approval-replay and unknown-tool-denial-spike despite normal usage counters
+      evidence:
+        - metadata-only anomaly counts
+        - anomaly breaker decision
+    mapping_status: reviewed
+  - id: ARB-009
+    title: Warning restriction circuit breaker and alert delivery are enforced
+    required_state: eighty-percent warning removes side effects hard limits or anomalies stop new model calls and every non-normal decision has a matching alert receipt within 120 seconds
+    responsible_role: shared
+    applies_to:
+      - circuit-breaker
+      - read-only-restriction
+      - model-call-gateway
+      - alert-delivery
+    context:
+      threat_actor: gateway or monitoring operator logging a decision without enforcing it suppressing the alert or allowing the agent to continue side effects
+      attack_or_failure_scenario: dashboards show a limit but the same session keeps calling models and tools and no accountable receiver learns that containment failed
+      why_required: measuring a threshold changes no outcome unless a separate enforcement point applies the state and delivery evidence reaches an owned response path
+    verification:
+      type: automated
+      method: derive expected decision breaker and permitted mode compare gateway permissions then validate exact alert reasons timestamps latency and receipt
+      expected: warning remains read-only every limit or anomaly stops calls and effects and six exact alerts arrive within 120 seconds
+      evidence:
+        - decision-to-enforcement comparison
+        - six sanitized alert receipts
+    mapping_status: reviewed
+  - id: ARB-010
+    title: Resource evidence is complete sanitized and fail-closed
+    required_state: collector and evaluator health are complete current gap-free and metadata-only without prompts tool content targets credentials or private URLs
+    responsible_role: security
+    applies_to:
+      - usage-collector
+      - resource-evaluator
+      - security-evidence
+      - data-minimization
+    context:
+      threat_actor: failed collector malicious evidence producer or operator interpreting absent usage records as a zero-consumption session
+      attack_or_failure_scenario: gaps hide resource abuse while verbose telemetry copies the sensitive prompt tool and credential content the control is intended to protect
+      why_required: threshold decisions require complete counters but centralized monitoring must remain useful without becoming a second sensitive context store
+    verification:
+      type: automated
+      method: require fresh complete collector and evaluator state reject gaps and recursively reject forbidden fields with distinct exit code 2
+      expected: metadata-only evidence passes while tampered incomplete unavailable malformed evaluator-failed or sensitive evidence returns ERROR
+      evidence:
+        - expected-results/errors.txt
+        - sanitized resource verifier output
+    mapping_status: reviewed
+  - id: ARB-011
+    title: Fixture result does not overclaim live budget enforcement
+    required_state: deterministic evidence explicitly reports live provider collector budget gateway circuit breaker and alert receiver adoption as NOT_CHECKED
+    responsible_role: security
+    applies_to:
+      - live-provider-usage
+      - live-budget-gateway
+      - live-alert-receiver
+      - adoption-claim
+    context:
+      threat_actor: adopter or automation presenting synthetic aggregate counters as proof that production spending loops and side effects are bounded
+      attack_or_failure_scenario: provider usage delays concurrency or gateway bypass exist in production but local JSON success is reported as live enforcement
+      why_required: policy logic can be tested offline but only adopted collectors and enforcement points can prove the real session cannot continue past a limit
+    verification:
+      type: automated
+      method: require synthetic-fixture source and explicit live_enforcement NOT_CHECKED state in secure evidence and output
+      expected: the E3 fixture passes without claiming provider billing gateway breaker or receiver adoption
+      evidence:
+        - synthetic evidence source
+        - live enforcement NOT_CHECKED output
+    mapping_status: unmapped
+mappings:
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0034.002
+    relationship: mitigates
+    confidence: high
+    rationale: Independent cumulative token cost duration tool retry and recursion limits directly constrain Agentic Resource Consumption while live concurrent and multi-agent enforcement remains unverified.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - ARB-002
+      - ARB-003
+      - ARB-004
+      - ARB-005
+      - ARB-006
+      - ARB-007
+      - ARB-009
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0029
+    relationship: mitigates
+    confidence: medium
+    rationale: Per-session budgets anomaly stops and gateway circuit breaking reduce one path to Denial of AI Service but do not establish tenant-wide provider or dependency availability.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - ARB-002
+      - ARB-003
+      - ARB-004
+      - ARB-005
+      - ARB-006
+      - ARB-007
+      - ARB-008
+      - ARB-009
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.M0024
+    relationship: supports
+    confidence: high
+    rationale: The exact AI-004 telemetry contract complete sequence checks metadata-only resource counters anomaly signals and verified alert receipts implement a reviewable AI Telemetry Logging subset.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - ARB-001
+      - ARB-008
+      - ARB-009
+      - ARB-010
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI08
+    relationship: mitigates
+    confidence: high
+    rationale: Warning restriction hard resource limits anomaly-driven circuit breaking and alert delivery reduce single-agent runaway and retry cascades without claiming complete multi-agent cascading-failure coverage.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - ARB-002
+      - ARB-003
+      - ARB-004
+      - ARB-005
+      - ARB-006
+      - ARB-007
+      - ARB-008
+      - ARB-009
+limitations:
+  - Aggregated fixture counters do not prove provider usage events tokenizer identity invoice accuracy or live collector authenticity.
+  - The exact AI-004 policy digest is not a substitute for signed live telemetry and protected collector key custody.
+  - Production counters require atomic reservation to contain concurrent requests that cross a limit between observation and enforcement.
+  - The safe-summary allowance may need a separately reserved termination budget and must not restore side-effect authority.
+  - Circuit breaking does not roll back an already dispatched external mutation and must compose PSB-AI-006 reconciliation.
+  - Budget values are illustrative fixture values not business SLO provider quota contract or universal safe thresholds.
+  - Multi-agent aggregate budgets cross-session and tenant quotas kill-switch recovery and provider availability remain outside this first slice.
+  - Passing resource checks does not establish model output correctness safety fairness or compliance.
+status: prototype
+evidence_level: E3
+owner: product-security

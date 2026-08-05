@@ -1,0 +1,6 @@
+PASS PSB-SOURCE-004/SCL-013 GitHub MCP defaults to exact remote OAuth without a configured PAT
+PASS PSB-SOURCE-004/SCL-014 PAT fallback is dedicated fine-grained repository-restricted and time-bound
+PASS PSB-SOURCE-004/SCL-015 PAT stays in an approved secret store and is referenced only by the MCP child
+PASS PSB-SOURCE-004/SCL-016 PAT fallback uses an exact managed command read-only mode and three toolsets
+PASS PSB-SOURCE-004/SCL-017 credential dependency runtime revocation and audit ownership stay explicit
+ACCEPTED GitHub MCP authentication profile

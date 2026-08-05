@@ -1,0 +1,45 @@
+{
+  "schema_version": "psb-ai-agent-trust-manifest/v1",
+  "manifest_id": "PSB-AI-008-TRUST-FIRST-SLICE",
+  "agents": [
+    {
+      "agent_id": "AGENT-ORCHESTRATOR-001",
+      "role": "orchestrator",
+      "tenant_id": "TENANT-FIXTURE-A",
+      "key_id": "KEY-ORCHESTRATOR-2026-08",
+      "algorithm": "Ed25519",
+      "public_key_path": "orchestrator-public.pem",
+      "public_key_sha256": "3beb8be298a5725329e7f6dff6d40a2072142115a83cfdc5284480751727f7ac",
+      "status": "active",
+      "can_delegate": true,
+      "allowed_recipients": [
+        "AGENT-REVIEWER-001"
+      ],
+      "maximum_capabilities": [
+        "delegate",
+        "repository.read",
+        "review.comment.propose"
+      ],
+      "maximum_data_classification": "internal"
+    },
+    {
+      "agent_id": "AGENT-REVIEWER-001",
+      "role": "reviewer",
+      "tenant_id": "TENANT-FIXTURE-A",
+      "key_id": "KEY-REVIEWER-2026-08",
+      "algorithm": "Ed25519",
+      "public_key_path": "reviewer-public.pem",
+      "public_key_sha256": "11c200de819b7fef75c6aac0425421cbee14b947e44fc4db07e964975decd0d1",
+      "status": "active",
+      "can_delegate": false,
+      "allowed_recipients": [
+        "AGENT-ORCHESTRATOR-001"
+      ],
+      "maximum_capabilities": [
+        "repository.read",
+        "review.comment.propose"
+      ],
+      "maximum_data_classification": "internal"
+    }
+  ]
+}

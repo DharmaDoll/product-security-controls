@@ -1,0 +1,94 @@
+{
+  "schema_version": "psb-ai-resource-budget-policy/v1",
+  "policy_id": "PSB-AI-007-FIRST-SLICE",
+  "policy_revision": "2026-08-05.1",
+  "source_type": "synthetic-fixture",
+  "evaluation_time": "2026-08-05T12:01:00Z",
+  "maximum_snapshot_age_seconds": 300,
+  "telemetry_contract_binding": {
+    "control_id": "PSB-AI-004",
+    "path": "controls/ai-development-security/ai-coding-agent-runtime-hardening/policy/fleet-telemetry-policy.json",
+    "sha256": "ff559da3bfd52eb8ce65f3ae9b22211b44f185316987ffeaf011b1274de42090",
+    "policy_id": "PSB-AI-004-FLEET-TELEMETRY",
+    "schema_version": "psb-ai-fleet-telemetry-policy/v1"
+  },
+  "required_scenarios": [
+    "SESSION-NORMAL",
+    "SESSION-WARNING",
+    "SESSION-TOKEN-LIMIT",
+    "SESSION-COST-LIMIT",
+    "SESSION-DURATION-LIMIT",
+    "SESSION-TOOL-LIMIT",
+    "SESSION-ANOMALY"
+  ],
+  "budget": {
+    "maximum_input_tokens": 20000,
+    "maximum_output_tokens": 8000,
+    "maximum_total_tokens": 28000,
+    "cost_currency": "USD",
+    "maximum_cost_microunits": 500000,
+    "maximum_duration_seconds": 900,
+    "maximum_tool_calls": 20,
+    "maximum_high_impact_actions": 1,
+    "maximum_retries": 3,
+    "maximum_recursion_depth": 4,
+    "warning_percent": 80
+  },
+  "anomaly_rules": {
+    "unknown_tool_denials": {
+      "threshold": 2,
+      "reason": "unknown-tool-denial-spike"
+    },
+    "approval_replays": {
+      "threshold": 1,
+      "reason": "approval-replay"
+    },
+    "hook_failures": {
+      "threshold": 1,
+      "reason": "hook-failure"
+    }
+  },
+  "decision_policy": {
+    "within_budget": {
+      "decision": "continue",
+      "breaker_state": "closed",
+      "permitted_mode": "normal"
+    },
+    "warning": {
+      "decision": "restrict",
+      "breaker_state": "restricted",
+      "permitted_mode": "read-only"
+    },
+    "limit_or_anomaly": {
+      "decision": "block",
+      "breaker_state": "open",
+      "permitted_mode": "none"
+    }
+  },
+  "alert_policy": {
+    "required_for_decisions": [
+      "restrict",
+      "block"
+    ],
+    "maximum_delivery_latency_seconds": 120,
+    "receipt_required": true
+  },
+  "evidence": {
+    "required_source": "synthetic-fixture",
+    "forbidden_fields": [
+      "prompt",
+      "raw_prompt",
+      "transcript",
+      "tool_input",
+      "arguments",
+      "parameters",
+      "target",
+      "body",
+      "tool_output",
+      "credential",
+      "secret_value",
+      "token",
+      "private_url"
+    ]
+  }
+}

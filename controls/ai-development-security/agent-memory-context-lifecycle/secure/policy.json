@@ -1,0 +1,33 @@
+{
+  "schema_version": "psb-ai-memory-policy/v1",
+  "policy_id": "PSB-AI-005-MEMORY-LIFECYCLE",
+  "policy_revision": "2026-08-05.1",
+  "evaluation_time": "2026-08-05T12:00:00Z",
+  "maximum_payload_bytes": 128,
+  "maximum_retention_seconds": 86400,
+  "deletion_grace_seconds": 300,
+  "allowed_classifications": ["public", "internal"],
+  "prohibited_classifications": ["credential", "secret", "restricted", "production-data", "raw-prompt", "tool-output-instruction"],
+  "allowed_source_trust": ["trusted-user-approved"],
+  "scope_fields": ["user_id", "session_id", "task_id"],
+  "cross_scope_sharing": false,
+  "retrieval_default": "deny",
+  "required_retrieval_cases": {
+    "MEM-READ-001": "exact-scope",
+    "MEM-READ-002": "user_id-mismatch",
+    "MEM-READ-003": "session_id-mismatch",
+    "MEM-READ-004": "task_id-mismatch",
+    "MEM-READ-005": "tombstoned"
+  },
+  "source_scenario_binding": {
+    "control_id": "PSB-AI-003",
+    "path": "controls/ai-development-security/prompt-document-injection-containment/secure/scenario-corpus.json",
+    "sha256": "d95ad1b1fd0c1988e8366f9896475eb0d2cc5d71bdb230413add2d5ae0d4e271",
+    "corpus_id": "PSB-AI-003-SYNTHETIC-2026-08-05"
+  },
+  "evidence": {
+    "required_collection_status": "complete",
+    "required_evaluator_status": "completed",
+    "forbidden_fields": ["raw_prompt", "raw_output", "transcript", "secret_value", "credential_value", "token", "payload_content", "tool_arguments"]
+  }
+}

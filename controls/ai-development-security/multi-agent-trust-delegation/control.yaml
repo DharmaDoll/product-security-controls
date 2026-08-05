@@ -1,0 +1,349 @@
+id: PSB-AI-008
+title: Authenticate and constrain multi-agent delegation
+domain: ai-development-security
+summary: Agent間delegationとresponseを署名identity、parent request、capability、tenant、data、budget、freshness、replay、hopへbindし、権限と障害のchain伝播をfail closedにする。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - verify
+  - respond
+threats:
+  - id: AI-AGENT-IDENTITY-SPOOFING
+    description: An attacker or compromised transport injects a delegation or response under another agent identity.
+  - id: AI-DELEGATION-PRIVILEGE-AMPLIFICATION
+    description: A child agent receives capabilities data or resource scope beyond both the sender and recipient ceilings.
+  - id: AI-DELEGATION-REPLAY
+    description: A stale delegation or response is replayed to repeat work or side effects.
+  - id: AI-MULTI-AGENT-BUDGET-AMPLIFICATION
+    description: Each child receives a fresh resource budget and a chain exceeds the parent session ceiling.
+  - id: AI-DELEGATION-LATERAL-MOVEMENT
+    description: One compromised agent delegates across tenant identity or onward-hop boundaries and propagates compromise.
+  - id: AI-MULTI-AGENT-EVIDENCE-FAILURE
+    description: Missing tampered sensitive or evaluator-failed delegation evidence is interpreted as trusted communication.
+implementations:
+  insecure:
+    - insecure/delegation-envelope.json
+    - insecure/execution-evidence.json
+  secure:
+    - secure/policy.json
+    - secure/parent-request.json
+    - secure/trust/agents.json
+    - secure/delegation-envelope.json
+    - secure/response-envelope.json
+    - secure/execution-evidence.json
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-AI-008
+  expected:
+    - exact AI-004 AI-006 and AI-007 policies trust manifest public keys and parent request are SHA-256 and identity bound
+    - Ed25519 signatures authenticate both the exact delegation sender and response sender
+    - sender recipient purpose capability tenant resource data budget freshness replay and hop constraints are independently derived
+    - recipient runtime remains isolated credential-free and cannot continue when the delegation is invalid
+    - response identity schema and budget usage bind to the exact delegation
+    - forged escalated cross-tenant over-budget replayed onward and ambient behavior is FAIL
+    - malformed unavailable evaluator cryptographic verifier or sensitive evidence is ERROR
+    - synthetic fixture output leaves live transport identity isolation ledger and budget enforcement NOT_CHECKED
+checks:
+  - id: MAD-001
+    title: Agent trust and cross-control contracts are immutable and complete
+    required_state: exact trust manifest public keys parent request and AI-004 AI-006 AI-007 policies are identity and SHA-256 bound before delegation evaluation
+    responsible_role: security
+    applies_to:
+      - agent-trust-manifest
+      - agent-public-key
+      - parent-request
+      - cross-control-contract
+    context:
+      threat_actor: attacker replacing an agent key or operator evaluating delegation against stale runtime action or budget semantics
+      attack_or_failure_scenario: a valid signature or policy result is accepted under a different trust manifest parent request or downstream control contract
+      why_required: every later check depends on stable identities and cannot safely infer that a changed key or policy retains the reviewed meaning
+    verification:
+      type: automated
+      method: hash and identify the trust manifest two public keys parent request and exact AI-004 AI-006 AI-007 policies
+      expected: all immutable bindings resolve before any delegation decision and mismatch is ERROR
+      evidence:
+        - trust manifest and public-key digest output
+        - cross-control binding output
+    mapping_status: reviewed
+  - id: MAD-002
+    title: Delegation and response authenticate exact agent identities
+    required_state: canonical delegation and response payloads have valid Ed25519 signatures from active sender key IDs bound to their registered agent IDs
+    responsible_role: security
+    applies_to:
+      - delegation-envelope
+      - response-envelope
+      - agent-identity
+      - message-authentication
+    context:
+      threat_actor: forged agent compromised message transport or attacker modifying a signed payload after dispatch
+      attack_or_failure_scenario: recipient trusts a display name or unsigned message and executes a task no registered sender issued
+      why_required: transport location and message prose do not authenticate which agent accepted accountability for the exact bytes
+    verification:
+      type: automated
+      method: canonicalize both payloads select public keys by exact agent and key ID and invoke the cryptographic verifier
+      expected: secure signatures pass while the modified insecure delegation signature fails and verifier outage is ERROR
+      evidence:
+        - delegation signature decision
+        - response signature decision
+    mapping_status: reviewed
+  - id: MAD-003
+    title: Delegation follows one explicit parent sender recipient and purpose edge
+    required_state: authorized AI-006 parent digest session and tenant bind one registered sender to one recipient for the exact review-diff purpose
+    responsible_role: shared
+    applies_to:
+      - delegation-edge
+      - parent-task
+      - sender-agent
+      - recipient-agent
+    context:
+      threat_actor: compromised orchestrator confused deputy or adapter detaching a child task from its authorized parent
+      attack_or_failure_scenario: a syntactically valid delegation uses an unrelated parent request or reaches an agent pair and purpose never approved by policy
+      why_required: signature proves authorship but not whether that sender may delegate this parent task to this recipient for this purpose
+    verification:
+      type: automated
+      method: compare exact schema parent digest session tenant sender recipient purpose and trust-manifest delegation edge
+      expected: only AGENT-ORCHESTRATOR-001 to AGENT-REVIEWER-001 review-diff passes
+      evidence:
+        - parent request binding
+        - delegation edge decision
+    mapping_status: reviewed
+  - id: MAD-004
+    title: Delegated capability cannot exceed sender recipient or edge ceilings
+    required_state: every delegated and runtime capability is unique and contained by sender recipient and exact edge maximums
+    responsible_role: security
+    applies_to:
+      - delegated-capability
+      - recipient-runtime-authority
+      - privilege-ceiling
+    context:
+      threat_actor: goal-hijacked sender compromised recipient or administrator granting deployment authority to a read-only reviewer
+      attack_or_failure_scenario: a child acquires a capability neither endpoint role was permitted to exercise and becomes a privilege-escalation path
+      why_required: authenticated delegation can still amplify authority unless each hop intersects all independent privilege ceilings
+    verification:
+      type: automated
+      method: compare requested and effective capabilities with sender recipient and edge sets without wildcard or subset inference
+      expected: read and comment proposal pass while deployment.write is rejected
+      evidence:
+        - capability ceiling comparisons
+        - effective runtime capability inventory
+    mapping_status: reviewed
+  - id: MAD-005
+    title: Tenant resource path and data classification remain bounded
+    required_state: delegation and runtime retain exact tenant repository ref and normalized src path while classification does not exceed recipient clearance
+    responsible_role: security
+    applies_to:
+      - tenant-boundary
+      - repository-scope
+      - delegated-data
+      - agent-clearance
+    context:
+      threat_actor: compromised agent or routing bug moving source and context to another tenant repository ref path or insufficiently cleared worker
+      attack_or_failure_scenario: correct agent identities are used but the child reads unrelated resources or receives more sensitive data than its role permits
+      why_required: identity and capability names do not express which tenant resources and classifications one invocation may process
+    verification:
+      type: automated
+      method: compare tenant repository ref normalized path prefix and ordered classification against edge recipient and runtime evidence
+      expected: internal src scope passes while repository-b infra and confidential scope fail
+      evidence:
+        - resource-scope comparisons
+        - classification ceiling decision
+    mapping_status: reviewed
+  - id: MAD-006
+    title: Child resource budgets cannot amplify the parent delegation ceiling
+    required_state: delegated token tool-call and duration values are at most the edge ceiling and signed response usage is at most the delegated amount
+    responsible_role: shared
+    applies_to:
+      - child-resource-budget
+      - multi-agent-propagation
+      - response-usage
+    context:
+      threat_actor: denial-of-wallet attacker recursive planner or orchestrator issuing a fresh maximum budget for every child
+      attack_or_failure_scenario: each agent appears locally within limits while aggregate tokens calls and duration exceed the parent risk boundary
+      why_required: PSB-AI-007 bounds one session but multi-agent fan-out needs an explicit non-amplifying transfer contract at every edge
+    verification:
+      type: automated
+      method: compare exact nonnegative integer delegation budget against edge ceiling and response usage against delegated values
+      expected: 3000 token child and lower usage pass while 8000 token delegation fails
+      evidence:
+        - edge-to-child budget comparison
+        - child-to-response usage comparison
+    mapping_status: reviewed
+  - id: MAD-007
+    title: Delegation and response are fresh monotonic and replay resistant
+    required_state: bounded issued and expiry times plus unseen nonces and strictly increasing sender-specific sequences are required for request and response
+    responsible_role: security
+    applies_to:
+      - delegation-freshness
+      - delegation-replay-ledger
+      - response-replay-ledger
+    context:
+      threat_actor: attacker delayed transport duplicate delivery or retry automation replaying a previously valid message
+      attack_or_failure_scenario: old authority or completed output is accepted again because the signature remains cryptographically valid
+      why_required: signatures do not expire or consume themselves and need independent time and replay state to prevent repeated execution
+    verification:
+      type: automated
+      method: derive age and TTL then compare each nonce and sequence with its sender replay state
+      expected: sequence 41 and response 12 pass while stale consumed sequence and nonce fail
+      evidence:
+        - freshness derivation
+        - sender-specific replay-state comparison
+    mapping_status: reviewed
+  - id: MAD-008
+    title: Onward delegation is denied at the bounded first hop
+    required_state: policy edge payload recipient trust and runtime all prohibit another delegation after hop one
+    responsible_role: security
+    applies_to:
+      - delegation-hop
+      - onward-delegation
+      - lateral-movement-boundary
+    context:
+      threat_actor: compromised reviewer propagating instructions or privilege through a newly selected downstream agent
+      attack_or_failure_scenario: a safe-looking first delegation becomes an unreviewed chain whose later recipients escape the original trust and data boundaries
+      why_required: sender-recipient verification at one edge cannot constrain a new edge unless hop and onward authority are explicitly bounded
+    verification:
+      type: automated
+      method: require hop one onward false nondelegating recipient role and zero runtime onward attempts
+      expected: secure review stops at reviewer while hop two and onward true fail
+      evidence:
+        - hop and onward flags
+        - recipient role and attempt count
+    mapping_status: reviewed
+  - id: MAD-009
+    title: Recipient runtime is isolated credential-free and fail-closed
+    required_state: recipient executes in a dedicated context without ambient credentials and invalid delegation blocks model calls and side effects
+    responsible_role: shared
+    applies_to:
+      - recipient-runtime
+      - execution-isolation
+      - credential-boundary
+      - delegation-circuit-breaker
+    context:
+      threat_actor: compromised child process shared parent context or enforcement component logging deny without stopping execution
+      attack_or_failure_scenario: delegation policy rejects a message but the child retains parent credentials context or side-effect access and continues anyway
+      why_required: a policy decision changes no outcome unless a separate runtime applies least privilege and fail-closed containment
+    verification:
+      type: automated
+      method: independently derive whether all delegation checks allow then compare identity isolation credentials model-call and side-effect states
+      expected: valid delegation runs dedicated and credential-free while invalid delegation must stop both execution paths
+      evidence:
+        - recipient runtime state
+        - derived decision-to-enforcement comparison
+    mapping_status: reviewed
+  - id: MAD-010
+    title: Signed response binds to the exact delegation and result contract
+    required_state: recipient-signed response reverses exact identities binds delegation payload digest uses the AI-006 result schema and records bounded usage
+    responsible_role: developer
+    applies_to:
+      - delegation-response
+      - result-identity
+      - downstream-agent-context
+    context:
+      threat_actor: compromised worker stale response transport or model inventing a plausible child result for another task
+      attack_or_failure_scenario: orchestrator consumes output whose sender request resource or schema differs from the delegated work
+      why_required: authenticated request does not prove which task produced a returned result or that downstream logic can safely interpret its shape
+    verification:
+      type: automated
+      method: verify response signature sender recipient delegation digest status result schema result digest and budget usage
+      expected: exact signed response passes while the changed insecure delegation creates a response-binding failure
+      evidence:
+        - response-to-delegation digest comparison
+        - AI-006 result schema decision
+    mapping_status: reviewed
+  - id: MAD-011
+    title: Multi-agent evidence is complete sanitized and does not overclaim adoption
+    required_state: collection and evaluator are complete metadata excludes sensitive content and live transport isolation replay and budget enforcement remains NOT_CHECKED
+    responsible_role: security
+    applies_to:
+      - multi-agent-evidence
+      - delegation-evaluator
+      - audit-data-minimization
+      - adoption-claim
+    context:
+      threat_actor: failed collector malicious evidence producer or adopter presenting synthetic signatures as proof of production isolation
+      attack_or_failure_scenario: gaps hide untrusted communication while raw prompts or tool content create another disclosure surface and fixture success is reported as live deployment
+      why_required: trustworthy sanitized evidence and explicit claim boundaries are required to distinguish offline contract behavior from actual enforcement
+    verification:
+      type: automated
+      method: require complete gap-free collection and evaluator state recursively reject sensitive fields and require synthetic source with live NOT_CHECKED
+      expected: secure metadata passes while unavailable malformed sensitive and ADOPTED fixture evidence returns ERROR or FAIL as appropriate
+      evidence:
+        - expected-results secure insecure and error outcomes
+        - live enforcement NOT_CHECKED state
+    mapping_status: unmapped
+mappings:
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.M0026
+    relationship: supports
+    confidence: high
+    rationale: Immutable agent identities explicit delegation edges intersected privilege ceilings nondelegating recipient roles and isolated credential-free runtime support privileged AI agent permissions configuration without proving live enforcement.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - MAD-001
+      - MAD-003
+      - MAD-004
+      - MAD-008
+      - MAD-009
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI03
+    relationship: mitigates
+    confidence: high
+    rationale: Signed agent identity exact trust edges intersected privilege and data ceilings and credential-free child isolation reduce delegated identity and privilege abuse.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - MAD-001
+      - MAD-002
+      - MAD-003
+      - MAD-004
+      - MAD-005
+      - MAD-008
+      - MAD-009
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI07
+    relationship: mitigates
+    confidence: high
+    rationale: Authenticated schema-bound fresh replay-resistant scoped delegation and response contracts directly reduce insecure inter-agent communication while transport and key custody remain unverified.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - MAD-001
+      - MAD-002
+      - MAD-003
+      - MAD-004
+      - MAD-005
+      - MAD-006
+      - MAD-007
+      - MAD-008
+      - MAD-009
+      - MAD-010
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI08
+    relationship: mitigates
+    confidence: medium
+    rationale: Non-amplifying child budgets replay denial one-hop limits and invalid-delegation circuit breaking reduce one multi-agent cascade path without implementing fleet-wide recovery or aggregate concurrency controls.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - MAD-006
+      - MAD-007
+      - MAD-008
+      - MAD-009
+limitations:
+  - Synthetic public keys and precomputed signatures do not prove live agent enrollment key custody rotation revocation or transport authenticity.
+  - The repository retains no fixture private key and cannot use these identities for production signing.
+  - Static replay evidence does not implement atomic nonce or sequence consumption under concurrency.
+  - Child budget comparison does not reserve provider quota atomically across concurrent agents sessions or tenants.
+  - One exact review edge does not cover dynamic discovery multi-hop workflows consensus quorum failover rollback or rogue-agent recovery.
+  - Dedicated context and ambient credential fields are synthetic claims until a live runtime collector verifies isolation.
+  - Path scope assumes upstream canonicalization and does not resolve symlink ref alias URL case or filesystem races.
+  - Passing the fixture does not establish agent goal correctness model safety or complete OWASP or ATLAS coverage.
+status: prototype
+owner: product-security
+evidence_level: E3

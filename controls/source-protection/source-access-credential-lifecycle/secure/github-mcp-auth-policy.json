@@ -1,0 +1,54 @@
+{
+  "schema": "psb-github-mcp-auth-policy/v1",
+  "authentication_order": [
+    "remote-oauth",
+    "local-oauth-memory-only",
+    "fine-grained-pat-fallback"
+  ],
+  "oauth": {
+    "remote_url": "https://api.githubcopilot.com/mcp/",
+    "organization_app_approval": "required",
+    "sso": "required"
+  },
+  "pat_fallback": {
+    "type": "fine-grained",
+    "purpose": "github-mcp-only",
+    "resource_owner_count": 1,
+    "repository_selection": "explicit",
+    "permissions": "read-only-minimum",
+    "maximum_lifetime_days": 90,
+    "organization_approval": "required",
+    "shared_with_git_or_automation": false
+  },
+  "secret_delivery": {
+    "at_rest": "os-keychain-or-approved-secret-manager",
+    "ide_secret_reference": "${input:github_token}",
+    "target_environment": "mcp-child-process-only",
+    "prohibited_persistence": [
+      "repository",
+      "ide-json-literal",
+      "shell-profile",
+      "dotenv-file",
+      "git-remote-url"
+    ]
+  },
+  "runtime_authority": {
+    "default_mode": "read-only",
+    "toolsets": [
+      "context",
+      "repos",
+      "pull_requests"
+    ],
+    "all_toolset": false,
+    "write_profile": "separate-human-approved",
+    "unknown_tools": "deny"
+  },
+  "lifecycle_binding": {
+    "credential_control": "PSB-SOURCE-004",
+    "dependency_control": "PSB-AI-002",
+    "runtime_control": "PSB-AI-004",
+    "revocation_triggers": "offboarding-role-change-device-loss-exposure-unused",
+    "audit_events": "creation-authorization-use-change-revocation"
+  },
+  "live_adoption": "NOT_CHECKED"
+}

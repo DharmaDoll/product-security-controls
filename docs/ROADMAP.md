@@ -128,7 +128,12 @@ Source-platform access credential lifecycle is implemented as
 fine-grained PATs, SSH keys, and GitHub App or workload identities; requires
 least privilege, bounded lifetime, protected storage, recurring review,
 event-driven revocation, audit evidence, and expiring exceptions; and keeps
-actual credential values out of fixtures and generated evidence.
+actual credential values out of fixtures and generated evidence. Its GitHub
+MCP adapter now prefers organization-approved remote or memory-only OAuth,
+uses a dedicated fine-grained PAT only as a fallback, resolves the protected
+secret reference only for the exact MCP child, and binds the default read-only
+toolset to `PSB-AI-002` dependency and `PSB-AI-004` runtime ownership. Live IDE
+secret storage and process inheritance evidence remain `NOT_CHECKED`.
 
 Prioritize ATT&CK, SSDF, and SLSA mappings.
 
@@ -227,14 +232,26 @@ Add:
 - agent security telemetry, anomaly detection, and token, cost, retry, and
   recursion limits;
 - multi-agent delegation, communication, privilege-ceiling, replay, and
-  cascading-failure controls.
+  cascading-failure controls;
+- application-facing AI gateway enforcement for approved providers, workload
+  identity, exact destination, data classification, minimization, PII and
+  secret egress policy, fail-closed routing, and sanitized telemetry;
+- AI model, dataset, AIBOM or ML-BOM, serialized-weight, and RAG corpus
+  provenance with integrity verification, safe loading, quarantine, and
+  poisoning tests;
+- threat-model-driven AI TEVV and red-team release gates with pinned test
+  suites, deterministic scenarios, result health, and scanner failures kept
+  distinct from clean results;
+- rogue-agent stop, kill-switch, bounded fallback, recovery, and AI incident
+  evidence that cannot be disabled by model or repository content.
 
 Add AI framework registries together with the first controls that can produce
 evidence for them:
 
 - OWASP Top 10 for Agentic Applications 2026 as a coarse agentic risk taxonomy
   — implemented with all `ASI01..ASI10` identifiers and reviewed mappings for
-  `PSB-AI-001` and `PSB-AI-004`;
+  `PSB-AI-001`, `PSB-AI-002`, `PSB-AI-003`, `PSB-AI-004`, `PSB-AI-005`, and
+  `PSB-AI-006`, and `PSB-AI-007`;
 - NIST SP 800-218A as the AI-specific SSDF community profile;
 - NIST AI RMF 1.0 and NIST AI 600-1 for governance, measurement, and
   generative-AI risk management;
@@ -313,7 +330,10 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    gate, provider enforcement, and bounded drift remediation — implemented.
 2. `PSB-SOURCE-004` — source-platform OAuth, PAT, SSH, and App credential
    lifecycle with least privilege, expiration, protected storage, inventory,
-   revocation, and audit evidence — implemented.
+   revocation, and audit evidence — implemented. GitHub MCP adds OAuth-first,
+   dedicated fine-grained PAT fallback, child-only secret delivery, default
+   read-only toolsets, and explicit AI-002/004 ownership with live endpoint
+   adoption left `NOT_CHECKED`.
 3. `PSB-CICD-004` — explicit least-privilege workflow and job permissions,
    rejecting broad write scopes — implemented with workflow deny-all,
    purpose-bound exact job policies, OIDC scoping, trusted-ref conditions,
@@ -416,8 +436,10 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    and artifact digest; license, owner, independent semantic review, expiry,
    dependency-specific capability allow-lists, identity-bound PSB-AI-001
    benchmark results, fresh complete revocation evidence, and exact PSB-AI-004
-   runtime handoff. Live publisher identity, remote MCP deployment attestation,
-   mirror retention, and revocation collectors remain deployment evidence.
+   runtime handoff. GitHub official MCP authentication guidance is reconciled
+   through `PSB-SOURCE-004`, while live publisher identity, remote MCP
+   deployment attestation, mirror retention, and revocation collectors remain
+   deployment evidence.
 4. `PSB-AI-004` — prototype first slice implemented for Claude Code and Codex
    sandbox, workspace, synthetic credential, network-off, source-publication
    approval, bypass, and managed-precedence outcomes. The second slice adds
@@ -448,19 +470,53 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    tampering and replay. Continue with live product, gateway,
    delayed-delivery, backend, command-broker, collector, key-custody, SIEM,
    checkpoint, and receiver evidence.
-5. `PSB-AI-003` — prompt/document injection fixtures that verify the
-   `PSB-AI-004` runtime boundary and repository security invariants.
-6. Reconcile the remaining OWASP AI Agent Security Cheat Sheet outcomes into
-   separate executable controls for memory/context/data lifecycle,
-   high-impact action integrity and output validation, monitoring and
-   denial-of-wallet limits, and multi-agent trust boundaries. Assign IDs only
-   after reviewing overlap with `PSB-AI-002..004`, `PSB-SOURCE-001`, and the
-   repository-wide E3 testing requirement.
-7. Use the OWASP Agentic Top 10 registry as the risk-coverage view for these
-   slices: `ASI01`, `ASI06`, `ASI07`, `ASI08`, `ASI09`, and `ASI10` remain
-   explicit implementation gaps until the corresponding prompt, memory,
-   multi-agent, cascading-failure, human-trust, and rogue-agent controls have
-   executable evidence. Do not mark them covered from roadmap text alone.
+5. `PSB-AI-003` — implemented at E3 with six inert repository-document,
+   issue, Web, API, tool-output, and direct-prompt fixtures; exact source and
+   AI-001／002／004 policy identity binding; five denied action classes;
+   root-goal and trust preservation; pre-action redacted audit; legitimate
+   task continuation; and distinct `FAIL`, evidence `ERROR`, and live
+   `NOT_CHECKED` outcomes.
+6. `PSB-AI-005` — implemented at E3 with source-bound write admission,
+   classification, poisoned and sensitive-data exclusion, actual byte and TTL
+   limits, exact user／session／task isolation, cross-scope retrieval denial,
+   bounded payload deletion and tombstones, sanitized fail-closed evidence,
+   and a provider-managed memory `NOT_CHECKED` boundary.
+7. `PSB-AI-006` — implemented at E3 with strict proposal and result schemas,
+   canonical request identity, independent action and resource policy,
+   exact AI-004 authorization and execution binding, single dispatch and
+   replay denial, uncertain-outcome quarantine, sanitized evidence, and a
+   provider／gateway／backend `NOT_CHECKED` boundary.
+8. `PSB-AI-007` — implemented at E3 with exact AI-004 telemetry binding,
+   per-session token, integer cost, duration, tool, high-impact action, retry,
+   recursion and anomaly limits, warning read-only restriction, hard circuit
+   breaking, verified alert receipts, evidence `ERROR`, and live provider／
+   billing／gateway／receiver `NOT_CHECKED` boundaries.
+9. `PSB-AI-008` — implemented at E3 with exact AI-004／006／007 and parent
+   request bindings, Ed25519 agent and response identities, explicit
+   sender-recipient edge, capability／tenant／resource／classification／budget
+   ceilings, freshness, replay, one-hop, credential-free isolation, and
+   fail-closed evidence. Live key custody, transport, atomic ledgers,
+   concurrent fan-out, provider isolation, and recovery remain `NOT_CHECKED`.
+10. Reconcile the remaining OWASP AI Agent Security Cheat Sheet outcome for
+    rogue-agent stop, quarantine, fallback, and recovery behavior. Assign the
+    next ID only after reviewing overlap with `PSB-AI-003..008`,
+    `PSB-GOV-001`, and the repository-wide E3 testing requirement.
+11. Use the OWASP Agentic Top 10 registry as the risk-coverage view for these
+    slices: `ASI01`, `ASI06`, `ASI07`, `ASI08`, and a bounded subset of `ASI09`
+    are now implemented-partial through PSB-AI-003, PSB-AI-005,
+    PSB-AI-008, PSB-AI-007／008, and PSB-AI-006 respectively. `ASI10` remains
+    an explicit implementation gap; multi-agent concurrency and recovery
+    remain `ASI08` gaps and human decision quality remains an `ASI09` gap. Do
+    not mark an entire risk category covered from one control or roadmap text
+    alone.
+12. Reconcile the seven-layer product-security and AI portfolio view from
+    [`REF-AI-003`](SECURITY_GUIDANCE_SOURCES.md#ref-ai-003). Existing controls
+    retain their current domain ownership. Prioritize the unique gaps as an AI
+    application gateway and data-egress boundary, model/data/RAG supply-chain
+    integrity, AI TEVV release gating, and rogue-agent stop/fallback/recovery.
+    Keep AI governance, training, security champions, KPI targets, PSIRT
+    capability, and customer assurance as organization-owned profiles rather
+    than documentation-only technical controls.
 
 Within a priority, implement one reviewable vertical slice at a time. Every new
 control must meet the repository definition of done, including insecure and

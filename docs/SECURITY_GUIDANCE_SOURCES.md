@@ -127,8 +127,13 @@ Limitations and review notes:
   - `PSB-AI-002` — agent extension dependency governance;
   - `PSB-AI-003` — prompt and document injection containment;
   - `PSB-AI-004` — coding-agent runtime hardening;
-  - later controls for memory, context, data, action integrity, observability,
-    resource abuse, and multi-agent trust boundaries.
+  - `PSB-AI-005` — memory, context, and data lifecycle;
+  - `PSB-AI-006` — action integrity and output validation;
+  - `PSB-AI-007` — resource budgets, anomaly detection, circuit breaking, and
+    alert delivery;
+  - `PSB-AI-008` — signed multi-agent trust, scoped delegation, replay, budget,
+    isolation, and response binding;
+  - later controls for rogue-agent recovery boundaries.
 
 Adopted or planned contributions:
 
@@ -140,7 +145,7 @@ Adopted or planned contributions:
 - redacted monitoring, anomaly signals, and evidence retention;
 - token, cost, retry, recursion, and tool-chain limits;
 - multi-agent identity, delegation, message integrity, replay protection, and
-  circuit breakers;
+  circuit breakers, implemented as the first PSB-AI-008 one-hop E3 slice;
 - data minimization, classification, retention, and deletion;
 - repeatable abuse-case tests and security release gates.
 
@@ -154,6 +159,135 @@ Limitations and review notes:
   review in `control.yaml`;
 - some production evidence will remain organization-owned and must be
   `NOT_CHECKED` until supplied.
+
+<a id="ref-ai-003"></a>
+
+### REF-AI-003 — AwesomeProductSecurity product-security and AI overview
+
+- Status: `adopted-partially`
+- Type: community product-security domain overview and roadmap input
+- Publisher: DharmaDoll
+- Product scope: product security across the SDLC, including AI and agentic
+  systems
+- Live URL:
+  [AwesomeProductSecurity Overview](https://github.com/DharmaDoll/AwesomeProductSecurity/blob/main/Overview.md)
+- Pinned source:
+  [`Overview.md` at `50f2e81f0062de112f7522280e76b92d8849fa1e`](https://github.com/DharmaDoll/AwesomeProductSecurity/blob/50f2e81f0062de112f7522280e76b92d8849fa1e/Overview.md)
+- Source commit date: `2026-07-10`
+- Source SHA-256:
+  `5b524004739bc00eae0faabb0f8c12fc3d37a976249e0650131fce8143903ffc`
+- Repository:
+  [DharmaDoll/AwesomeProductSecurity](https://github.com/DharmaDoll/AwesomeProductSecurity)
+- License: not declared in the reviewed repository; the source text is linked
+  and reconciled but is not vendored or redistributed here
+- Repository review date: `2026-08-05`
+- Related controls:
+  - `PSB-AI-001..008` — AI coding guidance, dependency, injection, runtime,
+    memory, action-integrity, resource-monitoring, and multi-agent delegation
+    boundaries;
+  - `PSB-DETECT-001` — integrity-verified multi-surface scanning;
+  - `PSB-REL-003..004` — artifact-bound and supplier SBOM lifecycle;
+  - `PSB-CONTAINER-004` — production runtime detection;
+  - `PSB-GOV-001..003` — impact lookup, exceptions, and PSIRT triage.
+
+Reconciliation by product-security layer:
+
+| Source layer | Repository disposition |
+|---|---|
+| Application | Secure design and coding, SAST, DAST, API testing, and the organization checklist remain in the existing application-control plan; AI prompt and output boundaries are partially implemented by `PSB-AI-003` and `PSB-AI-006`. |
+| Platform and infrastructure | Source, dependency, CI/CD, build, IaC, container, release, and coding-agent boundaries are already represented by existing controls; an application-facing AI gateway is a separate planned boundary. |
+| Operations | Container runtime detection, supply-chain incident lookup, AI coding-agent telemetry, per-session resource budgets, anomaly stops, and alert delivery are implemented subsets; AI application anomaly detection, independent kill-switch, fallback, and recovery remain planned. |
+| PSIRT and vulnerability management | `PSB-GOV-003` implements evidence-bound triage; intake, disclosure, organization capability, AI TEVV, red teaming, and AI-specific release gating remain planned or organization-owned. |
+| External and supply chain | SBOM, supplier SBOM, provenance, and agent extension dependencies are represented; model, dataset, AIBOM/ML-BOM, serialized-weight, and RAG provenance need distinct executable contracts. |
+| Governance | Time-bound exceptions and generated evidence views exist; AI risk governance, accountable inventory, KPI inputs, and live policy adoption require organization-owned evidence. |
+| Education and culture | Role-based training and security-champion outcomes are not executable controls yet; they belong to a governance capability profile and must not be inferred from technical fixture success. |
+
+Adopted contributions:
+
+- use the seven-layer view as a portfolio completeness and navigation check,
+  without replacing the repository's ADR-governed top-level domains;
+- retain model output as untrusted input and keep authorization and enforcement
+  outside the model, consistent with `PSB-AI-003`, `PSB-AI-004`, and
+  `PSB-AI-006`;
+- preserve immutable Skill and MCP dependency identity in `PSB-AI-002`;
+- expose the missing AI application gateway, model/data/RAG supply chain,
+  TEVV, kill-switch/recovery, governance, and education outcomes in the
+  roadmap rather than silently treating agent controls as complete AI product
+  security coverage.
+
+Limitations and review notes:
+
+- the source is a narrative synthesis without an item-level bibliography, so
+  it is not an authority for framework identifiers or factual compliance
+  claims;
+- XML or delimiter separation, guardrail models, and content filters are
+  defense in depth and are not authorization boundaries;
+- LiteLLM, Llama Guard, Model Armor, Dify, Policy Bot, Counterfit, ART, Garak,
+  and Giskard are implementation candidates, not repository dependencies;
+- CVSS v4.0 must not be locally extended and represented as a FIRST standard;
+  AI-specific prioritization requires a separately reviewed policy;
+- suggested KPI percentages and time horizons are illustrative and do not
+  become default acceptance thresholds;
+- NIST AI RMF, ISO/IEC 42001, domestic guidance, AISI material, and other named
+  sources require their own provenance and version review before mapping or
+  normative use.
+
+<a id="ref-ai-004"></a>
+
+### REF-AI-004 — GitHub MCP official authentication and governance guidance
+
+- Status: `adopted-partially`
+- Type: official vendor implementation and governance documentation
+- Publisher: GitHub
+- Product scope: GitHub remote and local MCP server authentication, tool
+  exposure, and organization policy
+- Live documentation:
+  [Setting up the GitHub MCP Server](https://docs.github.com/en/copilot/how-tos/provide-context/use-mcp-in-your-ide/set-up-the-github-mcp-server)
+- Live repository:
+  [github/github-mcp-server](https://github.com/github/github-mcp-server)
+- Pinned repository baseline:
+  [`README.md` at `3778a41476e31a072430cfee7c5d31c5f72def60`](https://github.com/github/github-mcp-server/blob/3778a41476e31a072430cfee7c5d31c5f72def60/README.md)
+  and
+  [`policies-and-governance.md` at the same commit](https://github.com/github/github-mcp-server/blob/3778a41476e31a072430cfee7c5d31c5f72def60/docs/policies-and-governance.md)
+- Baseline resolution date: `2026-08-05`
+- License:
+  [MIT at the pinned baseline](https://github.com/github/github-mcp-server/blob/3778a41476e31a072430cfee7c5d31c5f72def60/LICENSE)
+- Repository review date: `2026-08-05`
+- Related controls:
+  - `PSB-SOURCE-004` — OAuth/PAT selection, storage, delivery, lifetime,
+    revocation, and audit;
+  - `PSB-AI-002` — exact GitHub MCP dependency identity and semantic review;
+  - `PSB-AI-004` — runtime MCP tool, read-only, approval, and audit boundary.
+
+Adopted contributions:
+
+- prefer exact official remote OAuth and organization-approved application
+  access before asking a developer to create a PAT;
+- retain local memory-only OAuth as the next supported path on GitHub.com;
+- treat a PAT as a fallback with fine-grained repository, permission, approval,
+  lifetime, and non-sharing requirements owned by `PSB-SOURCE-004`;
+- treat environment variables as delivery to the exact MCP child rather than
+  protected storage, and prohibit literals in repository, IDE JSON, shell
+  profile, dotenv file, and Git URL;
+- enable read-only mode and an explicit toolset by default, with separate
+  human-approved write authority owned by `PSB-AI-004`;
+- use organization MCP, OAuth App, GitHub App, PAT, and SSO policies as live
+  evidence rather than inferring deployment from a local fixture.
+
+Limitations and review notes:
+
+- IDE authentication, secret-input persistence, and environment inheritance
+  differ by product and version and require endpoint verification;
+- a `${input:...}` reference and `password: true` do not themselves prove that
+  a system keychain stores the credential;
+- the vendor examples may use floating container references and broader scopes;
+  this repository requires independently reviewed immutable artifacts and
+  task-specific least privilege;
+- the live GitHub Docs page can change independently of the pinned server
+  repository and must be re-reviewed when the supported authentication flow or
+  organization policy changes;
+- this source is implementation guidance, not a framework or compliance
+  requirement.
 
 ## Relationship to other source records
 
@@ -1644,8 +1778,9 @@ Disposition and limitations:
 
 The reviewed collaboration history contained:
 
-- nineteen explicit external URLs: the two AI cheat sheets recorded as
-  `REF-AI-001` and `REF-AI-002`, three GitHub Actions documentation URLs
+- twenty unique explicit external URLs: the three AI design sources recorded
+  as `REF-AI-001..003` (the repeated AwesomeProductSecurity URL is one source),
+  three GitHub Actions documentation URLs
   represented by the pinned GitHub guidance registry, and the Advisory
   Database web query recorded with its API as `REF-CICD-001`, plus the six
   security diagnostic and monitoring projects recorded as `REF-CICD-002..004`,

@@ -27,6 +27,26 @@ PSB-AI-002,PSB-AI-002-AID-006,security,automated,revocation snapshot summary
 PSB-AI-002,PSB-AI-002-AID-006,security,automated,revoked and incomplete negative-test output
 PSB-AI-002,PSB-AI-002-AID-007,shared,automated,runtime handoff count
 PSB-AI-002,PSB-AI-002-AID-007,shared,automated,PSB-AI-004 inventory dependency record IDs
+PSB-AI-003,PSB-AI-003-AII-001,security,automated,corpus ID and source-type count
+PSB-AI-003,PSB-AI-003-AII-001,security,automated,per-source artifact digest verification
+PSB-AI-003,PSB-AI-003-AII-002,developer,automated,sanitized trust and goal comparison
+PSB-AI-003,PSB-AI-003-AII-002,developer,automated,insecure trust-promotion result
+PSB-AI-003,PSB-AI-003-AII-003,security,automated,redacted runtime decision for AII-T001 and AII-T006
+PSB-AI-003,PSB-AI-003-AII-003,security,automated,pre-action denial audit
+PSB-AI-003,PSB-AI-003-AII-004,shared,automated,sanitized AII-T002 decision
+PSB-AI-003,PSB-AI-003-AII-004,shared,automated,forbidden evidence-field test
+PSB-AI-003,PSB-AI-003-AII-005,shared,automated,sanitized AII-T003 network decision
+PSB-AI-003,PSB-AI-003-AII-005,shared,automated,PSB-AI-004 policy identity binding
+PSB-AI-003,PSB-AI-003-AII-006,developer,automated,sanitized AII-T004 dependency decision
+PSB-AI-003,PSB-AI-003-AII-006,developer,automated,exact AI-002 and AI-004 binding digests
+PSB-AI-003,PSB-AI-003-AII-007,shared,automated,sanitized AII-T005 command decision
+PSB-AI-003,PSB-AI-003-AII-007,shared,automated,tool_executed false assertion
+PSB-AI-003,PSB-AI-003-AII-008,developer,automated,completed task count
+PSB-AI-003,PSB-AI-003-AII-008,developer,automated,expected output digest comparison
+PSB-AI-003,PSB-AI-003-AII-009,security,automated,expected-results/errors.txt
+PSB-AI-003,PSB-AI-003-AII-009,security,automated,sanitized denial audit summary
+PSB-AI-003,PSB-AI-003-AII-010,security,automated,synthetic evidence source type
+PSB-AI-003,PSB-AI-003-AII-010,security,automated,live containment NOT_CHECKED output
 PSB-AI-004,PSB-AI-004-AAR-001,shared,automated,sanitized verifier result for AAR-001
 PSB-AI-004,PSB-AI-004-AAR-001,shared,automated,immutable secure and insecure fixtures
 PSB-AI-004,PSB-AI-004-AAR-002,shared,automated,sanitized verifier result for AAR-002
@@ -86,6 +106,89 @@ PSB-AI-004,PSB-AI-004-AAR-025,security,automated,synthetic alert delivery receip
 PSB-AI-004,PSB-AI-004-AAR-026,security,automated,sanitized AAR-026 issuer authentication result
 PSB-AI-004,PSB-AI-004-AAR-026,security,automated,exact snapshot digest and policy binding result
 PSB-AI-004,PSB-AI-004-AAR-026,security,automated,monotonic sequence and previous-digest checkpoint result
+PSB-AI-005,PSB-AI-005-AIM-001,security,automated,candidate set identity
+PSB-AI-005,PSB-AI-005-AIM-001,security,automated,sanitized payload digest and source binding results
+PSB-AI-005,PSB-AI-005-AIM-002,developer,automated,MEM-CAND-002 write decision
+PSB-AI-005,PSB-AI-005-AIM-002,developer,automated,active-record exclusion result
+PSB-AI-005,PSB-AI-005-AIM-003,security,automated,MEM-CAND-003 classification decision
+PSB-AI-005,PSB-AI-005-AIM-003,security,automated,forbidden evidence-field scan
+PSB-AI-005,PSB-AI-005-AIM-004,developer,automated,measured candidate payload size decisions
+PSB-AI-005,PSB-AI-005-AIM-004,developer,automated,MEM-CAND-004 denial
+PSB-AI-005,PSB-AI-005-AIM-005,shared,automated,active record count
+PSB-AI-005,PSB-AI-005-AIM-005,shared,automated,exact provenance and scope comparison
+PSB-AI-005,PSB-AI-005-AIM-006,shared,automated,five normalized retrieval decisions
+PSB-AI-005,PSB-AI-005-AIM-006,shared,automated,no-payload assertions for denied reads
+PSB-AI-005,PSB-AI-005-AIM-007,security,automated,sanitized MEM-OLD-001 tombstone
+PSB-AI-005,PSB-AI-005-AIM-007,security,automated,payload absence result
+PSB-AI-005,PSB-AI-005-AIM-008,security,automated,expected-results/errors.txt
+PSB-AI-005,PSB-AI-005-AIM-008,security,automated,sanitized lifecycle summary
+PSB-AI-005,PSB-AI-005-AIM-009,security,automated,synthetic source type
+PSB-AI-005,PSB-AI-005-AIM-009,security,automated,live provider NOT_CHECKED output
+PSB-AI-006,PSB-AI-006-AAI-001,developer,automated,proposal scenario identity and schema decision
+PSB-AI-006,PSB-AI-006-AAI-001,developer,automated,insecure unknown-field denial failure
+PSB-AI-006,PSB-AI-006-AAI-002,security,automated,normalized request digest comparisons
+PSB-AI-006,PSB-AI-006-AAI-002,security,automated,proposal set integrity binding
+PSB-AI-006,PSB-AI-006-AAI-003,security,automated,independent policy derivation
+PSB-AI-006,PSB-AI-006-AAI-003,security,automated,exact AI-002 dependency and AI-004 runtime-policy bindings
+PSB-AI-006,PSB-AI-006-AAI-004,developer,automated,sanitized authorization metadata
+PSB-AI-006,PSB-AI-006-AAI-004,developer,automated,PSB-AI-004 policy digest comparison
+PSB-AI-006,PSB-AI-006-AAI-005,shared,automated,decision-to-execution identity comparison
+PSB-AI-006,PSB-AI-006-AAI-005,shared,automated,sanitized target identity
+PSB-AI-006,PSB-AI-006-AAI-006,shared,automated,dispatch attempt count
+PSB-AI-006,PSB-AI-006-AAI-006,shared,automated,replay decision and hashed idempotency identity
+PSB-AI-006,PSB-AI-006-AAI-007,developer,automated,result-to-execution identity comparison
+PSB-AI-006,PSB-AI-006-AAI-007,developer,automated,action-specific schema decision
+PSB-AI-006,PSB-AI-006-AAI-008,shared,automated,sanitized unknown outcome state
+PSB-AI-006,PSB-AI-006-AAI-008,shared,automated,retry and authorization-restoration flags
+PSB-AI-006,PSB-AI-006-AAI-009,security,automated,expected-results/errors.txt
+PSB-AI-006,PSB-AI-006-AAI-009,security,automated,fixed-schema sanitized verifier output
+PSB-AI-006,PSB-AI-006-AAI-010,security,automated,synthetic evidence source
+PSB-AI-006,PSB-AI-006-AAI-010,security,automated,live enforcement NOT_CHECKED output
+PSB-AI-007,PSB-AI-007-ARB-001,security,automated,AI-004 telemetry policy digest result
+PSB-AI-007,PSB-AI-007-ARB-001,security,automated,provider and scenario coverage
+PSB-AI-007,PSB-AI-007-ARB-001,security,automated,contiguous sequence metadata
+PSB-AI-007,PSB-AI-007-ARB-002,shared,automated,token measurement and derived total
+PSB-AI-007,PSB-AI-007-ARB-002,shared,automated,token-limit breaker decision
+PSB-AI-007,PSB-AI-007-ARB-003,shared,automated,currency and integer cost measurement
+PSB-AI-007,PSB-AI-007-ARB-003,shared,automated,cost-limit breaker decision
+PSB-AI-007,PSB-AI-007-ARB-004,shared,automated,derived wall-clock duration
+PSB-AI-007,PSB-AI-007-ARB-004,shared,automated,duration-limit enforcement state
+PSB-AI-007,PSB-AI-007-ARB-005,security,automated,tool and high-impact counters
+PSB-AI-007,PSB-AI-007-ARB-005,security,automated,tool-limit breaker decision
+PSB-AI-007,PSB-AI-007-ARB-006,developer,automated,retry counter
+PSB-AI-007,PSB-AI-007-ARB-006,developer,automated,retry-limit breaker result
+PSB-AI-007,PSB-AI-007-ARB-007,developer,automated,maximum task-stack depth
+PSB-AI-007,PSB-AI-007-ARB-007,developer,automated,recursion-limit decision
+PSB-AI-007,PSB-AI-007-ARB-008,security,automated,metadata-only anomaly counts
+PSB-AI-007,PSB-AI-007-ARB-008,security,automated,anomaly breaker decision
+PSB-AI-007,PSB-AI-007-ARB-009,shared,automated,decision-to-enforcement comparison
+PSB-AI-007,PSB-AI-007-ARB-009,shared,automated,six sanitized alert receipts
+PSB-AI-007,PSB-AI-007-ARB-010,security,automated,expected-results/errors.txt
+PSB-AI-007,PSB-AI-007-ARB-010,security,automated,sanitized resource verifier output
+PSB-AI-007,PSB-AI-007-ARB-011,security,automated,synthetic evidence source
+PSB-AI-007,PSB-AI-007-ARB-011,security,automated,live enforcement NOT_CHECKED output
+PSB-AI-008,PSB-AI-008-MAD-001,security,automated,trust manifest and public-key digest output
+PSB-AI-008,PSB-AI-008-MAD-001,security,automated,cross-control binding output
+PSB-AI-008,PSB-AI-008-MAD-002,security,automated,delegation signature decision
+PSB-AI-008,PSB-AI-008-MAD-002,security,automated,response signature decision
+PSB-AI-008,PSB-AI-008-MAD-003,shared,automated,parent request binding
+PSB-AI-008,PSB-AI-008-MAD-003,shared,automated,delegation edge decision
+PSB-AI-008,PSB-AI-008-MAD-004,security,automated,capability ceiling comparisons
+PSB-AI-008,PSB-AI-008-MAD-004,security,automated,effective runtime capability inventory
+PSB-AI-008,PSB-AI-008-MAD-005,security,automated,resource-scope comparisons
+PSB-AI-008,PSB-AI-008-MAD-005,security,automated,classification ceiling decision
+PSB-AI-008,PSB-AI-008-MAD-006,shared,automated,edge-to-child budget comparison
+PSB-AI-008,PSB-AI-008-MAD-006,shared,automated,child-to-response usage comparison
+PSB-AI-008,PSB-AI-008-MAD-007,security,automated,freshness derivation
+PSB-AI-008,PSB-AI-008-MAD-007,security,automated,sender-specific replay-state comparison
+PSB-AI-008,PSB-AI-008-MAD-008,security,automated,hop and onward flags
+PSB-AI-008,PSB-AI-008-MAD-008,security,automated,recipient role and attempt count
+PSB-AI-008,PSB-AI-008-MAD-009,shared,automated,recipient runtime state
+PSB-AI-008,PSB-AI-008-MAD-009,shared,automated,derived decision-to-enforcement comparison
+PSB-AI-008,PSB-AI-008-MAD-010,developer,automated,response-to-delegation digest comparison
+PSB-AI-008,PSB-AI-008-MAD-010,developer,automated,AI-006 result schema decision
+PSB-AI-008,PSB-AI-008-MAD-011,security,automated,expected-results secure insecure and error outcomes
+PSB-AI-008,PSB-AI-008-MAD-011,security,automated,live enforcement NOT_CHECKED state
 PSB-BUILD-001,PSB-BUILD-001-BLD-001,build-platform,automated,sanitized verifier output
 PSB-BUILD-001,PSB-BUILD-001-BLD-002,build-platform,automated,sanitized verifier output
 PSB-BUILD-001,PSB-BUILD-001-BLD-002,build-platform,automated,build and deploy job definition
@@ -514,3 +617,15 @@ PSB-SOURCE-004,PSB-SOURCE-004-SCL-011,security,external-evidence,sanitized audit
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-011,security,external-evidence,alert or investigation record
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-012,security,external-evidence,credential exception register
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-012,security,external-evidence,sanitized expiry negative test
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-013,shared,hybrid,secure/github-mcp-oauth.json
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-013,shared,hybrid,sanitized OAuth application approval record
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-014,shared,hybrid,sanitized fine-grained PAT grant
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-014,shared,hybrid,organization PAT approval record
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-014,shared,hybrid,GitHub MCP authentication verifier output
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-015,developer,hybrid,secure/github-mcp-pat-fallback.json
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-015,developer,hybrid,sanitized endpoint secret-delivery assessment
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-015,developer,hybrid,negative sensitive-evidence test
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-016,security,hybrid,secure/github-mcp-pat-fallback.json
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-016,security,hybrid,PSB-AI-004 capability verifier output
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-017,security,hybrid,secure/github-mcp-auth-policy.json
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-017,security,hybrid,live adoption assessment when available

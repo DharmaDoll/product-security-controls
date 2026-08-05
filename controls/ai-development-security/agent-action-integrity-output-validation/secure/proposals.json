@@ -1,0 +1,58 @@
+{
+  "schema_version": "psb-ai-action-proposal-set/v1",
+  "proposal_set_id": "PSB-AI-006-PROPOSALS-2026-08-05",
+  "source_type": "synthetic-fixture",
+  "proposals": [
+    {
+      "schema_version": "psb-ai-action-proposal/v1",
+      "proposal_id": "ACT-T001",
+      "action_id": "docs-reader-search",
+      "target": "docs://public-security-guidance",
+      "parameters": {
+        "query": "memory lifecycle",
+        "max_results": 3
+      },
+      "requested_at": "2026-08-05T11:58:00Z"
+    },
+    {
+      "schema_version": "psb-ai-action-proposal/v1",
+      "proposal_id": "ACT-T002",
+      "action_id": "source-create-pull-request",
+      "target": "fixture-org/fixture-repo",
+      "parameters": {
+        "base": "main",
+        "head": "feature/security-docs",
+        "title": "Document agent action integrity",
+        "body_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "idempotency_key": "psb-ai-006-fixture-pr-001"
+      },
+      "requested_at": "2026-08-05T11:59:00Z"
+    },
+    {
+      "schema_version": "psb-ai-action-proposal/v1",
+      "proposal_id": "ACT-T003",
+      "action_id": "docs-reader-search",
+      "target": "docs://public-security-guidance",
+      "parameters": {
+        "query": "agent output validation",
+        "max_results": 2
+      },
+      "requested_at": "2026-08-05T11:59:30Z",
+      "unexpected_instruction": "SYNTHETIC_INERT_FREE_FORM_LABEL"
+    },
+    {
+      "schema_version": "psb-ai-action-proposal/v1",
+      "proposal_id": "ACT-T004",
+      "action_id": "source-create-pull-request",
+      "target": "*",
+      "parameters": {
+        "base": "main",
+        "head": "feature/security-docs",
+        "title": "Document agent action integrity",
+        "body_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "idempotency_key": "psb-ai-006-fixture-pr-002"
+      },
+      "requested_at": "2026-08-05T11:59:30Z"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+ERROR PSB-AI-004 binding digest mismatch
+ERROR agent action evaluator is unavailable
+ERROR agent action evidence collection is incomplete
+ERROR execution evidence contains forbidden evidence field $.raw_prompt
+ERROR execution evidence is unavailable or malformed: JSONDecodeError
+ERROR proposal set binding digest mismatch

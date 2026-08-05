@@ -1,0 +1,8 @@
+{
+  "schema_version": "psb-ai-006-parent-request-reference/v1",
+  "parent_request_id": "PARENT-REQUEST-001",
+  "request_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "session_id": "SESSION-MULTI-001",
+  "tenant_id": "TENANT-FIXTURE-A",
+  "authorization_status": "authorized"
+}

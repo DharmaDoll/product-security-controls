@@ -1,0 +1,7 @@
+PASS 4 candidate writes were derived from classification trust size scope and retention policy
+PASS untrusted PSB-AI-003 content credential-class data and oversized context were denied before persistence
+PASS 1 active memory record preserves exact payload provenance user session task scope and expiry
+PASS 5 retrieval cases enforce exact scope and deny tombstoned memory without returning payload data
+PASS 1 expired memory tombstone proves bounded deletion and payload absence
+PASS lifecycle evidence is complete sanitized and distinguishes policy findings from evaluator ERROR
+PASS synthetic fixture validates the lifecycle contract; live provider memory enforcement is NOT_CHECKED

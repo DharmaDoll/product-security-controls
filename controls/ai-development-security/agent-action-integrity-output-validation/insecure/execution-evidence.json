@@ -1,0 +1,117 @@
+{
+  "schema_version": "psb-ai-action-execution-evidence/v1",
+  "evidence_id": "PSB-AI-006-INSECURE-2026-08-05",
+  "source_type": "synthetic-fixture",
+  "collection_status": "complete",
+  "evaluator_status": "completed",
+  "policy_id": "PSB-AI-006-FIRST-SLICE",
+  "policy_revision": "2026-08-05.1",
+  "decisions": [
+    {
+      "decision_id": "DEC-ACT-T001",
+      "proposal_id": "ACT-T001",
+      "decision": "allow",
+      "reason": "policy-match",
+      "request_digest": "92431e950934721d286fe040917de2bfec8d00de603ab6b52398aa672172c3a8",
+      "evaluated_at": "2026-08-05T12:00:00Z"
+    },
+    {
+      "decision_id": "DEC-ACT-T002",
+      "proposal_id": "ACT-T002",
+      "decision": "allow",
+      "reason": "policy-and-authorization-match",
+      "request_digest": "11d1b714866b4ee4256686c630dfe0057927484f673701b90274cc2538cc87e0",
+      "evaluated_at": "2026-08-05T12:00:00Z",
+      "authorization": {
+        "control_id": "PSB-AI-004",
+        "status": "authorized",
+        "authorization_id": "SYNTHETIC-AI004-AUTH-001",
+        "request_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+        "policy_sha256": "d60a8aab5021e58d1ffff464854afb5bc951d02a7e431b7f47ee0b804659e59c",
+        "issued_at": "2026-08-05T11:59:30Z",
+        "expires_at": "2026-08-05T12:02:00Z",
+        "single_use": true,
+        "consumed": true,
+        "consumed_at": "2026-08-05T12:00:00Z"
+      }
+    },
+    {
+      "decision_id": "DEC-ACT-T003",
+      "proposal_id": "ACT-T003",
+      "decision": "allow",
+      "reason": "model-requested",
+      "request_digest": null,
+      "evaluated_at": "2026-08-05T12:00:00Z"
+    },
+    {
+      "decision_id": "DEC-ACT-T004",
+      "proposal_id": "ACT-T004",
+      "decision": "allow",
+      "reason": "model-requested",
+      "request_digest": "20e84d4f88fb4baa228db4c36097127fe8885d5d6c80d1fd238135fe79513fca",
+      "evaluated_at": "2026-08-05T12:00:00Z"
+    }
+  ],
+  "executions": [
+    {
+      "execution_id": "EXEC-ACT-T001",
+      "proposal_id": "ACT-T001",
+      "decision_id": "DEC-ACT-T001",
+      "request_digest": "92431e950934721d286fe040917de2bfec8d00de603ab6b52398aa672172c3a8",
+      "target": "docs://changed-after-decision",
+      "parameters_sha256": "09df91162621f27345c43b02f191b829d6622fc9546377ea88ca68f4537fc20a",
+      "attempt": 1,
+      "dispatched_at": "2026-08-05T12:00:01Z",
+      "idempotency_key_sha256": null,
+      "result_id": "RESULT-ACT-T001"
+    },
+    {
+      "execution_id": "EXEC-ACT-T002",
+      "proposal_id": "ACT-T002",
+      "decision_id": "DEC-ACT-T002",
+      "request_digest": "11d1b714866b4ee4256686c630dfe0057927484f673701b90274cc2538cc87e0",
+      "target": "fixture-org/fixture-repo",
+      "parameters_sha256": "1b586acf4a21bde440a08ce72e15d666d07504b55f6501e2f066c4100e5badc4",
+      "attempt": 2,
+      "dispatched_at": "2026-08-05T12:00:02Z",
+      "idempotency_key_sha256": "78915c2d70c80afae1c9ea0e1ca2b2a7b23b5152c5a4a74b7e47590a7e47916f",
+      "result_id": "RESULT-ACT-T002"
+    }
+  ],
+  "replay_decisions": [
+    {
+      "proposal_id": "ACT-T002",
+      "request_digest": "11d1b714866b4ee4256686c630dfe0057927484f673701b90274cc2538cc87e0",
+      "attempt": 2,
+      "decision": "allow",
+      "reason": "automatic-retry"
+    }
+  ],
+  "results": [
+    {
+      "result_id": "RESULT-ACT-T001",
+      "execution_id": "EXEC-ACT-T001",
+      "request_digest": "92431e950934721d286fe040917de2bfec8d00de603ab6b52398aa672172c3a8",
+      "schema_version": "free-form-result/v1",
+      "status": "succeeded",
+      "resource_identity": "docs://changed-after-decision",
+      "output": {
+        "result_count": 2,
+        "resource_ids_sha256": "8b6b60258c99e17fdb3e034db1a2987dca2d35ec602470e1abffbdb58c1ce914"
+      }
+    },
+    {
+      "result_id": "RESULT-ACT-T002",
+      "execution_id": "EXEC-ACT-T002",
+      "request_digest": "11d1b714866b4ee4256686c630dfe0057927484f673701b90274cc2538cc87e0",
+      "schema_version": "psb-ai-source-publication-result/v1",
+      "status": "unknown",
+      "resource_identity": "fixture-org/fixture-repo",
+      "outcome_state": "unknown",
+      "decision": "retry",
+      "automatic_retry": true,
+      "authorization_restored": true
+    }
+  ],
+  "live_enforcement": "NOT_CHECKED"
+}

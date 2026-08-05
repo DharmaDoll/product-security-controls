@@ -1,0 +1,293 @@
+id: PSB-AI-005
+title: Enforce agent memory context and data lifecycle boundaries
+domain: ai-development-security
+summary: Agent memoryへのwriteをsource provenance、classification、size、TTL、user／session／task scopeで制御し、cross-scope retrievalとpoisoned・sensitive persistenceを拒否して期限切れpayloadを削除する。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - verify
+  - govern
+threats:
+  - id: AI-MEMORY-POISONING
+    description: Untrusted prompt document or tool output is persisted and later retrieved as instruction authority.
+  - id: AI-CONTEXT-CROSS-SCOPE-DISCLOSURE
+    description: Memory created for one user session or task is returned to another scope.
+  - id: AI-MEMORY-SENSITIVE-PERSISTENCE
+    description: Credentials production data raw prompts or other prohibited classifications remain in reusable memory.
+  - id: AI-MEMORY-UNBOUNDED-RETENTION
+    description: Oversized stale or expired context remains active and influences future work.
+  - id: AI-MEMORY-EVIDENCE-FAILURE
+    description: Tampered incomplete evaluator-failed or sensitive lifecycle evidence is interpreted as a clean memory state.
+implementations:
+  insecure:
+    - insecure/lifecycle-evidence.json
+  secure:
+    - secure/policy.json
+    - secure/candidate-writes.json
+    - secure/lifecycle-evidence.json
+    - secure/payloads/approved-summary.txt
+    - secure/payloads/untrusted-injection.txt
+    - secure/payloads/sensitive-placeholder.txt
+    - secure/payloads/oversized-summary.txt
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-AI-005
+  expected:
+    - four candidate writes are evaluated from exact payload provenance classification trust size scope and retention
+    - only one approved summary enters active memory while untrusted PSB-AI-003 content credential-class and oversized payloads are denied
+    - active record identity provenance user session task scope and expiry match the accepted candidate
+    - exact-scope retrieval succeeds while user session task and tombstoned retrievals deny without payload return
+    - expired memory is deleted within the grace period and only a sanitized tombstone remains
+    - policy findings return FAIL while tampered incomplete unavailable malformed evaluator-failed or sensitive evidence returns ERROR
+    - synthetic evidence leaves live provider memory enforcement NOT_CHECKED
+checks:
+  - id: AIM-001
+    title: Memory candidates retain exact source provenance and integrity
+    required_state: every candidate payload resolves inside the control boundary matches SHA-256 and records its source type reference trust scope and lifecycle identity
+    responsible_role: security
+    applies_to:
+      - agent-memory-write
+      - memory-payload
+      - source-provenance
+    context:
+      threat_actor: compromised tool malicious document result producer or accidental candidate substitution
+      attack_or_failure_scenario: memory content is changed or detached from the source and trust classification reviewed when persistence was requested
+      why_required: later retrieval cannot make a safe authorization decision unless the exact bytes and origin of persisted context remain attributable
+    verification:
+      type: automated
+      method: resolve each payload within the control root recompute SHA-256 validate exact source and scope fields and bind PSB-AI-003 scenario references to its pinned corpus
+      expected: exact candidates pass while missing traversal tampered duplicate or unknown source identities return ERROR
+      evidence:
+        - candidate set identity
+        - sanitized payload digest and source binding results
+    mapping_status: reviewed
+  - id: AIM-002
+    title: Untrusted source content cannot become persistent memory
+    required_state: only explicitly user-approved source trust may be persisted and PSB-AI-003 untrusted content is denied before storage
+    responsible_role: developer
+    applies_to:
+      - memory-write-gate
+      - untrusted-tool-output
+      - prompt-injection-result
+    context:
+      threat_actor: attacker planting delayed instructions in tool output documents or prompts that appear useful for future tasks
+      attack_or_failure_scenario: untrusted content is saved now and retrieved in a later context where the original warning and trust boundary are absent
+      why_required: blocking immediate tool execution does not prevent delayed goal hijack if the same instruction can enter durable memory
+    verification:
+      type: automated
+      method: derive the write decision from source trust and verify the bound PSB-AI-003 tool-output candidate is denied and absent from active records
+      expected: trusted approved summary may persist while untrusted-data is denied regardless of public classification
+      evidence:
+        - MEM-CAND-002 write decision
+        - active-record exclusion result
+    mapping_status: reviewed
+  - id: AIM-003
+    title: Prohibited sensitive classifications cannot enter reusable context
+    required_state: credential secret restricted production raw-prompt and tool-instruction classifications are denied before persistence
+    responsible_role: security
+    applies_to:
+      - agent-memory-data-classification
+      - sensitive-context
+    context:
+      threat_actor: developer mistake prompt-injected agent or collector persisting convenient credential or production data
+      attack_or_failure_scenario: sensitive data survives beyond the immediate task and is disclosed by later retrieval logging backup or another user scope
+      why_required: encryption and access control do not remove the exposure created by retaining data that has no approved memory purpose
+    verification:
+      type: automated
+      method: compare candidate classification with explicit allowed and prohibited sets and require sensitive candidates to be denied and absent from active storage
+      expected: the synthetic credential-class candidate is rejected without recording any usable value
+      evidence:
+        - MEM-CAND-003 classification decision
+        - forbidden evidence-field scan
+    mapping_status: reviewed
+  - id: AIM-004
+    title: Memory payload size is bounded before persistence
+    required_state: exact payload bytes do not exceed the policy maximum and oversized context is denied before active storage
+    responsible_role: developer
+    applies_to:
+      - context-size-limit
+      - memory-write-gate
+    context:
+      threat_actor: malicious content source runaway agent or accidental bulk context capture
+      attack_or_failure_scenario: large retained content crowds out trusted context increases cost and creates a durable denial-of-service or poisoning surface
+      why_required: TTL alone does not bound immediate context pressure or the amount of attacker-controlled data available during the retention window
+    verification:
+      type: automated
+      method: measure actual payload file bytes rather than trusting reported metadata and compare with the policy maximum
+      expected: the 81-byte summary passes and the 157-byte fixture is denied under the 128-byte limit
+      evidence:
+        - measured candidate payload size decisions
+        - MEM-CAND-004 denial
+    mapping_status: reviewed
+  - id: AIM-005
+    title: Active memory is isolated to an exact user session and task
+    required_state: every accepted active record preserves all three non-empty scope fields and exact candidate provenance identity and expiry
+    responsible_role: shared
+    applies_to:
+      - memory-store
+      - user-isolation
+      - session-isolation
+      - task-isolation
+    context:
+      threat_actor: another tenant user concurrent agent session stale task or store implementation dropping namespace fields
+      attack_or_failure_scenario: context written for one work item becomes visible or authoritative in an unrelated user session or task
+      why_required: source and classification controls do not prevent cross-boundary disclosure when storage keys omit one isolation dimension
+    verification:
+      type: automated
+      method: compare the active record with the exact accepted candidate across memory ID payload digest classification provenance user session task created time and expiry
+      expected: one exact active record passes while missing accepted records error and denied substituted mismatched or expired active records do not pass
+      evidence:
+        - active record count
+        - exact provenance and scope comparison
+    mapping_status: reviewed
+  - id: AIM-006
+    title: Retrieval defaults to deny outside exact scope and after deletion
+    required_state: only the exact user session task tuple can retrieve an active record while each one-field mismatch and tombstoned identity returns deny with no payload digest
+    responsible_role: shared
+    applies_to:
+      - memory-retrieval
+      - cross-scope-access
+      - deleted-memory
+    context:
+      threat_actor: another user parallel session unrelated task or replay request for deleted context
+      attack_or_failure_scenario: a valid memory ID is treated as sufficient authority and returns context across scope or after retention expiry
+      why_required: write-time isolation is ineffective unless every read independently authorizes the complete scope and lifecycle state
+    verification:
+      type: automated
+      method: derive expected decisions for exact user session task and tombstone cases and compare decision reason and returned digest
+      expected: one exact-scope read returns the expected digest while three scope mismatches and one tombstone deny without data
+      evidence:
+        - five normalized retrieval decisions
+        - no-payload assertions for denied reads
+    mapping_status: reviewed
+  - id: AIM-007
+    title: Expired memory payload is deleted within a bounded grace period
+    required_state: expired memory is absent from the payload path and a sanitized tombstone binds its ID digest scope expiry deletion time and reason within five minutes
+    responsible_role: security
+    applies_to:
+      - memory-retention
+      - memory-deletion
+      - deletion-tombstone
+    context:
+      threat_actor: cleanup worker failure operator retaining useful context or attacker replaying an old poisoned memory ID
+      attack_or_failure_scenario: expired data remains physically retrievable or deletion cannot be distinguished from an unavailable collector
+      why_required: an expiry flag does not reduce disclosure or poisoning risk while the payload remains present and retrievable
+    verification:
+      type: automated
+      method: compare expiry and deletion timestamps with policy grace validate tombstone identity and assert the resolved payload path does not exist
+      expected: completed deletion within 60 seconds passes while pending late future malformed or still-present payloads fail or error
+      evidence:
+        - sanitized MEM-OLD-001 tombstone
+        - payload absence result
+    mapping_status: reviewed
+  - id: AIM-008
+    title: Lifecycle evidence is sanitized complete and fail-closed
+    required_state: write store retrieval and deletion evidence is complete and evaluator-completed without raw prompts outputs payload content credential values tokens or tool arguments
+    responsible_role: security
+    applies_to:
+      - memory-lifecycle-evidence
+      - lifecycle-evaluator
+    context:
+      threat_actor: failed collector malicious evidence producer or operator treating absent lifecycle records as an empty safe store
+      attack_or_failure_scenario: missing writes reads or deletions hide poisoning and cross-scope access while evidence itself copies sensitive context
+      why_required: memory safety claims need complete lifecycle observations without creating a second durable memory containing the protected data
+    verification:
+      type: automated
+      method: enforce exact candidate decision and retrieval coverage evidence health and recursive forbidden-field scanning with distinct exit code 2
+      expected: complete metadata-only evidence passes and tampered incomplete evaluator-failed malformed or sensitive evidence returns ERROR without printing values
+      evidence:
+        - expected-results/errors.txt
+        - sanitized lifecycle summary
+    mapping_status: unmapped
+  - id: AIM-009
+    title: Fixture evidence does not overclaim provider memory enforcement
+    required_state: deterministic fixture output explicitly reports live provider-managed memory enforcement as NOT_CHECKED
+    responsible_role: security
+    applies_to:
+      - live-provider-memory
+      - adoption-claim
+    context:
+      threat_actor: adopter or automation treating repository JSON as proof that a hosted agent deletes and isolates its actual memory
+      attack_or_failure_scenario: production is declared safe without provider APIs endpoint collection deletion proof encryption key ownership or cross-tenant tests
+      why_required: local policy logic can validate a contract but cannot observe opaque provider storage and enforcement behavior
+    verification:
+      type: automated
+      method: require synthetic-fixture source type and print the live NOT_CHECKED evidence boundary
+      expected: secure reference passes without claiming live isolation retention deletion or encryption
+      evidence:
+        - synthetic source type
+        - live provider NOT_CHECKED output
+    mapping_status: unmapped
+mappings:
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0080.000
+    relationship: mitigates
+    confidence: high
+    rationale: Provenance-bound write admission exact scope retrieval and bounded deletion directly reduce durable AI agent memory poisoning while live provider enforcement remains unverified.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AIM-001
+      - AIM-002
+      - AIM-003
+      - AIM-004
+      - AIM-005
+      - AIM-006
+      - AIM-007
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0080.001
+    relationship: mitigates
+    confidence: high
+    rationale: Exact user session and task scoping plus retrieval default deny reduce poisoned context propagation between agent threads without claiming every conversation store is covered.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AIM-005
+      - AIM-006
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.M0031
+    relationship: supports
+    confidence: high
+    rationale: The executable lifecycle policy supplies concrete memory hardening checks for provenance admission isolation retention deletion and sensitive-data exclusion.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AIM-001
+      - AIM-002
+      - AIM-003
+      - AIM-004
+      - AIM-005
+      - AIM-006
+      - AIM-007
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI06
+    relationship: mitigates
+    confidence: high
+    rationale: The control directly addresses Memory and Context Poisoning through source-aware write admission classification size TTL exact scope retrieval and verified deletion but does not prove live provider storage behavior.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AIM-001
+      - AIM-002
+      - AIM-003
+      - AIM-004
+      - AIM-005
+      - AIM-006
+      - AIM-007
+limitations:
+  - The store payloads decisions retrievals and tombstones are local deterministic fixtures and do not prove a hosted provider exposes or enforces equivalent controls.
+  - SHA-256 detects substitution against reviewed metadata but is not an authenticated store commitment when an attacker can rewrite both data and policy.
+  - The first slice models deletion by bounded tombstone and payload absence but does not prove backup cache replica vector-index or model-provider deletion.
+  - Encryption at rest key ownership residency backup governance and provider administrator access require organization and provider evidence and remain NOT_CHECKED.
+  - Only exact single-user single-session single-task scope is modeled; reviewed collaboration delegation and cross-device synchronization need a separate authorization design.
+  - Content classification is supplied as metadata and must be backed by organization data-classification tooling and human review in production.
+  - Memory poisoning through images audio embeddings retrieval ranking delayed triggers and multi-agent messages remains outside this first corpus.
+status: prototype
+evidence_level: E3
+owner: product-security

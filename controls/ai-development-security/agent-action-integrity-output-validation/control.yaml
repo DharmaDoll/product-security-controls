@@ -1,0 +1,342 @@
+id: PSB-AI-006
+title: Bind agent proposals authorization execution and outputs
+domain: ai-development-security
+summary: Untrusted model proposalをstrict typed requestへ変換し、policy、PSB-AI-004 authorization、execution、resultを同じdigestへ束縛してreplayと曖昧なside effectをfail closedにする。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - verify
+threats:
+  - id: AI-UNSTRUCTURED-ACTION-EXECUTION
+    description: Free-form or schema-invalid model output is treated as an executable trusted action.
+  - id: AI-ACTION-TOCTOU
+    description: Target parameters or identity change between policy decision authorization and execution.
+  - id: AI-AUTHORIZATION-MISBINDING
+    description: A stale reused or different-request approval authorizes a high-impact action.
+  - id: AI-ACTION-REPLAY
+    description: Timeout or retry logic dispatches the same side effect more than once.
+  - id: AI-UNTRUSTED-TOOL-OUTPUT
+    description: Malformed cross-request or attacker-controlled tool output is trusted by downstream decisions.
+  - id: AI-UNCERTAIN-OUTCOME
+    description: An ambiguous external result is interpreted as not applied and automatically retried.
+  - id: AI-ACTION-EVIDENCE-FAILURE
+    description: Tampered incomplete sensitive or evaluator-failed action evidence is interpreted as clean.
+implementations:
+  insecure:
+    - insecure/execution-evidence.json
+  secure:
+    - secure/policy.json
+    - secure/proposals.json
+    - secure/execution-evidence.json
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-AI-006
+  expected:
+    - exact proposal schema rejects unknown fields and broad targets before execution
+    - canonical request digest binds policy decision authorization execution and result identity
+    - high-impact source publication requires a current single-use PSB-AI-004 authorization for the exact request
+    - allowed operations dispatch once and replay is denied with stable idempotency identity
+    - action-specific result schema and resource identity are validated before downstream use
+    - unknown external outcomes quarantine for reconciliation without automatic retry or authorization restoration
+    - known unsafe behavior is FAIL while tampered incomplete unavailable malformed evaluator-failed or sensitive evidence is ERROR
+    - synthetic fixture output leaves live provider gateway and backend enforcement NOT_CHECKED
+checks:
+  - id: AAI-001
+    title: Model output must match an exact structured proposal schema
+    required_state: every executable proposal has the exact reviewed fields and schema version while unknown or free-form fields cause pre-execution denial
+    responsible_role: developer
+    applies_to:
+      - model-output
+      - agent-action-proposal
+      - tool-call-adapter
+    context:
+      threat_actor: prompt-injected or compromised model emitting persuasive free-form instructions or extra hidden action fields
+      attack_or_failure_scenario: an adapter ignores unknown fields or parses a command-like fragment and turns untrusted model text directly into a tool invocation
+      why_required: model output has no execution authority until an independently maintained parser proves it is one complete supported request shape
+    verification:
+      type: automated
+      method: compare each proposal with the exact required field set and version and exercise an inert unknown-field negative fixture
+      expected: ACT-T003 is denied as schema-invalid and cannot produce execution evidence
+      evidence:
+        - proposal scenario identity and schema decision
+        - insecure unknown-field denial failure
+    mapping_status: reviewed
+  - id: AAI-002
+    title: Canonical request digest binds normalized proposal content
+    required_state: one deterministic SHA-256 over the complete normalized proposal is preserved by the policy decision and every later authorized stage
+    responsible_role: security
+    applies_to:
+      - request-canonicalization
+      - action-identity
+      - decision-record
+    context:
+      threat_actor: compromised adapter inconsistent serializer or race exploiting different representations of the same apparent request
+      attack_or_failure_scenario: approval and execution compare selected display fields while omitted encoded or reordered values resolve to a different action
+      why_required: a canonical full-request identity is the join key that lets independent controls detect substitution rather than trusting presentation text
+    verification:
+      type: automated
+      method: serialize exact proposal objects with sorted keys and fixed separators recompute SHA-256 and compare every decision digest
+      expected: valid and policy-denied structured proposals retain the recomputed digest while schema-invalid content has no executable digest
+      evidence:
+        - normalized request digest comparisons
+        - proposal set integrity binding
+    mapping_status: reviewed
+  - id: AAI-003
+    title: Independent policy validates action target parameters and freshness
+    required_state: only registered actions on exact allowed targets with strict typed bounded parameters and a proposal age at most 300 seconds are eligible to execute
+    responsible_role: security
+    applies_to:
+      - action-policy
+      - tool-target
+      - tool-parameters
+      - proposal-freshness
+    context:
+      threat_actor: malicious model or developer mistake choosing a wildcard repository stale request or parameter outside the reviewed operation contract
+      attack_or_failure_scenario: syntactically valid output receives authority because the model requested it even though its resource scope or values violate policy
+      why_required: schema validation proves shape but only an external policy can decide whether the exact typed action is allowed for the protected resource now
+    verification:
+      type: automated
+      method: derive the decision from exact action inventory target allowlist parameter rules and evaluation time independently of evidence status fields
+      expected: ACT-T001 and ACT-T002 are eligible while ACT-T004 wildcard publication is denied as scope-violation
+      evidence:
+        - independent policy derivation
+        - exact AI-002 dependency and AI-004 runtime-policy bindings
+    mapping_status: reviewed
+  - id: AAI-004
+    title: High-impact execution uses an exact single-use AI-004 authorization
+    required_state: source publication has a current maximum-300-second PSB-AI-004 authorization bound to the same request and runtime-policy digest and consumed before dispatch
+    responsible_role: developer
+    applies_to:
+      - high-impact-action
+      - human-authorization
+      - source-publication
+    context:
+      threat_actor: agent reusing a prior approval compromised gateway substituting a request or human approving a different target or parameter set
+      attack_or_failure_scenario: a valid approval is detached from what actually executes or is restored after timeout and authorizes an unintended high-impact operation
+      why_required: policy eligibility alone does not represent the one exact human authorization required by PSB-AI-004 for crossing the source publication boundary
+    verification:
+      type: automated
+      method: compare control ID status request digest runtime-policy digest issue expiry single-use and consumed state before accepting ACT-T002
+      expected: the exact current receipt passes while the insecure different-request digest fails
+      evidence:
+        - sanitized authorization metadata
+        - PSB-AI-004 policy digest comparison
+    mapping_status: reviewed
+  - id: AAI-005
+    title: Decision and execution cannot diverge after authorization
+    required_state: execution uses the exact decision ID request digest target parameter digest and proposal identity that passed validation
+    responsible_role: shared
+    applies_to:
+      - execution-gateway
+      - decision-execution-boundary
+      - side-effect-target
+    context:
+      threat_actor: compromised tool adapter concurrent mutation or implementation bug changing values between validation and dispatch
+      attack_or_failure_scenario: an approved read or write is redirected to another resource after the security decision creating a time-of-check to time-of-use gap
+      why_required: even perfect proposal and approval checks are bypassed if the gateway reconstructs or accepts different execution arguments afterward
+    verification:
+      type: automated
+      method: recompute proposal and parameter digests and compare execution decision request target and parameter identities
+      expected: secure executions match exactly while the changed read target in insecure evidence fails
+      evidence:
+        - decision-to-execution identity comparison
+        - sanitized target identity
+    mapping_status: reviewed
+  - id: AAI-006
+    title: Dispatch is single attempt and replay is denied
+    required_state: each allowed operation dispatches as attempt one and every idempotent high-impact request denies a second attempt under the same stable key and digest
+    responsible_role: shared
+    applies_to:
+      - execution-dispatch
+      - idempotency-record
+      - replay-decision
+    context:
+      threat_actor: retry loop network timeout duplicate delivery or attacker replaying a previously authorized action
+      attack_or_failure_scenario: the same source publication is performed twice because the agent treats missing response as permission to redispatch
+      why_required: consuming approval stops its reuse at the gateway but backend-visible idempotency and explicit replay denial are still needed to bound external side effects
+    verification:
+      type: automated
+      method: derive the idempotency-key digest from the proposal require attempt one and verify the recorded attempt-two decision is deny
+      expected: ACT-T002 dispatches once and idempotency-key-already-dispatched rejects replay
+      evidence:
+        - dispatch attempt count
+        - replay decision and hashed idempotency identity
+    mapping_status: reviewed
+  - id: AAI-007
+    title: Tool results match action schema and request identity
+    required_state: every result matches its execution result ID request digest exact resource action-specific schema status set and bounded output shape before downstream use
+    responsible_role: developer
+    applies_to:
+      - tool-result
+      - output-validation
+      - downstream-agent-context
+    context:
+      threat_actor: compromised tool malformed response stale cross-request result or model inventing a successful tool response
+      attack_or_failure_scenario: downstream logic trusts plausible output that belongs to another resource or does not satisfy the registered action response contract
+      why_required: input authorization cannot establish what happened after dispatch and unvalidated output can inject false state into the next agent decision
+    verification:
+      type: automated
+      method: join each result to execution and proposal then validate exact schema request resource status and successful-output field types
+      expected: typed docs result passes while the insecure free-form result schema fails
+      evidence:
+        - result-to-execution identity comparison
+        - action-specific schema decision
+    mapping_status: reviewed
+  - id: AAI-008
+    title: Uncertain side effects quarantine without automatic retry
+    required_state: an unknown external outcome enters quarantine and reconciliation while automatic retry is false consumed authorization remains consumed and no output is trusted
+    responsible_role: shared
+    applies_to:
+      - uncertain-side-effect
+      - reconciliation-queue
+      - retry-policy
+    context:
+      threat_actor: network partition unavailable status service delayed response or retry automation assuming timeout means no mutation occurred
+      attack_or_failure_scenario: an already applied high-impact action is repeated or treated as successful without authenticated outcome evidence
+      why_required: unknown is a third security state distinct from success and failure and only reconciliation preserves safety when local and remote transactions cannot be atomic
+    verification:
+      type: automated
+      method: inspect the high-impact unknown result for exact quarantine decision no output no automatic retry and no authorization restoration
+      expected: ACT-T002 remains blocked for reconciliation while the insecure retry behavior fails
+      evidence:
+        - sanitized unknown outcome state
+        - retry and authorization-restoration flags
+    mapping_status: reviewed
+  - id: AAI-009
+    title: Action evidence is complete sanitized and fail-closed
+    required_state: proposal decision execution replay and result evidence is complete evaluator-backed and excludes prompts model output credentials tokens tool arguments and result bodies
+    responsible_role: security
+    applies_to:
+      - action-evidence
+      - execution-evaluator
+      - audit-data-minimization
+    context:
+      threat_actor: failed collector malicious evidence producer or operator interpreting absent action records as proof no unsafe execution occurred
+      attack_or_failure_scenario: missing stages hide a policy bypass while retained raw content creates a secondary disclosure and prompt-injection surface
+      why_required: action integrity is an end-to-end relationship and cannot be reviewed from partial evidence or from logs that copy the sensitive data being protected
+    verification:
+      type: automated
+      method: require exact scenario and lifecycle record coverage completed collection and evaluator status and recursively reject forbidden evidence fields with exit code 2
+      expected: complete metadata-only evidence passes while tampered incomplete malformed evaluator-failed or sensitive evidence is ERROR
+      evidence:
+        - expected-results/errors.txt
+        - fixed-schema sanitized verifier output
+    mapping_status: unmapped
+  - id: AAI-010
+    title: Fixture result does not overclaim live action enforcement
+    required_state: deterministic synthetic evidence explicitly leaves provider gateway backend and external side-effect enforcement NOT_CHECKED
+    responsible_role: security
+    applies_to:
+      - live-agent-provider
+      - live-execution-gateway
+      - live-backend-idempotency
+      - adoption-claim
+    context:
+      threat_actor: adopter or automation presenting repository fixture success as proof that production actions cannot bypass or replay the control
+      attack_or_failure_scenario: a live agent gateway or backend lacking the required schema authorization and idempotency enforcement is declared safe without observation
+      why_required: local contract tests prove evaluator behavior but cannot observe provider-specific dispatch or external service transaction semantics
+    verification:
+      type: automated
+      method: require synthetic-fixture source and explicit live_enforcement NOT_CHECKED state in the secure result
+      expected: fixture verification passes without claiming production adoption or external side-effect safety
+      evidence:
+        - synthetic evidence source
+        - live enforcement NOT_CHECKED output
+    mapping_status: unmapped
+mappings:
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0053
+    relationship: mitigates
+    confidence: high
+    rationale: Strict action registration exact target and parameter policy authorization binding and execution identity reduce attacker-driven AI Agent Tool Invocation without claiming malicious approved tools are eliminated.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AAI-003
+      - AAI-004
+      - AAI-005
+      - AAI-006
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.M0028
+    relationship: supports
+    confidence: high
+    rationale: The provider-neutral action inventory policy and exact execution boundary provide concrete AI Agent Tools Permissions Configuration evidence for registered tools operations resources and effects.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AAI-003
+      - AAI-004
+      - AAI-005
+      - AAI-006
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.M0033
+    relationship: supports
+    confidence: high
+    rationale: Exact proposal and action schemas canonical request identity strict result validation and unknown-outcome handling implement input and output validation at agent component boundaries.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AAI-001
+      - AAI-002
+      - AAI-003
+      - AAI-007
+      - AAI-008
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI02
+    relationship: mitigates
+    confidence: high
+    rationale: The control directly limits Tool Misuse and Exploitation through typed requests exact resource policy authorization continuity single dispatch and validated results while approved malicious tools remain out of scope.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AAI-001
+      - AAI-002
+      - AAI-003
+      - AAI-004
+      - AAI-005
+      - AAI-006
+      - AAI-007
+      - AAI-008
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI05
+    relationship: mitigates
+    confidence: medium
+    rationale: Rejecting free-form actions and binding execution to a validated typed request reduces unexpected execution paths but does not prove sandbox or interpreter exploit resistance.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AAI-001
+      - AAI-003
+      - AAI-005
+      - AAI-007
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI09
+    relationship: supports
+    confidence: medium
+    rationale: Exact parameter-bound authorization and no silent approval reuse reduce a subset of Human-Agent Trust Exploitation but do not assess deceptive explanations approval quality or cognitive manipulation.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AAI-004
+      - AAI-005
+      - AAI-006
+      - AAI-008
+limitations:
+  - The authorization receipt is synthetic metadata; signature verification atomic consumption and actor separation remain implemented and tested by PSB-AI-004.
+  - The fixture does not contact a live model MCP gateway source platform or backend and leaves adopted enforcement NOT_CHECKED.
+  - SHA-256 binding is not an authenticated commitment when one actor can rewrite policy proposals decisions and evidence together.
+  - Backend idempotency storage and authenticated outcome lookup are required to contain network ambiguity in production.
+  - Strict schemas cannot determine whether a formally valid approved action is semantically harmful or based on a deceptive explanation.
+  - Application authorization business invariants transactions rollback and compensating operations remain owned by domain-specific controls.
+  - Tool compromise provider sandbox escape and endpoint compromise are outside this action-boundary fixture.
+status: prototype
+evidence_level: E3
+owner: product-security

@@ -1,0 +1,52 @@
+{
+  "schema_version": "psb-ai-multi-agent-evidence/v1",
+  "evidence_source": "synthetic-fixture",
+  "collection": {
+    "status": "complete",
+    "gaps": [],
+    "observed_at": "2026-08-05T12:02:00Z"
+  },
+  "evaluator": {
+    "status": "complete"
+  },
+  "replay_state": {
+    "sender_agent_id": "AGENT-ORCHESTRATOR-001",
+    "last_consumed_sequence": 40,
+    "consumed_nonces": [
+      "NONCE-DELEGATION-001"
+    ]
+  },
+  "response_replay_state": {
+    "sender_agent_id": "AGENT-REVIEWER-001",
+    "last_consumed_sequence": 12,
+    "consumed_nonces": [
+      "NONCE-RESPONSE-001"
+    ]
+  },
+  "runtime": {
+    "recipient_agent_id": "AGENT-REVIEWER-001",
+    "tenant_id": "TENANT-FIXTURE-B",
+    "isolation": "shared-parent-context",
+    "ambient_credentials": true,
+    "capabilities": [
+      "repository.read",
+      "review.comment.propose",
+      "deployment.write"
+    ],
+    "repository": "fixture/repository-b",
+    "ref": "refs/heads/main",
+    "paths": [
+      "infra/**"
+    ],
+    "onward_delegation_attempts": 1,
+    "model_calls_stopped": false,
+    "side_effects_stopped": false
+  },
+  "decision": {
+    "status": "allow",
+    "reasons": [
+      "sender-requested"
+    ]
+  },
+  "live_enforcement": "ADOPTED"
+}

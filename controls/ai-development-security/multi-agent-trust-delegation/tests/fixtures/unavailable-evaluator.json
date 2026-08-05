@@ -1,0 +1,17 @@
+{
+  "schema_version": "psb-ai-multi-agent-evidence/v1",
+  "evidence_source": "synthetic-fixture",
+  "collection": {
+    "status": "complete",
+    "gaps": [],
+    "observed_at": "2026-08-05T12:02:00Z"
+  },
+  "evaluator": {
+    "status": "unavailable"
+  },
+  "replay_state": {},
+  "response_replay_state": {},
+  "runtime": {},
+  "decision": {},
+  "live_enforcement": "NOT_CHECKED"
+}

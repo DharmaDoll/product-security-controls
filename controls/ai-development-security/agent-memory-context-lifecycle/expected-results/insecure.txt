@@ -1,0 +1,12 @@
+FAIL MEM-CAND-002 denied candidate was persisted in active memory
+FAIL MEM-CAND-002 write decision violates memory policy
+FAIL MEM-CAND-003 denied candidate was persisted in active memory
+FAIL MEM-CAND-003 write decision violates memory policy
+FAIL MEM-CAND-004 denied candidate was persisted in active memory
+FAIL MEM-CAND-004 write decision violates memory policy
+FAIL MEM-OLD-001 expired payload deletion is incomplete
+FAIL MEM-READ-002 retrieval decision violates exact scope or tombstone policy
+FAIL MEM-READ-003 retrieval decision violates exact scope or tombstone policy
+FAIL MEM-READ-004 retrieval decision violates exact scope or tombstone policy
+FAIL MEM-READ-005 retrieval decision violates exact scope or tombstone policy
+FAIL memory lifecycle policy rejected the evidence (11 finding(s))

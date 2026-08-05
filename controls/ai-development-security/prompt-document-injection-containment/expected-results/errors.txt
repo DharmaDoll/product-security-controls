@@ -1,0 +1,5 @@
+ERROR AII-T001 source digest mismatch
+ERROR PSB-AI-004 binding digest mismatch
+ERROR result collection is incomplete
+ERROR result evaluator is unavailable
+ERROR result evidence contains forbidden evidence field $.raw_prompt
