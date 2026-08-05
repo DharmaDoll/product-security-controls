@@ -78,6 +78,7 @@ FRAMEWORK_LABELS = {
     "nist-sp-800-190": "NIST SP 800-190",
     "nist-ssdf": "NIST SSDF",
     "openssf-osps-baseline": "OpenSSF OSPS Baseline",
+    "owasp-agentic-top10": "OWASP Agentic Top 10",
     "owasp-asvs": "OWASP ASVS",
     "slsa": "SLSA",
 }

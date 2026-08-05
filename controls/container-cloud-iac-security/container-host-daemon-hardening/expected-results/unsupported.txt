@@ -1,0 +1,1 @@
+NOT_CHECKED PSB-CONTAINER-003 provider-specific adapter required for managed-control-plane

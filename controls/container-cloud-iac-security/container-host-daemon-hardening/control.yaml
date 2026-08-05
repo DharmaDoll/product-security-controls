@@ -1,0 +1,330 @@
+id: PSB-CONTAINER-003
+title: Harden container hosts daemons and node administration
+domain: container-cloud-iac-security
+summary: 本番・共有コンテナホストを専用化・更新し、daemon管理面、runtime socket、保護file、kernel isolation、operator権限、node trustを制約する。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - verify
+threats:
+  - id: CONTAINER-HOST-ATTACK-SURFACE
+    description: General-purpose software unnecessary services and mixed workloads expand the production container host attack surface.
+  - id: CONTAINER-HOST-VULNERABLE-STACK
+    description: Unsupported or unpatched host OS kernel runtime or daemon vulnerabilities enable container escape or node takeover.
+  - id: CONTAINER-DAEMON-EXPOSURE
+    description: Public or unauthenticated daemon APIs and runtime sockets grant node-level container administration.
+  - id: CONTAINER-SHARED-KERNEL-ESCAPE
+    description: Missing user namespace syscall filtering kernel lockdown or Linux security module enforcement amplifies a compromised container.
+  - id: CONTAINER-HOST-FILE-TAMPERING
+    description: Writable daemon configuration runtime binaries sockets storage or service units permit persistent host control.
+  - id: CONTAINER-HOST-ADMIN-ABUSE
+    description: Broad operator access unrestricted management networks or missing audit rules conceal privileged host changes.
+  - id: CONTAINER-NODE-TRUST-FAILURE
+    description: An unverified boot chain or cloned node identity admits an altered host into an orchestrated pool.
+  - id: CONTAINER-HOST-ASSESSMENT-FAIL-OPEN
+    description: Unsupported stale incomplete malformed or unavailable host evidence is interpreted as a passing host.
+implementations:
+  insecure:
+    - insecure/policy.json
+    - insecure/host-evidence.json
+    - insecure/exceptions.json
+  secure:
+    - secure/policy.json
+    - secure/host-evidence.json
+    - secure/exceptions.json
+    - secure/evidence-health.json
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-CONTAINER-003
+  expected:
+    - production container hosts are dedicated and expose only reviewed services
+    - host OS kernel runtime and daemon match supported patched baselines
+    - daemon management and runtime sockets are private authenticated and not workload mounted
+    - rootless or user namespace isolation default seccomp an enforcing LSM and kernel lockdown are active
+    - protected runtime files have exact ownership restrictive modes and reviewed digests where applicable
+    - exact operator roles management networks and immutable audit rules protect administrative access
+    - secure boot measured boot TPM identity and node attestation establish the reviewed host trust state
+    - unsupported platforms return NOT_CHECKED and evidence failures return ERROR rather than PASS
+checks:
+  - id: HST-001
+    title: Container hosts are dedicated and minimal
+    required_state: production nodes run only reviewed container platform services and no developer desktop office browser database or unrelated application workload
+    responsible_role: ci-platform
+    applies_to:
+      - production-container-host
+      - host-service-inventory
+    context:
+      threat_actor: compromised unnecessary service mixed tenant administrator or user browsing and development activity on a production node
+      attack_or_failure_scenario: unrelated software or workloads provide an additional path to host privileges and container data
+      why_required: workload admission constrains containers but cannot remove vulnerable host packages or general-purpose activity outside the runtime boundary
+    verification:
+      type: hybrid
+      method: compare normalized host purpose workload class and enabled service inventory with the reviewed minimal-host policy
+      expected: mixed-purpose hosts prohibited workload classes and unreviewed enabled services fail
+      evidence:
+        - sanitized host purpose and workload inventory
+        - enabled service inventory
+    mapping_status: reviewed
+  - id: HST-002
+    title: Host OS kernel runtime and daemon are supported and patched
+    required_state: every stack component matches an approved release baseline reports supported status and has security updates within the bounded patch age
+    responsible_role: ci-platform
+    applies_to:
+      - host-os
+      - linux-kernel
+      - container-runtime
+      - container-daemon
+    context:
+      threat_actor: attacker exploiting a known host kernel runtime or daemon vulnerability plus delayed or failed patch automation
+      attack_or_failure_scenario: code execution in a container reaches an affected shared-kernel or daemon path that remains unpatched
+      why_required: non-root and seccomp reduce exploitability but do not remove vulnerable privileged host code so support and patch state require independent evidence
+    verification:
+      type: hybrid
+      method: compare exact component name version support state and last security patch against the pinned organization baseline
+      expected: unknown unsupported mismatched or overdue components fail and unavailable patch evidence returns ERROR
+      evidence:
+        - normalized component inventory
+        - patch service health observation
+    mapping_status: reviewed
+  - id: HST-003
+    title: Daemon management and runtime sockets are not publicly exposed
+    required_state: daemon APIs use reviewed local sockets or authenticated private endpoints and no workload mounts a runtime socket
+    responsible_role: ci-platform
+    applies_to:
+      - container-daemon-endpoint
+      - runtime-socket
+      - management-network
+    context:
+      threat_actor: external attacker compromised workload developer or automation reaching Docker containerd or CRI administration
+      attack_or_failure_scenario: an unauthenticated TCP API public management address or mounted runtime socket creates node-level container control
+      why_required: ordinary application authorization does not mediate daemon APIs and runtime socket access is effectively host administration
+    verification:
+      type: hybrid
+      method: validate daemon listeners authentication exposure socket ownership and workload mount inventory against exact policy
+      expected: public unauthenticated cleartext wildcard or workload-mounted runtime control paths fail
+      evidence:
+        - normalized daemon endpoint inventory
+        - runtime socket and workload mount observation
+    mapping_status: reviewed
+  - id: HST-004
+    title: Host user and kernel isolation has no silent downgrade
+    required_state: rootless operation or user namespaces are enabled and kernel lockdown is active or a narrow approved unexpired exception is reported as NOT_CHECKED
+    responsible_role: ci-platform
+    applies_to:
+      - host-user-namespace
+      - shared-kernel
+      - isolation-exception
+    context:
+      threat_actor: attacker with container code execution attempting to map container root to host authority or expand a kernel exploit
+      attack_or_failure_scenario: rootful containers share host user identity and an unlocked kernel accepts a silent platform downgrade
+      why_required: container UID settings alone do not isolate host kernel authority so host-side namespaces and lockdown need a separate enforced or explicitly excepted state
+    verification:
+      type: hybrid
+      method: evaluate rootless user namespace and kernel lockdown evidence plus exact owner approver scope reason compensating controls and expiry for any exception
+      expected: silent disabled isolation broad missing or expired exceptions fail while a valid limitation is NOT_CHECKED rather than PASS
+      evidence:
+        - host isolation state
+        - time-bound exception record when applicable
+    mapping_status: reviewed
+  - id: HST-005
+    title: Runtime configuration binaries sockets storage and service units are protected
+    required_state: every policy-listed path has exact type owner group restrictive mode and reviewed SHA-256 for immutable files
+    responsible_role: ci-platform
+    applies_to:
+      - daemon-configuration
+      - runtime-binary
+      - runtime-socket
+      - container-storage
+      - service-unit
+    context:
+      threat_actor: compromised local account malicious process or workload escaping into a writable host path
+      attack_or_failure_scenario: runtime configuration binary service startup or stored container state is replaced or controlled through weak ownership and permissions
+      why_required: network restriction and RBAC do not stop local file tampering so privileged runtime paths need independent integrity and discretionary access checks
+    verification:
+      type: automated
+      method: compare normalized lstat ownership mode type and digest evidence with the exact protected-path manifest
+      expected: missing symlinked writable misowned type-mismatched or digest-mismatched protected paths fail
+      evidence:
+        - sanitized protected path inventory
+        - file integrity digest comparison output
+    mapping_status: reviewed
+  - id: HST-006
+    title: Default seccomp and an enforcing Linux security module constrain the shared kernel
+    required_state: daemon defaults apply a reviewed seccomp profile and SELinux or AppArmor is enabled enforcing and assigned to container workloads
+    responsible_role: ci-platform
+    applies_to:
+      - host-seccomp-default
+      - linux-security-module
+      - kernel-module-policy
+    context:
+      threat_actor: compromised container process invoking dangerous syscalls or accessing host resources outside its expected label
+      attack_or_failure_scenario: unconfined syscall and mandatory access control settings expand shared-kernel escape and persistence options
+      why_required: user namespaces reduce credential authority but do not filter syscalls or labeled resource access so both isolation layers require separate evidence
+    verification:
+      type: automated
+      method: validate daemon seccomp default LSM enforcement workload assignment and restricted kernel module policy
+      expected: unconfined seccomp disabled permissive or unassigned LSM and unrestricted module loading fail
+      evidence:
+        - normalized kernel isolation profile
+    mapping_status: reviewed
+  - id: HST-007
+    title: Host administration is role network and audit constrained
+    required_state: exact non-wildcard operator groups receive reviewed actions from private management networks and all required privileged events are immutably audited
+    responsible_role: security
+    applies_to:
+      - host-operator-rbac
+      - management-ingress
+      - host-audit-policy
+    context:
+      threat_actor: stolen operator identity insider over-privileged automation or audit tampering
+      attack_or_failure_scenario: an administrator reaches every node from an arbitrary network changes runtime state without task scope or removes the evidence trail
+      why_required: secure daemon listeners still permit authorized misuse so human and automation authority source network and auditability need a distinct boundary
+    verification:
+      type: hybrid
+      method: validate exact roles subjects node pools actions source addresses audit rule coverage immutability and collector health
+      expected: wildcard admin public source unmanaged identity missing audit event or mutable audit rule fails
+      evidence:
+        - normalized operator role and management connection inventory
+        - host audit policy and collector observation
+    mapping_status: reviewed
+  - id: HST-008
+    title: Hardware-backed boot and node identity establish host trust
+    required_state: secure boot measured boot TPM-backed node identity and fresh successful attestation bind the node to its reviewed pool
+    responsible_role: ci-platform
+    applies_to:
+      - node-boot-chain
+      - hardware-root-of-trust
+      - orchestrator-node-identity
+    context:
+      threat_actor: attacker modifying boot components cloning node identity or enrolling an unreviewed host into the orchestrator pool
+      attack_or_failure_scenario: application and runtime checks execute on a node whose pre-kernel state or identity has been altered
+      why_required: file and daemon checks begin after boot and cannot establish the integrity of earlier firmware bootloader or node enrollment decisions
+    verification:
+      type: external-evidence
+      method: validate normalized secure boot measured boot TPM identity attestation result freshness and exact node pool binding
+      expected: disabled boot protection software-only cloned wrong-pool stale or failed attestation fails or errors
+      evidence:
+        - sanitized hardware attestation receipt
+        - orchestrator node pool binding
+    mapping_status: reviewed
+  - id: HST-009
+    title: Host evidence distinguishes PASS FAIL NOT_CHECKED and ERROR
+    required_state: all required Linux observations are complete fresh and successful while unsupported platforms are NOT_CHECKED and collection failures are ERROR
+    responsible_role: security
+    applies_to:
+      - container-host-assessment
+      - host-evidence-health
+    context:
+      threat_actor: inventory outage insufficient collector privilege unsupported platform schema drift or stale cache
+      attack_or_failure_scenario: an evaluator cannot observe host kernel daemon file or access state but reports no findings as a clean host
+      why_required: each hardening assertion depends on privileged host observations whose absence is otherwise indistinguishable from a secure empty state
+    verification:
+      type: automated
+      method: validate platform support schema collection status source inventory completeness and freshness before evaluating findings
+      expected: unsupported platforms return NOT_CHECKED and missing stale incomplete malformed or unavailable Linux evidence returns ERROR
+      evidence:
+        - normalized host evidence health manifest
+        - distinct verifier status output
+    mapping_status: unmapped
+mappings:
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.3.1
+    relationship: mitigates
+    confidence: high
+    rationale: Private authenticated daemon management exact operator roles and management network restrictions directly constrain unbounded administrative access.
+    reviewer: product-security
+    review_date: "2026-08-04"
+    applies_to:
+      - HST-003
+      - HST-007
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.3.5
+    relationship: supports
+    confidence: high
+    rationale: Supported patched node components and fresh hardware-backed pool attestation provide evidence relevant to orchestrator node trust.
+    reviewer: product-security
+    review_date: "2026-08-04"
+    applies_to:
+      - HST-002
+      - HST-008
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.5.1
+    relationship: mitigates
+    confidence: high
+    rationale: Dedicated container hosts with a reviewed minimal service inventory reduce the host operating system attack surface.
+    reviewer: product-security
+    review_date: "2026-08-04"
+    applies_to:
+      - HST-001
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.5.2
+    relationship: mitigates
+    confidence: high
+    rationale: Rootless or user namespace isolation kernel lockdown seccomp and an enforcing LSM reduce authority and attack paths across the shared kernel boundary.
+    reviewer: product-security
+    review_date: "2026-08-04"
+    applies_to:
+      - HST-004
+      - HST-006
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.5.3
+    relationship: mitigates
+    confidence: high
+    rationale: Exact supported component baselines and bounded security patch age directly identify vulnerable host operating system components.
+    reviewer: product-security
+    review_date: "2026-08-04"
+    applies_to:
+      - HST-002
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.5.4
+    relationship: mitigates
+    confidence: high
+    rationale: Runtime socket ownership user namespace isolation and exact operator roles restrict improper user access to host and daemon authority.
+    reviewer: product-security
+    review_date: "2026-08-04"
+    applies_to:
+      - HST-003
+      - HST-004
+      - HST-007
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.5.5
+    relationship: mitigates
+    confidence: high
+    rationale: Exact protected-path ownership modes file digests and immutable audit rules detect or prevent host filesystem tampering.
+    reviewer: product-security
+    review_date: "2026-08-04"
+    applies_to:
+      - HST-005
+      - HST-007
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.6
+    relationship: supports
+    confidence: high
+    rationale: Secure boot measured boot TPM-backed identity and attestation implement a hardware-rooted node trust example without claiming complete hardware coverage.
+    reviewer: product-security
+    review_date: "2026-08-04"
+    applies_to:
+      - HST-008
+limitations:
+  - Offline fixtures do not prove that a live Linux host kernel daemon firewall audit subsystem or hardware root of trust enforces the recorded state.
+  - Windows container hosts and managed control planes are NOT_CHECKED until provider-specific adapters define equivalent evidence.
+  - Version allowlists and patch deadlines are organization policy inputs and do not replace a live vendor vulnerability or support feed.
+  - A valid isolation exception remains NOT_CHECKED rather than PASS and requires compensating controls until the limitation is removed.
+  - Runtime socket mount prevention inside workload specifications remains PSB-CONTAINER-001 while this control consumes host-side mount observations.
+  - Falco or Sysdig installation driver choice performance and update verification require a later live adapter; runtime event evaluation remains PSB-CONTAINER-004.
+  - Workload application behavior image vulnerability and registry security remain separate controls.
+  - CIS Docker Benchmark mapping remains unavailable until an authorized versioned source and exact recommendation inventory are reviewed.
+  - SLSA Build levels do not cover production container host hardening and are intentionally not mapped.
+status: prototype
+owner: product-security
+evidence_level: E3

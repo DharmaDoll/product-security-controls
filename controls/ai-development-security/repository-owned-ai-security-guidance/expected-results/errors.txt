@@ -1,0 +1,6 @@
+ERROR pinned repository-agents digest mismatch: expected 0000000000000000000000000000000000000000000000000000000000000000, got a737b0a6be8c4488cd3f91db290fbb018452160180b89eeb51bf9932ee8c2643
+ERROR guided result corpus digest mismatch
+ERROR guided task AIG-T001 repetition is outside the frozen range
+ERROR guided evidence is unavailable
+ERROR guided result contains forbidden evidence field $.raw_output
+ERROR guided recommendation exceeds the allowed evidence claim

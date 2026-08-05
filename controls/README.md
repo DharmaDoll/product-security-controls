@@ -5,7 +5,7 @@
 このページは、実装済みcontrolを目的別に探すための入口です。
 `control.yaml`を正本として`make generate-index`で生成されます。
 
-現在、**27 controls / 247 atomic checks**を収録しています。
+現在、**33 controls / 293 atomic checks**を収録しています。
 
 ## 使い方
 
@@ -27,11 +27,11 @@
 | [Dependency Security](#domain-dependency-security) | registry、cooldown、install script、lockfile、artifact integrityの保護。 | 4 | 27 |
 | [CI/CD Security](#domain-cicd-security) | workflow dependency、command injection、権限、未信頼PR境界の保護。 | 6 | 35 |
 | [Build Security](#domain-build-security) | build隔離、hosted build、credential境界、provenance生成の保護。 | 3 | 16 |
-| [Container / Cloud / IaC Security](#domain-container-cloud-iac-security) | IaC Golden Path、container admission、runtime、cloud control planeの保護。 | 3 | 33 |
+| [Container / Cloud / IaC Security](#domain-container-cloud-iac-security) | IaC Golden Path、container admission、runtime、cloud control planeの保護。 | 5 | 49 |
 | [Release Integrity](#domain-release-integrity) | 署名、provenance、SBOM、supplier artifact、配布時の完全性。 | 4 | 27 |
-| [AI Development Security](#domain-ai-development-security) | AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。 | 1 | 26 |
+| [AI Development Security](#domain-ai-development-security) | AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。 | 3 | 40 |
 | [Detection / Verification](#domain-detection-verification) | 脆弱性、secret、container、IaCなどを検出・検証する共通基盤。 | 1 | 8 |
-| [Governance / Operations](#domain-governance-operations) | 例外、ownership、証跡、影響調査、継続運用とincident readiness。 | 1 | 7 |
+| [Governance / Operations](#domain-governance-operations) | 例外、ownership、証跡、影響調査、継続運用とincident readiness。 | 3 | 23 |
 
 <a id="domain-secure-design"></a>
 
@@ -111,6 +111,8 @@ IaC Golden Path、container admission、runtime、cloud control planeの保護�
 | Control | 達成する状態 | マッピング先 | Security functions | Checks | Maturity / Evidence |
 |---|---|---|---|---:|---|
 | [PSB-CONTAINER-001](container-cloud-iac-security/container-admission-baseline/README.md) | 正確なOCIイメージと認証済みの来歴情報を、非root・隔離済み・リソース制限済みのKubernetesワークロードへ結び付けてから受け入れる。 | [NIST SP 800-190](../generated/mappings/nist-sp-800-190.md) / [SLSA](../generated/mappings/slsa.md) | `prevent`, `verify` | 9 | `adopted` / `E3` |
+| [PSB-CONTAINER-002](container-cloud-iac-security/container-registry-security/README.md) | コンテナレジストリへの通信と操作を短寿命identity・repository単位の最小権限・改変防止・監査・期限付きlifecycleで制御する。 | [NIST SP 800-190](../generated/mappings/nist-sp-800-190.md) | `prevent`, `detect`, `verify` | 7 | `prototype` / `E3` |
+| [PSB-CONTAINER-003](container-cloud-iac-security/container-host-daemon-hardening/README.md) | 本番・共有コンテナホストを専用化・更新し、daemon管理面、runtime socket、保護file、kernel isolation、operator権限、node trustを制約する。 | [NIST SP 800-190](../generated/mappings/nist-sp-800-190.md) | `prevent`, `detect`, `verify` | 9 | `prototype` / `E3` |
 | [PSB-CONTAINER-004](container-cloud-iac-security/runtime-threat-detection/README.md) | FalcoまたはSysdigのランタイムイベントを正規化して許可済みワークロードIDへ結び付け、テレメトリーの健全性を検証し、検出結果を権限管理された対応処理へ引き渡す。 | [NIST SP 800-190](../generated/mappings/nist-sp-800-190.md) | `detect`, `verify`, `respond` | 12 | `adopted` / `E3` |
 | [PSB-IAC-001](container-cloud-iac-security/secure-iac-golden-path/README.md) | バージョン管理されたセキュアな既定値のインフラモジュール、解決済み実行計画のポリシーゲート、クラウド側の強制、ドリフト管理を組み合わせる。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify`, `govern` | 12 | `prototype` / `E3` |
 
@@ -135,7 +137,9 @@ AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。
 
 | Control | 達成する状態 | マッピング先 | Security functions | Checks | Maturity / Evidence |
 |---|---|---|---|---:|---|
-| [PSB-AI-004](ai-development-security/ai-coding-agent-runtime-hardening/README.md) | 共通ポリシーと製品別アダプターにより、AIコーディングエージェントのファイルシステム、ネットワーク、拡張機能、高影響操作、バイパス経路を最小権限に制限して検証する。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) | `prevent`, `detect`, `verify`, `govern` | 26 | `prototype` / `E3` |
+| [PSB-AI-001](ai-development-security/repository-owned-ai-security-guidance/README.md) | AGENTSとrepository-owned CodeGuard profileをcanonical source、SHA-256、semantic reviewへ固定し、同一条件のpaired benchmarkで安全性向上と回帰を別々に評価する。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify`, `govern` | 7 | `prototype` / `E3` |
+| [PSB-AI-002](ai-development-security/agent-extension-dependency-governance/README.md) | Skill、MCP server、plugin、外部promptをimmutable source、SHA-256、独立semantic review、最小権限、benchmark、期限、失効状態へ固定し、承認済みidentityをruntimeへ引き渡す。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify`, `govern` | 7 | `prototype` / `E3` |
+| [PSB-AI-004](ai-development-security/ai-coding-agent-runtime-hardening/README.md) | 共通ポリシーと製品別アダプターにより、AIコーディングエージェントのファイルシステム、ネットワーク、拡張機能、高影響操作、バイパス経路を最小権限に制限して検証する。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify`, `govern` | 26 | `prototype` / `E3` |
 
 <a id="domain-detection-verification"></a>
 
@@ -156,6 +160,8 @@ AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。
 | Control | 達成する状態 | マッピング先 | Security functions | Checks | Maturity / Evidence |
 |---|---|---|---|---:|---|
 | [PSB-GOV-001](governance-operations/supply-chain-incident-readiness/README.md) | SBOMとビルド証跡から汚染パッケージの影響をリポジトリ、ビルド、成果物、デプロイ先へ逆引きし、承認付きドライラン対応計画を生成する。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) | `detect`, `respond`, `verify`, `govern` | 7 | `prototype` / `E3` |
+| [PSB-GOV-002](governance-operations/time-bound-security-exceptions/README.md) | controlとcheck、対象、risk、owner、独立承認、代替策、期限を共通契約へ固定し、完全な例外台帳から有効・失効間近・期限切れ・不正をfail-closedで導出する。 | [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `verify`, `respond`, `govern` | 8 | `prototype` / `E3` |
+| [PSB-GOV-003](governance-operations/exploited-vulnerability-prioritization/README.md) | scanner findingをexactな製品・artifact・稼働deployment、検証済みCVSS v4、完全でfreshなCISA KEV証跡、組織policy、PSIRT ownerへ結び、対応優先度と期限をfail-closedで導出する。 | [NIST SSDF](../generated/mappings/nist-ssdf.md) | `detect`, `verify`, `respond`, `govern` | 8 | `prototype` / `E3` |
 
 ## 表示の意味
 

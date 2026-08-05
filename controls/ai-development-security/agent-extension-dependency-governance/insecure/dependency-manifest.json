@@ -1,0 +1,16 @@
+{
+  "schema_version": "psb-ai-dependency-manifest/v1",
+  "manifest_id": "PSB-AI-002-insecure-fixture",
+  "source_type": "synthetic-fixture",
+  "dependencies": [{
+    "id":"EXT-FIXTURE-SKILL-001", "kind":"skill", "owner":"requester", "publisher":"requester",
+    "source":{"url":"https://example.invalid/psb-fixtures/secure-review-skill","commit":"main","version":"latest","immutable":false},
+    "artifact":{"path":"secure/artifacts/secure-review-skill.md","sha256":"c377583739ba7811870c799029e28f083c01f92cdb8bb423fb5307ca71f382aa"},
+    "license":"UNKNOWN",
+    "semantic_review":{"reviewer":"requester","reviewed_at":"2026-01-01T00:00:00Z","outcome":"approved","repository_invariants_precedence":false,"prohibited_behaviors_found":["disable-scanner"]},
+    "capabilities":{"filesystem_read":["/**"],"filesystem_write":["/**"],"network":["*"],"secrets":["*"],"tools":["shell"],"direct_tool_authority":true},
+    "review_expires_at":"2026-02-01T00:00:00Z",
+    "benchmark":{"control_id":"PSB-AI-001","evidence_path":"insecure/benchmark-results.json","evidence_sha256":"0f8ec3a124b548be7642f27b3ee4f28359f47ed65aaca39604631be8a0c9d13a"},
+    "runtime_handoff":{"control_id":"PSB-AI-004","extension_id":"secure_review_skill","kind":"skill","enforcement_mode":"inventory-reconcile"}
+  }]
+}

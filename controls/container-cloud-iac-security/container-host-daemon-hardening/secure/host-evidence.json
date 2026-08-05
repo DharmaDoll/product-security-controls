@@ -1,0 +1,155 @@
+{
+  "schema": "psb-container-host-evidence/v1",
+  "platform": "linux",
+  "adapter_status": "supported",
+  "node_id": "node-fixture-001",
+  "node_pool": "pool:production",
+  "observed_at": "2026-08-04T12:04:00Z",
+  "scope": {
+    "purpose": "production-container-host",
+    "workload_classes": ["container-workloads"],
+    "enabled_services": [
+      "apparmor",
+      "auditd",
+      "containerd",
+      "node-agent",
+      "sshd"
+    ]
+  },
+  "components": [
+    {
+      "type": "host-os",
+      "name": "flatcar",
+      "version": "4152.2.3",
+      "support_status": "supported",
+      "security_updates_current": true,
+      "last_security_patch_at": "2026-07-20T12:00:00Z"
+    },
+    {
+      "type": "kernel",
+      "name": "linux",
+      "version": "6.6.90",
+      "support_status": "supported",
+      "security_updates_current": true,
+      "last_security_patch_at": "2026-07-20T12:00:00Z"
+    },
+    {
+      "type": "runtime",
+      "name": "containerd",
+      "version": "2.0.5",
+      "support_status": "supported",
+      "security_updates_current": true,
+      "last_security_patch_at": "2026-07-20T12:00:00Z"
+    },
+    {
+      "type": "daemon",
+      "name": "containerd",
+      "version": "2.0.5",
+      "support_status": "supported",
+      "security_updates_current": true,
+      "last_security_patch_at": "2026-07-20T12:00:00Z"
+    }
+  ],
+  "management": {
+    "endpoints": [
+      {
+        "scheme": "unix",
+        "path": "/run/containerd/containerd.sock",
+        "authentication": "peer-credentials",
+        "public": false
+      }
+    ],
+    "runtime_socket_owner": "root",
+    "runtime_socket_group": "container-runtime",
+    "runtime_socket_mode": "0660",
+    "workload_runtime_socket_mounts": 0,
+    "observed_source_addresses": ["10.20.0.10"]
+  },
+  "isolation": {
+    "rootless_enabled": false,
+    "user_namespace_enabled": true,
+    "kernel_lockdown": "integrity",
+    "seccomp_default": "default",
+    "lsm": "apparmor",
+    "lsm_mode": "enforcing",
+    "workload_profile_assigned": true,
+    "kernel_modules_restricted": true
+  },
+  "protected_paths": [
+    {
+      "path": "/etc/containerd/config.toml",
+      "type": "file",
+      "owner": "root",
+      "group": "root",
+      "mode": "0640",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "path": "/usr/bin/containerd",
+      "type": "file",
+      "owner": "root",
+      "group": "root",
+      "mode": "0755",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    {
+      "path": "/run/containerd/containerd.sock",
+      "type": "socket",
+      "owner": "root",
+      "group": "container-runtime",
+      "mode": "0660"
+    },
+    {
+      "path": "/var/lib/containerd",
+      "type": "directory",
+      "owner": "root",
+      "group": "root",
+      "mode": "0700"
+    },
+    {
+      "path": "/etc/systemd/system/containerd.service",
+      "type": "file",
+      "owner": "root",
+      "group": "root",
+      "mode": "0644",
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+  ],
+  "access": {
+    "roles": [
+      {
+        "id": "container-platform-admin",
+        "subjects": ["group:container-platform-admins"],
+        "node_pools": ["pool:production"],
+        "actions": ["configure", "read", "restart"]
+      },
+      {
+        "id": "container-host-auditor",
+        "subjects": ["group:container-security-auditors"],
+        "node_pools": ["pool:production"],
+        "actions": ["read-audit"]
+      }
+    ]
+  },
+  "audit": {
+    "enabled": true,
+    "rules_immutable": true,
+    "events": [
+      "daemon-config-write",
+      "operator-session",
+      "runtime-binary-write",
+      "runtime-socket-access",
+      "service-unit-write"
+    ],
+    "collector_status": "ok",
+    "observed_at": "2026-08-04T12:04:00Z"
+  },
+  "hardware_trust": {
+    "secure_boot": true,
+    "measured_boot": true,
+    "tpm_backed_identity": true,
+    "attestation_status": "verified",
+    "node_pool": "pool:production",
+    "attested_at": "2026-08-04T12:03:00Z"
+  }
+}

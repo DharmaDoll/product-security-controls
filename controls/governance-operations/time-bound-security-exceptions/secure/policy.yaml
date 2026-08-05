@@ -1,0 +1,18 @@
+schema: psb-security-exception-policy/v1
+interface_version: "1.0"
+max_lifetime_days: 30
+expiring_window_days: 7
+max_register_age_minutes: 60
+min_justification_chars: 40
+min_risk_statement_chars: 40
+require_independent_approval: true
+require_independent_risk_review: true
+allowed_target_types:
+  - dependency-version
+  - scanner-finding
+  - repository-setting
+  - build-artifact
+  - deployment
+  - developer-endpoint
+  - container-host
+  - vulnerability-case

@@ -1,0 +1,47 @@
+{
+  "schema": "psb-container-registry-operations/v1",
+  "observed_at": "2026-08-04T12:04:00Z",
+  "complete": true,
+  "operations": [
+    {
+      "request_id": "request-101",
+      "actor": "anonymous",
+      "repository": "payments/api",
+      "action": "push",
+      "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "tag": "release-2026.08.04",
+      "timestamp": "2026-08-04T12:01:00Z",
+      "outcome": "allowed"
+    },
+    {
+      "request_id": "request-102",
+      "actor": "developer:alice",
+      "repository": "other/api",
+      "action": "push",
+      "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "tag": "candidate",
+      "timestamp": "2026-08-04T12:01:30Z",
+      "outcome": "allowed"
+    },
+    {
+      "request_id": "request-103",
+      "actor": "developer:alice",
+      "repository": "payments/api",
+      "action": "push",
+      "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "tag": "release-2026.08.04",
+      "timestamp": "2026-08-04T12:02:00Z",
+      "outcome": "allowed"
+    },
+    {
+      "request_id": "request-104",
+      "actor": "developer:alice",
+      "repository": "payments/api",
+      "action": "delete",
+      "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "tag": "release-2026.08.04",
+      "timestamp": "2026-08-04T12:03:00Z",
+      "outcome": "allowed"
+    }
+  ]
+}

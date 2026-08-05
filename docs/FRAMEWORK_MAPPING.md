@@ -91,6 +91,35 @@ behavior. Do not treat an ATLAS mapping as proof of AI security or formal
 coverage. Record both the ATLAS content release and data format version used
 by the registry.
 
+### OWASP Top 10 for Agentic Applications
+
+Use the pinned `2026` registry for broad risks created when an AI system can
+plan, retain context, invoke tools, inherit identities, delegate, and act across
+multiple steps. The stable identifiers are `ASI01` through `ASI10`.
+
+Relationship examples:
+
+- addresses
+- mitigates
+- detects
+- related-to
+
+This is a `threat-taxonomy`, not an atomic verification standard. Map only a
+check that directly addresses the named agentic failure scenario, and preserve
+unmapped categories as gaps rather than copying a control-level mapping to every
+row. A mapping does not prove complete category coverage, Agentic Top 10
+compliance, safe model behavior, or effective runtime enforcement.
+
+Keep the source roles separate:
+
+- OWASP Agentic Top 10 classifies the broad agentic risk;
+- MITRE ATLAS describes adversary tactics, techniques, mitigations, and case
+  studies;
+- OWASP AI Agent Security Cheat Sheet is implementation guidance in
+  `docs/SECURITY_GUIDANCE_SOURCES.md`;
+- a detailed requirement framework such as a future reviewed OWASP AISVS
+  registry would supply testable verification requirements.
+
 ### OWASP Top 10
 
 Use for broad application risk categories.
@@ -185,7 +214,7 @@ Section 4 guidance is not a container-platform certification or proof of
 complete NIST coverage.
 
 The implemented owners are `PSB-DETECT-001` for image and runtime vulnerability
-scanning and `PSB-CONTAINER-001` for workload admission. Planned owners are
+scanning, `PSB-CONTAINER-001` for workload admission,
 `PSB-CONTAINER-002` for registry security, `PSB-CONTAINER-003` for host and
 daemon hardening, and `PSB-CONTAINER-004` for post-admission runtime behavior.
 

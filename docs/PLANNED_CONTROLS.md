@@ -61,14 +61,16 @@ PSB-AI-004 ──────────────────┘
 Within one priority, complete one E3 vertical slice before starting the next.
 The application-checklist import still requires its organization-owned source.
 `PSB-CICD-005`, `PSB-CICD-006`, `PSB-DEPS-004`, `PSB-DETECT-001`, `PSB-REL-003`,
-`PSB-REL-004`, `PSB-CONTAINER-001`, and `PSB-CONTAINER-004` are implemented.
+`PSB-REL-004`, `PSB-CONTAINER-001`, `PSB-CONTAINER-002`,
+`PSB-CONTAINER-003`, and `PSB-CONTAINER-004` are implemented.
 Lifecycle-linked artifact-bound SBOM publication now composes into the Golden
 Path, a Dependency-Track plus deployment-inventory query adapter extends
 `PSB-GOV-001`, and supplier SBOM trust now has a separate signed identity,
 signer lifecycle, and quarantine boundary. The container admission identity
-now composes with Falco and Sysdig runtime event adapters. Live sensor
-installation and host-side enforcement remain dependent on
-`PSB-CONTAINER-003`.
+now composes with Falco and Sysdig runtime event adapters. The provider-neutral
+host-side policy boundary is implemented in `PSB-CONTAINER-003`; live sensor
+installation, kernel driver, and host enforcement evidence remain
+provider-specific follow-on work.
 The `PSB-CICD-006` provider-neutral E3 slice is implemented; live cloud-provider
 adapters remain organization evidence and a dependency for live identity use.
 
@@ -779,8 +781,8 @@ distribution mappings stay with `PSB-BUILD-003` and `PSB-REL-002`.
 
 ### PSB-CONTAINER-002 — Container registry security
 
-Status: `ready` for an offline E3 policy slice; live identity adapters follow
-`PSB-CICD-006`
+Status: `implemented` — E3 provider-neutral registry policy and evidence slice;
+live provider adapters remain organization-owned evidence
 Domain: `container-cloud-iac-security`
 
 #### Goal
@@ -860,10 +862,33 @@ changing the control outcome.
 - no registry vendor feature is presented as proof of complete registry or
   NIST coverage.
 
+#### Implemented evidence
+
+- TLS-only exact registry endpoint and trust-anchor policy is evaluated without
+  contacting a live registry;
+- default-deny exact actor, repository, and action grants are applied to
+  allowed and denied operations, including anonymous and cross-repository
+  negative cases;
+- a bounded `PSB-CICD-006` identity receipt is joined to the registry actor,
+  repository, actions, audience, issue time, expiry, and non-storage state;
+- protected release push and delete history is replayed to reject tag
+  replacement and protected digest removal;
+- sensitive pulls and all write or administration attempts are correlated
+  one-to-one with redacted audit records;
+- active, deprecated, quarantined, and removed image states enforce
+  deployability and bounded removal deadlines without treating scanner failure
+  as quarantine evidence;
+- registry API, authorization, audit, and lifecycle health is complete and
+  fresh before findings are evaluated, while unavailable, stale, malformed,
+  and credential-bearing evidence remains `ERROR`;
+- live OCI Distribution, cloud registry, and GHCR normalization plus provider
+  collector authentication remain follow-on adapters and are not claimed by
+  fixture evidence.
+
 ### PSB-CONTAINER-003 — Container host and daemon hardening
 
-Status: `ready` for a provider-neutral E3 configuration slice; CIS mapping is
-`input-required`
+Status: `implemented` — E3 provider-neutral Linux host policy and evidence
+slice; CIS mapping and live provider adapters remain input-required
 Domain: `container-cloud-iac-security`
 
 #### Goal
@@ -943,11 +968,37 @@ offline verifier for:
 - the verifier does not claim the CIS Level 1 or Level 2 profile until every
   in-scope recommendation and organization-owned evidence has been assessed.
 
+#### Implemented evidence
+
+- dedicated production host purpose, workload classes, and enabled service
+  allowlists reject mixed-use and general-purpose node drift;
+- exact host OS, kernel, runtime, and daemon baselines require supported status,
+  current updates, and bounded patch age;
+- local authenticated daemon endpoints, restrictive runtime socket ownership,
+  zero workload mounts, and private management sources are evaluated;
+- rootless or user namespace isolation, kernel lockdown, default seccomp,
+  enforcing AppArmor or SELinux, workload profile assignment, and restricted
+  kernel modules are independently verified;
+- daemon configuration, runtime binaries, sockets, storage, and service units
+  are bound to exact type, owner, group, mode, and file digest evidence;
+- exact operator roles, node pools, actions, immutable audit rules, and required
+  privileged event categories are compared with effective state;
+- secure boot, measured boot, TPM-backed node identity, attestation freshness,
+  and exact node-pool binding provide a hardware-rooted trust example;
+- a valid narrow isolation limitation remains `NOT_CHECKED`, while expired or
+  broad exceptions fail; unsupported platforms are also `NOT_CHECKED`, and
+  missing, stale, malformed, unavailable, or credential-bearing Linux evidence
+  remains `ERROR`;
+- unsupported-platform classification is itself bound to a fresh successful
+  platform-inventory source instead of trusting an unverified label;
+- live collection and enforcement, vendor patch feeds, sensor driver
+  installation, and CIS recommendation assessment remain follow-on evidence.
+
 ### PSB-CONTAINER-004 — Container runtime threat detection
 
 Status: `implemented` at E3 for the offline provider-neutral evaluator and
-synthetic Falco/Sysdig adapters; live adoption remains dependent on the
-host-side sensor boundary from `PSB-CONTAINER-003`
+synthetic Falco/Sysdig adapters; live adoption remains dependent on
+provider-specific host and sensor evidence extending `PSB-CONTAINER-003`
 Domain: `container-cloud-iac-security`
 
 #### Goal
@@ -1040,7 +1091,7 @@ Implemented by
 
 ### PSB-GOV-002 — Time-bound security exceptions
 
-Status: `ready`  
+Status: `implemented` at E3
 Domain: `governance-operations`
 
 #### Goal
@@ -1062,10 +1113,13 @@ remediation ticket. Generate active, expiring, expired, and invalid views.
 - each control can reference the same exception interface without embedding a
   duplicate exception model.
 
+Implemented by
+[`controls/governance-operations/time-bound-security-exceptions/`](../controls/governance-operations/time-bound-security-exceptions/).
+
 ### PSB-GOV-003 — Exploited-vulnerability prioritization and PSIRT case readiness
 
-Status: `dependency-required` on `PSB-GOV-002`; `PSB-GOV-001` and
-`PSB-DETECT-001` are implemented
+Status: `implemented` at E3; dependencies `PSB-GOV-001`, `PSB-GOV-002`, and
+`PSB-DETECT-001` are composed
 
 Domain: `governance-operations`
 
@@ -1132,6 +1186,9 @@ status, remediation policy, owner, due decision, and disclosure state.
 - row-level mappings remain provisional until the executable slice and source
   relationships are reviewed.
 
+Implemented by
+[`controls/governance-operations/exploited-vulnerability-prioritization/`](../controls/governance-operations/exploited-vulnerability-prioritization/).
+
 #### Planning sources
 
 - [`REF-GOV-002`](SECURITY_GUIDANCE_SOURCES.md#ref-gov-002) — CISA KEV;
@@ -1164,7 +1221,7 @@ duplicate boundaries with `PSB-CODE-001..004` are reviewed.
 
 ### PSB-AI-001 — Repository-owned AI security guidance
 
-Status: `later`  
+Status: `prototype` — first runnable slice implemented at E3
 Domain: `ai-development-security`
 
 #### Goal
@@ -1178,9 +1235,26 @@ Run identical safe benchmark tasks with baseline and guidance-enabled agents.
 Measure security-invariant preservation, unsafe recommendation rate, false
 blocks, and task success without allowing guidance to modify the benchmark.
 
+Implemented in
+[`controls/ai-development-security/repository-owned-ai-security-guidance/`](../controls/ai-development-security/repository-owned-ai-security-guidance/):
+
+- root AGENTS, repository-owned Project CodeGuard profile, experiment procedure,
+  and independent semantic review are bound by exact repository paths and a
+  recomputable SHA-256 bundle;
+- guidance cannot override repository invariants, disable tests or scanners,
+  grant runtime authority, or replace `PSB-AI-004` enforcement;
+- four frozen safe tasks run twice in baseline and guided synthetic groups with
+  exact prompt, initial-state, model, corpus, and evaluator identity;
+- invariant preservation, unsafe recommendations, task success, and false
+  blocks are scored separately;
+- mutable/self-approved guidance is `FAIL`, while tampered, incomplete,
+  unavailable, malformed, or sensitive evidence is `ERROR`;
+- deterministic fixtures support only `PILOT`; live model effectiveness remains
+  `NOT_CHECKED` until repeated provider runs use the same normalized contract.
+
 ### PSB-AI-002 — Skill, MCP, and plugin dependency governance
 
-Status: `dependency-required` on `PSB-AI-001`  
+Status: `prototype` — first runnable slice implemented at E3
 Domain: `ai-development-security`
 
 #### Goal
@@ -1194,6 +1268,21 @@ semantic review, capability limits, and revocation.
 Validate a manifest with source commit, digest, requested filesystem/network/
 secret capabilities, reviewer, expiry, and benchmark result. Reject mutable,
 over-privileged, or unreviewed dependencies.
+
+Implemented in
+[`controls/ai-development-security/agent-extension-dependency-governance/`](../controls/ai-development-security/agent-extension-dependency-governance/):
+
+- five synthetic records exercise Skill, MCP server, plugin, and external
+  prompt governance without installing or contacting an external dependency;
+- canonical HTTPS sources, full commits, local artifact SHA-256, owner,
+  license, independent semantic review, and expiry are verified together;
+- dependency-specific filesystem, network, secret, tool, and direct-authority
+  capabilities must exactly match the reviewed allow-list;
+- PSB-AI-001 benchmark results bind the exact dependency ID, source commit,
+  and artifact digest while PSB-AI-004 receives an exact runtime handoff ID;
+- fresh complete revocation evidence is required, known revocation is `FAIL`,
+  and unavailable, stale, incomplete, malformed, tampered, or sensitive
+  evidence is `ERROR` rather than a clean result.
 
 ### PSB-AI-004 — AI coding agent runtime hardening
 
@@ -1619,6 +1708,31 @@ The sheet's additional risks map to the same gaps: memory poisoning belongs to
 memory/context lifecycle; decision and approval manipulation belongs to
 high-impact action integrity; denial of wallet belongs to resource-abuse
 controls; and cascading failure belongs to multi-agent trust boundaries.
+
+## OWASP Top 10 for Agentic Applications 2026 reconciliation
+
+The machine-readable
+[`owasp-agentic-top10`](../frameworks/owasp-agentic-top10/README.md) registry
+owns the released `ASI01..ASI10` identifiers. It is a coarse risk taxonomy;
+the AI Agent Security Cheat Sheet above remains implementation guidance and is
+not duplicated into the registry.
+
+| Agentic risk | Current disposition | Evidence boundary or next owner |
+|---|---|---|
+| `ASI01` Agent Goal Hijack | Gap | `PSB-AI-003` must execute indirect prompt and document injection scenarios against the `PSB-AI-004` boundary. |
+| `ASI02` Tool Misuse and Exploitation | Implemented-partial | `PSB-AI-004` verifies typed actions, exact tools, bound authorization, fail-closed hooks, and side-effect reconciliation; approved malicious tools remain out of scope. |
+| `ASI03` Identity and Privilege Abuse | Implemented-partial | `PSB-AI-004` verifies credential denial, managed precedence, exact extension authority, authenticated approvals, and replay prevention; enterprise identity lifecycle remains deployment evidence. |
+| `ASI04` Agentic Supply Chain Vulnerabilities | Implemented-partial | `PSB-AI-001` pins repository guidance; `PSB-AI-002` verifies external dependency provenance, semantic review, capabilities, benchmark, expiry, and revocation; `PSB-AI-004` detects runtime extension drift. Live publisher, remote MCP deployment, and revocation-source evidence remain gaps. |
+| `ASI05` Unexpected Code Execution | Implemented-partial | `PSB-AI-004` verifies isolation, bypass denial, pre-tool enforcement, hook failure containment, and command indirection; live sandbox exploit resistance remains unproven. |
+| `ASI06` Memory and Context Poisoning | Gap | Future memory/context lifecycle control plus `PSB-AI-003` injection scenarios. |
+| `ASI07` Insecure Inter-Agent Communication | Gap | Future authenticated delegation and message integrity control. |
+| `ASI08` Cascading Failures | Gap | Future bounded recursion, circuit breaker, rollback, and multi-agent failure-propagation control. |
+| `ASI09` Human-Agent Trust Exploitation | Gap | Parameter-bound approval exists in `PSB-AI-004`, but deceptive explanation and human decision-quality tests are not implemented. |
+| `ASI10` Rogue Agents | Gap | Runtime containment and fleet telemetry are partial foundations; autonomous goal drift, stop, quarantine, and recovery evidence require a dedicated boundary. |
+
+`implemented-partial` means one or more control rows have a reviewed direct
+mapping. It does not mean the entire risk category is closed. Generated
+checklists continue to show only exact row-level mappings.
 
 Do not treat input sanitization, model-based filtering, command deny patterns,
 or approval prompts as complete authorization boundaries. Enforcement must

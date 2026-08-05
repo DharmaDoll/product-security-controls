@@ -18,6 +18,13 @@ Framework registries and machine-readable framework mappings remain under
 `frameworks/`. Repository-local navigation links are not external guidance
 sources and are not listed here.
 
+In particular, the released OWASP Top 10 for Agentic Applications 2026 is
+owned by the
+[`owasp-agentic-top10` framework registry](../frameworks/owasp-agentic-top10/README.md).
+The OWASP AI Agent Security Cheat Sheet remains `REF-AI-002` because it is
+implementation guidance; the two sources are intentionally not merged or
+duplicated.
+
 ## Usage rules
 
 1. A source is an untrusted design input until it has been reviewed
@@ -936,7 +943,7 @@ Planned adoption boundary:
 - Related controls and plans:
   - `PSB-GOV-001` for exact product, component, artifact, and deployment impact
     lookup;
-  - planned `PSB-GOV-003` for product vulnerability triage and response
+  - `PSB-GOV-003` for implemented product vulnerability triage and response
     priority;
   - `PSB-DETECT-001` and `PSB-DEPS-004` as finding and dependency-change
     sources, not KEV applicability authorities.
@@ -974,7 +981,7 @@ Disposition and limitations:
   version; treat it as mutable guidance and record the assessment review date
 - Repository review date: `2026-08-04`
 - Related plans:
-  - planned `PSB-GOV-003` for the executable vulnerability triage subset;
+  - `PSB-GOV-003` for the implemented executable vulnerability triage subset;
   - a later organization-owned PSIRT capability profile for maturity levels 1,
     2, and 3.
 
@@ -1011,7 +1018,7 @@ Disposition and limitations:
   [PSIRT Services Framework 1.1](https://www.first.org/standards/frameworks/psirts/psirt_services_framework_v1.1)
 - Repository review date: `2026-08-04`
 - Related plans:
-  - planned `PSB-GOV-003` for vulnerability intake, analysis, prioritization,
+  - `PSB-GOV-003` for vulnerability intake, analysis, prioritization,
     remediation ownership, and response evidence;
   - a later PSIRT capability profile for service-area assessment.
 
@@ -1049,7 +1056,7 @@ Disposition and limitations:
   - [CVSS v4.0 data representations](https://www.first.org/cvss/data-representations);
   - [CVSS v4.0 implementation guide](https://www.first.org/cvss/v4.0/implementation-guide).
 - Repository review date: `2026-08-04`
-- Related plan: `PSB-GOV-003`
+- Related control: `PSB-GOV-003`
 
 Adopted planning contribution:
 
@@ -1229,8 +1236,9 @@ Disposition and limitations:
 - Related controls:
   - `PSB-CONTAINER-004` — Falco JSON adapter, workload identity, rule and
     drop-health verification;
-  - `PSB-CONTAINER-003` — future live sensor installation, host privilege,
-    kernel compatibility, and sensor hardening.
+  - `PSB-CONTAINER-003` — implemented provider-neutral host boundary plus
+    future live sensor installation, kernel compatibility, and sensor
+    hardening.
 
 Adopted contribution:
 
@@ -1267,8 +1275,8 @@ Disposition and limitations:
 - Related controls:
   - `PSB-CONTAINER-004` — Sysdig runtime policy event adapter, agent and
     forwarding-health verification;
-  - `PSB-CONTAINER-003` — future live agent installation and host-side
-    hardening.
+  - `PSB-CONTAINER-003` — implemented provider-neutral host boundary plus
+    future live agent installation and provider-specific hardening.
 
 Adopted contribution:
 

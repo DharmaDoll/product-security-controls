@@ -1,0 +1,12 @@
+{
+  "schema_version": "psb-ai-dependency-revocations/v1",
+  "captured_at": "2026-08-05T00:00:00Z",
+  "collection_status": "complete",
+  "records": [
+    {"dependency_id":"EXT-FIXTURE-DOCS-001","source_commit":"1111111111111111111111111111111111111111","artifact_sha256":"b828e647195ca72df808cb28e1862ff9b3121f3b8ad543b5245e4d58f2c7b284","status":"active"},
+    {"dependency_id":"EXT-FIXTURE-SOURCE-001","source_commit":"2222222222222222222222222222222222222222","artifact_sha256":"e7c37d5168501bf8d331b7ee580f2909993438c87591fef0aefa1df52c8e647a","status":"active"},
+    {"dependency_id":"EXT-FIXTURE-SKILL-001","source_commit":"3333333333333333333333333333333333333333","artifact_sha256":"c377583739ba7811870c799029e28f083c01f92cdb8bb423fb5307ca71f382aa","status":"active"},
+    {"dependency_id":"EXT-FIXTURE-PLUGIN-001","source_commit":"4444444444444444444444444444444444444444","artifact_sha256":"379e232f784ac98d53bb4b9e0f2e573b86661e564d2f9b84f8522bf452eb6583","status":"active"},
+    {"dependency_id":"EXT-FIXTURE-PROMPT-001","source_commit":"5555555555555555555555555555555555555555","artifact_sha256":"0e88313516966d0f0a88501099f2c7047dc1cefcc5b8e3ecad287a474e093fa2","status":"active"}
+  ]
+}

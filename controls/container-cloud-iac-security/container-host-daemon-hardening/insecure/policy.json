@@ -1,0 +1,71 @@
+{
+  "schema": "psb-container-host-policy/v1",
+  "policy_version": "latest",
+  "scope": {
+    "required_purpose": "general-purpose",
+    "allowed_workload_classes": ["*"],
+    "prohibited_workload_classes": [],
+    "allowed_enabled_services": ["*"]
+  },
+  "components": {
+    "maximum_patch_age_days": 3650,
+    "required": [
+      {
+        "type": "host-os",
+        "name": "legacy-linux",
+        "version": "1.0"
+      }
+    ]
+  },
+  "management": {
+    "allowed_endpoint_schemes": ["tcp", "unix"],
+    "allowed_socket_paths": ["*"],
+    "required_authentication": "none",
+    "public_endpoints_allowed": true,
+    "workload_runtime_socket_mounts_allowed": true,
+    "allowed_management_cidrs": ["0.0.0.0/0"]
+  },
+  "isolation": {
+    "require_rootless_or_user_namespace": false,
+    "allowed_kernel_lockdown": ["disabled"],
+    "required_seccomp_profile": "unconfined",
+    "allowed_enforcing_lsm": ["none"],
+    "require_restricted_kernel_modules": false
+  },
+  "protected_paths": [
+    {
+      "path": "/etc/containerd/config.toml",
+      "type": "file",
+      "owner": "root",
+      "group": "root",
+      "maximum_mode": "0777"
+    }
+  ],
+  "access": {
+    "roles": [
+      {
+        "id": "everyone-admin",
+        "subjects": ["*"],
+        "node_pools": ["*"],
+        "actions": ["*"]
+      }
+    ],
+    "required_audit_events": [],
+    "audit_rules_immutable": false
+  },
+  "hardware_trust": {
+    "require_secure_boot": false,
+    "require_measured_boot": false,
+    "require_tpm_backed_identity": false,
+    "required_node_pool": "*",
+    "maximum_attestation_age_seconds": 86400
+  },
+  "exceptions": {
+    "maximum_lifetime_days": 365,
+    "required_compensating_controls": []
+  },
+  "evidence": {
+    "maximum_age_seconds": 86400,
+    "required_sources": ["host-inventory"]
+  }
+}

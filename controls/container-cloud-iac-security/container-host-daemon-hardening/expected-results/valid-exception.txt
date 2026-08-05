@@ -1,0 +1,10 @@
+NOT_CHECKED PSB-CONTAINER-003 host hardening has an approved limitation
+PASS HST-001 dedicated minimal host scope verified
+PASS HST-002 supported patched host component baseline verified
+PASS HST-003 private authenticated daemon and socket boundary verified
+NOT_CHECKED HST-004 rootless and user namespace limitation has a valid exception
+PASS HST-005 protected runtime path ownership mode and integrity verified
+PASS HST-006 default seccomp enforcing LSM and module policy verified
+PASS HST-007 operator network and immutable audit boundary verified
+PASS HST-008 hardware-backed boot node identity and attestation verified
+PASS HST-009 complete fresh host evidence sources verified

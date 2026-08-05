@@ -1,0 +1,40 @@
+FAIL PSB-CONTAINER-002 registry policy rejected
+FAIL REG-001 registry endpoint must be exact credential-free HTTPS
+FAIL REG-001 registry identities must be unique and exact
+FAIL REG-001 registry minimum TLS version must be TLS1.2 or later
+FAIL REG-001 registry trust anchor must be an exact SHA-256
+FAIL REG-002 an anonymous write or administrative action was allowed
+FAIL REG-002 anonymous pull repositories must be exact and reviewed
+FAIL REG-002 registry authorization must default deny
+FAIL REG-002 role developer-admin combines all registry authority
+FAIL REG-002 role developer-admin contains a wildcard actor or repository
+FAIL REG-002 the workload identity performed a cross-repository action
+FAIL REG-003 identity audience must be one exact trusted registry
+FAIL REG-003 identity evidence reports a stored credential
+FAIL REG-003 identity lifetime exceeds the policy maximum
+FAIL REG-003 identity maximum TTL must be between 1 and 3600 seconds
+FAIL REG-003 registry automation must use an OIDC exchange
+FAIL REG-003 stored registry credentials are allowed
+FAIL REG-003 workload identity source must be PSB-CICD-006
+FAIL REG-004 a protected release digest was deleted
+FAIL REG-004 a protected release tag was replaced
+FAIL REG-004 protected digest deletion is allowed
+FAIL REG-004 protected release tag overwrite is allowed
+FAIL REG-005 a required registry operation has no audit record
+FAIL REG-005 audit evidence is not marked redacted
+FAIL REG-005 audit maximum lag must be between 1 and 900 seconds
+FAIL REG-005 audit policy must cover push delete and admin
+FAIL REG-005 audit required fields are incomplete
+FAIL REG-005 audit retention must be between 30 and 3650 days
+FAIL REG-005 protected repository reads are not classified as sensitive
+FAIL REG-006 a non-active image remains deployable
+FAIL REG-006 deprecation removal deadline must be within 90 days
+FAIL REG-006 lifecycle evidence failure can be treated as quarantine
+FAIL REG-006 lifecycle must distinguish all four reviewed states
+FAIL REG-006 lifecycle state transitions are not the reviewed state machine
+FAIL REG-006 maximum active age must be between 1 and 365 days
+FAIL REG-006 quarantine deadline must be within 90 days
+FAIL REG-006 stale images are not assigned to quarantine
+FAIL REG-007 evidence freshness window must be between 1 and 3600 seconds
+FAIL REG-007 policy version is not immutable and digest-pinned
+FAIL REG-007 required evidence source inventory is incomplete

@@ -1,0 +1,93 @@
+{
+  "schema": "psb-container-registry-policy/v1",
+  "policy_version": "registry-policy@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "registries": [
+    {
+      "id": "registry.example.invalid",
+      "endpoint": "https://registry.example.invalid",
+      "minimum_tls_version": "TLS1.2",
+      "trusted_ca_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ],
+  "authorization": {
+    "default": "deny",
+    "public_anonymous_pull_repositories": [],
+    "roles": [
+      {
+        "id": "release-publisher",
+        "actors": ["ci:payments-release"],
+        "repositories": ["payments/api"],
+        "actions": ["push"]
+      },
+      {
+        "id": "production-deployer",
+        "actors": ["workload:payments-prod"],
+        "repositories": ["payments/api"],
+        "actions": ["pull"]
+      },
+      {
+        "id": "registry-security-auditor",
+        "actors": ["security:registry-audit"],
+        "repositories": ["payments/api"],
+        "actions": ["pull", "read-audit"]
+      },
+      {
+        "id": "registry-administrator",
+        "actors": ["platform:registry-admin"],
+        "repositories": ["payments/api"],
+        "actions": ["admin", "delete"]
+      }
+    ]
+  },
+  "identity": {
+    "source_control": "PSB-CICD-006",
+    "credential_kind": "oidc-exchange",
+    "audience": "registry.example.invalid",
+    "maximum_ttl_seconds": 900,
+    "stored_credentials_allowed": false
+  },
+  "release_protection": {
+    "protected_repositories": ["payments/api"],
+    "protected_tag_prefixes": ["release-"],
+    "allow_tag_overwrite": false,
+    "allow_protected_digest_delete": false
+  },
+  "audit": {
+    "required_actions": ["admin", "delete", "push"],
+    "sensitive_read_repositories": ["payments/api"],
+    "required_fields": [
+      "action",
+      "actor",
+      "digest",
+      "outcome",
+      "repository",
+      "request_id",
+      "timestamp"
+    ],
+    "maximum_lag_seconds": 300,
+    "minimum_retention_days": 365
+  },
+  "lifecycle": {
+    "allowed_states": ["active", "deprecated", "quarantined", "removed"],
+    "state_transitions": {
+      "active": ["deprecated", "quarantined"],
+      "deprecated": ["quarantined", "removed"],
+      "quarantined": ["removed"],
+      "removed": []
+    },
+    "maximum_active_age_days": 30,
+    "deprecation_removal_days": 7,
+    "maximum_quarantine_days": 30,
+    "stale_action": "quarantine",
+    "evidence_error_action": "error"
+  },
+  "evidence": {
+    "maximum_age_seconds": 900,
+    "required_sources": [
+      "audit-collector",
+      "authorization-evaluator",
+      "lifecycle-controller",
+      "registry-api"
+    ]
+  }
+}

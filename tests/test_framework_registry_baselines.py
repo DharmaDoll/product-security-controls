@@ -52,6 +52,11 @@ EXPECTED_BASELINES = {
         "count": 345,
         "known_id": "v5.0.0-1.2.5",
     },
+    "owasp-agentic-top10": {
+        "version": "2026",
+        "count": 10,
+        "known_id": "ASI04",
+    },
     "slsa": {
         "version": "1.2",
         "count": 9,

@@ -1,4 +1,32 @@
 ﻿Control ID,Check ID,Responsible Role,Verification Type,Required Evidence
+PSB-AI-001,PSB-AI-001-AIG-001,security,automated,sanitized bundle identity output
+PSB-AI-001,PSB-AI-001-AIG-001,security,automated,tampered manifest negative-test output
+PSB-AI-001,PSB-AI-001-AIG-002,security,automated,semantic review record
+PSB-AI-001,PSB-AI-001-AIG-002,security,automated,insecure CodeGuard profile result
+PSB-AI-001,PSB-AI-001-AIG-003,security,automated,frozen task corpus digest
+PSB-AI-001,PSB-AI-001-AIG-003,security,automated,paired-run completeness output
+PSB-AI-001,PSB-AI-001-AIG-004,security,automated,aggregated security metric output
+PSB-AI-001,PSB-AI-001-AIG-004,security,automated,below-threshold negative-test output
+PSB-AI-001,PSB-AI-001-AIG-005,developer,automated,task-success comparison
+PSB-AI-001,PSB-AI-001-AIG-005,developer,automated,false-block comparison
+PSB-AI-001,PSB-AI-001-AIG-006,security,automated,expected-results/errors.txt
+PSB-AI-001,PSB-AI-001-AIG-006,security,automated,sanitized secure benchmark output
+PSB-AI-001,PSB-AI-001-AIG-007,shared,automated,bounded recommendation output
+PSB-AI-001,PSB-AI-001-AIG-007,shared,automated,documented live experiment handoff
+PSB-AI-002,PSB-AI-002-AID-001,security,automated,sanitized source identity summary
+PSB-AI-002,PSB-AI-002-AID-001,security,automated,tampered digest negative-test output
+PSB-AI-002,PSB-AI-002-AID-002,security,automated,dependency manifest review metadata
+PSB-AI-002,PSB-AI-002-AID-002,security,automated,insecure manifest output
+PSB-AI-002,PSB-AI-002-AID-003,security,automated,semantic review fields
+PSB-AI-002,PSB-AI-002-AID-003,security,automated,prohibited-behavior negative fixture
+PSB-AI-002,PSB-AI-002-AID-004,shared,automated,capability allow-list summary
+PSB-AI-002,PSB-AI-002-AID-004,shared,automated,over-privileged fixture output
+PSB-AI-002,PSB-AI-002-AID-005,security,automated,PSB-AI-001 benchmark receipt summary
+PSB-AI-002,PSB-AI-002-AID-005,security,automated,failed evaluator negative-test output
+PSB-AI-002,PSB-AI-002-AID-006,security,automated,revocation snapshot summary
+PSB-AI-002,PSB-AI-002-AID-006,security,automated,revoked and incomplete negative-test output
+PSB-AI-002,PSB-AI-002-AID-007,shared,automated,runtime handoff count
+PSB-AI-002,PSB-AI-002-AID-007,shared,automated,PSB-AI-004 inventory dependency record IDs
 PSB-AI-004,PSB-AI-004-AAR-001,shared,automated,sanitized verifier result for AAR-001
 PSB-AI-004,PSB-AI-004-AAR-001,shared,automated,immutable secure and insecure fixtures
 PSB-AI-004,PSB-AI-004-AAR-002,shared,automated,sanitized verifier result for AAR-002
@@ -153,6 +181,37 @@ PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-008,ci-platform,hybrid,NetworkPolicy ver
 PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-008,ci-platform,hybrid,CNI enforcement evidence
 PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-009,ci-platform,automated,admission enforcement evidence
 PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-009,ci-platform,automated,error-state negative-test output
+PSB-CONTAINER-002,PSB-CONTAINER-002-REG-001,ci-platform,hybrid,sanitized registry endpoint policy
+PSB-CONTAINER-002,PSB-CONTAINER-002-REG-001,ci-platform,hybrid,registry API health observation
+PSB-CONTAINER-002,PSB-CONTAINER-002-REG-002,ci-platform,automated,authorization policy verifier output
+PSB-CONTAINER-002,PSB-CONTAINER-002-REG-002,ci-platform,automated,normalized registry operation decisions
+PSB-CONTAINER-002,PSB-CONTAINER-002-REG-003,ci-platform,hybrid,sanitized workload identity receipt
+PSB-CONTAINER-002,PSB-CONTAINER-002-REG-003,ci-platform,hybrid,identity-to-registry-role binding output
+PSB-CONTAINER-002,PSB-CONTAINER-002-REG-004,release-manager,automated,protected reference policy
+PSB-CONTAINER-002,PSB-CONTAINER-002-REG-004,release-manager,automated,normalized mutation event history
+PSB-CONTAINER-002,PSB-CONTAINER-002-REG-005,security,hybrid,audit collector health
+PSB-CONTAINER-002,PSB-CONTAINER-002-REG-005,security,hybrid,correlated sanitized audit records
+PSB-CONTAINER-002,PSB-CONTAINER-002-REG-006,shared,hybrid,sanitized image lifecycle inventory
+PSB-CONTAINER-002,PSB-CONTAINER-002-REG-006,shared,hybrid,lifecycle controller health and decision source status
+PSB-CONTAINER-002,PSB-CONTAINER-002-REG-007,security,automated,normalized evidence health manifest
+PSB-CONTAINER-002,PSB-CONTAINER-002-REG-007,security,automated,verifier error-state output
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-001,ci-platform,hybrid,sanitized host purpose and workload inventory
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-001,ci-platform,hybrid,enabled service inventory
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-002,ci-platform,hybrid,normalized component inventory
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-002,ci-platform,hybrid,patch service health observation
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-003,ci-platform,hybrid,normalized daemon endpoint inventory
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-003,ci-platform,hybrid,runtime socket and workload mount observation
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-004,ci-platform,hybrid,host isolation state
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-004,ci-platform,hybrid,time-bound exception record when applicable
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-005,ci-platform,automated,sanitized protected path inventory
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-005,ci-platform,automated,file integrity digest comparison output
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-006,ci-platform,automated,normalized kernel isolation profile
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-007,security,hybrid,normalized operator role and management connection inventory
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-007,security,hybrid,host audit policy and collector observation
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-008,ci-platform,external-evidence,sanitized hardware attestation receipt
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-008,ci-platform,external-evidence,orchestrator node pool binding
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-009,security,automated,normalized host evidence health manifest
+PSB-CONTAINER-003,PSB-CONTAINER-003-HST-009,security,automated,distinct verifier status output
 PSB-CONTAINER-004,PSB-CONTAINER-004-RTD-001,ci-platform,hybrid,sanitized sensor policy identity result
 PSB-CONTAINER-004,PSB-CONTAINER-004-RTD-002,ci-platform,automated,sanitized identity binding result
 PSB-CONTAINER-004,PSB-CONTAINER-004-RTD-003,security,automated,sanitized detection result
@@ -224,6 +283,39 @@ PSB-GOV-001,PSB-GOV-001-INC-006,incident-response,hybrid,sanitized Dependency-Tr
 PSB-GOV-001,PSB-GOV-001-INC-006,incident-response,hybrid,project UUID version SBOM serial and build-record linkage
 PSB-GOV-001,PSB-GOV-001-INC-007,incident-response,hybrid,sanitized deployment impact result
 PSB-GOV-001,PSB-GOV-001-INC-007,incident-response,hybrid,deployment inventory collector evidence
+PSB-GOV-002,PSB-GOV-002-GEX-001,security,automated,normalized exception state without target payload
+PSB-GOV-002,PSB-GOV-002-GEX-001,security,automated,catalog mismatch negative-test output
+PSB-GOV-002,PSB-GOV-002-GEX-002,security,automated,sanitized decision-role identifiers
+PSB-GOV-002,PSB-GOV-002-GEX-002,security,automated,self-approval negative-test output
+PSB-GOV-002,PSB-GOV-002-GEX-003,security,automated,sanitized rationale metadata
+PSB-GOV-002,PSB-GOV-002-GEX-003,security,automated,policy validation output
+PSB-GOV-002,PSB-GOV-002-GEX-004,security,automated,active expiring expired and invalid view output
+PSB-GOV-002,PSB-GOV-002-GEX-004,security,automated,fixed-time expiry negative test
+PSB-GOV-002,PSB-GOV-002-GEX-005,security,automated,sanitized complete register manifest
+PSB-GOV-002,PSB-GOV-002-GEX-005,security,automated,digest and completeness negative-test output
+PSB-GOV-002,PSB-GOV-002-GEX-006,security,automated,secret-bearing negative-test output
+PSB-GOV-002,PSB-GOV-002-GEX-006,security,automated,fixed exception field inventory
+PSB-GOV-002,PSB-GOV-002-GEX-007,shared,automated,versioned policy and example records
+PSB-GOV-002,PSB-GOV-002-GEX-007,shared,automated,cross-domain catalog validation output
+PSB-GOV-002,PSB-GOV-002-GEX-008,ci-platform,automated,expected-results/secure.txt
+PSB-GOV-002,PSB-GOV-002-GEX-008,ci-platform,automated,expected-results/insecure.txt
+PSB-GOV-002,PSB-GOV-002-GEX-008,ci-platform,automated,expected-results/unavailable.txt
+PSB-GOV-003,PSB-GOV-003-VPR-001,security,automated,sanitized finding identity receipt
+PSB-GOV-003,PSB-GOV-003-VPR-001,security,automated,identity mismatch negative-test output
+PSB-GOV-003,PSB-GOV-003-VPR-002,incident-response,hybrid,sanitized product impact receipt
+PSB-GOV-003,PSB-GOV-003-VPR-002,incident-response,hybrid,exact deployment relationship
+PSB-GOV-003,PSB-GOV-003-VPR-003,security,automated,sanitized vector and score result
+PSB-GOV-003,PSB-GOV-003-VPR-003,security,automated,pinned calculator identity and conformance receipt
+PSB-GOV-003,PSB-GOV-003-VPR-004,security,automated,sanitized KEV retrieval receipt
+PSB-GOV-003,PSB-GOV-003-VPR-004,security,automated,feed integrity and completeness negative-test output
+PSB-GOV-003,PSB-GOV-003-VPR-005,security,automated,computed priority and organization deadline
+PSB-GOV-003,PSB-GOV-003-VPR-005,security,automated,manual downgrade negative-test output
+PSB-GOV-003,PSB-GOV-003-VPR-006,incident-response,automated,sanitized case routing result
+PSB-GOV-003,PSB-GOV-003-VPR-006,incident-response,automated,ownership negative-test output
+PSB-GOV-003,PSB-GOV-003-VPR-007,security,automated,PSB-GOV-002 sanitized state output
+PSB-GOV-003,PSB-GOV-003-VPR-007,security,automated,exact exception binding result
+PSB-GOV-003,PSB-GOV-003-VPR-008,security,automated,expected-results/errors.txt
+PSB-GOV-003,PSB-GOV-003-VPR-008,security,automated,sensitive-content negative-test output
 PSB-IAC-001,PSB-IAC-001-IAC-001,ci-platform,automated,sanitized verifier output
 PSB-IAC-001,PSB-IAC-001-IAC-001,ci-platform,automated,module release review
 PSB-IAC-001,PSB-IAC-001-IAC-002,ci-platform,automated,sanitized plan verifier output

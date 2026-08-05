@@ -1,0 +1,8 @@
+INVALID EXC-2026-9001: target_id must identify one exact non-wildcard scope
+INVALID EXC-2026-9001: environment must identify one exact non-wildcard scope
+INVALID EXC-2026-9001: owner and approved_by must differ
+INVALID EXC-2026-9001: owner risk_reviewer and approved_by must be distinct
+INVALID EXC-2026-9001: risk_statement is too short
+INVALID EXC-2026-9001: exception lifetime exceeds policy maximum
+EXPIRED EXC-2026-9002 control=PSB-DEPS-001 check=COOL-003 expires_at=2026-07-20T09:00:00Z
+FAIL PSB-GOV-002 exception register rejected: active=0 expiring=0 expired=1 invalid=1

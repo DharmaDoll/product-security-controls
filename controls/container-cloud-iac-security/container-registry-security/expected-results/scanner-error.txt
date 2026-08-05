@@ -1,0 +1,1 @@
+ERROR PSB-CONTAINER-002 registry evaluation unavailable: lifecycle decision evidence failed; scanner failure is not quarantine evidence

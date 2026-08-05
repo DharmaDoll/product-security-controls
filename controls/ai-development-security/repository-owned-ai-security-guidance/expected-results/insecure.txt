@@ -1,0 +1,20 @@
+FAIL repository-agents uses mutable revision main
+FAIL repository-agents is not recorded with immutable identity
+FAIL repository-agents has no reviewed license disposition
+FAIL project-codeguard-profile uses mutable revision latest
+FAIL project-codeguard-profile is not recorded with immutable identity
+FAIL project-codeguard-profile has no reviewed license disposition
+FAIL experiment-procedure uses mutable revision latest
+FAIL experiment-procedure is not recorded with immutable identity
+FAIL experiment-procedure has no reviewed license disposition
+FAIL semantic-review uses mutable revision latest
+FAIL semantic-review is not recorded with immutable identity
+FAIL semantic-review has no reviewed license disposition
+FAIL CodeGuard authority field repository_security_invariants_take_precedence must be true
+FAIL CodeGuard authority field can_override_repository_security must be false
+FAIL CodeGuard authority field can_disable_tests_or_scanners must be false
+FAIL CodeGuard authority field can_grant_runtime_authority must be false
+FAIL CodeGuard profile is missing reviewed rules: CG-FAIL-CLOSED, CG-MINIMIZE-AUTHORITY, CG-PIN-DEPENDENCIES, CG-PRESERVE-CONTROLS, CG-REVIEW-AGENT-DEPS, CG-VERIFY-CLAIMS
+FAIL CodeGuard profile does not delegate runtime enforcement to PSB-AI-004
+FAIL semantic review ID does not match the manifest
+REJECTED 19 guidance violation(s)

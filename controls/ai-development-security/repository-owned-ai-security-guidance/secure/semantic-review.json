@@ -1,0 +1,33 @@
+{
+  "schema": "psb-guidance-semantic-review/v1",
+  "review_id": "PSB-AI-001-REVIEW-2026-08-05",
+  "reviewer": "security-architecture",
+  "review_date": "2026-08-05",
+  "outcome": "approved-for-pilot",
+  "repository_security_precedence_verified": true,
+  "runtime_authority_claim_rejected": true,
+  "required_rule_ids": [
+    "CG-PIN-DEPENDENCIES",
+    "CG-PRESERVE-CONTROLS",
+    "CG-FAIL-CLOSED",
+    "CG-MINIMIZE-AUTHORITY",
+    "CG-VERIFY-CLAIMS",
+    "CG-REVIEW-AGENT-DEPS"
+  ],
+  "reviewed_boundaries": [
+    "guidance cannot override AGENTS.md",
+    "guidance cannot grant filesystem network or credential authority",
+    "guidance cannot replace tests scanners or human review",
+    "benchmark fixtures cannot support an adoption claim for a live model"
+  ],
+  "source_reconciliation": [
+    {
+      "reference": "REF-AI-001",
+      "disposition": "selected preventive guidance only; product runtime settings remain PSB-AI-004"
+    },
+    {
+      "reference": "REF-AI-002",
+      "disposition": "selected least-privilege validation and adversarial-testing outcomes; prompt injection remains PSB-AI-003"
+    }
+  ]
+}

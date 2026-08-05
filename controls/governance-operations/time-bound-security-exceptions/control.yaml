@@ -1,0 +1,239 @@
+id: PSB-GOV-002
+title: Enforce exact independently approved time-bound security exceptions
+domain: governance-operations
+summary: controlとcheck、対象、risk、owner、独立承認、代替策、期限を共通契約へ固定し、完全な例外台帳から有効・失効間近・期限切れ・不正をfail-closedで導出する。
+check_context_version: "1.0"
+security_functions:
+  - verify
+  - respond
+  - govern
+threats:
+  - id: SECURITY-EXCEPTION-SCOPE-EXPANSION
+    description: A wildcard or ambiguous exception disables security enforcement beyond the reviewed target and environment.
+  - id: SECURITY-EXCEPTION-SELF-APPROVAL
+    description: A control owner accepts their own risk without an independent reviewer or accountable approval decision.
+  - id: SECURITY-EXCEPTION-PERMANENCE
+    description: An exception remains effective after its reviewed context and remediation deadline have expired.
+  - id: SECURITY-EXCEPTION-REGISTER-TAMPERING
+    description: An exception is deleted added or modified outside the complete integrity-bound register while enforcement continues.
+  - id: SECURITY-EXCEPTION-EVIDENCE-LEAK
+    description: Approval evidence copies credentials source code production payloads or other sensitive content into a wider audit system.
+  - id: SECURITY-EXCEPTION-FAIL-OPEN
+    description: Missing stale malformed or unavailable exception evidence is interpreted as an approved exception or clean result.
+implementations:
+  insecure:
+    - insecure/exceptions/broad-scope.yaml
+    - insecure/exceptions/expired.yaml
+    - insecure/register.json
+  secure:
+    - secure/policy.yaml
+    - secure/exceptions/active-dependency.yaml
+    - secure/exceptions/expiring-scanner.yaml
+    - secure/register.json
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-GOV-002
+  expected:
+    - exact repository control and check pairs are required
+    - wildcard targets and broad environments are rejected
+    - owner risk reviewer and approver are stable distinct identities
+    - justification risk compensating controls approval and remediation tickets are required
+    - exception lifetime is bounded and expiry is derived at evaluation time
+    - complete fresh register evidence binds every YAML file by SHA-256
+    - active expiring expired invalid and evidence error states remain distinct
+    - forbidden sensitive fields and credential-like values fail without value disclosure
+checks:
+  - id: GEX-001
+    title: Exception scope binds one cataloged control check target and environment
+    required_state: every exception names one existing control and check pair plus an exact allowed target type target identifier and environment without wildcard scope
+    responsible_role: security
+    applies_to:
+      - security-exception
+      - control-catalog
+      - enforcement-target
+    context:
+      threat_actor: contributor operator or approver using a broad selector accidentally or to bypass unrelated security decisions
+      attack_or_failure_scenario: one approved case suppresses all scanner findings dependencies repositories builds or environments because its scope is ambiguous
+      why_required: an exception can be safely evaluated only when the authorized decision and the enforcement target use the same exact identifiers
+    verification:
+      type: automated
+      method: compare exception control_id and check_id with repository metadata and reject wildcard target or environment values
+      expected: exact existing pairs pass while wildcard unknown and mismatched pairs fail
+      evidence:
+        - normalized exception state without target payload
+        - catalog mismatch negative-test output
+    mapping_status: reviewed
+  - id: GEX-002
+    title: Owner risk reviewer and approver are independently accountable
+    required_state: owner risk reviewer and approver are stable non-wildcard team identities and no one identity fills multiple decision roles
+    responsible_role: security
+    applies_to:
+      - risk-acceptance
+      - approval-workflow
+    context:
+      threat_actor: control owner under delivery pressure compromised identity or insider seeking an unreviewed bypass
+      attack_or_failure_scenario: the person benefiting from disabled enforcement also evaluates and approves the accepted risk
+      why_required: separation of duties adds an independent challenge and records who remains accountable for risk and approval
+    verification:
+      type: automated
+      method: validate stable identity syntax and require three distinct owner reviewer and approver values
+      expected: self-approved and role-collapsed records are invalid
+      evidence:
+        - sanitized decision-role identifiers
+        - self-approval negative-test output
+    mapping_status: reviewed
+  - id: GEX-003
+    title: Risk rationale compensation approval and remediation are actionable
+    required_state: meaningful justification and risk statements name non-empty compensating controls and distinct exact approval and remediation tickets
+    responsible_role: security
+    applies_to:
+      - risk-analysis
+      - compensating-control
+      - remediation-plan
+    context:
+      threat_actor: rushed decision maker or attacker hiding a bypass behind an empty generic or unactionable exception record
+      attack_or_failure_scenario: reviewers cannot determine what risk was accepted how exposure is reduced or which tracked work will remove the exception
+      why_required: exception expiry alone does not create a risk response unless interim protection and accountable remediation are reviewable
+    verification:
+      type: automated
+      method: validate minimum rationale lengths non-empty unique compensating controls and exact distinct ticket identifiers
+      expected: generic risk text missing compensation and absent or reused tickets are invalid
+      evidence:
+        - sanitized rationale metadata
+        - policy validation output
+    mapping_status: reviewed
+  - id: GEX-004
+    title: Exception lifetime is bounded and expiry is automatic
+    required_state: creation precedes expiry lifetime stays within policy and evaluation time independently derives active expiring or expired state
+    responsible_role: security
+    applies_to:
+      - exception-lifecycle
+      - security-gate
+    context:
+      threat_actor: owner delaying remediation clock rollback attempt or process that relies on manual exception cleanup
+      attack_or_failure_scenario: a temporary bypass silently becomes permanent after its approved time window
+      why_required: the enforcement decision must stop accepting expired risk even when no operator edits the exception file
+    verification:
+      type: automated
+      method: evaluate active expiring overlong future and expired fixtures against a fixed trusted UTC time
+      expected: expired and overlong records fail without manual removal while expiring records remain separately visible
+      evidence:
+        - active expiring expired and invalid view output
+        - fixed-time expiry negative test
+    mapping_status: reviewed
+  - id: GEX-005
+    title: The exception register is complete fresh and integrity-bound
+    required_state: successful complete fresh register evidence enumerates every exception YAML file and binds its exact SHA-256
+    responsible_role: security
+    applies_to:
+      - exception-register
+      - exception-evidence
+    context:
+      threat_actor: attacker deleting an exception to hide debt adding an unapproved record altering an approved scope or evidence collector outage
+      attack_or_failure_scenario: enforcement evaluates a partial stale or changed set of exceptions and presents it as the authoritative register
+      why_required: per-record validation cannot detect omitted or substituted decisions without an independently enumerated complete snapshot
+    verification:
+      type: automated
+      method: compare directory membership digest source status completeness and observation freshness with the register manifest
+      expected: missing extra tampered stale incomplete and unavailable evidence returns ERROR
+      evidence:
+        - sanitized complete register manifest
+        - digest and completeness negative-test output
+    mapping_status: unmapped
+  - id: GEX-006
+    title: Exception evidence excludes credentials and production payloads
+    required_state: the fixed schema stores identifiers and rationale only and rejects credential secret payload body source-code and private-key fields or credential-like values
+    responsible_role: security
+    applies_to:
+      - exception-evidence
+      - approval-system
+      - audit-log
+    context:
+      threat_actor: user with access to approval tickets audit logs or generated checklist evidence but not to the original protected value
+      attack_or_failure_scenario: an exception copies sensitive material into a longer-lived and more broadly readable governance system
+      why_required: risk documentation should identify protected objects by safe reference rather than create another disclosure and retention path
+    verification:
+      type: automated
+      method: recursively reject forbidden fields and representative credential patterns before rendering any record value
+      expected: secret-bearing fixture returns ERROR and the synthetic value is absent from output
+      evidence:
+        - secret-bearing negative-test output
+        - fixed exception field inventory
+    mapping_status: unmapped
+  - id: GEX-007
+    title: Controls consume one versioned exception interface
+    required_state: every consumer references psb-security-exception version 1.0 and retains only its control-specific risk and enforcement semantics
+    responsible_role: shared
+    applies_to:
+      - control-integration
+      - exception-adapter
+    context:
+      threat_actor: implementation drift or inconsistent local exception parsers that accept different scope approval and expiry semantics
+      attack_or_failure_scenario: one control rejects an unsafe exception while another accepts the same record through a weaker duplicate model
+      why_required: one versioned lifecycle contract permits consistent governance without moving control-specific security decisions into a generic policy engine
+    verification:
+      type: automated
+      method: validate interface_version against the shared policy and exercise dependency and scanner control-check examples
+      expected: both domains use the same record fields and version while mismatched versions are invalid
+      evidence:
+        - versioned policy and example records
+        - cross-domain catalog validation output
+    mapping_status: unmapped
+  - id: GEX-008
+    title: Invalid exceptions and evidence errors never become clean results
+    required_state: active and expiring records are usable expired and invalid records fail and unavailable malformed incomplete or unsafe evidence returns a separate error exit state
+    responsible_role: ci-platform
+    applies_to:
+      - security-gate
+      - exception-evaluator
+      - generated-exception-view
+    context:
+      threat_actor: collector outage parser regression tampered input or integration code collapsing every non-finding result into success
+      attack_or_failure_scenario: an exception cannot be verified but the protected security check is still bypassed
+      why_required: scanner and policy failures must preserve the original blocking decision rather than silently authorize risk
+    verification:
+      type: automated
+      method: assert exit 0 for usable records exit 1 for expired or invalid records and exit 2 for evidence failures
+      expected: all state and error fixtures reach exactly the documented output and exit code
+      evidence:
+        - expected-results/secure.txt
+        - expected-results/insecure.txt
+        - expected-results/unavailable.txt
+    mapping_status: reviewed
+mappings:
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: RV.2.1
+    relationship: supports
+    confidence: medium
+    rationale: For vulnerability-related exceptions the record captures reviewed risk interim compensation and tracked remediation but does not by itself perform complete vulnerability analysis or response.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - GEX-002
+      - GEX-003
+      - GEX-004
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-QA-03.01
+    relationship: supports
+    confidence: medium
+    rationale: Exact approved expiring exceptions and distinct fail-closed states provide a bounded mechanism for addressing a failed security check before accepting a change without claiming universal repository enforcement.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - GEX-001
+      - GEX-004
+      - GEX-008
+limitations:
+  - Repository fixtures do not prove that a production ticket system policy engine or deployment gate enforces the evaluated decision.
+  - SHA-256 detects mismatch against the supplied register but does not prevent an actor with write access from changing both files and hashes so independent immutable approval evidence remains necessary.
+  - Production evaluation requires a trusted UTC time source and must not let exception beneficiaries choose an earlier evaluation time.
+  - The fixed schema prevents payload fields and detects representative credential patterns but cannot recognize every sensitive value hidden inside free text.
+  - Existing control-local exception formats require staged adapters and drift monitoring until migration to the shared interface is complete.
+  - A valid exception documents bounded accepted risk and never changes the underlying failed security condition into PASS.
+  - Passing fixtures do not establish formal NIST SSDF or OpenSSF Baseline compliance.
+status: prototype
+owner: product-security
+evidence_level: E3

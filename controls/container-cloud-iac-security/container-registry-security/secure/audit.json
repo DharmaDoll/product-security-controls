@@ -1,0 +1,59 @@
+{
+  "schema": "psb-container-registry-audit/v1",
+  "status": "ok",
+  "complete": true,
+  "observed_at": "2026-08-04T12:04:30Z",
+  "redacted": true,
+  "records": [
+    {
+      "event_id": "audit-001",
+      "request_id": "request-001",
+      "actor": "ci:payments-release",
+      "repository": "payments/api",
+      "action": "push",
+      "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "timestamp": "2026-08-04T12:01:00Z",
+      "outcome": "allowed"
+    },
+    {
+      "event_id": "audit-002",
+      "request_id": "request-002",
+      "actor": "workload:payments-prod",
+      "repository": "payments/api",
+      "action": "pull",
+      "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "timestamp": "2026-08-04T12:02:00Z",
+      "outcome": "allowed"
+    },
+    {
+      "event_id": "audit-003",
+      "request_id": "request-003",
+      "actor": "anonymous",
+      "repository": "payments/api",
+      "action": "push",
+      "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "timestamp": "2026-08-04T12:02:30Z",
+      "outcome": "denied"
+    },
+    {
+      "event_id": "audit-004",
+      "request_id": "request-004",
+      "actor": "ci:payments-release",
+      "repository": "other/api",
+      "action": "push",
+      "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "timestamp": "2026-08-04T12:03:00Z",
+      "outcome": "denied"
+    },
+    {
+      "event_id": "audit-005",
+      "request_id": "request-005",
+      "actor": "platform:registry-admin",
+      "repository": "payments/api",
+      "action": "delete",
+      "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "timestamp": "2026-08-04T12:03:30Z",
+      "outcome": "denied"
+    }
+  ]
+}

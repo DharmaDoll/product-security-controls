@@ -1,0 +1,16 @@
+{
+  "schema": "psb-container-host-exceptions/v1",
+  "exceptions": [
+    {
+      "id": "host-exception-insecure",
+      "check_id": "*",
+      "node_pool": "*",
+      "owner": "platform-owner",
+      "approved_by": "platform-owner",
+      "reason": "temporary",
+      "created_at": "2025-01-01T00:00:00Z",
+      "expires_at": "2027-01-01T00:00:00Z",
+      "compensating_controls": []
+    }
+  ]
+}

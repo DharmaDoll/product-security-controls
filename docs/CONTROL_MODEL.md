@@ -151,6 +151,24 @@ target and excludes higher-level requirements. Its coverage view must retain
 unmapped requirements as explicit gaps. A mapped row is evidence relevant to a
 requirement; it is not by itself a framework level or compliance claim.
 
+## Security exception contract
+
+Controls do not invent weaker local exception lifecycle semantics. The shared
+`psb-security-exception/v1` contract and fail-closed reference evaluator are
+owned by `PSB-GOV-002`. An exception binds one exact control/check pair, target,
+environment, accountable roles, risk, compensating controls, approval,
+remediation, creation, and expiry.
+
+The control that raises a security decision still owns its domain-specific
+risk evaluation. It consumes only currently `ACTIVE` or `EXPIRING` decisions
+from the shared interface and records exception application separately; a
+valid exception does not rewrite the underlying check to `PASS`. `EXPIRED` or
+`INVALID` decisions fail, and unavailable or untrustworthy register evidence is
+`ERROR`.
+
+See [`policies/exceptions/README.md`](../policies/exceptions/README.md) for the
+repository policy and the staged migration rule for existing local formats.
+
 ## Read-only assessments
 
 A control may expose an `assessment` command when it can inspect an adopted

@@ -1,0 +1,82 @@
+{
+  "name": "owasp-agentic-top10",
+  "publisher": "OWASP GenAI Security Project",
+  "role": "threat-taxonomy",
+  "release": "OWASP Top 10 for Agentic Applications 2026, December 2025",
+  "mapping_version": "2026",
+  "review_date": "2026-08-05",
+  "source": {
+    "url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/",
+    "announcement_url": "https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/",
+    "published_at": "2025-12-09",
+    "license": "CC BY-SA 4.0",
+    "artifact_integrity": "not-recorded-vendor-download-monitor-denied-automated-retrieval"
+  },
+  "coverage": {
+    "scope": "All ten ASI risk categories in the OWASP Top 10 for Agentic Applications 2026",
+    "completeness": "complete-risk-list",
+    "maintenance_owner": "product-security"
+  },
+  "entries": [
+    {
+      "id": "ASI01",
+      "title": "Agent Goal Hijack",
+      "type": "risk-category",
+      "source_url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
+    },
+    {
+      "id": "ASI02",
+      "title": "Tool Misuse and Exploitation",
+      "type": "risk-category",
+      "source_url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
+    },
+    {
+      "id": "ASI03",
+      "title": "Identity and Privilege Abuse",
+      "type": "risk-category",
+      "source_url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
+    },
+    {
+      "id": "ASI04",
+      "title": "Agentic Supply Chain Vulnerabilities",
+      "type": "risk-category",
+      "source_url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
+    },
+    {
+      "id": "ASI05",
+      "title": "Unexpected Code Execution",
+      "type": "risk-category",
+      "source_url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
+    },
+    {
+      "id": "ASI06",
+      "title": "Memory and Context Poisoning",
+      "type": "risk-category",
+      "source_url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
+    },
+    {
+      "id": "ASI07",
+      "title": "Insecure Inter-Agent Communication",
+      "type": "risk-category",
+      "source_url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
+    },
+    {
+      "id": "ASI08",
+      "title": "Cascading Failures",
+      "type": "risk-category",
+      "source_url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
+    },
+    {
+      "id": "ASI09",
+      "title": "Human-Agent Trust Exploitation",
+      "type": "risk-category",
+      "source_url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
+    },
+    {
+      "id": "ASI10",
+      "title": "Rogue Agents",
+      "type": "risk-category",
+      "source_url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schema_version": "psb-ai-dependency-manifest/v1",
+  "manifest_id": "PSB-AI-002-fixture-2026-08-05",
+  "source_type": "synthetic-fixture",
+  "dependencies": [
+    {
+      "id": "EXT-FIXTURE-DOCS-001", "kind": "mcp-server", "owner": "ai-platform", "publisher": "fixture-maintainer",
+      "source": {"url":"https://example.invalid/psb-fixtures/docs-reader","commit":"1111111111111111111111111111111111111111","version":"1.0.0","immutable":true},
+      "artifact": {"path":"secure/artifacts/docs-reader-mcp.json","sha256":"b828e647195ca72df808cb28e1862ff9b3121f3b8ad543b5245e4d58f2c7b284"},
+      "license": "Apache-2.0",
+      "semantic_review": {"reviewer":"product-security-reviewer","reviewed_at":"2026-08-01T00:00:00Z","outcome":"approved","repository_invariants_precedence":true,"prohibited_behaviors_found":[]},
+      "capabilities": {"filesystem_read":[],"filesystem_write":[],"network":["https://docs.example.invalid/mcp/v1"],"secrets":[],"tools":["search","read"],"direct_tool_authority":true},
+      "review_expires_at": "2026-10-01T00:00:00Z",
+      "benchmark": {"control_id":"PSB-AI-001","evidence_path":"secure/benchmark-results.json","evidence_sha256":"8b23601a3d0545bc1a1bd9d079b69a01577c9c9891ac95ea63b6b10e3f8a05cc"},
+      "runtime_handoff": {"control_id":"PSB-AI-004","extension_id":"docs_reader","kind":"mcp","enforcement_mode":"inventory-reconcile"}
+    },
+    {
+      "id": "EXT-FIXTURE-SOURCE-001", "kind": "mcp-server", "owner": "ai-platform", "publisher": "fixture-maintainer",
+      "source": {"url":"https://example.invalid/psb-fixtures/source-manager","commit":"2222222222222222222222222222222222222222","version":"1.0.0","immutable":true},
+      "artifact": {"path":"secure/artifacts/source-manager-mcp.json","sha256":"e7c37d5168501bf8d331b7ee580f2909993438c87591fef0aefa1df52c8e647a"},
+      "license": "Apache-2.0",
+      "semantic_review": {"reviewer":"product-security-reviewer","reviewed_at":"2026-08-01T00:00:00Z","outcome":"approved","repository_invariants_precedence":true,"prohibited_behaviors_found":[]},
+      "capabilities": {"filesystem_read":[],"filesystem_write":[],"network":["https://source.example.invalid/mcp/v1"],"secrets":[],"tools":["list_pull_requests","update_issue","create_pull_request"],"direct_tool_authority":true},
+      "review_expires_at": "2026-10-01T00:00:00Z",
+      "benchmark": {"control_id":"PSB-AI-001","evidence_path":"secure/benchmark-results.json","evidence_sha256":"8b23601a3d0545bc1a1bd9d079b69a01577c9c9891ac95ea63b6b10e3f8a05cc"},
+      "runtime_handoff": {"control_id":"PSB-AI-004","extension_id":"source_manager","kind":"mcp","enforcement_mode":"inventory-reconcile"}
+    },
+    {
+      "id": "EXT-FIXTURE-SKILL-001", "kind": "skill", "owner": "ai-platform", "publisher": "fixture-maintainer",
+      "source": {"url":"https://example.invalid/psb-fixtures/secure-review-skill","commit":"3333333333333333333333333333333333333333","version":"1.0.0","immutable":true},
+      "artifact": {"path":"secure/artifacts/secure-review-skill.md","sha256":"c377583739ba7811870c799029e28f083c01f92cdb8bb423fb5307ca71f382aa"},
+      "license": "MIT",
+      "semantic_review": {"reviewer":"product-security-reviewer","reviewed_at":"2026-08-01T00:00:00Z","outcome":"approved","repository_invariants_precedence":true,"prohibited_behaviors_found":[]},
+      "capabilities": {"filesystem_read":[],"filesystem_write":[],"network":[],"secrets":[],"tools":[],"direct_tool_authority":false},
+      "review_expires_at": "2026-10-01T00:00:00Z",
+      "benchmark": {"control_id":"PSB-AI-001","evidence_path":"secure/benchmark-results.json","evidence_sha256":"8b23601a3d0545bc1a1bd9d079b69a01577c9c9891ac95ea63b6b10e3f8a05cc"},
+      "runtime_handoff": {"control_id":"PSB-AI-004","extension_id":"secure_review_skill","kind":"skill","enforcement_mode":"inventory-reconcile"}
+    },
+    {
+      "id": "EXT-FIXTURE-PLUGIN-001", "kind": "plugin", "owner": "ai-platform", "publisher": "fixture-maintainer",
+      "source": {"url":"https://example.invalid/psb-fixtures/change-summary-plugin","commit":"4444444444444444444444444444444444444444","version":"1.0.0","immutable":true},
+      "artifact": {"path":"secure/artifacts/change-summary-plugin.json","sha256":"379e232f784ac98d53bb4b9e0f2e573b86661e564d2f9b84f8522bf452eb6583"},
+      "license": "MIT",
+      "semantic_review": {"reviewer":"product-security-reviewer","reviewed_at":"2026-08-01T00:00:00Z","outcome":"approved","repository_invariants_precedence":true,"prohibited_behaviors_found":[]},
+      "capabilities": {"filesystem_read":["docs/**"],"filesystem_write":[],"network":[],"secrets":[],"tools":[],"direct_tool_authority":false},
+      "review_expires_at": "2026-10-01T00:00:00Z",
+      "benchmark": {"control_id":"PSB-AI-001","evidence_path":"secure/benchmark-results.json","evidence_sha256":"8b23601a3d0545bc1a1bd9d079b69a01577c9c9891ac95ea63b6b10e3f8a05cc"},
+      "runtime_handoff": {"control_id":"PSB-AI-004","extension_id":"change_summary","kind":"plugin","enforcement_mode":"deny-not-installed"}
+    },
+    {
+      "id": "EXT-FIXTURE-PROMPT-001", "kind": "external-prompt", "owner": "ai-platform", "publisher": "fixture-maintainer",
+      "source": {"url":"https://example.invalid/psb-fixtures/review-prompt","commit":"5555555555555555555555555555555555555555","version":"1.0.0","immutable":true},
+      "artifact": {"path":"secure/artifacts/review-prompt.md","sha256":"0e88313516966d0f0a88501099f2c7047dc1cefcc5b8e3ecad287a474e093fa2"},
+      "license": "CC-BY-4.0",
+      "semantic_review": {"reviewer":"product-security-reviewer","reviewed_at":"2026-08-01T00:00:00Z","outcome":"approved","repository_invariants_precedence":true,"prohibited_behaviors_found":[]},
+      "capabilities": {"filesystem_read":[],"filesystem_write":[],"network":[],"secrets":[],"tools":[],"direct_tool_authority":false},
+      "review_expires_at": "2026-10-01T00:00:00Z",
+      "benchmark": {"control_id":"PSB-AI-001","evidence_path":"secure/benchmark-results.json","evidence_sha256":"8b23601a3d0545bc1a1bd9d079b69a01577c9c9891ac95ea63b6b10e3f8a05cc"},
+      "runtime_handoff": {"control_id":"PSB-AI-004","extension_id":"review_prompt","kind":"external-prompt","enforcement_mode":"deny-not-installed"}
+    }
+  ]
+}

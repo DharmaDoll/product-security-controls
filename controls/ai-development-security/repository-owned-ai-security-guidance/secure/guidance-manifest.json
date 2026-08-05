@@ -1,0 +1,45 @@
+{
+  "schema": "psb-ai-guidance-manifest/v1",
+  "bundle_id": "PSB-AI-001-guidance-2026-08-05",
+  "bundle_sha256": "7528d715fdc693ba505fa3eaa9e2816ffe94a345008d6a4999bf3360d00faca8",
+  "owner": "product-security",
+  "review_id": "PSB-AI-001-REVIEW-2026-08-05",
+  "files": [
+    {
+      "role": "repository-agents",
+      "path": "AGENTS.md",
+      "source": "repository://AGENTS.md",
+      "revision": "psb-agents/2026-08-05",
+      "sha256": "a737b0a6be8c4488cd3f91db290fbb018452160180b89eeb51bf9932ee8c2643",
+      "immutable_identity": true,
+      "license": "repository-policy"
+    },
+    {
+      "role": "project-codeguard-profile",
+      "path": "controls/ai-development-security/repository-owned-ai-security-guidance/secure/guidance/project-codeguard-profile.json",
+      "source": "repository://controls/ai-development-security/repository-owned-ai-security-guidance/secure/guidance/project-codeguard-profile.json",
+      "revision": "project-codeguard-psb/2026-08-05",
+      "sha256": "2b54641fac4b495272abd3301958b07bf4ed200a846c6e2e97c6f148c8a26db3",
+      "immutable_identity": true,
+      "license": "repository-policy"
+    },
+    {
+      "role": "experiment-procedure",
+      "path": ".codex/prompts/04-run-codeguard-experiment.md",
+      "source": "repository://.codex/prompts/04-run-codeguard-experiment.md",
+      "revision": "codeguard-experiment/2026-08-05",
+      "sha256": "e91a86e6a11388fa77f30805922880d276e1bd25ec11495a8e7e2a9453fae84a",
+      "immutable_identity": true,
+      "license": "repository-policy"
+    },
+    {
+      "role": "semantic-review",
+      "path": "controls/ai-development-security/repository-owned-ai-security-guidance/secure/semantic-review.json",
+      "source": "repository://controls/ai-development-security/repository-owned-ai-security-guidance/secure/semantic-review.json",
+      "revision": "PSB-AI-001-REVIEW-2026-08-05",
+      "sha256": "42484185ee75df51c3881b33c36ebe8ed6ea9f29b46626d8c3de60b9cf8750ca",
+      "immutable_identity": true,
+      "license": "repository-policy"
+    }
+  ]
+}

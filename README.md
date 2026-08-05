@@ -85,6 +85,9 @@ checklistだけを更新する場合は`make generate-checklists`を使用でき
 生成物は`generated/checklists/`に保存されます。`control.yaml`が正本であり、
 生成されたspreadsheetは直接編集しません。組織固有の担当、判定、証跡URL、
 期限、例外IDは`product-security-assessment-template.xlsx`へ記録します。
+例外そのものの共通field、期限判定、fail-closedな台帳検証は
+[`PSB-GOV-002`](controls/governance-operations/time-bound-security-exceptions/README.md)
+と[`policies/exceptions/README.md`](policies/exceptions/README.md)を参照してください。
 
 SLSA Build Level 2を目標にする場合は
 `profiles/slsa-build-l2.csv`でL1とL2に直接対応する確認項目だけを確認できます。
@@ -172,6 +175,7 @@ Each control is mapped to applicable items from:
 - NIST SSDF
 - NIST SP 800-190 container implementation guidance
 - MITRE ATLAS
+- OWASP Top 10 for Agentic Applications 2026
 - GitHub security guidance
 - OpenSSF OSPS Baseline
 - CISA Product Security Bad Practices
@@ -188,6 +192,7 @@ SLSA           → source and build integrity requirements
 NIST SSDF      → secure software development practices
 NIST SP 800-190 → application-container countermeasure guidance
 MITRE ATLAS    → adversary behavior targeting AI-enabled systems
+OWASP Agentic Top 10 → major risk categories for autonomous and tool-using AI systems
 OpenSSF OSPS   → open source project security requirements
 CISA PSBP      → focused product security bad practices to avoid
 This repository→ concrete implementation and verification examples

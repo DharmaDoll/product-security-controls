@@ -1,0 +1,14 @@
+FAIL EXT-FIXTURE-SKILL-001 has no independent accountable owner
+FAIL EXT-FIXTURE-SKILL-001 license is not approved
+FAIL EXT-FIXTURE-SKILL-001 requested capabilities exceed or differ from policy
+FAIL EXT-FIXTURE-SKILL-001 semantic review is expired
+FAIL EXT-FIXTURE-SKILL-001 semantic review is not independent
+FAIL EXT-FIXTURE-SKILL-001 semantic review permits repository-policy override or prohibited behavior
+FAIL EXT-FIXTURE-SKILL-001 source commit is mutable or not a full commit
+FAIL EXT-FIXTURE-SKILL-001 source identity is mutable
+FAIL approved dependency EXT-FIXTURE-DOCS-001 is missing from the manifest
+FAIL approved dependency EXT-FIXTURE-PLUGIN-001 is missing from the manifest
+FAIL approved dependency EXT-FIXTURE-PROMPT-001 is missing from the manifest
+FAIL approved dependency EXT-FIXTURE-SOURCE-001 is missing from the manifest
+FAIL fixture does not exercise every required dependency kind
+FAIL dependency policy rejected the manifest (13 finding(s))

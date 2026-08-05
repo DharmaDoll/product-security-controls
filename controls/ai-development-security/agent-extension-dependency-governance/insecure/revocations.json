@@ -1,0 +1,8 @@
+{
+  "schema_version": "psb-ai-dependency-revocations/v1",
+  "captured_at": "2026-08-05T00:00:00Z",
+  "collection_status": "complete",
+  "records": [
+    {"dependency_id":"EXT-FIXTURE-SKILL-001","source_commit":"main","artifact_sha256":"c377583739ba7811870c799029e28f083c01f92cdb8bb423fb5307ca71f382aa","status":"active"}
+  ]
+}

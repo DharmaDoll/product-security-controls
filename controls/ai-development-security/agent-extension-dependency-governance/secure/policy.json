@@ -1,0 +1,42 @@
+{
+  "schema_version": "psb-ai-dependency-policy/v1",
+  "policy_id": "PSB-AI-002-DEPENDENCY-POLICY",
+  "evaluation_time": "2026-08-05T00:00:00Z",
+  "maximum_revocation_age_seconds": 86400,
+  "allowed_licenses": ["Apache-2.0", "MIT", "CC-BY-4.0"],
+  "required_fixture_kinds": ["skill", "mcp-server", "plugin", "external-prompt"],
+  "approved_dependencies": {
+    "EXT-FIXTURE-DOCS-001": {
+      "kind": "mcp-server",
+      "filesystem_read": [], "filesystem_write": [],
+      "network": ["https://docs.example.invalid/mcp/v1"], "secrets": [],
+      "tools": ["search", "read"], "direct_tool_authority": true,
+      "runtime_handoff": {"control_id":"PSB-AI-004","extension_id":"docs_reader","kind":"mcp","enforcement_mode":"inventory-reconcile"}
+    },
+    "EXT-FIXTURE-SOURCE-001": {
+      "kind": "mcp-server",
+      "filesystem_read": [], "filesystem_write": [],
+      "network": ["https://source.example.invalid/mcp/v1"], "secrets": [],
+      "tools": ["list_pull_requests", "update_issue", "create_pull_request"], "direct_tool_authority": true,
+      "runtime_handoff": {"control_id":"PSB-AI-004","extension_id":"source_manager","kind":"mcp","enforcement_mode":"inventory-reconcile"}
+    },
+    "EXT-FIXTURE-SKILL-001": {
+      "kind": "skill",
+      "filesystem_read": [], "filesystem_write": [], "network": [], "secrets": [],
+      "tools": [], "direct_tool_authority": false,
+      "runtime_handoff": {"control_id":"PSB-AI-004","extension_id":"secure_review_skill","kind":"skill","enforcement_mode":"inventory-reconcile"}
+    },
+    "EXT-FIXTURE-PLUGIN-001": {
+      "kind": "plugin",
+      "filesystem_read": ["docs/**"], "filesystem_write": [], "network": [], "secrets": [],
+      "tools": [], "direct_tool_authority": false,
+      "runtime_handoff": {"control_id":"PSB-AI-004","extension_id":"change_summary","kind":"plugin","enforcement_mode":"deny-not-installed"}
+    },
+    "EXT-FIXTURE-PROMPT-001": {
+      "kind": "external-prompt",
+      "filesystem_read": [], "filesystem_write": [], "network": [], "secrets": [],
+      "tools": [], "direct_tool_authority": false,
+      "runtime_handoff": {"control_id":"PSB-AI-004","extension_id":"review_prompt","kind":"external-prompt","enforcement_mode":"deny-not-installed"}
+    }
+  }
+}

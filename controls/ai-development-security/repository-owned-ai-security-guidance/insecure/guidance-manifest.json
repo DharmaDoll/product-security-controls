@@ -1,0 +1,45 @@
+{
+  "schema": "psb-ai-guidance-manifest/v1",
+  "bundle_id": "PSB-AI-001-unsafe-latest",
+  "bundle_sha256": "963e544d0a166d011334d1c42ef8da7339f135c0841953c8d3dbea39aa72ce29",
+  "owner": "task-agent",
+  "review_id": "self-approved",
+  "files": [
+    {
+      "role": "repository-agents",
+      "path": "AGENTS.md",
+      "source": "repository://AGENTS.md",
+      "revision": "main",
+      "sha256": "a737b0a6be8c4488cd3f91db290fbb018452160180b89eeb51bf9932ee8c2643",
+      "immutable_identity": false,
+      "license": "unknown"
+    },
+    {
+      "role": "project-codeguard-profile",
+      "path": "controls/ai-development-security/repository-owned-ai-security-guidance/insecure/codeguard-profile.json",
+      "source": "repository://controls/ai-development-security/repository-owned-ai-security-guidance/insecure/codeguard-profile.json",
+      "revision": "latest",
+      "sha256": "ecce78ecab3d66c36c82728673d0a02f2ff46694202b5b57c643562fd191ca4e",
+      "immutable_identity": false,
+      "license": "unknown"
+    },
+    {
+      "role": "experiment-procedure",
+      "path": ".codex/prompts/04-run-codeguard-experiment.md",
+      "source": "repository://.codex/prompts/04-run-codeguard-experiment.md",
+      "revision": "latest",
+      "sha256": "e91a86e6a11388fa77f30805922880d276e1bd25ec11495a8e7e2a9453fae84a",
+      "immutable_identity": false,
+      "license": "unknown"
+    },
+    {
+      "role": "semantic-review",
+      "path": "controls/ai-development-security/repository-owned-ai-security-guidance/secure/semantic-review.json",
+      "source": "repository://controls/ai-development-security/repository-owned-ai-security-guidance/secure/semantic-review.json",
+      "revision": "latest",
+      "sha256": "42484185ee75df51c3881b33c36ebe8ed6ea9f29b46626d8c3de60b9cf8750ca",
+      "immutable_identity": false,
+      "license": "unknown"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+ERROR EXT-FIXTURE-DOCS-001 artifact digest mismatch
+ERROR benchmark evaluator or evidence is unavailable
+ERROR benchmark evidence contains forbidden evidence field $.raw_prompt
+ERROR revocation collection is incomplete

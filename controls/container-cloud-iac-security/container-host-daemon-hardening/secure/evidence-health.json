@@ -1,0 +1,48 @@
+{
+  "schema": "psb-container-host-evidence-health/v1",
+  "observed_at": "2026-08-04T12:04:30Z",
+  "sources": [
+    {
+      "name": "access-audit",
+      "status": "ok",
+      "complete": true,
+      "last_success_at": "2026-08-04T12:04:00Z"
+    },
+    {
+      "name": "daemon-config",
+      "status": "ok",
+      "complete": true,
+      "last_success_at": "2026-08-04T12:04:00Z"
+    },
+    {
+      "name": "file-integrity",
+      "status": "ok",
+      "complete": true,
+      "last_success_at": "2026-08-04T12:04:00Z"
+    },
+    {
+      "name": "hardware-attestation",
+      "status": "ok",
+      "complete": true,
+      "last_success_at": "2026-08-04T12:03:00Z"
+    },
+    {
+      "name": "host-inventory",
+      "status": "ok",
+      "complete": true,
+      "last_success_at": "2026-08-04T12:04:00Z"
+    },
+    {
+      "name": "patch-service",
+      "status": "ok",
+      "complete": true,
+      "last_success_at": "2026-08-04T12:04:00Z"
+    },
+    {
+      "name": "platform-inventory",
+      "status": "ok",
+      "complete": true,
+      "last_success_at": "2026-08-04T12:04:00Z"
+    }
+  ]
+}

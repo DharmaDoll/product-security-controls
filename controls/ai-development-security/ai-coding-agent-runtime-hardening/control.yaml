@@ -770,6 +770,64 @@ mappings:
     review_date: "2026-07-29"
     applies_to:
       - AAR-003
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI02
+    relationship: mitigates
+    confidence: high
+    rationale: Exact tool inventories typed action classes parameter-bound authorization fail-closed invocation gates and side-effect reconciliation constrain misuse and unsafe composition of legitimate agent tools without proving that approved tools are defect free.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AAR-008
+      - AAR-009
+      - AAR-012
+      - AAR-013
+      - AAR-015
+      - AAR-022
+      - AAR-023
+      - AAR-024
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI03
+    relationship: mitigates
+    confidence: high
+    rationale: Credential-path denial managed precedence exact extension authority independently authenticated request-bound approvals and single-use consumption reduce inherited credential delegated-permission and confused-deputy abuse.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AAR-003
+      - AAR-007
+      - AAR-009
+      - AAR-012
+      - AAR-016
+      - AAR-017
+      - AAR-018
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI04
+    relationship: detects
+    confidence: medium
+    rationale: Exact reviewed extension identities tool sets and recent complete installed-runtime inventory detect unapproved agent supply-chain components at the runtime boundary while source provenance semantic review and revocation remain PSB-AI-002.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AAR-012
+      - AAR-018
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI05
+    relationship: mitigates
+    confidence: high
+    rationale: Fail-closed isolation bypass prohibition pre-tool enforcement downstream permit checks and typed command-indirection denial reduce unintended agent-generated or agent-invoked code execution paths but do not prove the sandbox implementation is unexploitable.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AAR-001
+      - AAR-006
+      - AAR-015
+      - AAR-022
+      - AAR-024
 limitations:
   - Static configuration verification does not prove that a deployed Claude Code or Codex binary loaded or enforced the reviewed settings.
   - Claude Code arrays merge across settings scopes so managed-only permission and domain locks plus repository broadening review are both required; this slice does not assess every setting key.

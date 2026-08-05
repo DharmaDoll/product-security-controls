@@ -1,0 +1,13 @@
+{
+  "schema": "psb-container-registry-identity/v1",
+  "source_control": "manual-secret",
+  "credential_kind": "static-password",
+  "actor": "developer:alice",
+  "repository": "other/api",
+  "actions": ["admin", "push"],
+  "audience": "*",
+  "issued_at": "2026-08-03T12:00:00Z",
+  "expires_at": "2026-08-05T12:00:00Z",
+  "stored_credential": true,
+  "request_id": "identity-request-insecure"
+}

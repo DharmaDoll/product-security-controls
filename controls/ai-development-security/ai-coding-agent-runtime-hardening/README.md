@@ -787,8 +787,25 @@ PowerShell、Windows command resolution、symlink、PATH race、dynamic loader�
 task graph、every package managerを解析しません。production adapterがargv境界を失う場合は
 safeに復元したと推測せず、shell-stringとしてdenyします。
 
-MITRE ATLAS mappingは関連するattack behaviorとの対応であり、compliance requirement
-でもAI security coverageの証明でもありません。
+MITRE ATLAS mappingは関連するattack behaviorとの対応です。OWASP Agentic Top 10 2026は
+次の直接的なrisk関係だけを行単位で記録します。
+
+- `ASI02 Tool Misuse and Exploitation`: typed action、exact tool、bound approval、
+  fail-closed invocation、side-effect reconciliation;
+- `ASI03 Identity and Privilege Abuse`: credential denial、managed precedence、exact
+  extension authority、authenticated single-use approval;
+- `ASI04 Agentic Supply Chain Vulnerabilities`: reviewed extension setとinstalled
+  runtime inventory drift detection。Source provenanceとrevocationは`PSB-AI-002`;
+- `ASI05 Unexpected Code Execution`: isolation、bypass denial、pre-tool gate、hook
+  failure containment、command indirection denial。
+
+`ASI01`、`ASI06..10`はこのcontrolだけではmappingしません。Prompt injection、memory、
+multi-agent、cascading failure、human trust、rogue-agent behaviorには別のexecutable evidenceが
+必要です。ATLASもAgentic Top 10もcompliance requirementやAI security coverageの証明では
+ありません。Registryと全risk gapは
+[`frameworks/owasp-agentic-top10`](../../../frameworks/owasp-agentic-top10/README.md)および
+[`docs/PLANNED_CONTROLS.md`](../../../docs/PLANNED_CONTROLS.md#owasp-top-10-for-agentic-applications-2026-reconciliation)
+に記録します。
 
 ## 再開方法
 
@@ -813,6 +830,7 @@ MITRE ATLAS mappingは関連するattack behaviorとの対応であり、complia
 - [Codex plugin controls](https://learn.chatgpt.com/docs/enterprise/apps-and-connectors)
 - [REF-AI-001 Claude Code Hardening Cheatsheet](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-ai-001)
 - [REF-AI-002 OWASP AI Agent Security Cheat Sheet](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-ai-002)
+- [OWASP Top 10 for Agentic Applications 2026 registry](../../../frameworks/owasp-agentic-top10/README.md)
 
 The cheat sheets are reviewed design inputs, not framework mappings or
 automatic compliance requirements.

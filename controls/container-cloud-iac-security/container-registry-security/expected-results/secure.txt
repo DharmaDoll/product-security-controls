@@ -1,0 +1,8 @@
+PASS PSB-CONTAINER-002 registry policy accepted
+PASS REG-001 TLS-only trusted registry identity verified
+PASS REG-002 repository-scoped default-deny authorization verified
+PASS REG-003 short-lived PSB-CICD-006 identity binding verified
+PASS REG-004 protected release mutation and deletion denied
+PASS REG-005 attributable redacted audit correlation verified
+PASS REG-006 bounded non-deployable image lifecycle verified
+PASS REG-007 complete fresh evidence sources verified

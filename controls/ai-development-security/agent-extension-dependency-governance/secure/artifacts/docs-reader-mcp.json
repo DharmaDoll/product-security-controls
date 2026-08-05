@@ -1,0 +1,7 @@
+{
+  "name": "docs_reader",
+  "transport": "streamable-http",
+  "endpoint": "https://docs.example.invalid/mcp/v1",
+  "tools": ["search", "read"],
+  "fixture_notice": "Synthetic descriptor; it is not an executable server."
+}

@@ -1,0 +1,229 @@
+id: PSB-CONTAINER-002
+title: Enforce authenticated immutable and auditable container registries
+domain: container-cloud-iac-security
+summary: コンテナレジストリへの通信と操作を短寿命identity・repository単位の最小権限・改変防止・監査・期限付きlifecycleで制御する。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - verify
+threats:
+  - id: CONTAINER-REGISTRY-UNTRUSTED-TRANSPORT
+    description: An attacker intercepts or redirects registry traffic to an untrusted endpoint.
+  - id: CONTAINER-REGISTRY-EXCESSIVE-AUTHORITY
+    description: An anonymous user stolen developer credential or over-privileged CI identity reads or modifies repositories outside its task.
+  - id: CONTAINER-REGISTRY-MUTABLE-RELEASE
+    description: A protected release tag or digest is replaced or deleted after review.
+  - id: CONTAINER-REGISTRY-AUDIT-GAP
+    description: Sensitive reads writes or administrative actions cannot be attributed to an exact actor repository digest and time.
+  - id: CONTAINER-REGISTRY-STALE-IMAGE
+    description: Deprecated revoked or stale images remain deployable without a bounded quarantine or removal decision.
+  - id: CONTAINER-REGISTRY-EVIDENCE-FAIL-OPEN
+    description: Registry API audit collector identity or lifecycle evidence failure is interpreted as a clean result.
+implementations:
+  insecure:
+    - insecure/policy.json
+    - insecure/identity.json
+    - insecure/operations.json
+    - insecure/audit.json
+    - insecure/inventory.json
+  secure:
+    - secure/policy.json
+    - secure/identity.json
+    - secure/operations.json
+    - secure/audit.json
+    - secure/inventory.json
+    - secure/evidence-health.json
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-CONTAINER-002
+  expected:
+    - registry endpoints require TLS and an exact trusted identity
+    - anonymous wildcard and cross-repository writes are denied by default
+    - registry operations use a current short-lived PSB-CICD-006 identity
+    - protected release tags cannot be replaced and protected digests cannot be deleted
+    - sensitive reads writes and administrative actions have attributable redacted audit records
+    - stale images enter bounded non-deployable lifecycle states
+    - missing malformed stale and unavailable evidence returns ERROR rather than PASS
+checks:
+  - id: REG-001
+    title: Registry transport is encrypted and bound to an exact trusted identity
+    required_state: every registry endpoint is HTTPS with TLS 1.2 or later and an exact reviewed CA or service identity digest
+    responsible_role: ci-platform
+    applies_to:
+      - container-registry-endpoint
+      - registry-transport
+    context:
+      threat_actor: network attacker DNS attacker compromised proxy or operator configuring an untrusted registry mirror
+      attack_or_failure_scenario: image credentials manifests or layers traverse plaintext transport or terminate at a registry whose identity is not explicitly trusted
+      why_required: digest pinning protects artifact bytes but does not protect credentials or registry API responses in transit so the endpoint trust boundary needs independent verification
+    verification:
+      type: hybrid
+      method: validate the normalized registry policy and fresh registry API health evidence
+      expected: HTTP wildcard hosts weak TLS and missing or non-exact trust anchors are rejected
+      evidence:
+        - sanitized registry endpoint policy
+        - registry API health observation
+    mapping_status: reviewed
+  - id: REG-002
+    title: Registry authorization is repository and action scoped with default deny
+    required_state: exact actors receive only reviewed pull push delete or administration actions for exact repositories and anonymous or unmatched operations are denied
+    responsible_role: ci-platform
+    applies_to:
+      - registry-authorization-policy
+      - container-repository
+    context:
+      threat_actor: external attacker compromised developer credential or CI identity with wildcard registry authority
+      attack_or_failure_scenario: an identity pushes to another product repository deletes releases administers the registry or performs an anonymous write outside its task
+      why_required: authentication identifies an actor but does not constrain its actions so repository and verb boundaries are required independently of token lifetime
+    verification:
+      type: automated
+      method: evaluate exact role grants and recompute allow or deny for synthetic same-repository anonymous and cross-repository operations
+      expected: wildcard grants default allow anonymous writes and cross-repository writes are rejected
+      evidence:
+        - authorization policy verifier output
+        - normalized registry operation decisions
+    mapping_status: reviewed
+  - id: REG-003
+    title: Registry automation uses a current short-lived workload identity
+    required_state: the exact actor repository audience and actions are bound to an unexpired PSB-CICD-006 exchange receipt with no stored registry credential
+    responsible_role: ci-platform
+    applies_to:
+      - registry-workload-identity
+      - ci-release-publisher
+    context:
+      threat_actor: credential thief malicious workflow or forgotten long-lived robot account
+      attack_or_failure_scenario: a reusable static password or broadly scoped token remains valid after the release job and can be replayed against the registry
+      why_required: least-privilege roles still expose durable authority when credentials are stored so a separately bounded short lifetime and exact federation context reduce replay impact
+    verification:
+      type: hybrid
+      method: validate the normalized PSB-CICD-006 receipt scope issue time expiry and storage state against the registry policy
+      expected: expired overlong wrong-audience stored or unauthorized identity evidence is rejected
+      evidence:
+        - sanitized workload identity receipt
+        - identity-to-registry-role binding output
+    mapping_status: reviewed
+  - id: REG-004
+    title: Protected release references cannot be replaced or deleted
+    required_state: protected release tags bind to one digest and successful overwrite or protected digest deletion is prohibited
+    responsible_role: release-manager
+    applies_to:
+      - release-image-reference
+      - registry-mutation-policy
+    context:
+      threat_actor: compromised publisher registry administrator or automation retry with a different artifact
+      attack_or_failure_scenario: an already reviewed release tag resolves to new bytes or its protected digest is deleted while consumers continue trusting the reference
+      why_required: scoped push permission is intentionally able to publish content and therefore needs a separate post-publication immutability boundary
+    verification:
+      type: automated
+      method: replay normalized protected-tag push and delete operations and detect successful digest replacement or removal
+      expected: one protected tag never has two successfully published digests and protected deletes are denied
+      evidence:
+        - protected reference policy
+        - normalized mutation event history
+    mapping_status: reviewed
+  - id: REG-005
+    title: Sensitive reads writes and administration are attributable in audit evidence
+    required_state: each sensitive pull and every push delete or administration attempt has a complete redacted audit record with exact request actor repository action digest outcome and time
+    responsible_role: security
+    applies_to:
+      - registry-audit-log
+      - sensitive-image-access
+    context:
+      threat_actor: insider stolen identity compromised automation or failing audit collector
+      attack_or_failure_scenario: sensitive content is read or a registry mutation occurs without evidence that can identify the actor target digest outcome and request
+      why_required: preventive authorization cannot explain or investigate allowed and denied activity after an incident so complete attributable records are a separate detection and response prerequisite
+    verification:
+      type: hybrid
+      method: correlate required normalized operations one-to-one with fresh complete redacted audit records
+      expected: missing mismatched delayed incomplete or secret-bearing audit evidence is rejected or reported as ERROR
+      evidence:
+        - audit collector health
+        - correlated sanitized audit records
+    mapping_status: reviewed
+  - id: REG-006
+    title: Image lifecycle prevents indefinite deployment of stale content
+    required_state: active deprecated quarantined and removed states have explicit transitions and bounded deadlines while non-active images are non-deployable
+    responsible_role: shared
+    applies_to:
+      - registry-image-inventory
+      - image-retention-policy
+    context:
+      threat_actor: stale vulnerable or revoked image plus lifecycle automation drift or scanner failure
+      attack_or_failure_scenario: an old image remains deployable indefinitely or a failed scanner is misrepresented as evidence that an image was safely quarantined
+      why_required: release immutability preserves history but does not decide how obsolete content is withdrawn so lifecycle state and failure semantics require independent evidence
+    verification:
+      type: hybrid
+      method: evaluate lifecycle state transitions image age deployability quarantine and removal deadlines plus decision evidence status
+      expected: stale active images unbounded quarantine deployable non-active images and scanner-error-as-quarantine are rejected or return ERROR
+      evidence:
+        - sanitized image lifecycle inventory
+        - lifecycle controller health and decision source status
+    mapping_status: reviewed
+  - id: REG-007
+    title: Registry control-plane evidence fails closed
+    required_state: registry API authorization audit and lifecycle observations are complete successful and within the policy freshness window
+    responsible_role: security
+    applies_to:
+      - registry-control-plane-evidence
+      - registry-assessment
+    context:
+      threat_actor: registry outage collector disconnection schema drift partial pagination or stale cached observation
+      attack_or_failure_scenario: the evaluator cannot observe a required boundary but reports no findings because missing events or inventory entries look empty
+      why_required: every other registry check depends on external observations and can produce a false clean result unless source health completeness and freshness are evaluated separately
+    verification:
+      type: automated
+      method: validate required source inventory status completeness observation time and schema before evaluating security findings
+      expected: missing malformed stale incomplete and unavailable source evidence exits with ERROR never PASS
+      evidence:
+        - normalized evidence health manifest
+        - verifier error-state output
+    mapping_status: unmapped
+mappings:
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.2.1
+    relationship: mitigates
+    confidence: high
+    rationale: TLS-only exact registry endpoints and reviewed trust anchors directly reduce insecure registry connection and interception risk.
+    reviewer: product-security
+    review_date: "2026-08-04"
+    applies_to:
+      - REG-001
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.2.2
+    relationship: mitigates
+    confidence: high
+    rationale: Explicit state transitions non-deployable stale states and bounded quarantine or removal deadlines directly address stale images retained in registries.
+    reviewer: product-security
+    review_date: "2026-08-04"
+    applies_to:
+      - REG-006
+  - framework: nist-sp-800-190
+    version: "SP 800-190 (September 2017)"
+    id: 4.2.3
+    relationship: mitigates
+    confidence: high
+    rationale: Default-deny repository-scoped actions short-lived workload identity protected mutation and attributable audit evidence address insufficient registry authentication and authorization restrictions.
+    reviewer: product-security
+    review_date: "2026-08-04"
+    applies_to:
+      - REG-002
+      - REG-003
+      - REG-004
+      - REG-005
+limitations:
+  - Offline fixtures do not prove that a live OCI Distribution cloud registry or GitHub Container Registry enforces the normalized policy.
+  - The first slice consumes normalized PSB-CICD-006 identity evidence but does not cryptographically validate a live provider token or exchange it with a registry.
+  - Audit and inventory records are synthetic and are not authenticated by a provider-specific collector in this slice.
+  - Public anonymous pull requires a separate repository-specific review and is not enabled by the secure example.
+  - Artifact signature provenance publication and consumer verification remain PSB-REL-001 and PSB-REL-002 responsibilities.
+  - Image vulnerability secret and malware scanning are not performed; scanner execution remains PSB-DETECT-001 and future malware detection work.
+  - Admission-time prevention of quarantined or removed images remains PSB-CONTAINER-001 provider integration.
+  - Registry availability backup disaster recovery geo-replication and legal retention require organization-specific evidence.
+  - CIS Docker Benchmark mappings remain unavailable until an authorized source snapshot and exact recommendation review exist.
+status: prototype
+owner: product-security
+evidence_level: E3

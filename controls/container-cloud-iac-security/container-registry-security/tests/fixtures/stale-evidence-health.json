@@ -1,0 +1,30 @@
+{
+  "schema": "psb-container-registry-evidence-health/v1",
+  "observed_at": "2026-08-04T10:00:00Z",
+  "sources": [
+    {
+      "name": "audit-collector",
+      "status": "ok",
+      "complete": true,
+      "last_success_at": "2026-08-04T10:00:00Z"
+    },
+    {
+      "name": "authorization-evaluator",
+      "status": "ok",
+      "complete": true,
+      "last_success_at": "2026-08-04T10:00:00Z"
+    },
+    {
+      "name": "lifecycle-controller",
+      "status": "ok",
+      "complete": true,
+      "last_success_at": "2026-08-04T10:00:00Z"
+    },
+    {
+      "name": "registry-api",
+      "status": "ok",
+      "complete": true,
+      "last_success_at": "2026-08-04T10:00:00Z"
+    }
+  ]
+}

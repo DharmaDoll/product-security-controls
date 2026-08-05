@@ -94,8 +94,15 @@ exact-claim federation, stored-key removal, and bounded credential receipts.
 artifact-bound CycloneDX publication, and a normalized Dependency-Track
 processing receipt. `PSB-REL-004` adds signed supplier product/artifact
 identity, signer lifecycle, least-privilege intake, and fail-closed
-quarantine. Artifact signing generation and provider-specific live OIDC
-adapters remain incomplete.
+quarantine. `PSB-CONTAINER-002` adds TLS-only exact registry trust,
+repository/action-scoped authorization, short-lived identity binding,
+protected release immutability, attributable audit correlation, bounded image
+lifecycle, and fail-closed evidence health. Artifact signing generation and
+provider-specific live OIDC or registry adapters remain incomplete.
+`PSB-CONTAINER-003` adds dedicated minimal Linux host scope, exact patch
+baselines, private daemon control, protected runtime paths, kernel isolation,
+operator and audit boundaries, and hardware-backed node trust with distinct
+`NOT_CHECKED` and `ERROR` states. Live host adapters remain incomplete.
 
 Also add source-protection controls for public repository exposure, including
 GitHub dorking scenarios, secret discovery in current and historical content,
@@ -225,17 +232,21 @@ Add:
 Add AI framework registries together with the first controls that can produce
 evidence for them:
 
+- OWASP Top 10 for Agentic Applications 2026 as a coarse agentic risk taxonomy
+  — implemented with all `ASI01..ASI10` identifiers and reviewed mappings for
+  `PSB-AI-001` and `PSB-AI-004`;
 - NIST SP 800-218A as the AI-specific SSDF community profile;
 - NIST AI RMF 1.0 and NIST AI 600-1 for governance, measurement, and
   generative-AI risk management;
 - OWASP Top 10 for LLM Applications 2025 as a coarse secondary risk taxonomy.
 
 Keep the roles separate: SP 800-218A supplies lifecycle practices, AI RMF and
-AI 600-1 supply risk-management outcomes, and OWASP LLM Top 10 plus MITRE
-ATLAS classify risks and attacker behavior. None of these mappings alone
-proves that an AI system is secure. Track revisions to AI RMF and emerging
-agentic-AI guidance, but do not pin drafts or unstable identifiers into
-controls.
+AI 600-1 supply risk-management outcomes, OWASP LLM and Agentic Top 10 classify
+broad risks, and MITRE ATLAS classifies attacker behavior. None of these
+mappings alone proves that an AI system is secure. Track revisions to AI RMF
+and agentic-AI guidance, and do not pin drafts or unstable identifiers into
+controls. The released OWASP Agentic `2026` baseline is no longer tracked as a
+draft; a future revision still requires explicit registry and mapping review.
 
 ## Phase 6 — Governance and generated views
 
@@ -254,10 +265,19 @@ Dependency-Track exact CVE/PURL portfolio adapter that requires complete
 pagination and links project UUID/version and SBOM serials back to build
 evidence.
 
+Time-bound exception governance is implemented as `PSB-GOV-002`. Its shared
+YAML contract binds exact control/check and target scope to independent roles,
+risk, compensation, approval, remediation, and expiry. A complete fresh
+SHA-256-bound register derives active, expiring, expired, and invalid views;
+missing, stale, unsafe, or tampered evidence remains `ERROR`.
+
 Add product-vulnerability response capabilities that compose the existing
 impact lookup with CISA KEV, CVSS v4.0, and FIRST PSIRT guidance. The first
-executable boundary is planned as `PSB-GOV-003`; the broader FIRST maturity and
-service inventory remains a separate organization-owned assessment profile so
+executable boundary is implemented as `PSB-GOV-003`, with exact scanner and
+product-impact identity, integrity-bound offline KEV and CVSS evidence,
+policy-derived priority and deadlines, accountable case routing, and
+`PSB-GOV-002` exception composition. The broader FIRST maturity and service
+inventory remains a separate organization-owned assessment profile so
 repository fixtures cannot claim that a live PSIRT is mature.
 
 ## Prioritized control backlog
@@ -354,21 +374,30 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    composition.
 8. `PSB-CONTAINER-002` — registry transport, repository-scoped authorization,
    short-lived identity, immutable release protection, audit, and image
-   lifecycle enforcement.
+   lifecycle enforcement — implemented with seven atomic checks, positive and
+   negative provider-neutral fixtures, operation-to-audit correlation,
+   protected-tag history, and distinct evidence `ERROR` states.
 9. `PSB-CONTAINER-003` — minimal patched container hosts, protected daemon and
    runtime sockets, user and kernel isolation, management restriction, and
-   host audit policy.
+   host audit policy — implemented with nine atomic checks, protected-path
+   integrity, hardware-backed node trust, time-bound isolation exceptions, and
+   distinct `PASS`, `FAIL`, `NOT_CHECKED`, and `ERROR` outcomes.
 10. `PSB-CONTAINER-004` — implemented at E3 with workload-bound Falco and
    Sysdig event adapters, six behavior categories, sensor/drop/sequence health,
    alert delivery failure handling, sanitized evidence, and
    authorization-bound response handoff. Live privileged sensor deployment
-   remains dependent on `PSB-CONTAINER-003`.
-11. `PSB-GOV-002` — narrow, owned, justified, and time-bound security exceptions
-   with expiry enforcement.
+   remains provider-specific follow-on work extending `PSB-CONTAINER-003`.
+11. `PSB-GOV-002` — implemented at E3 with exact cataloged control/check and
+    target scope, distinct owner/risk-reviewer/approver roles, bounded expiry,
+    compensating controls, approval and remediation tickets, complete
+    SHA-256-bound register evidence, sanitized output, and distinct active,
+    expiring, expired, invalid, and `ERROR` outcomes.
 12. `PSB-GOV-003` — exact product-vulnerability triage that combines validated
     CVSS v4 vectors, fresh complete CISA KEV evidence, product/artifact/
     deployment applicability, accountable PSIRT ownership, and policy-bound
-    remediation priority without treating source failure as low risk.
+    remediation priority without treating source failure as low risk —
+    implemented at E3 with listed, not-listed, not-applicable, risk-accepted,
+    governance-failure, and evidence-`ERROR` fixtures.
 
 ### P3 — Extended application and AI development security
 
@@ -376,10 +405,19 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    for cryptography, file upload, SSRF, logging, and error handling. Assign IDs
    only after source-row reconciliation to avoid premature or duplicate control
    boundaries.
-2. `PSB-AI-001` — repository-owned AGENTS and Project CodeGuard guidance pinned
-   to a canonical source and benchmarked against a no-guidance baseline.
-3. `PSB-AI-002` — Agent Skill, MCP server, and plugin pinning, integrity
-   verification, semantic review, and least-privilege enforcement.
+2. `PSB-AI-001` — implemented at E3 with SHA-256-bound repository AGENTS,
+   repository-owned Project CodeGuard profile, semantic review and experiment
+   procedure; an identical-condition 4-task x 2-repetition paired benchmark;
+   separate security, task-success, and false-block metrics; mutable downgrade,
+   tamper, incomplete, unavailable, regression, and sensitive-evidence negative
+   tests; and a synthetic-only `PILOT` / live `NOT_CHECKED` claim boundary.
+3. `PSB-AI-002` — implemented at E3 with five synthetic Skill, MCP server,
+   plugin, and external-prompt dependency records; exact HTTPS source commit
+   and artifact digest; license, owner, independent semantic review, expiry,
+   dependency-specific capability allow-lists, identity-bound PSB-AI-001
+   benchmark results, fresh complete revocation evidence, and exact PSB-AI-004
+   runtime handoff. Live publisher identity, remote MCP deployment attestation,
+   mirror retention, and revocation collectors remain deployment evidence.
 4. `PSB-AI-004` — prototype first slice implemented for Claude Code and Codex
    sandbox, workspace, synthetic credential, network-off, source-publication
    approval, bypass, and managed-precedence outcomes. The second slice adds
@@ -418,6 +456,11 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    denial-of-wallet limits, and multi-agent trust boundaries. Assign IDs only
    after reviewing overlap with `PSB-AI-002..004`, `PSB-SOURCE-001`, and the
    repository-wide E3 testing requirement.
+7. Use the OWASP Agentic Top 10 registry as the risk-coverage view for these
+   slices: `ASI01`, `ASI06`, `ASI07`, `ASI08`, `ASI09`, and `ASI10` remain
+   explicit implementation gaps until the corresponding prompt, memory,
+   multi-agent, cascading-failure, human-trust, and rogue-agent controls have
+   executable evidence. Do not mark them covered from roadmap text alone.
 
 Within a priority, implement one reviewable vertical slice at a time. Every new
 control must meet the repository definition of done, including insecure and

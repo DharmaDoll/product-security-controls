@@ -1,0 +1,21 @@
+{
+  "schema": "psb-container-host-exceptions/v1",
+  "exceptions": [
+    {
+      "id": "host-exception-valid",
+      "check_id": "HST-004",
+      "node_pool": "pool:production",
+      "owner": "container-platform-owner",
+      "approved_by": "product-security-reviewer",
+      "reason": "Provider limitation prevents user namespace enablement during migration.",
+      "created_at": "2026-08-01T00:00:00Z",
+      "expires_at": "2026-08-20T00:00:00Z",
+      "compensating_controls": [
+        "dedicated-host",
+        "enforcing-lsm",
+        "management-network-restricted",
+        "seccomp-default"
+      ]
+    }
+  ]
+}

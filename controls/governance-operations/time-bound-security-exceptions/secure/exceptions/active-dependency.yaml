@@ -1,0 +1,20 @@
+schema: psb-security-exception/v1
+interface_version: "1.0"
+id: EXC-2026-0001
+control_id: PSB-DEPS-001
+check_id: COOL-003
+target_type: dependency-version
+target_id: "pkg:npm/example-parser@4.2.0"
+environment: build-test
+owner: application-team
+risk_reviewer: product-security
+approved_by: engineering-director
+justification: A synthetic compatibility fixture needs the exact version while the reviewed replacement is tested.
+risk_statement: The synthetic package version may execute untrusted install behavior in the isolated test build.
+compensating_controls:
+  - network-denied-build-sandbox
+  - post-install-script-disabled
+created_at: "2026-08-01T09:00:00Z"
+expires_at: "2026-08-25T09:00:00Z"
+approval_reference: RISK-4201
+remediation_ticket: SEC-4202

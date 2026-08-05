@@ -86,6 +86,30 @@ phishing-resistant authentication, protected credential storage, automatic
 blocking, managed isolation, EDR or XDR telemetry, revocation, and auditable
 evidence.
 
+### AI-assisted development and agentic threats
+
+- repository instructions, retrieved documents, tool output, or inter-agent
+  messages redirecting an agent's goal or multi-step plan;
+- legitimate tools being composed or invoked with unsafe targets, parameters,
+  identities, or side effects;
+- agent identities inheriting broad credentials, delegated trust, or stale
+  approval beyond the exact task;
+- tampered rules, Skills, MCP servers, plugins, models, or update channels
+  entering the agentic supply chain;
+- generated code, shell indirection, hook failure, or sandbox bypass causing
+  unexpected execution;
+- poisoned persistent memory or context changing future decisions;
+- unauthenticated, replayed, or over-privileged inter-agent delegation;
+- failures, false signals, retries, and resource consumption cascading through
+  autonomous workflows;
+- plausible explanations manipulating a human into approving a harmful action;
+- compromised or misaligned agents continuing outside intended goals or stop
+  conditions.
+
+These scenarios align with the OWASP Top 10 for Agentic Applications 2026
+risk categories and overlap with more specific MITRE ATLAS attack behaviors.
+Neither taxonomy is itself an enforcement boundary or proof of coverage.
+
 ### CI/CD and release threats
 
 - excessive workflow permissions;
@@ -132,6 +156,24 @@ mapping or a claim of complete coverage.
 - reusable CI templates claiming planned scanning, SBOM, signing, provenance
   distribution, or OIDC controls as already implemented.
 
+### Security exception governance threats
+
+- wildcard control, check, target, or environment scope suppressing unrelated
+  current and future security decisions;
+- owners accepting their own risk without independent review and approval;
+- temporary exceptions remaining effective after their approved deadline;
+- missing, added, stale, partial, or modified exception records being treated
+  as an authoritative complete register;
+- credentials, source code, or production payloads being copied into approval
+  and audit evidence;
+- invalid or unavailable exception evidence being interpreted as a clean
+  control result rather than preserving the original blocking decision.
+
+These lifecycle threats are implemented by `PSB-GOV-002`. The owning scanner,
+dependency, build, release, container, or application control still determines
+the domain-specific security failure and applies a valid exception as a
+separate decision.
+
 ### Product vulnerability response and PSIRT threats
 
 - a stale, partial, malformed, schema-changed, or unavailable CISA KEV feed
@@ -153,10 +195,22 @@ mapping or a claim of complete coverage.
   repository, evidence, and deployment identities are not linked across the
   complete software supply chain.
 
+The executable triage subset is implemented by `PSB-GOV-003`, which composes
+`PSB-DETECT-001`, `PSB-GOV-001`, and `PSB-GOV-002` with integrity-bound CVSS
+and KEV evidence. Organization-wide FIRST PSIRT maturity and service capacity
+remain outside repository fixture evidence.
+
 ### Container and runtime threats
 
 - vulnerable, malicious, stale, mutable, or untrusted images reaching a
   workload;
+- plaintext or ambiguously trusted registry connections exposing credentials,
+  manifests, layers, or registry API decisions to interception or redirection;
+- anonymous, wildcard, durable, or cross-repository registry authority allowing
+  unauthorized pull, push, delete, or administration;
+- protected release mutation, incomplete registry audit, or failed lifecycle
+  evidence leaving replaced, revoked, or stale images deployable without an
+  attributable bounded decision;
 - clear-text secrets, unnecessary software, or unsafe configuration embedded
   in an image;
 - root, privileged, capability-rich, or privilege-escalating containers
@@ -182,10 +236,10 @@ The
 [container security source allocation](CONTAINER_SECURITY_SOURCE_ALLOCATION.md)
 assigns these outcomes across container admission, detection, secure coding,
 registry, host, runtime monitoring, and release controls without duplicating
-framework or reference-source roles. The previously unowned boundaries are
-reserved as `PSB-CONTAINER-002` for registry security,
-`PSB-CONTAINER-003` for host and daemon hardening, and `PSB-CONTAINER-004` for
-post-admission runtime detection.
+framework or reference-source roles. `PSB-CONTAINER-002` implements the
+registry boundary, `PSB-CONTAINER-003` implements the host and daemon boundary,
+and `PSB-CONTAINER-004` implements the post-admission runtime detection
+boundary. Live provider enforcement remains organization-owned evidence.
 
 ### AI-assisted development threats
 

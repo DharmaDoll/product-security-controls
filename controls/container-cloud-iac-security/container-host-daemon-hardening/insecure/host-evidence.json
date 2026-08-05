@@ -1,0 +1,137 @@
+{
+  "schema": "psb-container-host-evidence/v1",
+  "platform": "linux",
+  "adapter_status": "supported",
+  "node_id": "node-fixture-insecure",
+  "node_pool": "pool:production",
+  "observed_at": "2026-08-04T12:04:00Z",
+  "scope": {
+    "purpose": "general-purpose",
+    "workload_classes": ["container-workloads", "developer-tools", "web-browsing"],
+    "enabled_services": ["containerd", "docker-tcp", "telnet", "web-browser"]
+  },
+  "components": [
+    {
+      "type": "host-os",
+      "name": "legacy-linux",
+      "version": "1.0",
+      "support_status": "unsupported",
+      "security_updates_current": false,
+      "last_security_patch_at": "2024-01-01T12:00:00Z"
+    },
+    {
+      "type": "kernel",
+      "name": "linux",
+      "version": "5.4.0",
+      "support_status": "unsupported",
+      "security_updates_current": false,
+      "last_security_patch_at": "2024-01-01T12:00:00Z"
+    },
+    {
+      "type": "runtime",
+      "name": "containerd",
+      "version": "1.6.0",
+      "support_status": "unsupported",
+      "security_updates_current": false,
+      "last_security_patch_at": "2024-01-01T12:00:00Z"
+    },
+    {
+      "type": "daemon",
+      "name": "containerd",
+      "version": "1.6.0",
+      "support_status": "unsupported",
+      "security_updates_current": false,
+      "last_security_patch_at": "2024-01-01T12:00:00Z"
+    }
+  ],
+  "management": {
+    "endpoints": [
+      {
+        "scheme": "tcp",
+        "address": "0.0.0.0",
+        "port": 2375,
+        "authentication": "none",
+        "public": true
+      }
+    ],
+    "runtime_socket_owner": "root",
+    "runtime_socket_group": "everyone",
+    "runtime_socket_mode": "0666",
+    "workload_runtime_socket_mounts": 2,
+    "observed_source_addresses": ["203.0.113.10"]
+  },
+  "isolation": {
+    "rootless_enabled": false,
+    "user_namespace_enabled": false,
+    "kernel_lockdown": "disabled",
+    "seccomp_default": "unconfined",
+    "lsm": "none",
+    "lsm_mode": "disabled",
+    "workload_profile_assigned": false,
+    "kernel_modules_restricted": false
+  },
+  "protected_paths": [
+    {
+      "path": "/etc/containerd/config.toml",
+      "type": "file",
+      "owner": "developer",
+      "group": "developers",
+      "mode": "0777",
+      "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    {
+      "path": "/usr/bin/containerd",
+      "type": "file",
+      "owner": "developer",
+      "group": "developers",
+      "mode": "0777",
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "path": "/run/containerd/containerd.sock",
+      "type": "socket",
+      "owner": "root",
+      "group": "everyone",
+      "mode": "0666"
+    },
+    {
+      "path": "/var/lib/containerd",
+      "type": "directory",
+      "owner": "developer",
+      "group": "developers",
+      "mode": "0777"
+    },
+    {
+      "path": "/etc/systemd/system/containerd.service",
+      "type": "symlink",
+      "owner": "developer",
+      "group": "developers",
+      "mode": "0777"
+    }
+  ],
+  "access": {
+    "roles": [
+      {
+        "id": "everyone-admin",
+        "subjects": ["*"],
+        "node_pools": ["*"],
+        "actions": ["*"]
+      }
+    ]
+  },
+  "audit": {
+    "enabled": false,
+    "rules_immutable": false,
+    "events": [],
+    "collector_status": "ok",
+    "observed_at": "2026-08-04T12:04:00Z"
+  },
+  "hardware_trust": {
+    "secure_boot": false,
+    "measured_boot": false,
+    "tpm_backed_identity": false,
+    "attestation_status": "failed",
+    "node_pool": "pool:unknown",
+    "attested_at": "2026-08-04T12:03:00Z"
+  }
+}

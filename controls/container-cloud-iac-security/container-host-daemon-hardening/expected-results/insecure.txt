@@ -1,0 +1,57 @@
+FAIL PSB-CONTAINER-003 host hardening rejected
+FAIL HST-001 allowed workload classes must be exact and non-empty
+FAIL HST-001 enabled service allowlist must be exact and non-empty
+FAIL HST-001 host contains an unreviewed or mixed workload class
+FAIL HST-001 host runs an enabled service outside the allowlist
+FAIL HST-001 policy does not require a dedicated production host
+FAIL HST-001 prohibited mixed workload classes are incomplete
+FAIL HST-002 host component inventory is incomplete or unexpected
+FAIL HST-002 host-os is not supported
+FAIL HST-002 host-os security updates are not current
+FAIL HST-002 maximum patch age must be between 1 and 30 days
+FAIL HST-002 required host component baseline is incomplete
+FAIL HST-003 a workload mounts a host runtime socket
+FAIL HST-003 daemon endpoint is publicly exposed
+FAIL HST-003 daemon management authentication is not peer credentials
+FAIL HST-003 daemon management must use reviewed local Unix sockets
+FAIL HST-003 daemon socket paths must be exact absolute paths
+FAIL HST-003 public daemon management endpoints are allowed
+FAIL HST-003 runtime socket grants access to other users
+FAIL HST-003 runtime socket group is not the reviewed operator group
+FAIL HST-003 workload runtime socket mounts are allowed
+FAIL HST-004 disabled isolation lacks one exact scoped exception
+FAIL HST-004 exception lifetime must be between 1 and 30 days
+FAIL HST-004 kernel lockdown policy permits a disabled state
+FAIL HST-004 required exception compensating controls are incomplete
+FAIL HST-004 rootless or user namespace isolation is not required
+FAIL HST-005 protected file /etc/containerd/config.toml digest does not match
+FAIL HST-005 protected file /etc/containerd/config.toml lacks an exact digest
+FAIL HST-005 protected path /etc/containerd/config.toml has wrong group
+FAIL HST-005 protected path /etc/containerd/config.toml has wrong owner
+FAIL HST-005 protected path /etc/containerd/config.toml permits world write
+FAIL HST-005 protected path manifest is incomplete
+FAIL HST-006 container workloads lack an assigned LSM profile
+FAIL HST-006 default seccomp is not required
+FAIL HST-006 enforcing LSM policy is missing or unsupported
+FAIL HST-006 host LSM is not enforcing
+FAIL HST-006 kernel module loading is not restricted
+FAIL HST-006 restricted kernel module loading is not required
+FAIL HST-007 audit rules are not required to be immutable
+FAIL HST-007 host audit is disabled
+FAIL HST-007 host audit rules are mutable
+FAIL HST-007 management network must be private and bounded
+FAIL HST-007 required host audit event coverage is incomplete
+FAIL HST-007 role everyone-admin contains wildcard or unsupported authority
+FAIL HST-008 TPM-backed identity is not required
+FAIL HST-008 attestation age must be between 1 and 3600 seconds
+FAIL HST-008 hardware attestation is bound to the wrong node pool
+FAIL HST-008 hardware attestation is not verified
+FAIL HST-008 hardware trust node pool must be exact
+FAIL HST-008 measured boot is not enabled
+FAIL HST-008 measured boot is not required
+FAIL HST-008 node identity is not TPM-backed
+FAIL HST-008 secure boot is not enabled
+FAIL HST-008 secure boot is not required
+FAIL HST-009 evidence age must be between 1 and 3600 seconds
+FAIL HST-009 policy version is not immutable and digest-pinned
+FAIL HST-009 required evidence source inventory is incomplete

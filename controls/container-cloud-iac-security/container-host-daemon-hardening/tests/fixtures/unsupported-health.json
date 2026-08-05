@@ -1,0 +1,12 @@
+{
+  "schema": "psb-container-host-evidence-health/v1",
+  "observed_at": "2026-08-04T12:04:30Z",
+  "sources": [
+    {
+      "name": "platform-inventory",
+      "status": "ok",
+      "complete": true,
+      "last_success_at": "2026-08-04T12:04:00Z"
+    }
+  ]
+}

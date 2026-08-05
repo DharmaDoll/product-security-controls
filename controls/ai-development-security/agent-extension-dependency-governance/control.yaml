@@ -1,0 +1,240 @@
+id: PSB-AI-002
+title: Govern Skill MCP plugin and external prompt dependencies
+domain: ai-development-security
+summary: Skill、MCP server、plugin、外部promptをimmutable source、SHA-256、独立semantic review、最小権限、benchmark、期限、失効状態へ固定し、承認済みidentityをruntimeへ引き渡す。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - verify
+  - govern
+threats:
+  - id: AI-DEPENDENCY-MUTABLE-SOURCE
+    description: Mutable branch tag or package identity changes after review and installs different agent instructions or code.
+  - id: AI-DEPENDENCY-TOOL-POISONING
+    description: A malicious or compromised Skill MCP server plugin or prompt embeds policy override credential collection or hidden side effects.
+  - id: AI-DEPENDENCY-EXCESSIVE-CAPABILITY
+    description: A dependency receives broader filesystem network secret or tool authority than its documented purpose needs.
+  - id: AI-DEPENDENCY-STALE-APPROVAL
+    description: Expired revoked or no-longer-benchmarked dependencies remain approved and installed.
+  - id: AI-DEPENDENCY-EVIDENCE-FAILURE
+    description: Missing malformed stale incomplete or sensitive evidence is interpreted as a clean dependency review.
+implementations:
+  insecure:
+    - insecure/dependency-manifest.json
+    - insecure/benchmark-results.json
+    - insecure/revocations.json
+  secure:
+    - secure/policy.json
+    - secure/dependency-manifest.json
+    - secure/revocations.json
+    - secure/benchmark-results.json
+    - secure/artifacts/docs-reader-mcp.json
+    - secure/artifacts/source-manager-mcp.json
+    - secure/artifacts/secure-review-skill.md
+    - secure/artifacts/change-summary-plugin.json
+    - secure/artifacts/review-prompt.md
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-AI-002
+  expected:
+    - five synthetic Skill MCP plugin and prompt records use canonical HTTPS sources full commits and matching SHA-256 artifacts
+    - independent semantic review preserves repository invariants and approved licenses owners and expiry
+    - requested capabilities exactly match dependency-specific allow-lists
+    - every benchmark result is PSB-AI-001 governed and bound to the exact commit and artifact
+    - fresh complete revocation evidence marks each exact dependency active
+    - each record exposes an exact PSB-AI-004 runtime disposition and unsupported plugin or prompt activation stays denied
+    - mutable over-privileged self-reviewed expired and revoked dependencies fail
+    - unavailable malformed tampered incomplete or sensitive evidence exits 2 as ERROR
+checks:
+  - id: AID-001
+    title: Dependency source and artifact identities are immutable
+    required_state: every Skill MCP server plugin and external prompt has a canonical HTTPS source full commit immutable version and matching local SHA-256 artifact
+    responsible_role: security
+    applies_to:
+      - skill
+      - mcp-server
+      - plugin
+      - external-prompt
+    context:
+      threat_actor: compromised publisher malicious marketplace maintainer or developer selecting a convenient mutable branch
+      attack_or_failure_scenario: reviewed content is replaced after approval through a moving branch tag package release or artifact without a detectable identity change
+      why_required: an exact source commit plus independently recomputed artifact digest is the minimum identity needed to review install and revoke the same dependency
+    verification:
+      type: automated
+      method: require HTTPS canonical sources full 40-character commits non-floating versions and recompute every repository-local fixture SHA-256
+      expected: exact immutable identities pass while mutable references path traversal missing artifacts and digest mismatch cannot pass
+      evidence:
+        - sanitized source identity summary
+        - tampered digest negative-test output
+    mapping_status: reviewed
+  - id: AID-002
+    title: Ownership license and independent semantic review are current
+    required_state: every dependency has an accountable owner approved license independent reviewer approved outcome and unexpired review
+    responsible_role: security
+    applies_to:
+      - dependency-ownership
+      - license-review
+      - semantic-review
+    context:
+      threat_actor: malicious publisher self-approving requester abandoned dependency or organization importing code and instructions without license review
+      attack_or_failure_scenario: an unowned self-reviewed expired or legally unusable dependency enters the developer agent environment
+      why_required: cryptographic integrity identifies bytes but does not establish that their behavior ownership license and continued use were reviewed
+    verification:
+      type: automated
+      method: compare publisher owner reviewer outcome license and expiry with the policy evaluation time
+      expected: independent current approved records pass while self-review unknown license missing owner and expiry fail
+      evidence:
+        - dependency manifest review metadata
+        - insecure manifest output
+    mapping_status: reviewed
+  - id: AID-003
+    title: Semantic review preserves repository security invariants
+    required_state: reviewed dependencies cannot override repository policy disable controls collect credentials perform undeclared network access or hide side effects
+    responsible_role: security
+    applies_to:
+      - skill-instructions
+      - mcp-tool-semantics
+      - plugin-behavior
+      - external-prompt
+    context:
+      threat_actor: poisoned agent-tool author prompt package publisher compromised upstream or reviewer checking only a digest
+      attack_or_failure_scenario: exact pinned bytes instruct the agent to bypass scanners reveal credentials or invoke deceptive tools while still passing integrity checks
+      why_required: malicious semantics can be perfectly signed and hashed so content review must be a separate gate from provenance verification
+    verification:
+      type: automated
+      method: require an independent approved semantic-review assertion with repository precedence and an empty prohibited-behavior finding set
+      expected: non-overriding reviewed behavior passes and a known policy override or prohibited behavior fails
+      evidence:
+        - semantic review fields
+        - prohibited-behavior negative fixture
+    mapping_status: reviewed
+  - id: AID-004
+    title: Requested dependency capabilities exactly match least-privilege policy
+    required_state: filesystem read and write network secret tool and direct-authority capabilities exactly match the dependency-specific allow-list
+    responsible_role: shared
+    applies_to:
+      - filesystem-capability
+      - network-capability
+      - secret-capability
+      - tool-capability
+    context:
+      threat_actor: over-privileged MCP server malicious plugin compromised Skill or operator using wildcard capability grants
+      attack_or_failure_scenario: a read-only helper gains shell secret broad network or repository-write authority and converts prompt injection into a high-impact side effect
+      why_required: approval of a dependency name must not implicitly approve every capability that dependency can request later
+    verification:
+      type: automated
+      method: compare all six capability dimensions with the exact per-dependency policy entry and reject differences rather than subsets with undeclared fields
+      expected: narrow exact requests pass while wildcard filesystem network secret shell and direct Skill authority fail
+      evidence:
+        - capability allow-list summary
+        - over-privileged fixture output
+    mapping_status: reviewed
+  - id: AID-005
+    title: Benchmark results are bound to the exact reviewed dependency
+    required_state: completed available PSB-AI-001 benchmark evidence binds each dependency ID source commit and artifact digest with no security regression or unsafe recommendation
+    responsible_role: security
+    applies_to:
+      - dependency-benchmark
+      - adoption-decision
+    context:
+      threat_actor: dependency publisher experiment author or operator reusing a favorable result from different bytes
+      attack_or_failure_scenario: a changed extension is approved using an old or unrelated benchmark or a failed evaluator is reported as safe
+      why_required: behavioral evidence is meaningful only for the exact dependency identity evaluated under the repository benchmark contract
+    verification:
+      type: automated
+      method: pin the benchmark file digest require completed available evaluator state and match every result to dependency ID commit and artifact SHA-256
+      expected: exact pilot results pass while identity mismatch regression unsafe recommendation evaluator failure and evidence failure do not pass
+      evidence:
+        - PSB-AI-001 benchmark receipt summary
+        - failed evaluator negative-test output
+    mapping_status: reviewed
+  - id: AID-006
+    title: Revocation evidence is fresh complete and fail-closed
+    required_state: a fresh complete revocation snapshot contains exactly one active state for every approved dependency and a known revoked state blocks use
+    responsible_role: security
+    applies_to:
+      - dependency-revocation
+      - approval-lifecycle
+    context:
+      threat_actor: compromised or abandoned publisher incident responder revoking a dependency or collector outage
+      attack_or_failure_scenario: a known-compromised dependency remains usable or missing stale incomplete revocation data is treated as active
+      why_required: immutable approval without a current kill switch preserves dangerous dependencies indefinitely after new risk is discovered
+    verification:
+      type: automated
+      method: enforce collection completeness bounded timestamp exact dependency coverage and active status while separating known revocation from evidence error
+      expected: fresh complete active records pass revoked is FAIL and unavailable stale incomplete or malformed evidence is ERROR
+      evidence:
+        - revocation snapshot summary
+        - revoked and incomplete negative-test output
+    mapping_status: reviewed
+  - id: AID-007
+    title: Approved dependency identity is handed to runtime enforcement
+    required_state: every dependency exposes an exact PSB-AI-004 extension ID kind and enforcement mode with unsupported plugin and prompt activation denied
+    responsible_role: shared
+    applies_to:
+      - runtime-inventory-handoff
+      - extension-identity
+    context:
+      threat_actor: identity-confused extension malicious lookalike package or operator installing an approved name with different runtime content
+      attack_or_failure_scenario: governance approves one record but the endpoint collector cannot correlate the actually installed MCP Skill plugin or prompt to it
+      why_required: pre-install review has no operational effect unless runtime enforcement can compare installed state with the exact approved dependency record
+    verification:
+      type: automated
+      method: compare each PSB-AI-004 control ID extension identity provider-neutral runtime kind and inventory-reconcile or deny-not-installed mode with policy
+      expected: MCP and Skill records reconcile inventory while plugin and external prompt remain deny-not-installed and missing or kind-confused handoffs fail
+      evidence:
+        - runtime handoff count
+        - PSB-AI-004 inventory dependency record IDs
+    mapping_status: unmapped
+mappings:
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0010.005
+    relationship: mitigates
+    confidence: high
+    rationale: Immutable AI agent tool identities independent review capability bounds and revocation reduce supply-chain compromise of Skills MCP servers plugins and prompt packages without proving all runtime behavior.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AID-001
+      - AID-002
+      - AID-004
+      - AID-006
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0110
+    relationship: mitigates
+    confidence: high
+    rationale: Independent semantic review and exact behavior-bound benchmark evidence directly reduce AI Agent Tool Poisoning risk but do not replace runtime isolation.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AID-003
+      - AID-005
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI04
+    relationship: mitigates
+    confidence: high
+    rationale: The control directly governs provenance integrity semantic behavior privilege benchmark and revocation for agentic supply-chain dependencies while PSB-AI-004 retains runtime enforcement.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - AID-001
+      - AID-002
+      - AID-003
+      - AID-004
+      - AID-005
+      - AID-006
+limitations:
+  - Synthetic metadata-only artifacts prove the verifier contract and do not establish the security of a live third-party Skill MCP server plugin or prompt.
+  - SHA-256 and immutable commits detect changes but do not prove that reviewed behavior has no latent vulnerability or malicious logic.
+  - The fixture benchmark supports pilot evidence only; production dependencies require representative repeated live PSB-AI-001 evaluation.
+  - Revocation freshness depends on a trustworthy upstream source and collector which this offline fixture does not implement.
+  - This control approves what may be installed but cannot enforce endpoint state network filesystem secret or side-effect limits; PSB-AI-004 owns those runtime outcomes.
+  - Full commits do not prevent upstream deletion and local retention or an internally controlled mirror may still be required.
+status: prototype
+evidence_level: E3
+owner: product-security

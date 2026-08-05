@@ -31,6 +31,7 @@
 │   ├── mitre-atlas/
 │   ├── nist-sp-800-190/
 │   ├── openssf-osps-baseline/
+│   ├── owasp-agentic-top10/
 │   ├── owasp-top10/
 │   ├── owasp-asvs/
 │   ├── slsa/

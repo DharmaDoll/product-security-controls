@@ -1,0 +1,154 @@
+{
+  "schema": "psb-container-host-policy/v1",
+  "policy_version": "container-host-policy@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "scope": {
+    "required_purpose": "production-container-host",
+    "allowed_workload_classes": ["container-workloads"],
+    "prohibited_workload_classes": [
+      "database",
+      "developer-tools",
+      "general-purpose",
+      "office",
+      "web-browsing"
+    ],
+    "allowed_enabled_services": [
+      "apparmor",
+      "auditd",
+      "containerd",
+      "node-agent",
+      "sshd"
+    ]
+  },
+  "components": {
+    "maximum_patch_age_days": 30,
+    "required": [
+      {
+        "type": "host-os",
+        "name": "flatcar",
+        "version": "4152.2.3"
+      },
+      {
+        "type": "kernel",
+        "name": "linux",
+        "version": "6.6.90"
+      },
+      {
+        "type": "runtime",
+        "name": "containerd",
+        "version": "2.0.5"
+      },
+      {
+        "type": "daemon",
+        "name": "containerd",
+        "version": "2.0.5"
+      }
+    ]
+  },
+  "management": {
+    "allowed_endpoint_schemes": ["unix"],
+    "allowed_socket_paths": ["/run/containerd/containerd.sock"],
+    "required_authentication": "peer-credentials",
+    "public_endpoints_allowed": false,
+    "workload_runtime_socket_mounts_allowed": false,
+    "allowed_management_cidrs": ["10.20.0.0/24"]
+  },
+  "isolation": {
+    "require_rootless_or_user_namespace": true,
+    "allowed_kernel_lockdown": ["confidentiality", "integrity"],
+    "required_seccomp_profile": "default",
+    "allowed_enforcing_lsm": ["apparmor", "selinux"],
+    "require_restricted_kernel_modules": true
+  },
+  "protected_paths": [
+    {
+      "path": "/etc/containerd/config.toml",
+      "type": "file",
+      "owner": "root",
+      "group": "root",
+      "maximum_mode": "0640",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "path": "/usr/bin/containerd",
+      "type": "file",
+      "owner": "root",
+      "group": "root",
+      "maximum_mode": "0755",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    {
+      "path": "/run/containerd/containerd.sock",
+      "type": "socket",
+      "owner": "root",
+      "group": "container-runtime",
+      "maximum_mode": "0660"
+    },
+    {
+      "path": "/var/lib/containerd",
+      "type": "directory",
+      "owner": "root",
+      "group": "root",
+      "maximum_mode": "0700"
+    },
+    {
+      "path": "/etc/systemd/system/containerd.service",
+      "type": "file",
+      "owner": "root",
+      "group": "root",
+      "maximum_mode": "0644",
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+  ],
+  "access": {
+    "roles": [
+      {
+        "id": "container-platform-admin",
+        "subjects": ["group:container-platform-admins"],
+        "node_pools": ["pool:production"],
+        "actions": ["configure", "read", "restart"]
+      },
+      {
+        "id": "container-host-auditor",
+        "subjects": ["group:container-security-auditors"],
+        "node_pools": ["pool:production"],
+        "actions": ["read-audit"]
+      }
+    ],
+    "required_audit_events": [
+      "daemon-config-write",
+      "operator-session",
+      "runtime-binary-write",
+      "runtime-socket-access",
+      "service-unit-write"
+    ],
+    "audit_rules_immutable": true
+  },
+  "hardware_trust": {
+    "require_secure_boot": true,
+    "require_measured_boot": true,
+    "require_tpm_backed_identity": true,
+    "required_node_pool": "pool:production",
+    "maximum_attestation_age_seconds": 900
+  },
+  "exceptions": {
+    "maximum_lifetime_days": 30,
+    "required_compensating_controls": [
+      "dedicated-host",
+      "enforcing-lsm",
+      "management-network-restricted",
+      "seccomp-default"
+    ]
+  },
+  "evidence": {
+    "maximum_age_seconds": 900,
+    "required_sources": [
+      "access-audit",
+      "daemon-config",
+      "file-integrity",
+      "hardware-attestation",
+      "host-inventory",
+      "patch-service",
+      "platform-inventory"
+    ]
+  }
+}

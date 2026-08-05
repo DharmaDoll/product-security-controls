@@ -1,0 +1,8 @@
+PASS manifest PSB-AI-002-fixture-2026-08-05 contains 5 exact approved dependencies across 4 kinds
+PASS canonical HTTPS sources use full immutable commits and every local artifact matches its SHA-256
+PASS license owner independent semantic review repository precedence and review expiry satisfy policy
+PASS requested filesystem network secret tool and direct-authority capabilities exactly match the allow-list
+PASS fresh complete revocation evidence marks every dependency active
+PASS PSB-AI-001 benchmark evidence is digest-pinned and bound to each exact commit and artifact
+PASS 5 dependency records expose exact PSB-AI-004 runtime dispositions
+PASS sanitized evidence contains no raw prompt output transcript token or secret value

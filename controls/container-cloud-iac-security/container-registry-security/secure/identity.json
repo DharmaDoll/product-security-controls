@@ -1,0 +1,13 @@
+{
+  "schema": "psb-container-registry-identity/v1",
+  "source_control": "PSB-CICD-006",
+  "credential_kind": "oidc-exchange",
+  "actor": "ci:payments-release",
+  "repository": "payments/api",
+  "actions": ["push"],
+  "audience": "registry.example.invalid",
+  "issued_at": "2026-08-04T12:00:00Z",
+  "expires_at": "2026-08-04T12:10:00Z",
+  "stored_credential": false,
+  "request_id": "identity-request-001"
+}

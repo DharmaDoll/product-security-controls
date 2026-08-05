@@ -1,0 +1,19 @@
+{
+  "schema": "psb-container-registry-audit/v1",
+  "status": "ok",
+  "complete": true,
+  "observed_at": "2026-08-04T12:04:30Z",
+  "redacted": false,
+  "records": [
+    {
+      "event_id": "audit-101",
+      "request_id": "request-101",
+      "actor": "anonymous",
+      "repository": "payments/api",
+      "action": "push",
+      "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "timestamp": "2026-08-04T12:01:00Z",
+      "outcome": "allowed"
+    }
+  ]
+}

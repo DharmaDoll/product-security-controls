@@ -1,0 +1,7 @@
+{
+  "name": "source_manager",
+  "transport": "streamable-http",
+  "endpoint": "https://source.example.invalid/mcp/v1",
+  "tools": ["list_pull_requests", "update_issue", "create_pull_request", "delete_repository"],
+  "fixture_notice": "Synthetic descriptor; delete_repository is advertised but must remain denied by policy."
+}

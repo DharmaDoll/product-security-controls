@@ -1,0 +1,8 @@
+{
+  "schema": "psb-container-host-evidence/v1",
+  "platform": "managed-control-plane",
+  "adapter_status": "unsupported",
+  "node_id": "managed-fixture-001",
+  "node_pool": "provider-managed",
+  "observed_at": "2026-08-04T12:04:00Z"
+}

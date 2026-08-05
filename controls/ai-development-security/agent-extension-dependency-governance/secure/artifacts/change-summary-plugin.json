@@ -1,0 +1,6 @@
+{
+  "name": "change_summary",
+  "entrypoint": "disabled-synthetic-fixture",
+  "capabilities": ["read:repository-documentation"],
+  "fixture_notice": "Metadata-only fixture; plugin execution is intentionally unavailable."
+}

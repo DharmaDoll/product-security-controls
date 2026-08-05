@@ -1,0 +1,13 @@
+{
+  "schema": "psb-security-exception-register/v1",
+  "interface_version": "1.0",
+  "source_status": "ok",
+  "complete": true,
+  "observed_at": "2026-08-05T10:00:00Z",
+  "entries": [
+    {
+      "path": "wrong-check.yaml",
+      "sha256": "00ab7e31de2e989b0d01aedac78c8eb3518df946496210f828c6bb83550bf7fb"
+    }
+  ]
+}

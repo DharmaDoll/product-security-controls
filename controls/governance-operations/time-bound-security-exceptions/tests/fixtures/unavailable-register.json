@@ -1,0 +1,8 @@
+{
+  "schema": "psb-security-exception-register/v1",
+  "interface_version": "1.0",
+  "source_status": "unavailable",
+  "complete": false,
+  "observed_at": "2026-08-05T10:00:00Z",
+  "entries": []
+}

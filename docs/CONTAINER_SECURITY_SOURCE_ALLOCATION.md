@@ -84,6 +84,20 @@ Mapping candidates are provisional. They become reviewed mappings only when an
 implemented control has an atomic check, runnable verification, negative
 fixture, and rationale that directly supports the cited identifier.
 
+`PSB-CONTAINER-002` now meets that threshold for NIST `4.2.1` through `4.2.3`.
+Its seven checks verify provider-neutral registry transport, exact
+authorization, short-lived identity binding, release mutation protection,
+audit correlation, bounded stale-image lifecycle, and evidence health. Live
+provider enforcement and collector authenticity remain explicit limitations.
+
+`PSB-CONTAINER-003` now meets the implementation threshold for NIST `4.3.1`,
+`4.3.5`, `4.5.1` through `4.5.5`, and `4.6`. Its provider-neutral Linux E3
+slice verifies dedicated minimal hosts, patch state, daemon and socket access,
+user and kernel isolation, protected-path integrity, operator and audit
+boundaries, hardware-backed node trust, and fail-closed evidence semantics.
+CIS Docker mappings and live host enforcement remain unavailable until their
+separate inputs and provider adapters are reviewed.
+
 `PSB-CONTAINER-004` now meets that implementation threshold for NIST
 `4.4.4`. Falco and Sysdig supply representative provider adapters through
 [`REF-CONTAINER-003`](SECURITY_GUIDANCE_SOURCES.md#ref-container-003) and

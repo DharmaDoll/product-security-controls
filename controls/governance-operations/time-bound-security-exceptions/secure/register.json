@@ -1,0 +1,17 @@
+{
+  "schema": "psb-security-exception-register/v1",
+  "interface_version": "1.0",
+  "source_status": "ok",
+  "complete": true,
+  "observed_at": "2026-08-05T10:00:00Z",
+  "entries": [
+    {
+      "path": "active-dependency.yaml",
+      "sha256": "8794a6979593737b1fd6c7d75f2fdfb96238c755ecc172e04ff54f4c091f1cfe"
+    },
+    {
+      "path": "expiring-scanner.yaml",
+      "sha256": "ffaa82770510f18ab7608bcda3f9f9cdc6c3cd52a7d67b6db27d9142340a2923"
+    }
+  ]
+}

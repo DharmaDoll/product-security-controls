@@ -38,11 +38,11 @@ evidence. Do not attach every Section 4 item to one container control:
 - `PSB-CONTAINER-001` implements mappings for `4.1.5`, `4.3.3`, `4.4.2`,
   `4.4.3`, and `4.4.5`; future workload slices retain `4.1.2`, `4.3.2`, and
   `4.3.4` only when direct evidence exists;
-- `PSB-CONTAINER-002` owns `4.2.1` through `4.2.3` registry transport,
-  access, audit, and lifecycle;
-- `PSB-CONTAINER-003` owns `4.3.1`, `4.3.5`, `4.5.1` through `4.5.5`, and
-  `4.6` host OS, daemon, orchestrator node, and hardware-backed host
-  countermeasures;
+- `PSB-CONTAINER-002` implements `4.2.1` through `4.2.3` registry transport,
+  access, audit, and lifecycle mappings through provider-neutral E3 evidence;
+- `PSB-CONTAINER-003` implements `4.3.1`, `4.3.5`, `4.5.1` through `4.5.5`,
+  and `4.6` host OS, daemon, orchestrator node, and hardware-backed host
+  mappings through provider-neutral Linux E3 evidence;
 - `PSB-CONTAINER-004` owns `4.4.4` post-admission runtime behavior and alert
   evidence;
 - application vulnerability prevention remains in secure-coding controls.

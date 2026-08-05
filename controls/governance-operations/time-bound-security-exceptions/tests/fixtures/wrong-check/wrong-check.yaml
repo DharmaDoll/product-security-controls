@@ -1,0 +1,19 @@
+schema: psb-security-exception/v1
+interface_version: "1.0"
+id: EXC-2026-8002
+control_id: PSB-DEPS-001
+check_id: DVS-006
+target_type: dependency-version
+target_id: "pkg:npm/example-parser@4.2.0"
+environment: build-test
+owner: application-team
+risk_reviewer: product-security
+approved_by: engineering-director
+justification: This synthetic record deliberately binds a check to the wrong control to exercise catalog validation.
+risk_statement: A mismatched identifier could make an approval appear to authorize a security decision it never reviewed.
+compensating_controls:
+  - network-denied-build-sandbox
+created_at: "2026-08-01T10:00:00Z"
+expires_at: "2026-08-10T10:00:00Z"
+approval_reference: RISK-8101
+remediation_ticket: SEC-8102
