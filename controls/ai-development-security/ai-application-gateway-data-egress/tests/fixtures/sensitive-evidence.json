@@ -1,0 +1,17 @@
+{
+  "schema_version": "psb-ai-application-gateway-evidence/v1",
+  "evidence_source": "synthetic-fixture",
+  "collection_status": "complete",
+  "evaluator_status": "available",
+  "policy_id": "PSB-AI-010-FIRST-SLICE",
+  "workload_session_id": "AI-GATEWAY-SESSION-0001",
+  "observed_at": "2026-08-05T12:00:00Z",
+  "prompt": "SYNTHETIC-PROHIBITED-EVIDENCE",
+  "gateway_health": {
+    "observed_at": "2026-08-05T11:59:30Z",
+    "complete": true,
+    "components": []
+  },
+  "decisions": [],
+  "live_enforcement": {}
+}

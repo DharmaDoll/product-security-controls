@@ -1,0 +1,36 @@
+{
+  "schema_version": "psb-ai-recovery-authorization/v1",
+  "payload": {
+    "authorization_id": "RECOVER-AI-INCIDENT-2026-0001",
+    "incident_id": "AI-INCIDENT-2026-0001",
+    "action": "authorize-staged-recovery",
+    "tenant_id": "TENANT-A",
+    "old_agent_id": "AGENT-ORCHESTRATOR-001",
+    "old_session_id": "SESSION-ANOMALY",
+    "new_agent_id": "AGENT-ORCHESTRATOR-002",
+    "new_session_id": "SESSION-RECOVERY-0001",
+    "new_key_id": "AGENT-KEY-ROTATED-002",
+    "recovery_readiness_id": "RECOVERY-READINESS-001",
+    "policy_id": "PSB-AI-009-FIRST-SLICE",
+    "policy_sha256": "1b5f4de64054881bb79f6f1fc9a99dbad5131518802121a4800624001246445d",
+    "canary_mode": "read-only",
+    "issued_at": "2026-08-05T12:20:00Z",
+    "expires_at": "2026-08-05T12:25:00Z",
+    "nonce": "NONCE-RECOVER-0001",
+    "sequence": 42
+  },
+  "signatures": [
+    {
+      "operator_id": "OP-INCIDENT-COMMANDER-001",
+      "key_id": "KEY-INCIDENT-COMMANDER-001",
+      "algorithm": "Ed25519",
+      "signature": "VfXskMojVx6pS5qXoEAMRh2qZZGGe4EKQY2E3X9jRIeoJgsxZESnM8ppN098qYh7Pw83YV1LI20d6DvRhZrvBw=="
+    },
+    {
+      "operator_id": "OP-SECURITY-REVIEWER-001",
+      "key_id": "KEY-SECURITY-REVIEWER-001",
+      "algorithm": "Ed25519",
+      "signature": "ppjDUAtOxLjh//Wck7a9Q229LUJL+zWdEpumttQ4i+xaqpLGIWcnjVejdUbvFVcmhO8tCaCKcc3EN2I/kALFBA=="
+    }
+  ]
+}

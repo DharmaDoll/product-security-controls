@@ -133,7 +133,10 @@ Limitations and review notes:
     alert delivery;
   - `PSB-AI-008` — signed multi-agent trust, scoped delegation, replay, budget,
     isolation, and response binding;
-  - later controls for rogue-agent recovery boundaries.
+  - `PSB-AI-009` — independent rogue-agent containment, authority revocation,
+    bounded fallback, dual-control recovery, and read-only canary;
+  - `PSB-AI-010` — authenticated application gateway, exact inference target,
+    classification, minimization, redaction, retention, and bypass control.
 
 Adopted or planned contributions:
 
@@ -146,7 +149,11 @@ Adopted or planned contributions:
 - token, cost, retry, recursion, and tool-chain limits;
 - multi-agent identity, delegation, message integrity, replay protection, and
   circuit breakers, implemented as the first PSB-AI-008 one-hop E3 slice;
+- model-independent signed containment, authority revocation, evidence-first
+  quarantine, bounded fallback, and staged recovery, implemented by PSB-AI-009;
 - data minimization, classification, retention, and deletion;
+- application inference route, workload identity, exact provider/model/tenant/
+  region/data-use policy, prohibited-class denial, and content-free telemetry;
 - repeatable abuse-case tests and security release gates.
 
 Limitations and review notes:
@@ -182,9 +189,9 @@ Limitations and review notes:
   and reconciled but is not vendored or redistributed here
 - Repository review date: `2026-08-05`
 - Related controls:
-  - `PSB-AI-001..008` — AI coding guidance, dependency, injection, runtime,
-    memory, action-integrity, resource-monitoring, and multi-agent delegation
-    boundaries;
+  - `PSB-AI-001..010` — AI coding guidance, dependency, injection, runtime,
+    memory, action-integrity, resource-monitoring, multi-agent delegation, and
+    rogue-agent containment／recovery plus application inference egress boundaries;
   - `PSB-DETECT-001` — integrity-verified multi-surface scanning;
   - `PSB-REL-003..004` — artifact-bound and supplier SBOM lifecycle;
   - `PSB-CONTAINER-004` — production runtime detection;
@@ -195,8 +202,8 @@ Reconciliation by product-security layer:
 | Source layer | Repository disposition |
 |---|---|
 | Application | Secure design and coding, SAST, DAST, API testing, and the organization checklist remain in the existing application-control plan; AI prompt and output boundaries are partially implemented by `PSB-AI-003` and `PSB-AI-006`. |
-| Platform and infrastructure | Source, dependency, CI/CD, build, IaC, container, release, and coding-agent boundaries are already represented by existing controls; an application-facing AI gateway is a separate planned boundary. |
-| Operations | Container runtime detection, supply-chain incident lookup, AI coding-agent telemetry, per-session resource budgets, anomaly stops, and alert delivery are implemented subsets; AI application anomaly detection, independent kill-switch, fallback, and recovery remain planned. |
+| Platform and infrastructure | Source, dependency, CI/CD, build, IaC, container, release, and coding-agent boundaries are represented; `PSB-AI-010` adds a provider-neutral E3 application-facing gateway and data-egress contract while live route, IdP, provider and telemetry evidence remains planned. |
+| Operations | Container runtime detection, supply-chain incident lookup, AI coding-agent telemetry, per-session resource budgets, anomaly stops, alert delivery, and an E3 independent kill-switch／fallback／read-only recovery contract are implemented subsets; live AI application anomaly detection, gateway enforcement, fleet recovery, and incident-system adoption remain planned. |
 | PSIRT and vulnerability management | `PSB-GOV-003` implements evidence-bound triage; intake, disclosure, organization capability, AI TEVV, red teaming, and AI-specific release gating remain planned or organization-owned. |
 | External and supply chain | SBOM, supplier SBOM, provenance, and agent extension dependencies are represented; model, dataset, AIBOM/ML-BOM, serialized-weight, and RAG provenance need distinct executable contracts. |
 | Governance | Time-bound exceptions and generated evidence views exist; AI risk governance, accountable inventory, KPI inputs, and live policy adoption require organization-owned evidence. |
@@ -210,8 +217,8 @@ Adopted contributions:
   outside the model, consistent with `PSB-AI-003`, `PSB-AI-004`, and
   `PSB-AI-006`;
 - preserve immutable Skill and MCP dependency identity in `PSB-AI-002`;
-- expose the missing AI application gateway, model/data/RAG supply chain,
-  TEVV, kill-switch/recovery, governance, and education outcomes in the
+- expose the missing live AI gateway adoption, model/data/RAG supply chain,
+  TEVV, live fleet recovery, governance, and education outcomes in the
   roadmap rather than silently treating agent controls as complete AI product
   security coverage.
 

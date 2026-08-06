@@ -1,0 +1,139 @@
+{
+  "schema_version": "psb-ai-rogue-incident-evidence/v1",
+  "evidence_source": "synthetic-fixture",
+  "collection_status": "complete",
+  "evaluator_status": "available",
+  "incident_id": "AI-INCIDENT-2026-0001",
+  "tenant_id": "TENANT-A",
+  "agent_id": "AGENT-ORCHESTRATOR-001",
+  "session_id": "SESSION-ANOMALY",
+  "control_plane": {
+    "type": "agent-local-hook",
+    "health": "available",
+    "policy_sha256": "1b5f4de64054881bb79f6f1fc9a99dbad5131518802121a4800624001246445d",
+    "agent_can_disable": true,
+    "repository_can_override": true
+  },
+  "state_transitions": [
+    {
+      "sequence": 1,
+      "state": "DETECTED",
+      "at": "2026-08-05T11:55:00Z"
+    },
+    {
+      "sequence": 2,
+      "state": "CONTAINED",
+      "at": "2026-08-05T12:10:00Z"
+    },
+    {
+      "sequence": 4,
+      "state": "RECOVERED",
+      "at": "2026-08-05T12:11:00Z"
+    }
+  ],
+  "containment": {
+    "command_id": "CONTAIN-AI-INCIDENT-2026-0001",
+    "applied_at": "2026-08-05T12:10:00Z",
+    "model_calls_allowed": true,
+    "tool_dispatch_allowed": true,
+    "delegation_allowed": true,
+    "memory_writes_allowed": true,
+    "agent_process_state": "running",
+    "revocations": [
+      {
+        "authority_type": "agent-key",
+        "authority_id": "AGENT-KEY-OLD-001",
+        "state": "active"
+      },
+      {
+        "authority_type": "model-access",
+        "authority_id": "MODEL-GRANT-SESSION-ANOMALY",
+        "state": "active"
+      }
+    ]
+  },
+  "quarantine": {
+    "records": [
+      {
+        "request_id": "REQ-UNKNOWN-0002",
+        "original_state": "unknown-outcome",
+        "state": "retried",
+        "automatic_retry": true
+      }
+    ],
+    "evidence_preserved_before_cleanup": false,
+    "snapshot_id": "none",
+    "snapshot_sha256": "not-recorded"
+  },
+  "fallback_exercise": {
+    "exercise_id": "FALLBACK-EXERCISE-0001",
+    "mode": "agent-autonomous-full-authority",
+    "started_at": "2026-08-05T11:57:00Z",
+    "ended_at": "2026-08-05T12:17:01Z",
+    "agent_process_used": true,
+    "model_calls_used": true,
+    "tool_dispatch_used": true,
+    "mutation_used": true,
+    "operations": [
+      "deployment.write"
+    ],
+    "result": "passed"
+  },
+  "recovery_readiness": {
+    "readiness_id": "RECOVERY-READINESS-001",
+    "root_cause_id": "unknown",
+    "root_cause_status": "missing",
+    "old_agent_key_state": "active",
+    "old_session_authority_state": "active",
+    "new_agent_id": "AGENT-ORCHESTRATOR-001",
+    "new_session_id": "SESSION-ANOMALY",
+    "new_key_id": "AGENT-KEY-OLD-001",
+    "clean_runtime_revision": "unreviewed-current-runtime",
+    "evidence_preserved": false,
+    "fallback_exercise_result": "failed",
+    "negative_tests": [
+      {
+        "test_id": "OLD-SESSION-REPLAY",
+        "result": "skipped"
+      }
+    ]
+  },
+  "recovery": {
+    "authorization_id": "RECOVER-AI-INCIDENT-2026-0001",
+    "applied_at": "2026-08-05T12:11:00Z",
+    "new_agent_id": "AGENT-ORCHESTRATOR-001",
+    "new_session_id": "SESSION-ANOMALY",
+    "new_key_id": "AGENT-KEY-OLD-001",
+    "old_session_state": "running",
+    "old_authority_restored": true,
+    "canary_mode": "full-authority",
+    "canary_duration_seconds": 0,
+    "canary_health": "not-observed",
+    "automatic_full_restore": true,
+    "final_state": "RECOVERED"
+  },
+  "audit": {
+    "events": [
+      {
+        "sequence": 1,
+        "event": "trigger-received",
+        "status": "recorded"
+      },
+      {
+        "sequence": 3,
+        "event": "full-authority-restored",
+        "status": "recorded"
+      }
+    ],
+    "incident_handoff": "not-created"
+  },
+  "live_enforcement": {
+    "control_plane": "ADOPTED",
+    "model_gateway": "ADOPTED",
+    "tool_gateway": "ADOPTED",
+    "delegation_gateway": "ADOPTED",
+    "memory_gateway": "ADOPTED",
+    "authority_revocation": "ADOPTED",
+    "incident_receiver": "ADOPTED"
+  }
+}

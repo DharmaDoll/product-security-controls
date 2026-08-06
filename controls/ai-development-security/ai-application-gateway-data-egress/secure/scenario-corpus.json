@@ -1,0 +1,267 @@
+{
+  "schema_version": "psb-ai-application-egress-corpus/v1",
+  "corpus_id": "PSB-AI-010-SYNTHETIC-2026-08-05",
+  "evaluated_at": "2026-08-05T12:00:00Z",
+  "scenarios": [
+    {
+      "request_id": "REQ-ALLOW-PUBLIC",
+      "workload_session_id": "AI-GATEWAY-SESSION-0001",
+      "route": {
+        "mode": "mandatory-gateway",
+        "scheme": "https",
+        "host": "ai-gateway.example.invalid",
+        "port": 443,
+        "path": "/v1/inference"
+      },
+      "target": {
+        "provider_id": "PROVIDER-APPROVED-001",
+        "model_id": "MODEL-REVIEWED-2026-001",
+        "provider_tenant_id": "PROVIDER-TENANT-A",
+        "region": "jp",
+        "training_on_inputs": false,
+        "retention_seconds": 0
+      },
+      "input_classification": "public",
+      "output_classification": "public",
+      "input_bytes": 1200,
+      "outbound_bytes": 700,
+      "received_field_count": 6,
+      "forwarded_field_count": 3,
+      "personal_data_detected_count": 0,
+      "redacted_count": 0,
+      "secret_detected_count": 0,
+      "content_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "expected_decision": "allow",
+      "expected_reasons": []
+    },
+    {
+      "request_id": "REQ-ALLOW-PERSONAL-REDACTED",
+      "workload_session_id": "AI-GATEWAY-SESSION-0001",
+      "route": {
+        "mode": "mandatory-gateway",
+        "scheme": "https",
+        "host": "ai-gateway.example.invalid",
+        "port": 443,
+        "path": "/v1/inference"
+      },
+      "target": {
+        "provider_id": "PROVIDER-APPROVED-001",
+        "model_id": "MODEL-REVIEWED-2026-001",
+        "provider_tenant_id": "PROVIDER-TENANT-A",
+        "region": "jp",
+        "training_on_inputs": false,
+        "retention_seconds": 0
+      },
+      "input_classification": "personal-data",
+      "output_classification": "internal-redacted",
+      "input_bytes": 1600,
+      "outbound_bytes": 800,
+      "received_field_count": 8,
+      "forwarded_field_count": 3,
+      "personal_data_detected_count": 2,
+      "redacted_count": 2,
+      "secret_detected_count": 0,
+      "content_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "expected_decision": "allow",
+      "expected_reasons": []
+    },
+    {
+      "request_id": "REQ-DENY-SECRET",
+      "workload_session_id": "AI-GATEWAY-SESSION-0001",
+      "route": {
+        "mode": "mandatory-gateway",
+        "scheme": "https",
+        "host": "ai-gateway.example.invalid",
+        "port": 443,
+        "path": "/v1/inference"
+      },
+      "target": {
+        "provider_id": "PROVIDER-APPROVED-001",
+        "model_id": "MODEL-REVIEWED-2026-001",
+        "provider_tenant_id": "PROVIDER-TENANT-A",
+        "region": "jp",
+        "training_on_inputs": false,
+        "retention_seconds": 0
+      },
+      "input_classification": "secret",
+      "output_classification": "blocked",
+      "input_bytes": 300,
+      "outbound_bytes": 0,
+      "received_field_count": 2,
+      "forwarded_field_count": 0,
+      "personal_data_detected_count": 0,
+      "redacted_count": 0,
+      "secret_detected_count": 1,
+      "content_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "expected_decision": "deny",
+      "expected_reasons": [
+        "data-class-denied"
+      ]
+    },
+    {
+      "request_id": "REQ-DENY-UNAPPROVED-MODEL",
+      "workload_session_id": "AI-GATEWAY-SESSION-0001",
+      "route": {
+        "mode": "mandatory-gateway",
+        "scheme": "https",
+        "host": "ai-gateway.example.invalid",
+        "port": 443,
+        "path": "/v1/inference"
+      },
+      "target": {
+        "provider_id": "PROVIDER-APPROVED-001",
+        "model_id": "MODEL-UNREVIEWED-999",
+        "provider_tenant_id": "PROVIDER-TENANT-A",
+        "region": "jp",
+        "training_on_inputs": false,
+        "retention_seconds": 0
+      },
+      "input_classification": "public",
+      "output_classification": "public",
+      "input_bytes": 800,
+      "outbound_bytes": 500,
+      "received_field_count": 4,
+      "forwarded_field_count": 3,
+      "personal_data_detected_count": 0,
+      "redacted_count": 0,
+      "secret_detected_count": 0,
+      "content_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "expected_decision": "deny",
+      "expected_reasons": [
+        "inference-target-unapproved"
+      ]
+    },
+    {
+      "request_id": "REQ-DENY-WRONG-TENANT-REGION",
+      "workload_session_id": "AI-GATEWAY-SESSION-0001",
+      "route": {
+        "mode": "mandatory-gateway",
+        "scheme": "https",
+        "host": "ai-gateway.example.invalid",
+        "port": 443,
+        "path": "/v1/inference"
+      },
+      "target": {
+        "provider_id": "PROVIDER-APPROVED-001",
+        "model_id": "MODEL-REVIEWED-2026-001",
+        "provider_tenant_id": "PROVIDER-TENANT-B",
+        "region": "us",
+        "training_on_inputs": true,
+        "retention_seconds": 2592000
+      },
+      "input_classification": "public",
+      "output_classification": "public",
+      "input_bytes": 900,
+      "outbound_bytes": 600,
+      "received_field_count": 5,
+      "forwarded_field_count": 3,
+      "personal_data_detected_count": 0,
+      "redacted_count": 0,
+      "secret_detected_count": 0,
+      "content_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+      "expected_decision": "deny",
+      "expected_reasons": [
+        "inference-target-unapproved"
+      ]
+    },
+    {
+      "request_id": "REQ-DENY-DIRECT-BYPASS",
+      "workload_session_id": "AI-GATEWAY-SESSION-0001",
+      "route": {
+        "mode": "direct-provider",
+        "scheme": "https",
+        "host": "provider-api.example.invalid",
+        "port": 443,
+        "path": "/v1/inference"
+      },
+      "target": {
+        "provider_id": "PROVIDER-APPROVED-001",
+        "model_id": "MODEL-REVIEWED-2026-001",
+        "provider_tenant_id": "PROVIDER-TENANT-A",
+        "region": "jp",
+        "training_on_inputs": false,
+        "retention_seconds": 0
+      },
+      "input_classification": "public",
+      "output_classification": "public",
+      "input_bytes": 700,
+      "outbound_bytes": 500,
+      "received_field_count": 4,
+      "forwarded_field_count": 3,
+      "personal_data_detected_count": 0,
+      "redacted_count": 0,
+      "secret_detected_count": 0,
+      "content_sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+      "expected_decision": "deny",
+      "expected_reasons": [
+        "gateway-bypass"
+      ]
+    },
+    {
+      "request_id": "REQ-DENY-UNKNOWN-WORKLOAD",
+      "workload_session_id": "AI-GATEWAY-SESSION-UNKNOWN",
+      "route": {
+        "mode": "mandatory-gateway",
+        "scheme": "https",
+        "host": "ai-gateway.example.invalid",
+        "port": 443,
+        "path": "/v1/inference"
+      },
+      "target": {
+        "provider_id": "PROVIDER-APPROVED-001",
+        "model_id": "MODEL-REVIEWED-2026-001",
+        "provider_tenant_id": "PROVIDER-TENANT-A",
+        "region": "jp",
+        "training_on_inputs": false,
+        "retention_seconds": 0
+      },
+      "input_classification": "public",
+      "output_classification": "public",
+      "input_bytes": 600,
+      "outbound_bytes": 400,
+      "received_field_count": 4,
+      "forwarded_field_count": 2,
+      "personal_data_detected_count": 0,
+      "redacted_count": 0,
+      "secret_detected_count": 0,
+      "content_sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+      "expected_decision": "deny",
+      "expected_reasons": [
+        "workload-identity-invalid"
+      ]
+    },
+    {
+      "request_id": "REQ-DENY-OVERSIZED",
+      "workload_session_id": "AI-GATEWAY-SESSION-0001",
+      "route": {
+        "mode": "mandatory-gateway",
+        "scheme": "https",
+        "host": "ai-gateway.example.invalid",
+        "port": 443,
+        "path": "/v1/inference"
+      },
+      "target": {
+        "provider_id": "PROVIDER-APPROVED-001",
+        "model_id": "MODEL-REVIEWED-2026-001",
+        "provider_tenant_id": "PROVIDER-TENANT-A",
+        "region": "jp",
+        "training_on_inputs": false,
+        "retention_seconds": 0
+      },
+      "input_classification": "public",
+      "output_classification": "public",
+      "input_bytes": 7000,
+      "outbound_bytes": 5000,
+      "received_field_count": 20,
+      "forwarded_field_count": 18,
+      "personal_data_detected_count": 0,
+      "redacted_count": 0,
+      "secret_detected_count": 0,
+      "content_sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+      "expected_decision": "deny",
+      "expected_reasons": [
+        "data-size-exceeded"
+      ]
+    }
+  ]
+}

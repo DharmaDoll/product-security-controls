@@ -1,0 +1,31 @@
+{
+  "schema_version": "psb-ai-incident-operator-trust/v1",
+  "manifest_id": "PSB-AI-009-OPERATORS-001",
+  "operators": [
+    {
+      "operator_id": "OP-INCIDENT-COMMANDER-001",
+      "role": "incident-commander",
+      "key_id": "KEY-INCIDENT-COMMANDER-001",
+      "algorithm": "Ed25519",
+      "public_key_path": "incident-commander-public.pem",
+      "public_key_sha256": "5123453d0819a55f8302dde112f3404c10908418060ee2896eb00b9495b0af25",
+      "authorities": [
+        "agent-session.contain",
+        "agent-session.recover.propose"
+      ],
+      "status": "active"
+    },
+    {
+      "operator_id": "OP-SECURITY-REVIEWER-001",
+      "role": "security-reviewer",
+      "key_id": "KEY-SECURITY-REVIEWER-001",
+      "algorithm": "Ed25519",
+      "public_key_path": "security-reviewer-public.pem",
+      "public_key_sha256": "d1e18f1b5fe5d59288e6c2bc07943ae9447a483e0f1055266a6fe91d39e8dd1e",
+      "authorities": [
+        "agent-session.recover.approve"
+      ],
+      "status": "active"
+    }
+  ]
+}

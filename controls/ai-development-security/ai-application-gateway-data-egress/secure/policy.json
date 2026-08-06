@@ -1,0 +1,85 @@
+{
+  "schema_version": "psb-ai-application-gateway-policy/v1",
+  "policy_id": "PSB-AI-010-FIRST-SLICE",
+  "evaluated_at": "2026-08-05T12:00:00Z",
+  "application_route": {
+    "mode": "mandatory-gateway",
+    "scheme": "https",
+    "host": "ai-gateway.example.invalid",
+    "port": 443,
+    "path": "/v1/inference",
+    "direct_provider_access": false,
+    "fail_closed_when_unavailable": true
+  },
+  "workload_trust": {
+    "path": "controls/ai-development-security/ai-application-gateway-data-egress/secure/trust/workloads.json",
+    "sha256": "3a11d9b4ff279ad13b741404792677961fd9a042a8fdb081f69cb4234e75ab3d",
+    "manifest_id": "PSB-AI-010-WORKLOADS-001",
+    "maximum_session_ttl_seconds": 300,
+    "audience": "PSB-AI-APPLICATION-GATEWAY"
+  },
+  "approved_inference_targets": [
+    {
+      "provider_id": "PROVIDER-APPROVED-001",
+      "model_id": "MODEL-REVIEWED-2026-001",
+      "provider_tenant_id": "PROVIDER-TENANT-A",
+      "region": "jp",
+      "training_on_inputs": false,
+      "maximum_retention_seconds": 0
+    }
+  ],
+  "data_egress": {
+    "allow": {
+      "public": {
+        "maximum_bytes": 4096,
+        "requires_local_redaction": false
+      },
+      "internal-redacted": {
+        "maximum_bytes": 2048,
+        "requires_local_redaction": true
+      }
+    },
+    "deny_input_classes": [
+      "credential",
+      "regulated",
+      "secret",
+      "source-code"
+    ],
+    "personal_data_input_class": "personal-data",
+    "personal_data_required_output_class": "internal-redacted",
+    "minimum_required_fields_only": true,
+    "raw_input_storage": false
+  },
+  "gateway_health": {
+    "required_components": [
+      "decision-engine",
+      "egress-enforcer",
+      "identity-verifier",
+      "telemetry-sink"
+    ],
+    "maximum_age_seconds": 300
+  },
+  "evidence": {
+    "forbidden_fields": [
+      "body",
+      "credential",
+      "credential_value",
+      "customer_record",
+      "message_body",
+      "personal_data",
+      "private_url",
+      "prompt",
+      "prompt_text",
+      "response_body",
+      "secret",
+      "secret_value",
+      "source_code",
+      "token",
+      "token_value",
+      "tool_arguments",
+      "tool_output",
+      "transcript"
+    ],
+    "live_enforcement": "NOT_CHECKED"
+  }
+}

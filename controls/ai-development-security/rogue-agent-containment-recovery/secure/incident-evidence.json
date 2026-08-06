@@ -1,0 +1,219 @@
+{
+  "schema_version": "psb-ai-rogue-incident-evidence/v1",
+  "evidence_source": "synthetic-fixture",
+  "collection_status": "complete",
+  "evaluator_status": "available",
+  "incident_id": "AI-INCIDENT-2026-0001",
+  "tenant_id": "TENANT-A",
+  "agent_id": "AGENT-ORCHESTRATOR-001",
+  "session_id": "SESSION-ANOMALY",
+  "control_plane": {
+    "type": "out-of-band-security-control-plane",
+    "health": "available",
+    "policy_sha256": "1b5f4de64054881bb79f6f1fc9a99dbad5131518802121a4800624001246445d",
+    "agent_can_disable": false,
+    "repository_can_override": false
+  },
+  "state_transitions": [
+    {
+      "sequence": 1,
+      "state": "DETECTED",
+      "at": "2026-08-05T11:55:00Z"
+    },
+    {
+      "sequence": 2,
+      "state": "CONTAINMENT_AUTHORIZED",
+      "at": "2026-08-05T11:56:00Z"
+    },
+    {
+      "sequence": 3,
+      "state": "CONTAINED",
+      "at": "2026-08-05T11:56:20Z"
+    },
+    {
+      "sequence": 4,
+      "state": "QUARANTINED",
+      "at": "2026-08-05T11:57:00Z"
+    },
+    {
+      "sequence": 5,
+      "state": "RECOVERY_PENDING",
+      "at": "2026-08-05T12:19:00Z"
+    },
+    {
+      "sequence": 6,
+      "state": "RECOVERED_READ_ONLY",
+      "at": "2026-08-05T12:24:00Z"
+    }
+  ],
+  "containment": {
+    "command_id": "CONTAIN-AI-INCIDENT-2026-0001",
+    "applied_at": "2026-08-05T11:56:20Z",
+    "model_calls_allowed": false,
+    "tool_dispatch_allowed": false,
+    "delegation_allowed": false,
+    "memory_writes_allowed": false,
+    "agent_process_state": "stopped",
+    "revocations": [
+      {
+        "authority_type": "agent-key",
+        "authority_id": "AGENT-KEY-OLD-001",
+        "state": "revoked"
+      },
+      {
+        "authority_type": "approval-receipts",
+        "authority_id": "APPROVAL-SET-SESSION-ANOMALY",
+        "state": "invalidated"
+      },
+      {
+        "authority_type": "delegation-nonces",
+        "authority_id": "DELEGATION-LEDGER-SESSION-ANOMALY",
+        "state": "invalidated"
+      },
+      {
+        "authority_type": "model-access",
+        "authority_id": "MODEL-GRANT-SESSION-ANOMALY",
+        "state": "revoked"
+      },
+      {
+        "authority_type": "session-credentials",
+        "authority_id": "SESSION-AUTHORITY-ANOMALY",
+        "state": "revoked"
+      },
+      {
+        "authority_type": "tool-access",
+        "authority_id": "TOOL-GRANT-SESSION-ANOMALY",
+        "state": "revoked"
+      }
+    ]
+  },
+  "quarantine": {
+    "records": [
+      {
+        "request_id": "REQ-PENDING-0001",
+        "original_state": "pending-action",
+        "state": "quarantined",
+        "automatic_retry": false
+      },
+      {
+        "request_id": "REQ-UNKNOWN-0002",
+        "original_state": "unknown-outcome",
+        "state": "quarantined",
+        "automatic_retry": false
+      }
+    ],
+    "evidence_preserved_before_cleanup": true,
+    "snapshot_id": "SNAPSHOT-AI-INCIDENT-2026-0001",
+    "snapshot_sha256": "5db134607afecf7050f5317efbe5a2561cddaf94e77b78bb4f9238892ce7e780"
+  },
+  "fallback_exercise": {
+    "exercise_id": "FALLBACK-EXERCISE-0001",
+    "mode": "operator-runbook-read-only",
+    "started_at": "2026-08-05T11:57:00Z",
+    "ended_at": "2026-08-05T12:07:00Z",
+    "agent_process_used": false,
+    "model_calls_used": false,
+    "tool_dispatch_used": false,
+    "mutation_used": false,
+    "operations": [
+      "evidence.read",
+      "incident-status.read",
+      "runbook.read"
+    ],
+    "result": "passed"
+  },
+  "recovery_readiness": {
+    "readiness_id": "RECOVERY-READINESS-001",
+    "root_cause_id": "ROOT-CAUSE-GOAL-INTEGRITY-LOSS",
+    "root_cause_status": "reviewed",
+    "old_agent_key_state": "revoked",
+    "old_session_authority_state": "invalid",
+    "new_agent_id": "AGENT-ORCHESTRATOR-002",
+    "new_session_id": "SESSION-RECOVERY-0001",
+    "new_key_id": "AGENT-KEY-ROTATED-002",
+    "clean_runtime_revision": "RUNTIME-REVISION-REVIEWED-002",
+    "evidence_preserved": true,
+    "fallback_exercise_result": "passed",
+    "negative_tests": [
+      {
+        "test_id": "OLD-SESSION-REPLAY",
+        "result": "denied"
+      },
+      {
+        "test_id": "OLD-KEY-REPLAY",
+        "result": "denied"
+      },
+      {
+        "test_id": "OLD-APPROVAL-REPLAY",
+        "result": "denied"
+      },
+      {
+        "test_id": "OLD-DELEGATION-REPLAY",
+        "result": "denied"
+      }
+    ]
+  },
+  "recovery": {
+    "authorization_id": "RECOVER-AI-INCIDENT-2026-0001",
+    "applied_at": "2026-08-05T12:21:00Z",
+    "new_agent_id": "AGENT-ORCHESTRATOR-002",
+    "new_session_id": "SESSION-RECOVERY-0001",
+    "new_key_id": "AGENT-KEY-ROTATED-002",
+    "old_session_state": "stopped",
+    "old_authority_restored": false,
+    "canary_mode": "read-only",
+    "canary_duration_seconds": 180,
+    "canary_health": "passed",
+    "automatic_full_restore": false,
+    "final_state": "RECOVERED_READ_ONLY"
+  },
+  "audit": {
+    "events": [
+      {
+        "sequence": 1,
+        "event": "trigger-received",
+        "status": "recorded"
+      },
+      {
+        "sequence": 2,
+        "event": "containment-command-verified",
+        "status": "recorded"
+      },
+      {
+        "sequence": 3,
+        "event": "authority-revoked",
+        "status": "recorded"
+      },
+      {
+        "sequence": 4,
+        "event": "evidence-preserved",
+        "status": "recorded"
+      },
+      {
+        "sequence": 5,
+        "event": "fallback-tested",
+        "status": "recorded"
+      },
+      {
+        "sequence": 6,
+        "event": "recovery-authorized",
+        "status": "recorded"
+      },
+      {
+        "sequence": 7,
+        "event": "read-only-canary-passed",
+        "status": "recorded"
+      }
+    ],
+    "incident_handoff": "organization-owned-live-workflow-NOT_CHECKED"
+  },
+  "live_enforcement": {
+    "control_plane": "NOT_CHECKED",
+    "model_gateway": "NOT_CHECKED",
+    "tool_gateway": "NOT_CHECKED",
+    "delegation_gateway": "NOT_CHECKED",
+    "memory_gateway": "NOT_CHECKED",
+    "authority_revocation": "NOT_CHECKED",
+    "incident_receiver": "NOT_CHECKED"
+  }
+}

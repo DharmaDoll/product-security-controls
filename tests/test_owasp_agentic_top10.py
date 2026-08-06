@@ -70,12 +70,14 @@ class OwaspAgenticTop10RegistryTest(unittest.TestCase):
                 "PSB-AI-006",
                 "PSB-AI-007",
                 "PSB-AI-008",
+                "PSB-AI-009",
+                "PSB-AI-010",
                 "PSB-SOURCE-004",
             },
         )
         self.assertEqual(
             {mapping["id"] for _, mapping in mappings},
-            {"ASI01", "ASI02", "ASI03", "ASI04", "ASI05", "ASI06", "ASI07", "ASI08", "ASI09"},
+            {"ASI01", "ASI02", "ASI03", "ASI04", "ASI05", "ASI06", "ASI07", "ASI08", "ASI09", "ASI10"},
         )
         for _, mapping in mappings:
             self.assertEqual(mapping["version"], "2026")

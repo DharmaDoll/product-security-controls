@@ -1,0 +1,27 @@
+{
+  "schema_version": "psb-ai-containment-command/v1",
+  "payload": {
+    "command_id": "CONTAIN-AI-INCIDENT-2026-0001",
+    "incident_id": "AI-INCIDENT-2026-0001",
+    "action": "contain",
+    "operator_id": "OP-INCIDENT-COMMANDER-001",
+    "tenant_id": "TENANT-A",
+    "agent_id": "AGENT-ORCHESTRATOR-001",
+    "session_id": "SESSION-ANOMALY",
+    "scope": "exact-agent-session",
+    "reason_ids": [
+      "approval-replay",
+      "invalid-delegation-attempt"
+    ],
+    "policy_id": "PSB-AI-009-FIRST-SLICE",
+    "policy_sha256": "1b5f4de64054881bb79f6f1fc9a99dbad5131518802121a4800624001246445d",
+    "trigger_sha256": "5654769f2452816ff82b3c9761511fc82b15fe687ad900437be7dc8bb31e5770",
+    "issued_at": "2026-08-05T11:56:00Z",
+    "expires_at": "2026-08-05T12:01:00Z",
+    "nonce": "NONCE-CONTAIN-0001",
+    "sequence": 41
+  },
+  "key_id": "KEY-INCIDENT-COMMANDER-001",
+  "algorithm": "Ed25519",
+  "signature": "IAOpNT3HfQuko0NFqKqh1JeFOENLJ33nvVbRdJpt9HmZ41rwgM20S9X13jMmn87supUC167IwGXC2KlouODaDw=="
+}

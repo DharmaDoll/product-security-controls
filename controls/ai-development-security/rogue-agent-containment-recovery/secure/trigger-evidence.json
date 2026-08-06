@@ -1,0 +1,29 @@
+{
+  "schema_version": "psb-ai-rogue-trigger/v1",
+  "evidence_source": "synthetic-fixture",
+  "collection_status": "complete",
+  "evaluator_status": "available",
+  "incident_id": "AI-INCIDENT-2026-0001",
+  "tenant_id": "TENANT-A",
+  "agent_id": "AGENT-ORCHESTRATOR-001",
+  "session_id": "SESSION-ANOMALY",
+  "observed_at": "2026-08-05T11:55:00Z",
+  "signals": [
+    {
+      "source_control": "PSB-AI-007",
+      "source_policy_id": "PSB-AI-007-FIRST-SLICE",
+      "signal_id": "approval-replay",
+      "decision": "block",
+      "circuit_breaker": "open",
+      "alert_receipt": "verified"
+    },
+    {
+      "source_control": "PSB-AI-008",
+      "source_policy_id": "PSB-AI-008-FIRST-SLICE",
+      "signal_id": "invalid-delegation-attempt",
+      "decision": "reject",
+      "downstream_dispatched": false
+    }
+  ],
+  "live_trigger_adoption": "NOT_CHECKED"
+}

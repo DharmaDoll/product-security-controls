@@ -1,0 +1,374 @@
+id: PSB-AI-009
+title: Independently contain and safely recover rogue agents
+domain: ai-development-security
+summary: 侵害・逸脱したagentをmodel外の署名付きcontrol planeで停止し、authority失効、action隔離、限定fallback、二者承認、新identityのread-only canaryまでをfail closedに検証する。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - verify
+  - respond
+threats:
+  - id: AI-ROGUE-AGENT-CONTINUATION
+    description: A compromised or misaligned agent continues model tool memory and delegation activity after a stop condition.
+  - id: AI-KILL-SWITCH-DEPENDENCY
+    description: The stop mechanism depends on the same agent model repository extension or mutable policy that must be contained.
+  - id: AI-INCIDENT-AUTHORITY-PERSISTENCE
+    description: Agent keys session authority approvals nonces and access grants remain usable after process termination.
+  - id: AI-INCIDENT-RETRY-CASCADE
+    description: Pending or unknown external actions are retried during containment and propagate duplicate effects.
+  - id: AI-UNSAFE-FALLBACK
+    description: Fallback retains agent model mutation or tool authority and reproduces the original compromise path.
+  - id: AI-PREMATURE-RECOVERY
+    description: Operators restore an old session key or authority without root-cause review replay tests independent approval or a bounded canary.
+  - id: AI-RECOVERY-EVIDENCE-FAILURE
+    description: Missing tampered sensitive malformed or evaluator-failed incident evidence is interpreted as successful containment or recovery.
+implementations:
+  insecure:
+    - insecure/containment-command.json
+    - insecure/recovery-authorization.json
+    - insecure/incident-evidence.json
+  secure:
+    - secure/policy.json
+    - secure/trigger-evidence.json
+    - secure/trust/operators.json
+    - secure/containment-command.json
+    - secure/recovery-authorization.json
+    - secure/incident-evidence.json
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-AI-009
+  expected:
+    - exact AI-006 AI-007 and AI-008 policies and operator trust keys are immutable before evaluation
+    - sanitized attributable AI-007 and AI-008 triggers initiate exact signed agent and session containment
+    - model tool delegation memory and agent execution stop within 60 seconds
+    - agent key approvals delegation nonces model access session authority and tool access are revoked
+    - pending and unknown actions are quarantined without automatic retry after evidence preservation
+    - model-free read-only fallback is bounded to 900 seconds and exercised
+    - root cause clean replacement identity and four old-authority replay denials precede recovery
+    - distinct incident commander and security reviewer signatures authorize only a new read-only canary
+    - continued authority unsafe fallback premature restore and live-adoption overclaim are FAIL
+    - malformed unavailable cryptographic evaluator or sensitive evidence is ERROR
+checks:
+  - id: RRC-001
+    title: Containment control plane is independent and immutable
+    required_state: the exact AI-006 AI-007 AI-008 policies operator trust manifest and public keys bind an out-of-band control plane that the agent model repository and extension cannot disable or override
+    responsible_role: security
+    applies_to:
+      - agent-containment-control-plane
+      - cross-control-contract
+      - operator-trust
+      - recovery-policy
+    context:
+      threat_actor: compromised agent model extension or repository instruction attempting to alter the mechanism intended to stop it
+      attack_or_failure_scenario: an agent-local hook reports containment while the same agent can bypass disable or rewrite the stop and recovery decision
+      why_required: every later response action is ineffective if the subject of containment controls the policy enforcement or operator trust root
+    verification:
+      type: automated
+      method: verify exact policy and trust digests public keys independence flags and evidence control-plane identity before processing commands
+      expected: only the out-of-band incident-response plane with no agent or repository override passes and any binding mismatch is ERROR
+      evidence:
+        - cross-control and trust binding output
+        - control-plane independence decision
+    mapping_status: reviewed
+  - id: RRC-002
+    title: Rogue-agent trigger is attributable complete and fresh
+    required_state: complete fresh AI-007 approval-replay and AI-008 invalid-delegation signals bind one exact tenant agent session incident and verified alert state
+    responsible_role: security
+    applies_to:
+      - rogue-agent-trigger
+      - anomaly-alert
+      - delegation-rejection
+      - incident-identity
+    context:
+      threat_actor: attacker spoofing an alert compromised collector omitting a signal or operator containing the wrong agent from stale evidence
+      attack_or_failure_scenario: unattributed missing or old telemetry causes either continued rogue activity or a destructive stop of an unrelated session
+      why_required: containment authority must be driven by independently observed exact identity and signal evidence rather than the agent's own self-report
+    verification:
+      type: automated
+      method: validate exact incident tenant agent session source policies required signal set breaker alert rejection and maximum trigger age
+      expected: both sanitized signals bind the containment command within 600 seconds while unavailable collection is ERROR
+      evidence:
+        - trigger identity comparison
+        - source decision and freshness output
+    mapping_status: reviewed
+  - id: RRC-003
+    title: Containment command has authenticated exact scope
+    required_state: an active incident commander signs a maximum-five-minute command for one exact incident tenant agent session reason set nonce and sequence
+    responsible_role: incident-response
+    applies_to:
+      - containment-command
+      - incident-operator
+      - agent-session-scope
+      - command-replay
+    context:
+      threat_actor: forged operator compromised agent replay attacker or broad automation issuing a wildcard tenant stop
+      attack_or_failure_scenario: an unsigned stale modified or over-broad command either fails to stop the rogue session or disrupts unrelated agents
+      why_required: a valid trigger identifies risk but does not authorize who may apply which availability-impacting action to which exact subject
+    verification:
+      type: automated
+      method: canonicalize the payload verify Ed25519 signature and compare operator authority exact identities reasons TTL nonce sequence policy and trigger digests
+      expected: the signed exact-session command passes while modified wildcard long-lived or forged commands fail
+      evidence:
+        - operator signature decision
+        - command scope freshness and replay fields
+    mapping_status: reviewed
+  - id: RRC-004
+    title: All agent execution channels stop within the deadline
+    required_state: no new model call tool dispatch delegation or memory write occurs and the target agent process is stopped within 60 seconds of the signed command
+    responsible_role: shared
+    applies_to:
+      - model-gateway
+      - tool-gateway
+      - delegation-gateway
+      - memory-gateway
+      - agent-runtime
+    context:
+      threat_actor: rogue agent racing the containment command or an enforcement integration applying a dashboard state without blocking execution
+      attack_or_failure_scenario: one unblocked channel lets the agent continue external effects poison future context or propagate work after operators believe it stopped
+      why_required: process termination alone does not cover remote model tool delegation and memory services that can continue independently
+    verification:
+      type: automated
+      method: derive command-to-application latency and require explicit deny state at all four gateways plus stopped runtime
+      expected: every execution channel is denied within 60 seconds and delayed or partial stop evidence fails
+      evidence:
+        - containment latency
+        - gateway and process enforcement states
+    mapping_status: reviewed
+  - id: RRC-005
+    title: Old agent and session authority is revoked
+    required_state: agent key approval receipts delegation nonces model access session credentials and tool access have exact identifiers and terminal revoked or invalidated states
+    responsible_role: shared
+    applies_to:
+      - agent-key
+      - approval-ledger
+      - delegation-ledger
+      - model-access
+      - session-authority
+      - tool-access
+    context:
+      threat_actor: stopped agent attacker holding cached authority or automation restarting the same identity after process termination
+      attack_or_failure_scenario: old keys approvals nonces or grants remain valid and recreate the compromised session through another process or replay path
+      why_required: stopping current execution does not remove distributed authority already issued to gateways ledgers and identity providers
+    verification:
+      type: automated
+      method: compare the exact required authority inventory and require every item to have a nonempty identifier and terminal revocation state
+      expected: all six authority classes are revoked or invalidated and active or missing entries fail
+      evidence:
+        - authority revocation inventory
+        - terminal state comparison
+    mapping_status: reviewed
+  - id: RRC-006
+    title: In-flight actions are quarantined after evidence preservation
+    required_state: pending-action and unknown-outcome requests are both quarantined without automatic retry after a SHA-256-bound metadata snapshot is preserved
+    responsible_role: incident-response
+    applies_to:
+      - pending-agent-action
+      - unknown-external-outcome
+      - incident-evidence-snapshot
+      - retry-control
+    context:
+      threat_actor: retry automation or responder treating a timeout as non-execution and cleaning state before investigation
+      attack_or_failure_scenario: duplicate external mutations occur while cleanup destroys the request identity needed to reconcile what already happened
+      why_required: gateway shutdown prevents new work but does not determine or safely reverse actions already dispatched before containment
+    verification:
+      type: automated
+      method: require both action states unique request IDs quarantine status no retry evidence-first ordering and an exact snapshot digest
+      expected: both records remain quarantined and preserved while retried or unrecorded outcomes fail
+      evidence:
+        - quarantine records
+        - evidence snapshot identity and digest
+    mapping_status: reviewed
+  - id: RRC-007
+    title: Emergency fallback is bounded and independent of AI execution
+    required_state: the exercised fallback lasts at most 900 seconds uses no agent model tool dispatch or mutation and permits only evidence incident status and runbook reads
+    responsible_role: incident-response
+    applies_to:
+      - incident-fallback
+      - operator-runbook
+      - read-only-recovery-path
+      - fallback-exercise
+    context:
+      threat_actor: compromised model or extension re-entering through an emergency mode that silently preserves full agent authority
+      attack_or_failure_scenario: the fallback reproduces the same dependency and privilege path under a different label and extends it without a time limit
+      why_required: containment must preserve a usable investigation path without forcing responders to reactivate the compromised system
+    verification:
+      type: automated
+      method: derive fallback duration compare exact allowed operations and require false agent model tool and mutation usage with a passed exercise
+      expected: operator-runbook read-only fallback passes and agent-driven full-authority fallback fails
+      evidence:
+        - fallback duration and operation set
+        - fallback exercise result
+    mapping_status: reviewed
+  - id: RRC-008
+    title: Recovery prerequisites prevent immediate reinfection
+    required_state: reviewed root cause preserved evidence tested fallback clean runtime new agent key and session and denied old session key approval and delegation replays exist before authorization
+    responsible_role: incident-response
+    applies_to:
+      - recovery-readiness
+      - root-cause-review
+      - clean-runtime
+      - old-authority-negative-test
+    context:
+      threat_actor: rushed operator incomplete remediation or surviving attacker relying on old identity and approval state
+      attack_or_failure_scenario: service is restarted on the same compromised runtime or authority before the original entry and replay paths are closed
+      why_required: elapsed time and process restart do not demonstrate that the cause was removed or that prior authority cannot recreate the incident
+    verification:
+      type: automated
+      method: verify reviewed nonempty root cause distinct clean identities old authority invalidation evidence and four exact denied replay tests
+      expected: all readiness facts exist before recovery and missing root cause reused identity or skipped replay test fails
+      evidence:
+        - recovery readiness record
+        - four negative replay decisions
+    mapping_status: reviewed
+  - id: RRC-009
+    title: Recovery requires independent authenticated dual control
+    required_state: distinct active incident commander and security reviewer identities sign the same maximum-five-minute recovery payload with a sequence after containment
+    responsible_role: incident-response
+    applies_to:
+      - recovery-authorization
+      - dual-control
+      - operator-signature
+      - authorization-replay
+    context:
+      threat_actor: compromised single operator rogue agent impersonating a responder or replay of an earlier recovery command
+      attack_or_failure_scenario: one identity restores authority without independent review or a modified stale authorization targets another replacement session
+      why_required: containment is availability-sensitive but re-enabling execution also reintroduces security risk and needs separation of proposal and approval
+    verification:
+      type: automated
+      method: verify two Ed25519 signatures exact roles distinct operators common payload identities TTL and monotonic sequence
+      expected: two valid role-separated signatures pass while duplicate operator modified payload or long-lived authorization fails
+      evidence:
+        - dual signature decisions
+        - role separation and authorization freshness
+    mapping_status: reviewed
+  - id: RRC-010
+    title: Recovery uses new identity and a read-only canary
+    required_state: recovery starts a new agent key and session in read-only mode for at most 300 seconds while the old session remains stopped and full authority is not automatically restored
+    responsible_role: shared
+    applies_to:
+      - recovered-agent
+      - read-only-canary
+      - old-session-isolation
+      - authority-restoration
+    context:
+      threat_actor: surviving compromise or recovery automation immediately restoring the original full authority before observing the replacement
+      attack_or_failure_scenario: old authority returns or an untested new runtime gains mutation access and repeats harmful actions without a bounded observation stage
+      why_required: readiness authorizes a safe trial but does not justify automatic return to the complete pre-incident privilege set
+    verification:
+      type: automated
+      method: bind recovery application to authorization and readiness identities then verify old-session stop read-only duration health and no automatic full restore
+      expected: a healthy new read-only session reaches RECOVERED_READ_ONLY while reused old identity or immediate full authority fails
+      evidence:
+        - recovery application record
+        - canary state duration and health
+    mapping_status: reviewed
+  - id: RRC-011
+    title: Incident evidence is ordered sanitized and claim-bounded
+    required_state: complete contiguous state and audit sequences contain no prohibited sensitive fields and every live control-plane gateway revocation and receiver adoption state remains NOT_CHECKED
+    responsible_role: security
+    applies_to:
+      - incident-state-machine
+      - sanitized-audit
+      - evidence-health
+      - live-adoption-claim
+    context:
+      threat_actor: failed collector malicious evidence producer or adopter copying sensitive incident content and presenting synthetic fixture success as production proof
+      attack_or_failure_scenario: missing events hide containment gaps while incident evidence becomes a second secret store or unsupported live adoption claim
+      why_required: response decisions require trustworthy chronology but fixture evidence must remain safe to share and must not overstate enforcement it cannot observe
+    verification:
+      type: automated
+      method: require exact state order contiguous audit events forbidden-field rejection complete health and seven explicit live NOT_CHECKED states
+      expected: sanitized synthetic evidence passes while gaps malformed sensitive unavailable or ADOPTED overclaim evidence is ERROR or FAIL as appropriate
+      evidence:
+        - state and audit sequence output
+        - expected-results/errors.txt
+        - live enforcement NOT_CHECKED output
+    mapping_status: reviewed
+mappings:
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI10
+    relationship: mitigates
+    confidence: high
+    rationale: Independent signed containment authority comprehensive revocation evidence-first quarantine bounded fallback dual-control readiness and staged recovery directly reduce one rogue-agent continuation and unsafe-recovery path without claiming complete live coverage.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - RRC-001
+      - RRC-002
+      - RRC-003
+      - RRC-004
+      - RRC-005
+      - RRC-006
+      - RRC-007
+      - RRC-008
+      - RRC-009
+      - RRC-010
+      - RRC-011
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI08
+    relationship: mitigates
+    confidence: medium
+    rationale: Multi-channel stop authority revocation in-flight quarantine bounded fallback replay denial and read-only recovery limit one cascade and reinfection path while concurrent fleet and tenant-wide recovery remain outside the fixture.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - RRC-004
+      - RRC-005
+      - RRC-006
+      - RRC-007
+      - RRC-008
+      - RRC-010
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.M0024
+    relationship: supports
+    confidence: high
+    rationale: Attributable sanitized anomaly triggers ordered containment transitions revocation records quarantine state and recovery audit provide a bounded AI Telemetry Logging implementation subset.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - RRC-002
+      - RRC-006
+      - RRC-011
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.M0028
+    relationship: mitigates
+    confidence: medium
+    rationale: Revoking tool authority stopping dispatch and allowing only a read-only canary constrain AI Agent Tools Permissions during containment and recovery without proving every live tool gateway enforces the state.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - RRC-004
+      - RRC-005
+      - RRC-007
+      - RRC-010
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.M0032
+    relationship: supports
+    confidence: high
+    rationale: An out-of-band control plane model-free fallback isolated old session and separate read-only replacement demonstrate a reviewed segmentation boundary among agent components and containment authority.
+    reviewer: product-security
+    review_date: "2026-08-05"
+    applies_to:
+      - RRC-001
+      - RRC-004
+      - RRC-007
+      - RRC-010
+limitations:
+  - Synthetic evidence does not prove live provider gateway process key ledger memory store identity provider SIEM or receiver enforcement.
+  - Repository public keys and precomputed signatures do not prove production hardware-backed custody enrollment rotation revocation or phishing-resistant operator authentication.
+  - Exact JSON timing and state fixtures do not prove distributed revocation is atomic or that no in-flight request crosses the containment boundary.
+  - Quarantine preserves request identity but does not implement application-specific rollback compensation or external transaction reversal.
+  - The operator-runbook fallback is a fixture and requires a separately hosted tested organization-owned implementation.
+  - RECOVERED_READ_ONLY is not automatic approval for full mutation authority and a later production decision requires additional review and evidence.
+  - PSB-GOV-001 integration remains NOT_CHECKED until exact AI asset artifact and deployment identities can be joined to the live incident.
+  - Passing this control does not establish model correctness safety complete ASI10 or ASI08 coverage incident-response maturity or compliance.
+status: prototype
+owner: product-security
+evidence_level: E3

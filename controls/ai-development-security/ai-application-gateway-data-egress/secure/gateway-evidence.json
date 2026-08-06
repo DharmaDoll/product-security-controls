@@ -1,0 +1,188 @@
+{
+  "schema_version": "psb-ai-application-gateway-evidence/v1",
+  "evidence_source": "synthetic-fixture",
+  "collection_status": "complete",
+  "evaluator_status": "available",
+  "policy_id": "PSB-AI-010-FIRST-SLICE",
+  "workload_session_id": "AI-GATEWAY-SESSION-0001",
+  "observed_at": "2026-08-05T12:00:00Z",
+  "gateway_health": {
+    "observed_at": "2026-08-05T11:59:30Z",
+    "complete": true,
+    "components": [
+      {
+        "component_id": "decision-engine",
+        "status": "healthy"
+      },
+      {
+        "component_id": "egress-enforcer",
+        "status": "healthy"
+      },
+      {
+        "component_id": "identity-verifier",
+        "status": "healthy"
+      },
+      {
+        "component_id": "telemetry-sink",
+        "status": "healthy"
+      }
+    ]
+  },
+  "decisions": [
+    {
+      "sequence": 1,
+      "request_id": "REQ-ALLOW-PUBLIC",
+      "decision": "allow",
+      "reasons": [],
+      "identity_enforced": true,
+      "route_enforced": true,
+      "target_enforced": true,
+      "classification_enforced": true,
+      "minimization_enforced": true,
+      "redaction_enforced": true,
+      "retention_enforced": true,
+      "dispatch_decision": "authorized",
+      "upstream_dispatched": false,
+      "network_execution": "not-performed-synthetic",
+      "audit_before_dispatch": true
+    },
+    {
+      "sequence": 2,
+      "request_id": "REQ-ALLOW-PERSONAL-REDACTED",
+      "decision": "allow",
+      "reasons": [],
+      "identity_enforced": true,
+      "route_enforced": true,
+      "target_enforced": true,
+      "classification_enforced": true,
+      "minimization_enforced": true,
+      "redaction_enforced": true,
+      "retention_enforced": true,
+      "dispatch_decision": "authorized",
+      "upstream_dispatched": false,
+      "network_execution": "not-performed-synthetic",
+      "audit_before_dispatch": true
+    },
+    {
+      "sequence": 3,
+      "request_id": "REQ-DENY-SECRET",
+      "decision": "deny",
+      "reasons": [
+        "data-class-denied"
+      ],
+      "identity_enforced": true,
+      "route_enforced": true,
+      "target_enforced": true,
+      "classification_enforced": true,
+      "minimization_enforced": true,
+      "redaction_enforced": true,
+      "retention_enforced": true,
+      "dispatch_decision": "blocked",
+      "upstream_dispatched": false,
+      "network_execution": "not-performed-synthetic",
+      "audit_before_dispatch": true
+    },
+    {
+      "sequence": 4,
+      "request_id": "REQ-DENY-UNAPPROVED-MODEL",
+      "decision": "deny",
+      "reasons": [
+        "inference-target-unapproved"
+      ],
+      "identity_enforced": true,
+      "route_enforced": true,
+      "target_enforced": true,
+      "classification_enforced": true,
+      "minimization_enforced": true,
+      "redaction_enforced": true,
+      "retention_enforced": true,
+      "dispatch_decision": "blocked",
+      "upstream_dispatched": false,
+      "network_execution": "not-performed-synthetic",
+      "audit_before_dispatch": true
+    },
+    {
+      "sequence": 5,
+      "request_id": "REQ-DENY-WRONG-TENANT-REGION",
+      "decision": "deny",
+      "reasons": [
+        "inference-target-unapproved"
+      ],
+      "identity_enforced": true,
+      "route_enforced": true,
+      "target_enforced": true,
+      "classification_enforced": true,
+      "minimization_enforced": true,
+      "redaction_enforced": true,
+      "retention_enforced": true,
+      "dispatch_decision": "blocked",
+      "upstream_dispatched": false,
+      "network_execution": "not-performed-synthetic",
+      "audit_before_dispatch": true
+    },
+    {
+      "sequence": 6,
+      "request_id": "REQ-DENY-DIRECT-BYPASS",
+      "decision": "deny",
+      "reasons": [
+        "gateway-bypass"
+      ],
+      "identity_enforced": true,
+      "route_enforced": true,
+      "target_enforced": true,
+      "classification_enforced": true,
+      "minimization_enforced": true,
+      "redaction_enforced": true,
+      "retention_enforced": true,
+      "dispatch_decision": "blocked",
+      "upstream_dispatched": false,
+      "network_execution": "not-performed-synthetic",
+      "audit_before_dispatch": true
+    },
+    {
+      "sequence": 7,
+      "request_id": "REQ-DENY-UNKNOWN-WORKLOAD",
+      "decision": "deny",
+      "reasons": [
+        "workload-identity-invalid"
+      ],
+      "identity_enforced": true,
+      "route_enforced": true,
+      "target_enforced": true,
+      "classification_enforced": true,
+      "minimization_enforced": true,
+      "redaction_enforced": true,
+      "retention_enforced": true,
+      "dispatch_decision": "blocked",
+      "upstream_dispatched": false,
+      "network_execution": "not-performed-synthetic",
+      "audit_before_dispatch": true
+    },
+    {
+      "sequence": 8,
+      "request_id": "REQ-DENY-OVERSIZED",
+      "decision": "deny",
+      "reasons": [
+        "data-size-exceeded"
+      ],
+      "identity_enforced": true,
+      "route_enforced": true,
+      "target_enforced": true,
+      "classification_enforced": true,
+      "minimization_enforced": true,
+      "redaction_enforced": true,
+      "retention_enforced": true,
+      "dispatch_decision": "blocked",
+      "upstream_dispatched": false,
+      "network_execution": "not-performed-synthetic",
+      "audit_before_dispatch": true
+    }
+  ],
+  "live_enforcement": {
+    "application-route": "NOT_CHECKED",
+    "gateway-decision": "NOT_CHECKED",
+    "identity-provider": "NOT_CHECKED",
+    "provider-tenant-policy": "NOT_CHECKED",
+    "telemetry-receiver": "NOT_CHECKED"
+  }
+}

@@ -1,0 +1,5 @@
+ERROR malformed or unavailable gateway evidence is not interpreted as a clean route
+ERROR unavailable identity decision enforcement or telemetry health is not interpreted as healthy
+ERROR unavailable cryptographic verification is not interpreted as authenticated workload identity
+ERROR prompt response credential source and personal content is rejected from evidence
+ERROR tampered policy trust manifest or public key binding is not evaluated

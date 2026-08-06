@@ -1,0 +1,12 @@
+PASS PSB-AI-010/AIG-001 gateway route workload trust and policy identity are immutable
+PASS PSB-AI-010/AIG-002 workload session is authenticated audience-bound fresh and exact
+PASS PSB-AI-010/AIG-003 application traffic cannot bypass the mandatory gateway route
+PASS PSB-AI-010/AIG-004 provider model tenant region training and retention are allowlisted
+PASS PSB-AI-010/AIG-005 outbound data is classified minimized and size bounded
+PASS PSB-AI-010/AIG-006 secret credential source and regulated classes are denied before dispatch
+PASS PSB-AI-010/AIG-007 personal data is locally redacted for a zero-retention target
+PASS PSB-AI-010/AIG-008 decision telemetry is content-free complete and committed before dispatch
+PASS PSB-AI-010/AIG-009 gateway decisions are independently derived and fail closed before egress
+PASS PSB-AI-010/AIG-010 gateway identity policy enforcement and telemetry health are complete and fresh
+PASS PSB-AI-010/AIG-011 synthetic evidence leaves every live enforcement point NOT_CHECKED
+ACCEPTED AI application gateway evidence; live enforcement NOT_CHECKED

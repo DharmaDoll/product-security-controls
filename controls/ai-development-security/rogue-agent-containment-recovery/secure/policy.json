@@ -1,0 +1,125 @@
+{
+  "schema_version": "psb-ai-rogue-containment-policy/v1",
+  "policy_id": "PSB-AI-009-FIRST-SLICE",
+  "evaluated_at": "2026-08-05T12:00:00Z",
+  "authority_plane": {
+    "type": "out-of-band-security-control-plane",
+    "administered_by": "incident-response",
+    "mutable_by_agent": false,
+    "depends_on_agent_process": false,
+    "depends_on_model_output": false,
+    "depends_on_repository_content": false,
+    "depends_on_extension_runtime": false
+  },
+  "cross_control_bindings": [
+    {
+      "control_id": "PSB-AI-006",
+      "path": "controls/ai-development-security/agent-action-integrity-output-validation/secure/policy.json",
+      "sha256": "88ae1d87a94a2ffcb50c13d9bc60a65d3c45830e4061a4e3c947bc58664c07f3",
+      "identity_field": "policy_id",
+      "identity": "PSB-AI-006-FIRST-SLICE"
+    },
+    {
+      "control_id": "PSB-AI-007",
+      "path": "controls/ai-development-security/agent-resource-budget-monitoring/secure/policy.json",
+      "sha256": "010d23e81a3133646e12f4f87803e36bd7703c751ed79482b486d05b4c4b5d05",
+      "identity_field": "policy_id",
+      "identity": "PSB-AI-007-FIRST-SLICE"
+    },
+    {
+      "control_id": "PSB-AI-008",
+      "path": "controls/ai-development-security/multi-agent-trust-delegation/secure/policy.json",
+      "sha256": "92ad48bf358abcdea3cbed80f084eed0f39be6ac6ca8e8dd8895c5aced7b4c1d",
+      "identity_field": "policy_id",
+      "identity": "PSB-AI-008-FIRST-SLICE"
+    }
+  ],
+  "operator_trust": {
+    "path": "controls/ai-development-security/rogue-agent-containment-recovery/secure/trust/operators.json",
+    "sha256": "13904ef50641010f70b03d5930cea111f36e77f53cdc24a34aa079c8c1ed770f",
+    "manifest_id": "PSB-AI-009-OPERATORS-001"
+  },
+  "trigger": {
+    "path": "controls/ai-development-security/rogue-agent-containment-recovery/secure/trigger-evidence.json",
+    "sha256": "5654769f2452816ff82b3c9761511fc82b15fe687ad900437be7dc8bb31e5770",
+    "required_signal_ids": [
+      "approval-replay",
+      "invalid-delegation-attempt"
+    ],
+    "maximum_age_seconds": 600
+  },
+  "containment": {
+    "maximum_command_ttl_seconds": 300,
+    "maximum_application_latency_seconds": 60,
+    "required_blocks": [
+      "delegation",
+      "memory-write",
+      "model-call",
+      "tool-dispatch"
+    ],
+    "required_revocations": [
+      "agent-key",
+      "approval-receipts",
+      "delegation-nonces",
+      "model-access",
+      "session-credentials",
+      "tool-access"
+    ]
+  },
+  "quarantine": {
+    "required_states": [
+      "pending-action",
+      "unknown-outcome"
+    ],
+    "automatic_retry": false,
+    "preserve_evidence_before_cleanup": true
+  },
+  "fallback": {
+    "mode": "operator-runbook-read-only",
+    "maximum_duration_seconds": 900,
+    "model_calls_allowed": false,
+    "tool_dispatch_allowed": false,
+    "mutation_allowed": false,
+    "allowed_operations": [
+      "evidence.read",
+      "incident-status.read",
+      "runbook.read"
+    ]
+  },
+  "recovery": {
+    "required_roles": [
+      "incident-commander",
+      "security-reviewer"
+    ],
+    "maximum_authorization_ttl_seconds": 300,
+    "require_distinct_operators": true,
+    "require_new_agent_key": true,
+    "require_new_session": true,
+    "require_old_authority_invalid": true,
+    "require_root_cause": true,
+    "require_negative_replay_test": true,
+    "require_fallback_exercise": true,
+    "canary": {
+      "mode": "read-only",
+      "maximum_duration_seconds": 300,
+      "automatic_full_restore": false
+    }
+  },
+  "evidence": {
+    "forbidden_fields": [
+      "credential",
+      "credential_value",
+      "message_body",
+      "private_url",
+      "prompt",
+      "secret",
+      "secret_value",
+      "token",
+      "token_value",
+      "tool_arguments",
+      "tool_output",
+      "transcript"
+    ],
+    "live_enforcement": "NOT_CHECKED"
+  }
+}

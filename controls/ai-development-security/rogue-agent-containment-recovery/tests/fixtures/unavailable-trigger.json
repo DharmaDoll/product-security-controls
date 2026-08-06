@@ -1,0 +1,13 @@
+{
+  "schema_version": "psb-ai-rogue-trigger/v1",
+  "evidence_source": "synthetic-fixture",
+  "collection_status": "unavailable",
+  "evaluator_status": "unavailable",
+  "incident_id": "AI-INCIDENT-2026-0001",
+  "tenant_id": "TENANT-A",
+  "agent_id": "AGENT-ORCHESTRATOR-001",
+  "session_id": "SESSION-ANOMALY",
+  "observed_at": "2026-08-05T11:55:00Z",
+  "signals": [],
+  "live_trigger_adoption": "NOT_CHECKED"
+}

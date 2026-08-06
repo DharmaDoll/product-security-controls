@@ -5,7 +5,7 @@
 このページは、実装済みcontrolを目的別に探すための入口です。
 `control.yaml`を正本として`make generate-index`で生成されます。
 
-現在、**38 controls / 349 atomic checks**を収録しています。
+現在、**40 controls / 371 atomic checks**を収録しています。
 
 ## 使い方
 
@@ -29,7 +29,7 @@
 | [Build Security](#domain-build-security) | build隔離、hosted build、credential境界、provenance生成の保護。 | 3 | 16 |
 | [Container / Cloud / IaC Security](#domain-container-cloud-iac-security) | IaC Golden Path、container admission、runtime、cloud control planeの保護。 | 5 | 49 |
 | [Release Integrity](#domain-release-integrity) | 署名、provenance、SBOM、supplier artifact、配布時の完全性。 | 4 | 27 |
-| [AI Development Security](#domain-ai-development-security) | AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。 | 8 | 91 |
+| [AI Development Security](#domain-ai-development-security) | AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。 | 10 | 113 |
 | [Detection / Verification](#domain-detection-verification) | 脆弱性、secret、container、IaCなどを検出・検証する共通基盤。 | 1 | 8 |
 | [Governance / Operations](#domain-governance-operations) | 例外、ownership、証跡、影響調査、継続運用とincident readiness。 | 3 | 23 |
 
@@ -145,6 +145,8 @@ AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。
 | [PSB-AI-006](ai-development-security/agent-action-integrity-output-validation/README.md) | Untrusted model proposalをstrict typed requestへ変換し、policy、PSB-AI-004 authorization、execution、resultを同じdigestへ束縛してreplayと曖昧なside effectをfail closedにする。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify` | 10 | `prototype` / `E3` |
 | [PSB-AI-007](ai-development-security/agent-resource-budget-monitoring/README.md) | Agent sessionのtoken、cost、duration、tool call、retry、recursionとsecurity anomalyをmodel外で評価し、warning時のread-only制限と上限超過時のcircuit breakerをsanitized telemetryで検証する。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify`, `respond` | 11 | `prototype` / `E3` |
 | [PSB-AI-008](ai-development-security/multi-agent-trust-delegation/README.md) | Agent間delegationとresponseを署名identity、parent request、capability、tenant、data、budget、freshness、replay、hopへbindし、権限と障害のchain伝播をfail closedにする。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify`, `respond` | 11 | `prototype` / `E3` |
+| [PSB-AI-009](ai-development-security/rogue-agent-containment-recovery/README.md) | 侵害・逸脱したagentをmodel外の署名付きcontrol planeで停止し、authority失効、action隔離、限定fallback、二者承認、新identityのread-only canaryまでをfail closedに検証する。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify`, `respond` | 11 | `prototype` / `E3` |
+| [PSB-AI-010](ai-development-security/ai-application-gateway-data-egress/README.md) | ApplicationのLLM通信を署名workload identity、mandatory gateway、exact provider／model／tenant／region、classification、minimization、redaction、retentionへbindし、bypassと機密data egressをfail closedにする。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify` | 11 | `prototype` / `E3` |
 
 <a id="domain-detection-verification"></a>
 

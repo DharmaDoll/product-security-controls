@@ -1,0 +1,19 @@
+{
+  "schema_version": "psb-ai-workload-session/v1",
+  "payload": {
+    "session_authorization_id": "AI-GATEWAY-SESSION-0001",
+    "workload_id": "WORKLOAD-CUSTOMER-SUPPORT-001",
+    "service_account": "SERVICE-ACCOUNT-AI-APP-001",
+    "tenant_id": "TENANT-A",
+    "audience": "PSB-AI-APPLICATION-GATEWAY",
+    "policy_id": "PSB-AI-010-FIRST-SLICE",
+    "policy_sha256": "078c8ad2b5991696824b85bd310ee213976c8b00c71374b8a6fefb8aa8a19b92",
+    "issued_at": "2026-08-05T11:58:00Z",
+    "expires_at": "2026-08-05T12:03:00Z",
+    "nonce": "NONCE-AI-GATEWAY-SESSION-0001",
+    "sequence": 17
+  },
+  "key_id": "KEY-AI-APP-WORKLOAD-001",
+  "algorithm": "Ed25519",
+  "signature": "pqSpUvciZOizGJ1gqPSmEKtxg4/wd1q7t+2QunslsFQe8sxa26D0qyLbNv6Vcg7eChQShvq+6cX5E/lmE5JEDw=="
+}

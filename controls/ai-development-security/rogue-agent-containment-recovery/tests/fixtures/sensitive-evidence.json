@@ -1,0 +1,14 @@
+{
+  "schema_version": "psb-ai-rogue-incident-evidence/v1",
+  "evidence_source": "synthetic-fixture",
+  "collection_status": "complete",
+  "evaluator_status": "available",
+  "incident_id": "AI-INCIDENT-2026-0001",
+  "tenant_id": "TENANT-A",
+  "agent_id": "AGENT-ORCHESTRATOR-001",
+  "session_id": "SESSION-ANOMALY",
+  "credential_value": "SYNTHETIC-PROHIBITED-EVIDENCE",
+  "live_enforcement": {
+    "control_plane": "NOT_CHECKED"
+  }
+}

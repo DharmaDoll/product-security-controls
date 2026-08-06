@@ -12,6 +12,8 @@ Generated control catalog. Do not edit manually.
 | [PSB-AI-006](../controls/ai-development-security/agent-action-integrity-output-validation/README.md) | ai-development-security | Bind agent proposals authorization execution and outputs | 10 | prototype | E3 |
 | [PSB-AI-007](../controls/ai-development-security/agent-resource-budget-monitoring/README.md) | ai-development-security | Enforce agent resource budgets anomaly detection and circuit breaking | 11 | prototype | E3 |
 | [PSB-AI-008](../controls/ai-development-security/multi-agent-trust-delegation/README.md) | ai-development-security | Authenticate and constrain multi-agent delegation | 11 | prototype | E3 |
+| [PSB-AI-009](../controls/ai-development-security/rogue-agent-containment-recovery/README.md) | ai-development-security | Independently contain and safely recover rogue agents | 11 | prototype | E3 |
+| [PSB-AI-010](../controls/ai-development-security/ai-application-gateway-data-egress/README.md) | ai-development-security | Enforce an authenticated AI application gateway and data egress policy | 11 | prototype | E3 |
 | [PSB-BUILD-001](../controls/build-security/build-containment/README.md) | build-security | dependency buildを権限・credential・networkから隔離する | 6 | prototype | E3 |
 | [PSB-BUILD-002](../controls/build-security/hosted-consistent-build/README.md) | build-security | 一貫したrelease buildを承認済みhosted platformで実行する | 5 | prototype | E3 |
 | [PSB-BUILD-003](../controls/build-security/platform-provenance-generation/README.md) | build-security | Build platformがauthentic provenanceを自動生成する | 5 | prototype | E3 |

@@ -189,6 +189,51 @@ PSB-AI-008,PSB-AI-008-MAD-010,developer,automated,response-to-delegation digest 
 PSB-AI-008,PSB-AI-008-MAD-010,developer,automated,AI-006 result schema decision
 PSB-AI-008,PSB-AI-008-MAD-011,security,automated,expected-results secure insecure and error outcomes
 PSB-AI-008,PSB-AI-008-MAD-011,security,automated,live enforcement NOT_CHECKED state
+PSB-AI-009,PSB-AI-009-RRC-001,security,automated,cross-control and trust binding output
+PSB-AI-009,PSB-AI-009-RRC-001,security,automated,control-plane independence decision
+PSB-AI-009,PSB-AI-009-RRC-002,security,automated,trigger identity comparison
+PSB-AI-009,PSB-AI-009-RRC-002,security,automated,source decision and freshness output
+PSB-AI-009,PSB-AI-009-RRC-003,incident-response,automated,operator signature decision
+PSB-AI-009,PSB-AI-009-RRC-003,incident-response,automated,command scope freshness and replay fields
+PSB-AI-009,PSB-AI-009-RRC-004,shared,automated,containment latency
+PSB-AI-009,PSB-AI-009-RRC-004,shared,automated,gateway and process enforcement states
+PSB-AI-009,PSB-AI-009-RRC-005,shared,automated,authority revocation inventory
+PSB-AI-009,PSB-AI-009-RRC-005,shared,automated,terminal state comparison
+PSB-AI-009,PSB-AI-009-RRC-006,incident-response,automated,quarantine records
+PSB-AI-009,PSB-AI-009-RRC-006,incident-response,automated,evidence snapshot identity and digest
+PSB-AI-009,PSB-AI-009-RRC-007,incident-response,automated,fallback duration and operation set
+PSB-AI-009,PSB-AI-009-RRC-007,incident-response,automated,fallback exercise result
+PSB-AI-009,PSB-AI-009-RRC-008,incident-response,automated,recovery readiness record
+PSB-AI-009,PSB-AI-009-RRC-008,incident-response,automated,four negative replay decisions
+PSB-AI-009,PSB-AI-009-RRC-009,incident-response,automated,dual signature decisions
+PSB-AI-009,PSB-AI-009-RRC-009,incident-response,automated,role separation and authorization freshness
+PSB-AI-009,PSB-AI-009-RRC-010,shared,automated,recovery application record
+PSB-AI-009,PSB-AI-009-RRC-010,shared,automated,canary state duration and health
+PSB-AI-009,PSB-AI-009-RRC-011,security,automated,state and audit sequence output
+PSB-AI-009,PSB-AI-009-RRC-011,security,automated,expected-results/errors.txt
+PSB-AI-009,PSB-AI-009-RRC-011,security,automated,live enforcement NOT_CHECKED output
+PSB-AI-010,PSB-AI-010-AIG-001,security,automated,policy route comparison
+PSB-AI-010,PSB-AI-010-AIG-001,security,automated,trust manifest and public-key digest result
+PSB-AI-010,PSB-AI-010-AIG-002,shared,automated,workload signature decision
+PSB-AI-010,PSB-AI-010-AIG-002,shared,automated,session identity audience and freshness output
+PSB-AI-010,PSB-AI-010-AIG-003,shared,automated,route comparison
+PSB-AI-010,PSB-AI-010-AIG-003,shared,automated,bypass block and dispatch state
+PSB-AI-010,PSB-AI-010-AIG-004,security,automated,inference target tuple comparison
+PSB-AI-010,PSB-AI-010-AIG-004,security,automated,target and retention enforcement decisions
+PSB-AI-010,PSB-AI-010-AIG-005,developer,automated,byte and field count comparisons
+PSB-AI-010,PSB-AI-010-AIG-005,developer,automated,oversized request decision
+PSB-AI-010,PSB-AI-010-AIG-006,shared,automated,prohibited class decision
+PSB-AI-010,PSB-AI-010-AIG-006,shared,automated,blocked dispatch metadata
+PSB-AI-010,PSB-AI-010-AIG-007,shared,automated,redaction count comparison
+PSB-AI-010,PSB-AI-010-AIG-007,shared,automated,minimization training and retention decisions
+PSB-AI-010,PSB-AI-010-AIG-008,security,automated,decision sequence and audit ordering
+PSB-AI-010,PSB-AI-010-AIG-008,security,automated,expected-results/errors.txt
+PSB-AI-010,PSB-AI-010-AIG-009,shared,automated,derived-versus-reported decision output
+PSB-AI-010,PSB-AI-010-AIG-009,shared,automated,dispatch authorization and block states
+PSB-AI-010,PSB-AI-010-AIG-010,security,automated,health component inventory
+PSB-AI-010,PSB-AI-010-AIG-010,security,automated,health freshness result
+PSB-AI-010,PSB-AI-010-AIG-011,security,automated,synthetic evidence source
+PSB-AI-010,PSB-AI-010-AIG-011,security,automated,live enforcement NOT_CHECKED output
 PSB-BUILD-001,PSB-BUILD-001-BLD-001,build-platform,automated,sanitized verifier output
 PSB-BUILD-001,PSB-BUILD-001-BLD-002,build-platform,automated,sanitized verifier output
 PSB-BUILD-001,PSB-BUILD-001-BLD-002,build-platform,automated,build and deploy job definition

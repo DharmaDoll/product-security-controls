@@ -1,0 +1,5 @@
+ERROR malformed incident evidence is not interpreted as a clean result
+ERROR unavailable trigger collection or evaluator is not interpreted as no rogue behavior
+ERROR missing cryptographic verifier is not interpreted as valid operator authority
+ERROR sensitive prompt credential token and tool content is rejected from incident evidence
+ERROR tampered cross-control policy trust manifest or public key binding is not evaluated

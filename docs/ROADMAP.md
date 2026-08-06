@@ -250,8 +250,7 @@ evidence for them:
 
 - OWASP Top 10 for Agentic Applications 2026 as a coarse agentic risk taxonomy
   — implemented with all `ASI01..ASI10` identifiers and reviewed mappings for
-  `PSB-AI-001`, `PSB-AI-002`, `PSB-AI-003`, `PSB-AI-004`, `PSB-AI-005`, and
-  `PSB-AI-006`, and `PSB-AI-007`;
+  `PSB-AI-001..010` plus the GitHub MCP slice in `PSB-SOURCE-004`;
 - NIST SP 800-218A as the AI-specific SSDF community profile;
 - NIST AI RMF 1.0 and NIST AI 600-1 for governance, measurement, and
   generative-AI risk management;
@@ -497,23 +496,35 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    ceilings, freshness, replay, one-hop, credential-free isolation, and
    fail-closed evidence. Live key custody, transport, atomic ledgers,
    concurrent fan-out, provider isolation, and recovery remain `NOT_CHECKED`.
-10. Reconcile the remaining OWASP AI Agent Security Cheat Sheet outcome for
-    rogue-agent stop, quarantine, fallback, and recovery behavior. Assign the
-    next ID only after reviewing overlap with `PSB-AI-003..008`,
-    `PSB-GOV-001`, and the repository-wide E3 testing requirement.
-11. Use the OWASP Agentic Top 10 registry as the risk-coverage view for these
-    slices: `ASI01`, `ASI06`, `ASI07`, `ASI08`, and a bounded subset of `ASI09`
-    are now implemented-partial through PSB-AI-003, PSB-AI-005,
-    PSB-AI-008, PSB-AI-007／008, and PSB-AI-006 respectively. `ASI10` remains
-    an explicit implementation gap; multi-agent concurrency and recovery
-    remain `ASI08` gaps and human decision quality remains an `ASI09` gap. Do
+10. `PSB-AI-009` — implemented at E3 with an out-of-band control plane,
+    AI-007／008 trigger binding, signed exact-session containment, model／tool／
+    delegation／memory stop, distributed authority revocation, evidence-first
+    quarantine, model-free bounded fallback, root-cause and replay readiness,
+    independent dual-control recovery, and a new-identity read-only canary.
+    Live gateways, key custody, distributed revocation, process termination,
+    SIEM and incident workflow remain `NOT_CHECKED`.
+11. `PSB-AI-010` — implemented at E3 with a signed five-minute application
+    workload identity, mandatory HTTPS gateway, exact provider／model／tenant／
+    region／training／retention tuple, classification, minimization, local
+    redaction, prohibited-class denial, bypass detection, content-free audit,
+    and fail-closed health. Live application egress, IdP, provider contract,
+    response and non-text filtering, and telemetry remain `NOT_CHECKED`.
+12. Use the OWASP Agentic Top 10 registry as the risk-coverage view for these
+    slices: `ASI01`, `ASI03`, `ASI06`, `ASI07`, `ASI08`, and a bounded subset
+    of `ASI09` are now implemented-partial through PSB-AI-003,
+    PSB-SOURCE-004／PSB-AI-004／010, PSB-AI-005, PSB-AI-008,
+    PSB-AI-007／008／009, and PSB-AI-006 respectively. `ASI10` is
+    implemented-partial by `PSB-AI-009`; fleet-wide kill, distributed rollback,
+    concurrent containment and full-authority recovery remain gaps. Multi-agent
+    concurrency remains an `ASI08` gap and human decision quality remains an `ASI09` gap. Do
     not mark an entire risk category covered from one control or roadmap text
     alone.
-12. Reconcile the seven-layer product-security and AI portfolio view from
+13. Reconcile the seven-layer product-security and AI portfolio view from
     [`REF-AI-003`](SECURITY_GUIDANCE_SOURCES.md#ref-ai-003). Existing controls
-    retain their current domain ownership. Prioritize the unique gaps as an AI
-    application gateway and data-egress boundary, model/data/RAG supply-chain
-    integrity, AI TEVV release gating, and rogue-agent stop/fallback/recovery.
+    retain their current domain ownership. Prioritize the remaining unique gaps
+    as model/data/RAG supply-chain integrity and AI TEVV release gating. Extend
+    the AI application gateway and rogue-agent containment only
+    with live enforcement, fleet recovery and incident-system evidence.
     Keep AI governance, training, security champions, KPI targets, PSIRT
     capability, and customer assurance as organization-owned profiles rather
     than documentation-only technical controls.

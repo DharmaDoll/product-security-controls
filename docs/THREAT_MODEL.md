@@ -160,9 +160,28 @@ breaking, and alert receipts. Local aggregates do not prove provider billing,
 atomic concurrent reservations, tenant or multi-agent budgets, or live alert
 response.
 
-Application-facing AI gateways, model and dataset supply-chain integrity,
-RAG corpus provenance, AI TEVV release gating, and independent kill-switch and
-recovery behavior remain planned boundaries. Coding-agent controls must not be
+`PSB-AI-009` owns the independent containment and bounded recovery boundary
+after those signals indicate a rogue or misaligned agent. It authenticates an
+exact-session stop outside the agent, blocks model, tool, delegation, and
+memory activity, revokes distributed authority, quarantines in-flight state,
+tests a model-free fallback, and requires root-cause, replay denial, two-person
+authorization, and a new-identity read-only canary. Its synthetic signatures
+and state evidence do not prove live gateway enforcement, key custody,
+distributed revocation, process termination, SIEM delivery, rollback, or
+full-authority recovery.
+
+`PSB-AI-010` owns the application-facing inference egress boundary, separate
+from the coding-agent network policy in `PSB-AI-004`. It authenticates a
+short-lived workload session, requires one HTTPS gateway, fixes provider,
+model, provider tenant, region, training, and retention as one target, and
+derives classification, minimization, local redaction, prohibited-class, and
+bypass decisions before dispatch. Content-free fixtures do not prove live
+application routes, IdP, gateway, provider contract, semantic classification,
+response or non-text filtering, or telemetry adoption.
+
+Model and dataset supply-chain integrity, RAG corpus provenance, AI TEVV
+release gating, live application gateway evidence, and live fleet-wide
+kill-switch and recovery evidence remain planned boundaries. Coding-agent controls must not be
 used as evidence that these broader AI product and operations threats are
 covered.
 
