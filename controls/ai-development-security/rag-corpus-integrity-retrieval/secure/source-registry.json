@@ -1,0 +1,76 @@
+{
+  "schema": "psb-rag-source-registry/v1.0",
+  "available": true,
+  "complete": true,
+  "collected_at": "2026-08-06T07:00:00Z",
+  "records": [
+    {
+      "source_id": "SRC-001",
+      "document_id": "DOC-001",
+      "status": "ACTIVE",
+      "owner": "platform-security",
+      "tenant_id": "tenant-a",
+      "classification": "internal",
+      "source_url": "https://knowledge.example.invalid/engineering-handbook",
+      "source_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "content_path": "documents/engineering-handbook.txt",
+      "content_sha256": "e4339d8a5036f57ec51d8178a201de0ea5ec376dc0ff36bbd52b3963963e8661",
+      "license_expression": "LicenseRef-Internal-Use",
+      "use_authorization": "RAG-INTERNAL-KNOWLEDGE",
+      "authorized_at": "2026-08-01T00:00:00Z",
+      "authorization_expires_at": "2026-09-01T00:00:00Z"
+    },
+    {
+      "source_id": "SRC-002",
+      "document_id": "DOC-002",
+      "status": "ACTIVE",
+      "owner": "support-content",
+      "tenant_id": "tenant-a",
+      "classification": "public",
+      "source_url": "https://knowledge.example.invalid/public-faq",
+      "source_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "content_path": "documents/public-faq.txt",
+      "content_sha256": "db946b91a712d17bc1b59063d8e9694c8aa0a8df4b01c830743e167f0b863691",
+      "license_expression": "CC-BY-4.0",
+      "use_authorization": "RAG-PUBLIC-KNOWLEDGE",
+      "authorized_at": "2026-08-01T00:00:00Z",
+      "authorization_expires_at": "2026-09-01T00:00:00Z"
+    },
+    {
+      "source_id": "SRC-003",
+      "document_id": "DOC-003",
+      "status": "UNAPPROVED",
+      "owner": "external-submitter",
+      "tenant_id": "tenant-a",
+      "classification": "public",
+      "source_url": "https://untrusted.example.invalid/submission",
+      "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "content_path": "candidates/untrusted-injection.txt",
+      "content_sha256": "90f732ec870c9b9d1c31106ec371b629c3ac2510c98df69bd1a61f72a7c95142",
+      "license_expression": "UNKNOWN",
+      "use_authorization": "NONE",
+      "authorized_at": null,
+      "authorization_expires_at": null
+    },
+    {
+      "source_id": "SRC-004",
+      "document_id": "DOC-004",
+      "status": "REVOKED",
+      "owner": "platform-security",
+      "tenant_id": "tenant-a",
+      "classification": "internal",
+      "source_url": "https://knowledge.example.invalid/retired-guide",
+      "source_revision": "dddddddddddddddddddddddddddddddddddddddd",
+      "content_path": "deleted/retired-guide.txt",
+      "content_sha256": "e3122bd949e9f37aec803e1dd323384c96794028a18b639eb0b39dc0a5e6006e",
+      "license_expression": "LicenseRef-Internal-Use",
+      "use_authorization": "REVOKED",
+      "authorized_at": "2026-08-01T00:00:00Z",
+      "authorization_expires_at": "2026-09-01T00:00:00Z",
+      "revoked_at": "2026-08-06T07:30:00Z",
+      "retired_chunk_ids": [
+        "CHK-DOC-004-001"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "psb-ai-model-intake-policy/v1.0",
+  "expected": {
+    "model_id": "example/tiny-classifier",
+    "model_version": "1.0.0",
+    "model_source_url": "https://models.example.invalid/example/tiny-classifier",
+    "model_source_revision": "1111111111111111111111111111111111111111",
+    "dataset_id": "example/synthetic-training",
+    "dataset_version": "2026.08.01",
+    "dataset_source_url": "https://datasets.example.invalid/example/synthetic-training",
+    "dataset_source_revision": "2222222222222222222222222222222222222222",
+    "dataset_license_expression": "CC0-1.0",
+    "dataset_use_authorization": "synthetic-test-data",
+    "loader_name": "safetensors",
+    "loader_version": "0.8.0",
+    "loader_source_commit": "a406ca3e7a90598be0cd05a50069cb9bf5ef6ba6",
+    "mlbom_serial_number": "urn:uuid:ad7d83a1-3bf3-49ed-80dc-6b51773dad55"
+  },
+  "artifact": {
+    "accepted_serializations": [
+      "safetensors"
+    ],
+    "denied_extensions": [
+      ".bin",
+      ".ckpt",
+      ".joblib",
+      ".pkl",
+      ".pickle",
+      ".pt",
+      ".pth"
+    ],
+    "maximum_artifact_bytes": 1048576,
+    "maximum_header_bytes": 4096,
+    "maximum_tensors": 16,
+    "maximum_dimensions": 8,
+    "allowed_dtypes": [
+      "F32"
+    ],
+    "require_complete_tensor_buffer": true,
+    "allow_remote_code": false
+  },
+  "mlbom": {
+    "format": "CycloneDX",
+    "spec_version": "1.7",
+    "required_component_types": [
+      "machine-learning-model",
+      "data",
+      "library"
+    ],
+    "require_model_card": true,
+    "require_dependency_graph": true
+  },
+  "inspector": {
+    "id": "psb-static-model-inspector",
+    "version": "1.0.0",
+    "sha256": "f434bfe66eb9266afb7c53cbf733c7158fde0d36af8bf4016b2a8b12ff85162f",
+    "maximum_receipt_age_hours": 24
+  },
+  "trusted_signer": {
+    "id": "psb-model-intake-test-signer",
+    "algorithm": "ed25519",
+    "public_key": "trust/model-intake-test-public.pem",
+    "public_key_sha256": "10ed11f2286c5c0fbddb1cda63fc44990f115ada468559a72458159ea55d00cc",
+    "maximum_status_age_hours": 24,
+    "maximum_attestation_age_hours": 24
+  },
+  "handoff": {
+    "allowed_target_environments": [
+      "staging"
+    ],
+    "required_decision": "ACCEPTED",
+    "require_remote_code": false,
+    "dependency_control": "PSB-DEPS-003"
+  },
+  "evidence": {
+    "include_model_bytes": false,
+    "include_dataset_rows": false,
+    "include_signature": false,
+    "include_key_material": false,
+    "include_source_credentials": false
+  }
+}

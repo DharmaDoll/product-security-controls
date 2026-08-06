@@ -1,0 +1,23 @@
+QUARANTINE RAG-003 SRC-003 poisoned content was not denied before embedding
+QUARANTINE RAG-001 SRC-003 source authorization was not enforced
+QUARANTINE RAG-008 SRC-004 revoked content was not removed from ingestion
+QUARANTINE RAG-010 fixture ingestion overclaims live source connector enforcement
+QUARANTINE RAG-004 corpus uses an unapproved or unbound embedding model
+QUARANTINE RAG-002 corpus snapshot does not contain exactly the admitted active sources
+QUARANTINE RAG-002 SRC-003 chunk identity or embedding binding is invalid
+QUARANTINE RAG-005 SRC-003 tenant or classification scope changed during indexing
+QUARANTINE RAG-002 corpus snapshot contains an unauthorized or deleted source
+QUARANTINE RAG-010 fixture snapshot overclaims live vector database enforcement
+QUARANTINE RAG-006 QUERY-001 retrieval authorization or expected result set is invalid
+QUARANTINE RAG-007 QUERY-001 result provenance is incomplete or substituted
+QUARANTINE RAG-006 QUERY-001 returned cross-tenant or over-classified content
+QUARANTINE RAG-006 QUERY-002 retrieval authorization or expected result set is invalid
+QUARANTINE RAG-007 QUERY-002 result provenance is incomplete or substituted
+QUARANTINE RAG-006 QUERY-002 returned cross-tenant or over-classified content
+QUARANTINE RAG-006 QUERY-003 retrieval authorization or expected result set is invalid
+QUARANTINE RAG-007 QUERY-003 result provenance is incomplete or substituted
+QUARANTINE RAG-006 QUERY-004 retrieval authorization or expected result set is invalid
+QUARANTINE RAG-007 QUERY-004 result provenance is incomplete or substituted
+QUARANTINE RAG-010 fixture retrieval overclaims live embedding service enforcement
+QUARANTINE RAG-008 revoked source deletion index removal or retrieval denial is incomplete
+RESULT QUARANTINE

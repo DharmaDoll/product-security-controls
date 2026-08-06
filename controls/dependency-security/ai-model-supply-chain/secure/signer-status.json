@@ -1,0 +1,19 @@
+{
+  "schema": "psb-ai-model-signer-status/v1.0",
+  "available": true,
+  "complete": true,
+  "collected_at": "2026-08-06T06:00:00Z",
+  "signers": [
+    {
+      "id": "psb-model-intake-test-signer",
+      "algorithm": "ed25519",
+      "public_key_sha256": "10ed11f2286c5c0fbddb1cda63fc44990f115ada468559a72458159ea55d00cc",
+      "status": "ACTIVE",
+      "valid_from": "2026-08-01T00:00:00Z",
+      "valid_until": "2026-08-31T00:00:00Z",
+      "allowed_model_ids": [
+        "example/tiny-classifier"
+      ]
+    }
+  ]
+}

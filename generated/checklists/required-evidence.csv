@@ -234,6 +234,26 @@ PSB-AI-010,PSB-AI-010-AIG-010,security,automated,health component inventory
 PSB-AI-010,PSB-AI-010-AIG-010,security,automated,health freshness result
 PSB-AI-010,PSB-AI-010-AIG-011,security,automated,synthetic evidence source
 PSB-AI-010,PSB-AI-010-AIG-011,security,automated,live enforcement NOT_CHECKED output
+PSB-AI-011,PSB-AI-011-RAG-001,security,hybrid,sanitized RAG-001 lifecycle result
+PSB-AI-011,PSB-AI-011-RAG-001,security,hybrid,source ID owner revision classification and authorization reference without content
+PSB-AI-011,PSB-AI-011-RAG-002,build-platform,automated,sanitized RAG-002 digest result
+PSB-AI-011,PSB-AI-011-RAG-002,build-platform,automated,source chunk ingestion and snapshot digests without content or vectors
+PSB-AI-011,PSB-AI-011-RAG-003,security,automated,sanitized RAG-003 finding and decision
+PSB-AI-011,PSB-AI-011-RAG-003,security,automated,exact PSB-AI-003 control and scenario identity without prompt body
+PSB-AI-011,PSB-AI-011-RAG-004,build-platform,automated,sanitized RAG-004 model identity
+PSB-AI-011,PSB-AI-011-RAG-004,build-platform,automated,embedding binding digest without vector values
+PSB-AI-011,PSB-AI-011-RAG-005,shared,automated,sanitized RAG-005 scope comparison
+PSB-AI-011,PSB-AI-011-RAG-005,shared,automated,tenant and classification labels without document content
+PSB-AI-011,PSB-AI-011-RAG-006,shared,automated,sanitized RAG-006 query ID principal scope and decision
+PSB-AI-011,PSB-AI-011-RAG-006,shared,automated,result chunk IDs without query or chunk text
+PSB-AI-011,PSB-AI-011-RAG-007,security,automated,sanitized RAG-007 provenance result
+PSB-AI-011,PSB-AI-011-RAG-007,security,automated,source chunk snapshot and model digests without returned content
+PSB-AI-011,PSB-AI-011-RAG-008,shared,automated,sanitized RAG-008 deletion result
+PSB-AI-011,PSB-AI-011-RAG-008,shared,automated,tombstone and retired chunk IDs without deleted content
+PSB-AI-011,PSB-AI-011-RAG-009,security,automated,expected-results/errors.txt
+PSB-AI-011,PSB-AI-011-RAG-009,security,automated,sanitized RAG-009 status and evidence identities
+PSB-AI-011,PSB-AI-011-RAG-010,security,automated,sanitized RAG-010 claim boundary
+PSB-AI-011,PSB-AI-011-RAG-010,security,automated,organization adoption evidence request
 PSB-BUILD-001,PSB-BUILD-001-BLD-001,build-platform,automated,sanitized verifier output
 PSB-BUILD-001,PSB-BUILD-001-BLD-002,build-platform,automated,sanitized verifier output
 PSB-BUILD-001,PSB-BUILD-001-BLD-002,build-platform,automated,build and deploy job definition
@@ -405,6 +425,24 @@ PSB-DEPS-004,PSB-DEPS-004-DCR-006,security,hybrid,sanitized provenance binding r
 PSB-DEPS-004,PSB-DEPS-004-DCR-007,repository-admin,automated,sanitized approval result
 PSB-DEPS-004,PSB-DEPS-004-DCR-008,security,automated,sanitized exception decision
 PSB-DEPS-004,PSB-DEPS-004-DCR-009,ci-platform,automated,fail-closed negative-test output
+PSB-DEPS-005,PSB-DEPS-005-AMS-001,build-platform,automated,sanitized AMS-001 result
+PSB-DEPS-005,PSB-DEPS-005-AMS-001,build-platform,automated,model ID version revision digest and size without model content
+PSB-DEPS-005,PSB-DEPS-005-AMS-002,build-platform,automated,sanitized AMS-002 result
+PSB-DEPS-005,PSB-DEPS-005-AMS-002,build-platform,automated,ML-BOM serial and digest without dataset rows or weight bytes
+PSB-DEPS-005,PSB-DEPS-005-AMS-003,build-platform,automated,sanitized AMS-003 result
+PSB-DEPS-005,PSB-DEPS-005-AMS-003,build-platform,automated,serialization and loader identity without executing either artifact
+PSB-DEPS-005,PSB-DEPS-005-AMS-004,security,automated,sanitized AMS-004 result
+PSB-DEPS-005,PSB-DEPS-005-AMS-004,security,automated,header size tensor count dtype and structural decision without tensor values
+PSB-DEPS-005,PSB-DEPS-005-AMS-005,security,automated,sanitized AMS-005 result
+PSB-DEPS-005,PSB-DEPS-005-AMS-005,security,automated,signer ID status receipt ID and material digests without signature or key body
+PSB-DEPS-005,PSB-DEPS-005-AMS-006,shared,hybrid,sanitized AMS-006 result
+PSB-DEPS-005,PSB-DEPS-005-AMS-006,shared,hybrid,dataset ID version revision digest license and authorization reference without dataset rows
+PSB-DEPS-005,PSB-DEPS-005-AMS-007,release-manager,automated,sanitized AMS-007 result
+PSB-DEPS-005,PSB-DEPS-005-AMS-007,release-manager,automated,target environment and immutable dependency digests
+PSB-DEPS-005,PSB-DEPS-005-AMS-008,security,automated,sanitized AMS-008 error state
+PSB-DEPS-005,PSB-DEPS-005-AMS-008,security,automated,operations alert reference without model or dataset content
+PSB-DEPS-005,PSB-DEPS-005-AMS-009,security,automated,sanitized AMS-009 result
+PSB-DEPS-005,PSB-DEPS-005-AMS-009,security,automated,check IDs decisions and digests only
 PSB-DETECT-001,PSB-DETECT-001-DVS-001,ci-platform,automated,sanitized release verification receipt
 PSB-DETECT-001,PSB-DETECT-001-DVS-001,ci-platform,automated,artifact digest negative-test output
 PSB-DETECT-001,PSB-DETECT-001-DVS-002,security,automated,scanner database metadata

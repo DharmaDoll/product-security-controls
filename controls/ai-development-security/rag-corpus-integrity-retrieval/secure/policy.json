@@ -1,0 +1,106 @@
+{
+  "schema": "psb-rag-corpus-policy/v1.0",
+  "source_registry": {
+    "sha256": "21f5c508bcfc818aabe070609d0e07ecd4eff2d25b1e5272c06285513e74e2b8",
+    "maximum_age_hours": 24,
+    "accepted_active_status": "ACTIVE",
+    "accepted_tenants": [
+      "tenant-a"
+    ]
+  },
+  "classification_ranks": {
+    "public": 0,
+    "internal": 1,
+    "restricted": 2
+  },
+  "chunking": {
+    "algorithm": "whole-document-v1",
+    "maximum_document_bytes": 256,
+    "maximum_chunks_per_document": 1,
+    "chunk_id_prefix": "CHK"
+  },
+  "poisoning": {
+    "upstream_control": "PSB-AI-003",
+    "scenario_id": "RAG-POISON-001",
+    "synthetic_marker": "UNTRUSTED_INSTRUCTION_FIXTURE",
+    "deny_before_embedding": true
+  },
+  "inspector": {
+    "id": "psb-rag-corpus-verifier",
+    "version": "1.0.0",
+    "sha256": "b06fcda7ee9a160cee7ff7af09d29a9c4626a2a87c43bd1e84b8fb47c1ca7e47"
+  },
+  "embedding_model": {
+    "upstream_control": "PSB-DEPS-005",
+    "model_id": "example/tiny-classifier",
+    "model_version": "1.0.0",
+    "artifact_sha256": "df0c00870b43005f873ec026757af59db1956218773b4ee401df32a9536c1aed"
+  },
+  "principals": [
+    {
+      "principal_id": "app-tenant-a",
+      "tenant_id": "tenant-a",
+      "maximum_classification": "internal"
+    },
+    {
+      "principal_id": "public-tenant-a",
+      "tenant_id": "tenant-a",
+      "maximum_classification": "public"
+    },
+    {
+      "principal_id": "app-tenant-b",
+      "tenant_id": "tenant-b",
+      "maximum_classification": "internal"
+    }
+  ],
+  "retrieval_scenarios": [
+    {
+      "query_id": "QUERY-001",
+      "query_sha256": "df6a220c7f444ecb44cd2748d060166d562c6a179d1523a3d3adb44b5c75f329",
+      "principal_id": "app-tenant-a",
+      "expected_chunk_ids": [
+        "CHK-DOC-001-001"
+      ]
+    },
+    {
+      "query_id": "QUERY-002",
+      "query_sha256": "49248c2ad0f8e86f1b85dc609c9624608d62a9f3d583860b11b47add2cf59471",
+      "principal_id": "public-tenant-a",
+      "expected_chunk_ids": [
+        "CHK-DOC-002-001"
+      ]
+    },
+    {
+      "query_id": "QUERY-003",
+      "query_sha256": "cf411efabfc8236864bfdd529db90a2b6a94e17dc90fcce9b305d62e90de0fe1",
+      "principal_id": "app-tenant-b",
+      "expected_chunk_ids": []
+    },
+    {
+      "query_id": "QUERY-004",
+      "query_sha256": "47353a452d154d695d0368d7c4e12f7f15dc73675c50057b40087b72d401c2a2",
+      "principal_id": "app-tenant-a",
+      "expected_chunk_ids": []
+    }
+  ],
+  "deletion": {
+    "source_id": "SRC-004",
+    "document_id": "DOC-004",
+    "maximum_propagation_seconds": 300,
+    "required_index_state": "NOT_FOUND",
+    "required_retrieval_decision": "DENY"
+  },
+  "evidence": {
+    "include_document_content": false,
+    "include_chunk_content": false,
+    "include_query_text": false,
+    "include_embedding_vectors": false,
+    "include_credentials": false
+  },
+  "live_claims": {
+    "source_connectors": "NOT_CHECKED",
+    "vector_database": "NOT_CHECKED",
+    "embedding_service": "NOT_CHECKED",
+    "deletion_replication": "NOT_CHECKED"
+  }
+}

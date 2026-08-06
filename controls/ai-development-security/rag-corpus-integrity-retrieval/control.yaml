@@ -1,0 +1,362 @@
+id: PSB-AI-011
+title: Govern RAG corpus integrity retrieval scope and deletion
+domain: ai-development-security
+summary: RAG source、document、chunk、embedding model、tenant、classification、corpus snapshot、retrieval result、revocationをexact identityへ結び、poisoningとcross-scope retrievalを拒否する。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - verify
+  - govern
+threats:
+  - id: AI-RAG-UNAUTHORIZED-SOURCE
+    description: Unowned unapproved expired or revoked external content is admitted to a trusted retrieval corpus.
+  - id: AI-RAG-POISONING
+    description: A document contains instructions intended to hijack the model or harvest protected data after retrieval.
+  - id: AI-RAG-CONTENT-SUBSTITUTION
+    description: Source bytes chunks embedding identity or corpus snapshot change after review without a corresponding identity change.
+  - id: AI-RAG-CROSS-TENANT-RETRIEVAL
+    description: A principal receives chunks from another tenant or above its maximum classification.
+  - id: AI-RAG-PROVENANCE-LOSS
+    description: Retrieved text cannot be traced to an exact source revision chunk digest corpus snapshot and embedding model.
+  - id: AI-RAG-REVOCATION-FAILURE
+    description: Revoked documents or embeddings remain searchable in an index replica or cache.
+  - id: AI-RAG-EVIDENCE-FAIL-OPEN
+    description: Missing partial malformed stale or sensitive ingestion retrieval and deletion evidence is interpreted as a clean corpus.
+implementations:
+  insecure:
+    - insecure/ingestion-evidence.json
+    - insecure/corpus-snapshot.json
+    - insecure/retrieval-evidence.json
+    - insecure/deletion-evidence.json
+  secure:
+    - secure/policy.json
+    - secure/source-registry.json
+    - secure/documents/engineering-handbook.txt
+    - secure/documents/public-faq.txt
+    - secure/candidates/untrusted-injection.txt
+    - secure/ingestion-evidence.json
+    - secure/corpus-snapshot.json
+    - secure/retrieval-evidence.json
+    - secure/deletion-evidence.json
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-AI-011
+  expected:
+    - complete fresh source registry binds owner tenant classification HTTPS source full revision content digest license authorization and lifecycle
+    - active approved documents are deterministically chunked while unapproved poisoned and revoked candidates remain absent from the corpus snapshot
+    - inert prompt-injection fixture is denied before embedding through an exact PSB-AI-003 scenario identity
+    - corpus snapshot binds the exact PSB-DEPS-005 embedding model artifact and ingestion evidence
+    - tenant and classification labels survive source ingestion chunking and retrieval
+    - four metadata-only retrieval scenarios enforce exact principal tenant clearance and expected chunk set
+    - every returned chunk binds source document revision digest snapshot and embedding model without copying content
+    - revoked source payload and chunk are absent within the bounded deletion window and retrieval returns deny
+    - unavailable incomplete malformed tampered or sensitive evidence exits 2 as ERROR rather than clean
+    - synthetic evidence keeps source connectors vector database embedding service and deletion replication NOT_CHECKED
+checks:
+  - id: RAG-001
+    title: Corpus sources are explicitly owned authorized and current
+    required_state: every source has one owner tenant classification HTTPS URL full revision content digest license use authorization and active unexpired or explicit rejected or revoked lifecycle state
+    responsible_role: security
+    applies_to:
+      - rag-source-registry
+      - corpus-source-authorization
+    context:
+      threat_actor: malicious content submitter compromised connector abandoned source owner or developer adding a convenient unreviewed website
+      attack_or_failure_scenario: unowned expired unknown-license or unapproved material is indexed and later presented to the model as trusted organizational knowledge
+      why_required: prompt filtering cannot establish that a source is permitted for one tenant and purpose so admission requires an independent accountable source registry
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-AI-011 and inspect organization source-owner approval evidence
+      expected: active exact sources may proceed while unapproved expired unknown-license and revoked sources cannot be indexed
+      evidence:
+        - sanitized RAG-001 lifecycle result
+        - source ID owner revision classification and authorization reference without content
+    mapping_status: reviewed
+  - id: RAG-002
+    title: Document chunks and corpus snapshot retain exact integrity
+    required_state: source content digest deterministic whole-document chunk ID chunk digest ingestion receipt and corpus snapshot contain exactly the admitted active sources
+    responsible_role: build-platform
+    applies_to:
+      - rag-document-ingestion
+      - chunking-pipeline
+      - corpus-snapshot
+    context:
+      threat_actor: compromised connector index writer or race replacing content between authorization scanning chunking and embedding
+      attack_or_failure_scenario: reviewed source metadata points to changed chunks or the active index silently omits approved content and adds unauthorized content
+      why_required: source authorization applies to exact bytes and becomes ineffective when chunk and snapshot identities can drift after the decision
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-AI-011
+      expected: exact source and one deterministic chunk per admitted document pass while byte tamper unauthorized entry omission duplicate or embedding-binding mismatch quarantines
+      evidence:
+        - sanitized RAG-002 digest result
+        - source chunk ingestion and snapshot digests without content or vectors
+    mapping_status: reviewed
+  - id: RAG-003
+    title: Poisoned content is denied before embedding
+    required_state: exact inert PSB-AI-003-bound RAG poisoning marker produces finding RAG-POISON-001 and REJECTED before chunk embedding or indexing
+    responsible_role: security
+    applies_to:
+      - rag-poisoning-scan
+      - pre-embedding-admission
+      - retrieved-instruction-boundary
+    context:
+      threat_actor: external publisher compromised knowledge source or insider planting instructions that request policy override or credential disclosure
+      attack_or_failure_scenario: adversarial text enters the index and later hijacks the model when a semantically related query retrieves it as trusted context
+      why_required: runtime prompt-injection controls remain necessary but rejecting known poisoned content before durable indexing reduces repeated and delayed exposure
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-AI-011
+      expected: the inert poisoned source is detected and rejected while a signed or hashed finding cannot be ignored by the ingestion decision
+      evidence:
+        - sanitized RAG-003 finding and decision
+        - exact PSB-AI-003 control and scenario identity without prompt body
+    mapping_status: reviewed
+  - id: RAG-004
+    title: Embedding model is the exact PSB-DEPS-005 artifact
+    required_state: corpus snapshot identifies one model ID version artifact SHA-256 and PSB-DEPS-005 control and each chunk binds that model digest to its content digest
+    responsible_role: build-platform
+    applies_to:
+      - embedding-model
+      - embedding-pipeline
+      - corpus-snapshot
+    context:
+      threat_actor: compromised model registry index job or operator changing to a mutable embedding model without rebuilding and reviewing the corpus
+      attack_or_failure_scenario: retrieval semantics change or a poisoned model is used while the corpus retains a previous approved model name
+      why_required: content provenance alone cannot reproduce or assess the index unless the exact model artifact that transformed each chunk is also immutable
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-AI-011
+      expected: exact PSB-DEPS-005 model artifact and per-chunk binding pass while latest wrong model or zero digest quarantines
+      evidence:
+        - sanitized RAG-004 model identity
+        - embedding binding digest without vector values
+    mapping_status: reviewed
+  - id: RAG-005
+    title: Tenant and classification scope survive ingestion
+    required_state: every corpus chunk repeats the authorized source tenant and classification and the tenant-specific snapshot cannot contain another tenant
+    responsible_role: shared
+    applies_to:
+      - vector-index-namespace
+      - chunk-access-label
+      - data-classification
+    context:
+      threat_actor: faulty connector shared index configuration or malicious index writer dropping or rewriting authorization metadata
+      attack_or_failure_scenario: an otherwise valid chunk crosses tenant boundaries or is downgraded from internal to public before retrieval policy runs
+      why_required: retrieval authorization cannot enforce scope that was discarded or falsified during indexing so labels must be integrity-checked end to end
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-AI-011
+      expected: source chunk and snapshot tenant and classification match exactly while wildcard cross-tenant and downgrade fixtures quarantine
+      evidence:
+        - sanitized RAG-005 scope comparison
+        - tenant and classification labels without document content
+    mapping_status: reviewed
+  - id: RAG-006
+    title: Every retrieval authorizes exact principal tenant and clearance
+    required_state: each query digest maps to one known principal tenant maximum classification and exact allow or deny result set before context is returned
+    responsible_role: shared
+    applies_to:
+      - rag-retrieval-authorization
+      - query-principal
+      - tenant-and-clearance-policy
+    context:
+      threat_actor: another tenant user forged principal confused retrieval service or application omitting classification constraints
+      attack_or_failure_scenario: a valid query returns chunks from a different tenant above caller clearance or from a revoked source
+      why_required: vector similarity is not authorization and must never decide which protected context a principal may receive
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-AI-011
+      expected: exact internal public cross-tenant and revoked-source scenarios match policy while substituted principal result set or over-classified chunk quarantines
+      evidence:
+        - sanitized RAG-006 query ID principal scope and decision
+        - result chunk IDs without query or chunk text
+    mapping_status: reviewed
+  - id: RAG-007
+    title: Retrieved chunks preserve source and snapshot provenance
+    required_state: each result repeats exact chunk document source revision digest tenant classification corpus snapshot and embedding model artifact identity
+    responsible_role: security
+    applies_to:
+      - rag-retrieval-result
+      - context-provenance
+      - response-attribution
+    context:
+      threat_actor: compromised retriever stale cache or result adapter substituting plausible text without its reviewed source identity
+      attack_or_failure_scenario: the model and reviewer cannot distinguish an approved current chunk from stale forged or differently embedded context
+      why_required: authorization of a chunk ID alone does not prove which bytes and corpus version were actually returned to the model
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-AI-011
+      expected: exact snapshot entries pass while absent chunks changed revisions wrong digests or model substitution quarantine
+      evidence:
+        - sanitized RAG-007 provenance result
+        - source chunk snapshot and model digests without returned content
+    mapping_status: reviewed
+  - id: RAG-008
+    title: Revocation deletes payload chunks and retrieval access
+    required_state: revoked source payload is absent its retired chunk is absent from the snapshot index lookup is NOT_FOUND retrieval probe is DENY and a metadata-only tombstone is created within 300 seconds
+    responsible_role: shared
+    applies_to:
+      - rag-source-revocation
+      - vector-index-deletion
+      - retrieval-cache-invalidation
+    context:
+      threat_actor: failed deletion worker stale replica cache or operator retaining useful but revoked knowledge
+      attack_or_failure_scenario: removed sensitive outdated or poisoned content remains retrievable after its source authorization is revoked
+      why_required: changing source status does not reduce exposure until every payload chunk and retrieval path stops returning the content
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-AI-011
+      expected: bounded deletion tombstone payload absence chunk absence and deny probe pass while delayed FOUND or returned revoked chunk quarantines
+      evidence:
+        - sanitized RAG-008 deletion result
+        - tombstone and retired chunk IDs without deleted content
+    mapping_status: reviewed
+  - id: RAG-009
+    title: Corpus evidence is complete sanitized and fail closed
+    required_state: source ingestion snapshot retrieval and deletion evidence is complete available parseable digest-bound and excludes document chunk query vector credential prompt and output content
+    responsible_role: security
+    applies_to:
+      - rag-security-evidence
+      - corpus-evaluator
+      - evidence-privacy
+    context:
+      threat_actor: collector outage malformed provider response malicious result producer or evidence exporter copying protected knowledge
+      attack_or_failure_scenario: missing observations become a clean corpus decision or security evidence creates another broadly readable corpus and query history
+      why_required: reliable automation needs an explicit ERROR state and metadata-only evidence so inability to evaluate cannot be mistaken for safety
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-AI-011
+      expected: complete sanitized evidence passes while unavailable incomplete malformed tampered or sensitive fields return exit code 2 ERROR without echoing values
+      evidence:
+        - expected-results/errors.txt
+        - sanitized RAG-009 status and evidence identities
+    mapping_status: unmapped
+  - id: RAG-010
+    title: Fixture results do not overclaim live RAG enforcement
+    required_state: source connectors vector database embedding service and deletion replication remain explicitly NOT_CHECKED in repository fixture evidence
+    responsible_role: security
+    applies_to:
+      - live-rag-platform
+      - adoption-claim
+      - vector-database-replicas
+    context:
+      threat_actor: adopter dashboard or automation treating deterministic JSON fixtures as proof about a live hosted retrieval platform
+      attack_or_failure_scenario: production RAG is declared protected without observing connector identity index ACL cache replica deletion or model service behavior
+      why_required: a provider-neutral evaluator proves the contract and negative semantics but cannot establish that a changing live platform enforces them
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-AI-011
+      expected: secure fixture passes only with four NOT_CHECKED claims and any synthetic PASS overclaim quarantines
+      evidence:
+        - sanitized RAG-010 claim boundary
+        - organization adoption evidence request
+    mapping_status: unmapped
+mappings:
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0070
+    relationship: mitigates
+    confidence: high
+    rationale: Source authorization、exact content integrity、pre-embedding poisoning denial、tenant scope、retrieval provenance、revocationはRAG poisoningのadmissionとpersistenceを低減するが、未知semantic attackを完全検出しない。
+    reviewer: product-security
+    review_date: "2026-08-06"
+    applies_to:
+      - RAG-001
+      - RAG-002
+      - RAG-003
+      - RAG-005
+      - RAG-007
+      - RAG-008
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0071
+    relationship: mitigates
+    confidence: high
+    rationale: Complete source registry、deterministic chunk identity、exact corpus membership、retrieval provenanceによりfalse RAG entry injectionを検出・隔離するが、authorized sourceの誤情報までは保証しない。
+    reviewer: product-security
+    review_date: "2026-08-06"
+    applies_to:
+      - RAG-001
+      - RAG-002
+      - RAG-005
+      - RAG-007
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.T0082
+    relationship: mitigates
+    confidence: medium
+    rationale: Credential disclosureを求めるpoisoned corpusをembedding前に拒否し、retrievalをtenantとclassificationへ制約することでRAG credential harvesting経路を縮小するが、application response egressはPSB-AI-010等を要する。
+    reviewer: product-security
+    review_date: "2026-08-06"
+    applies_to:
+      - RAG-003
+      - RAG-005
+      - RAG-006
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.M0025
+    relationship: supports
+    confidence: high
+    rationale: Source owner、revision、digest、license、authorization、chunk、snapshot、revocationを保持してAI dataset provenanceをRAG corpusへ適用するが、source claimの真実性は証明しない。
+    reviewer: product-security
+    review_date: "2026-08-06"
+    applies_to:
+      - RAG-001
+      - RAG-002
+      - RAG-007
+      - RAG-008
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI01
+    relationship: mitigates
+    confidence: medium
+    rationale: Retrieved poisoned instructionsをdurable indexへ入れる前に拒否しsource authorityを保持することでgoal hijack exposureを減らすが、live modelのinstruction followingはPSB-AI-003の実環境検証を要する。
+    reviewer: product-security
+    review_date: "2026-08-06"
+    applies_to:
+      - RAG-001
+      - RAG-003
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI04
+    relationship: mitigates
+    confidence: medium
+    rationale: Corpus sourceとembedding modelをimmutable provenance、admission、revocationへ結び、agentic applicationが利用するRAG supply chainの一部を保護するが、全agent dependencyを対象にしない。
+    reviewer: product-security
+    review_date: "2026-08-06"
+    applies_to:
+      - RAG-001
+      - RAG-002
+      - RAG-004
+      - RAG-008
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI06
+    relationship: mitigates
+    confidence: high
+    rationale: Untrusted poisoned contextのadmission、tenant scope、provenance、revocationとdeletionを検証しRAG-backed context poisoningを低減するが、agent memory lifecycleはPSB-AI-005が所有する。
+    reviewer: product-security
+    review_date: "2026-08-06"
+    applies_to:
+      - RAG-003
+      - RAG-005
+      - RAG-006
+      - RAG-007
+      - RAG-008
+limitations:
+  - Synthetic text fixtures and deterministic whole-document chunks do not represent production parsers OCR media extraction tokenizers semantic chunking or vector similarity behavior.
+  - The inert marker verifies admission semantics and does not prove detection of obfuscated multilingual delayed multimodal or novel RAG poisoning.
+  - The embedding binding is a metadata digest and does not generate or validate a real vector; live embedding execution and model behavior remain NOT_CHECKED.
+  - Source owner license authorization classification and tenant records are repository fixtures; production evidence requires independently governed connectors identity and approval lifecycle.
+  - A complete exact source can still contain false biased outdated or malicious claims that deterministic scanning does not identify.
+  - Vector database ACL cache replica backup encryption residency availability and deletion propagation are not exercised by the local adapter.
+  - Retrieval result provenance does not prove that the application or model actually consumed only those chunks or that the response did not leak information.
+  - PSB-AI-003 runtime prompt-injection containment PSB-AI-005 memory lifecycle PSB-DEPS-005 model trust and PSB-AI-010 application egress remain independent required controls.
+  - AI TEVV and adversarial release thresholds remain a separate detection-verification control.
+  - Mappings do not claim complete MITRE ATLAS OWASP Agentic or product security coverage.
+status: prototype
+owner: product-security
+evidence_level: E3

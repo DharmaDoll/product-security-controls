@@ -1931,13 +1931,13 @@ not an immutable dependency.
 | OWASP practice area | Existing disposition | Remaining work |
 | --- | --- | --- |
 | Tool Security & Least Privilege | `PSB-AI-002` governs extension dependencies and `PSB-AI-004` enforces runtime capabilities and approvals. | Add executable per-resource and read-versus-write authorization fixtures rather than relying only on tool-name patterns. |
-| Input Validation & Prompt Injection Defense | `PSB-AI-003` now exercises repository documents, issue text, Web content, API responses, tool output, and direct prompts while `PSB-AI-004` supplies the runtime boundary. | Extend the same normalized corpus to live provider versions, multilingual and encoded inputs, delayed triggers, and non-text modalities without treating detection as authorization. |
-| Memory & Context Security | `PSB-AI-005` implements provenance-bound writes, classification, sensitive-data exclusion, byte and TTL limits, exact user/session/task isolation, retrieval denial, expiry, and payload deletion fixtures. | Add live provider, cache, vector-index, replica, backup, encryption, residency, and cross-tenant evidence; extend poisoning scenarios to delayed, encoded, and non-text inputs. |
+| Input Validation & Prompt Injection Defense | `PSB-AI-003` exercises repository documents, issue text, Web content, API responses, tool output, and direct prompts while `PSB-AI-004` supplies the runtime boundary; `PSB-AI-011` rejects an inert poisoned RAG source before embedding. | Extend the same normalized corpus to live provider versions, multilingual and encoded inputs, delayed triggers, semantic corpus poisoning, and non-text modalities without treating detection as authorization. |
+| Memory & Context Security | `PSB-AI-005` implements agent-memory lifecycle; `PSB-AI-011` adds source and snapshot integrity, tenant／classification retrieval scope, result provenance, revocation, index absence, and deletion for RAG context. | Add live provider, connector, cache, vector-index, replica, backup, encryption, residency, deletion-propagation, and cross-tenant evidence; extend poisoning scenarios to delayed, encoded, semantic, and non-text inputs. |
 | Human-in-the-Loop Controls | `PSB-AI-004` owns approval issuance and atomic single-use enforcement; `PSB-AI-006` binds that receipt to independent policy, execution, idempotency, and uncertain-outcome handling. | Add live approval UI decision-quality and deceptive-explanation tests, step-up policy, interruption, and application-specific bounded rollback. |
 | Output Validation & Guardrails | `PSB-AI-006` implements strict proposal and result schemas, parameter and scope validation, canonical request identity, decision/execution binding, replay denial, and fail-closed reconciliation. | Add sensitive semantic-output classifiers, adopted provider and gateway adapters, per-action rate limits, and application-specific result schemas without treating model filtering as authorization. |
 | Monitoring & Observability | `PSB-AI-004` owns fixed-schema runtime audit and fleet ingestion; `PSB-AI-007` adds token, cost, duration, tool, retry, recursion and anomaly budgets, circuit breaking, and verified alert receipts. | Add live provider usage, tokenizer, billing, atomic concurrent reservations, organization receiver evidence, cross-session and tenant budgets, and adaptive-threshold review. |
 | Multi-Agent Security | `PSB-AI-008` implements signed identity, exact parent and trust edge, capability／tenant／data／budget ceilings, freshness, replay, one-hop, isolated runtime, fail-closed decision, and response binding fixtures; `PSB-AI-009` adds independent chain stop and bounded recovery. | Add live key enrollment and revocation, authenticated transport, atomic replay and budget ledgers, concurrent fan-out, multi-hop policy, distributed rollback, fleet recovery, and provider adapters. |
-| Data Protection & Privacy | `PSB-AI-005` owns memory lifecycle; `PSB-AI-010` adds application inference gateway identity, exact provider/model/tenant/region/data-use terms, classification, minimization, local redaction, prohibited-class denial, bypass detection, and content-free telemetry; endpoint and credential lifecycle remain `PSB-SOURCE-001` and `PSB-SOURCE-004`. | Add live application route, IdP, provider contract, encryption, key ownership, residency, cache, index, replica, backup, response filtering, deletion, and cross-tenant evidence. |
+| Data Protection & Privacy | `PSB-AI-005` owns memory lifecycle; `PSB-AI-010` owns application inference egress; `PSB-AI-011` enforces RAG tenant／classification scope and bounded source deletion; endpoint and credential lifecycle remain `PSB-SOURCE-001` and `PSB-SOURCE-004`. | Add live application route, IdP, provider contract, encryption, key ownership, residency, connector, cache, index, replica, backup, response filtering, deletion propagation, and cross-tenant evidence. |
 | Secure Agent Testing & Adversarial Validation | `PSB-AI-001` owns baseline benchmarking, `PSB-AI-003` owns injection scenarios, and every control must reach E3 with negative tests. | Maintain an abuse-case reconciliation view covering tool misuse, privilege escalation, memory poisoning, exfiltration, approval bypass, runaway loops, and multi-agent chaining without duplicating control-local tests. |
 
 The sheet's additional risks map to the same gaps: memory poisoning belongs to
@@ -1955,12 +1955,12 @@ not duplicated into the registry.
 
 | Agentic risk | Current disposition | Evidence boundary or next owner |
 |---|---|---|
-| `ASI01` Agent Goal Hijack | Implemented-partial | `PSB-AI-003` executes six direct and indirect goal-hijack fixtures against PSB-AI-004 policy identities and verifies legitimate task continuation. Live model, delayed, multimodal, memory, and multi-agent evidence remain gaps. |
+| `ASI01` Agent Goal Hijack | Implemented-partial | `PSB-AI-003` executes six direct and indirect goal-hijack fixtures against PSB-AI-004 policy identities and verifies legitimate task continuation; `PSB-AI-011` rejects an inert poisoned RAG source before embedding. Live model, delayed, semantic, multimodal, memory, and multi-agent evidence remain gaps. |
 | `ASI02` Tool Misuse and Exploitation | Implemented-partial | `PSB-AI-004` enforces runtime capabilities and approvals; `PSB-AI-006` independently validates typed proposal scope, exact authorization/execution identity, single dispatch, result schema, and uncertain outcomes. Approved malicious tools and live gateway enforcement remain out of scope. |
 | `ASI03` Identity and Privilege Abuse | Implemented-partial | `PSB-SOURCE-004` verifies OAuth-first GitHub MCP configuration and bounded PAT fallback; `PSB-AI-004` verifies coding-agent authority; `PSB-AI-010` verifies signed application workload identity, exact gateway audience, and provider-tenant authority. Live IDE keychain, application IdP, process inheritance, provider enforcement, and enterprise identity lifecycle remain deployment evidence. |
-| `ASI04` Agentic Supply Chain Vulnerabilities | Implemented-partial | `PSB-AI-001` pins repository guidance; `PSB-AI-002` verifies external dependency provenance, semantic review, capabilities, benchmark, expiry, and revocation; `PSB-AI-004` detects runtime extension drift. Live publisher, remote MCP deployment, and revocation-source evidence remain gaps. |
+| `ASI04` Agentic Supply Chain Vulnerabilities | Implemented-partial | `PSB-AI-001` pins repository guidance; `PSB-AI-002` verifies external dependency provenance, semantic review, capabilities, benchmark, expiry, and revocation; `PSB-AI-004` detects runtime extension drift; `PSB-AI-011` binds RAG sources, snapshots, embedding-model identity, and revocation evidence. Live publisher, remote MCP deployment, source connectors, vector stores, and revocation propagation remain gaps. |
 | `ASI05` Unexpected Code Execution | Implemented-partial | `PSB-AI-004` verifies isolation, bypass denial, pre-tool enforcement, hook failure containment, and command indirection; `PSB-AI-006` rejects free-form actions and decision/execution substitution. Live sandbox exploit resistance remains unproven. |
-| `ASI06` Memory and Context Poisoning | Implemented-partial | `PSB-AI-005` verifies source-aware write admission, sensitive and poisoned candidate rejection, exact scope retrieval, bounded retention, and payload deletion using a PSB-AI-003-bound fixture. Live provider and non-text memory evidence remain gaps. |
+| `ASI06` Memory and Context Poisoning | Implemented-partial | `PSB-AI-005` verifies agent-memory admission, scope, retention, and deletion; `PSB-AI-011` verifies RAG source admission, corpus integrity, exact retrieval scope and provenance, poisoned-source quarantine, revocation, index absence, and deletion. Live provider, vector database, semantic-poisoning, deletion-propagation, and non-text evidence remain gaps. |
 | `ASI07` Insecure Inter-Agent Communication | Implemented-partial | `PSB-AI-008` verifies Ed25519 agent identity, exact parent and sender-recipient edge, capability／tenant／data scope, freshness, replay, one-hop isolation, and signed response binding. Live key custody, transport, atomic ledger, dynamic discovery, and multi-hop evidence remain gaps. |
 | `ASI08` Cascading Failures | Implemented-partial | `PSB-AI-007` verifies single-agent budgets and circuit breaking; `PSB-AI-008` adds non-amplifying child budgets, replay denial, one-hop limits, and invalid-delegation stop semantics; `PSB-AI-009` adds multi-channel stop, authority revocation, action quarantine, bounded fallback, and replay-tested read-only recovery. Concurrent fan-out, tenant-wide reservation, distributed rollback, and fleet-wide recovery remain gaps. |
 | `ASI09` Human-Agent Trust Exploitation | Implemented-partial | `PSB-AI-004` supplies parameter-bound authorization and `PSB-AI-006` prevents request substitution, replay, and silent approval restoration. Deceptive explanation, approval-UI comprehension, and human decision-quality tests remain gaps. |
@@ -2179,23 +2179,40 @@ DPoP, mTLS, VPN, LiteLLM, Model Armor, or another product remains an adapter.
 Live application egress, IdP, provider contract, response filtering, non-text
 data, and telemetry evidence remain follow-on work.
 
-### AI model, dataset, AIBOM, and RAG supply-chain integrity
+### AI model and dataset supply-chain integrity — implemented as PSB-DEPS-005
 
 Goal: identify and verify the model, serialized weights, dataset, fine-tuning,
-embedding, RAG corpus, loader, license, source, digest, signer, and deployment
+embedding, loader, license, source, digest, signer, and deployment
 relationships used by an AI product.
 
-Disposition: do not extend `PSB-REL-003` SBOM or `PSB-AI-002` agent extension
-records until model and data semantics are explicit. Plan a
-`dependency-security` control for immutable acquisition, AIBOM or ML-BOM
-identity, safe non-executing inspection, risky serialization rejection,
-malware and remote-code quarantine, provenance, signer lifecycle, and
-dependency handoff. Plan a separate `secure-design` or
-`ai-development-security` RAG boundary for source authorization, tenant and
-classification scope, content integrity, index deletion, retrieval provenance,
-and poisoning tests. Model and corpus scanner failure must be `ERROR`, never a
-clean result. Assign IDs only after stable interchange formats and safe inert
-fixtures are selected.
+Disposition: the first provider-neutral E3 slice is implemented as
+`PSB-DEPS-005`, separate from `PSB-REL-003` software release SBOM and
+`PSB-AI-002` coding-agent extension governance. It fixes immutable model and
+dataset source identities, exact bytes, a CycloneDX 1.7 ML-BOM relationship
+profile, Safetensors-only non-executing structural inspection, pinned loader
+handoff to `PSB-DEPS-003`, signed exact-material inspection, current signer
+status, dataset license and use authorization, quarantine, and an exact staging
+deployment handoff. The unsafe serialization fixture is inert and never loads
+pickle or model code. Live registry, HSM, scanner, dataset consent/privacy,
+semantic poisoning and production deployment evidence remain `NOT_CHECKED`.
+
+### AI RAG corpus integrity and retrieval — implemented as PSB-AI-011
+
+Goal: prevent unauthorized, poisoned, cross-tenant, over-classified, stale, or
+untraceable content from entering or being returned by a RAG corpus.
+
+Disposition: the provider-neutral E3 slice is implemented as `PSB-AI-011`. It
+binds an owned source registry to exact source bytes, chunks, corpus snapshots,
+and the `PSB-DEPS-005` embedding-model identity; rejects an inert
+`PSB-AI-003`-style prompt-injection candidate before embedding; enforces tenant
+and classification scope at ingestion and retrieval; verifies exact authorized,
+cross-tenant, over-classified, and stale-source result sets; returns result-level
+provenance; and proves bounded revocation, payload and chunk removal, index
+absence, and retrieval denial. Malformed or unavailable evidence is `ERROR`,
+never a clean result, and evidence output is content-free. Live source
+connectors, OCR and parsers, embedding services, vector databases, caches,
+replicas, backups, deletion propagation, and semantic-poisoning detection remain
+`NOT_CHECKED`.
 
 ### AI TEVV and adversarial release gate
 

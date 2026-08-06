@@ -1,0 +1,14 @@
+{
+  "schema": "psb-rag-ingestion-evidence/v1.0",
+  "available": false,
+  "complete": false,
+  "evaluated_at": "2026-08-06T08:00:00Z",
+  "source_registry_sha256": "21f5c508bcfc818aabe070609d0e07ecd4eff2d25b1e5272c06285513e74e2b8",
+  "inspector": {
+    "id": "psb-rag-corpus-verifier",
+    "version": "1.0.0",
+    "sha256": "b06fcda7ee9a160cee7ff7af09d29a9c4626a2a87c43bd1e84b8fb47c1ca7e47"
+  },
+  "candidates": [],
+  "live_source_connectors": "NOT_CHECKED"
+}

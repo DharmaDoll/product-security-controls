@@ -5,7 +5,7 @@
 このページは、実装済みcontrolを目的別に探すための入口です。
 `control.yaml`を正本として`make generate-index`で生成されます。
 
-現在、**40 controls / 371 atomic checks**を収録しています。
+現在、**42 controls / 390 atomic checks**を収録しています。
 
 ## 使い方
 
@@ -24,12 +24,12 @@
 | [Secure Design](#domain-secure-design) | 脅威モデリング、trust boundary、abuse caseなど、実装前の設計判断。 | 0 | 0 |
 | [Secure Coding](#domain-secure-coding) | 認証・認可、入力処理、secret、暗号など、application実装の安全性。 | 0 | 0 |
 | [Source Protection](#domain-source-protection) | 開発端末、Git、repository、source access credential、公開露出の保護。 | 4 | 73 |
-| [Dependency Security](#domain-dependency-security) | registry、cooldown、install script、lockfile、artifact integrityの保護。 | 4 | 27 |
+| [Dependency Security](#domain-dependency-security) | registry、cooldown、install script、lockfile、artifact integrityの保護。 | 5 | 36 |
 | [CI/CD Security](#domain-cicd-security) | workflow dependency、command injection、権限、未信頼PR境界の保護。 | 6 | 35 |
 | [Build Security](#domain-build-security) | build隔離、hosted build、credential境界、provenance生成の保護。 | 3 | 16 |
 | [Container / Cloud / IaC Security](#domain-container-cloud-iac-security) | IaC Golden Path、container admission、runtime、cloud control planeの保護。 | 5 | 49 |
 | [Release Integrity](#domain-release-integrity) | 署名、provenance、SBOM、supplier artifact、配布時の完全性。 | 4 | 27 |
-| [AI Development Security](#domain-ai-development-security) | AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。 | 10 | 113 |
+| [AI Development Security](#domain-ai-development-security) | AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。 | 11 | 123 |
 | [Detection / Verification](#domain-detection-verification) | 脆弱性、secret、container、IaCなどを検出・検証する共通基盤。 | 1 | 8 |
 | [Governance / Operations](#domain-governance-operations) | 例外、ownership、証跡、影響調査、継続運用とincident readiness。 | 3 | 23 |
 
@@ -74,6 +74,7 @@ registry、cooldown、install script、lockfile、artifact integrityの保護。
 | [PSB-DEPS-002](dependency-security/install-script-execution/README.md) | 依存パッケージ導入時のライフサイクルスクリプトとソースビルドを既定で拒否し、必要な実行だけを範囲を限定して承認する。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) | `prevent`, `verify` | 5 | `prototype` / `E3` |
 | [PSB-DEPS-003](dependency-security/lockfile-integrity/README.md) | 固定された依存関係グラフとマニフェスト、管理対象プロキシの取得元、正確なバージョン、成果物の完全性が一致することを検証する。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) | `prevent`, `verify` | 5 | `prototype` / `E3` |
 | [PSB-DEPS-004](dependency-security/dependency-change-review/README.md) | baseからheadまでの正確な依存関係差分を、最新の脆弱性アドバイザリ、ライセンス、取得元、来歴情報、承認、期限付き例外の証跡へ結び付ける。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify` | 9 | `adopted` / `E3` |
+| [PSB-DEPS-005](dependency-security/ai-model-supply-chain/README.md) | AI model、dataset、loader、CycloneDX ML-BOM、署名済みinspection、deployment handoffをexact digestへ結び、unsafe serializationと不完全な検証を隔離する。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) | `prevent`, `detect`, `verify` | 9 | `prototype` / `E3` |
 
 <a id="domain-cicd-security"></a>
 
@@ -147,6 +148,7 @@ AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。
 | [PSB-AI-008](ai-development-security/multi-agent-trust-delegation/README.md) | Agent間delegationとresponseを署名identity、parent request、capability、tenant、data、budget、freshness、replay、hopへbindし、権限と障害のchain伝播をfail closedにする。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify`, `respond` | 11 | `prototype` / `E3` |
 | [PSB-AI-009](ai-development-security/rogue-agent-containment-recovery/README.md) | 侵害・逸脱したagentをmodel外の署名付きcontrol planeで停止し、authority失効、action隔離、限定fallback、二者承認、新identityのread-only canaryまでをfail closedに検証する。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify`, `respond` | 11 | `prototype` / `E3` |
 | [PSB-AI-010](ai-development-security/ai-application-gateway-data-egress/README.md) | ApplicationのLLM通信を署名workload identity、mandatory gateway、exact provider／model／tenant／region、classification、minimization、redaction、retentionへbindし、bypassと機密data egressをfail closedにする。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify` | 11 | `prototype` / `E3` |
+| [PSB-AI-011](ai-development-security/rag-corpus-integrity-retrieval/README.md) | RAG source、document、chunk、embedding model、tenant、classification、corpus snapshot、retrieval result、revocationをexact identityへ結び、poisoningとcross-scope retrievalを拒否する。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `prevent`, `detect`, `verify`, `govern` | 10 | `prototype` / `E3` |
 
 <a id="domain-detection-verification"></a>
 

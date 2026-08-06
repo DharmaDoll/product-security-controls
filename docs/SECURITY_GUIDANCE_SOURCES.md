@@ -136,7 +136,9 @@ Limitations and review notes:
   - `PSB-AI-009` — independent rogue-agent containment, authority revocation,
     bounded fallback, dual-control recovery, and read-only canary;
   - `PSB-AI-010` — authenticated application gateway, exact inference target,
-    classification, minimization, redaction, retention, and bypass control.
+    classification, minimization, redaction, retention, and bypass control;
+  - `PSB-AI-011` — RAG source admission, corpus integrity, retrieval scope and
+    provenance, revocation, and deletion.
 
 Adopted or planned contributions:
 
@@ -154,6 +156,9 @@ Adopted or planned contributions:
 - data minimization, classification, retention, and deletion;
 - application inference route, workload identity, exact provider/model/tenant/
   region/data-use policy, prohibited-class denial, and content-free telemetry;
+- RAG source ownership and authorization, content and snapshot integrity,
+  tenant／classification retrieval isolation, result provenance, poisoned-source
+  quarantine, and bounded deletion;
 - repeatable abuse-case tests and security release gates.
 
 Limitations and review notes:
@@ -189,9 +194,12 @@ Limitations and review notes:
   and reconciled but is not vendored or redistributed here
 - Repository review date: `2026-08-05`
 - Related controls:
-  - `PSB-AI-001..010` — AI coding guidance, dependency, injection, runtime,
+  - `PSB-AI-001..011` — AI coding guidance, dependency, injection, runtime,
     memory, action-integrity, resource-monitoring, multi-agent delegation, and
-    rogue-agent containment／recovery plus application inference egress boundaries;
+    rogue-agent containment／recovery plus application inference egress and RAG
+    corpus／retrieval boundaries;
+  - `PSB-DEPS-005` — model／dataset immutable acquisition, ML-BOM,
+    non-executing inspection, quarantine, and deployment handoff;
   - `PSB-DETECT-001` — integrity-verified multi-surface scanning;
   - `PSB-REL-003..004` — artifact-bound and supplier SBOM lifecycle;
   - `PSB-CONTAINER-004` — production runtime detection;
@@ -205,7 +213,7 @@ Reconciliation by product-security layer:
 | Platform and infrastructure | Source, dependency, CI/CD, build, IaC, container, release, and coding-agent boundaries are represented; `PSB-AI-010` adds a provider-neutral E3 application-facing gateway and data-egress contract while live route, IdP, provider and telemetry evidence remains planned. |
 | Operations | Container runtime detection, supply-chain incident lookup, AI coding-agent telemetry, per-session resource budgets, anomaly stops, alert delivery, and an E3 independent kill-switch／fallback／read-only recovery contract are implemented subsets; live AI application anomaly detection, gateway enforcement, fleet recovery, and incident-system adoption remain planned. |
 | PSIRT and vulnerability management | `PSB-GOV-003` implements evidence-bound triage; intake, disclosure, organization capability, AI TEVV, red teaming, and AI-specific release gating remain planned or organization-owned. |
-| External and supply chain | SBOM, supplier SBOM, provenance, and agent extension dependencies are represented; model, dataset, AIBOM/ML-BOM, serialized-weight, and RAG provenance need distinct executable contracts. |
+| External and supply chain | SBOM, supplier SBOM, provenance, agent extension dependencies, and E3 model／dataset／ML-BOM／serialized-weight and RAG corpus／retrieval contracts are represented; live RAG connectors, vector stores, deletion propagation, and semantic-poisoning detection remain gaps. |
 | Governance | Time-bound exceptions and generated evidence views exist; AI risk governance, accountable inventory, KPI inputs, and live policy adoption require organization-owned evidence. |
 | Education and culture | Role-based training and security-champion outcomes are not executable controls yet; they belong to a governance capability profile and must not be inferred from technical fixture success. |
 
@@ -217,8 +225,8 @@ Adopted contributions:
   outside the model, consistent with `PSB-AI-003`, `PSB-AI-004`, and
   `PSB-AI-006`;
 - preserve immutable Skill and MCP dependency identity in `PSB-AI-002`;
-- expose the missing live AI gateway adoption, model/data/RAG supply chain,
-  TEVV, live fleet recovery, governance, and education outcomes in the
+- expose the missing live AI gateway adoption, live model/data and RAG adoption,
+  semantic-poisoning evidence, TEVV, live fleet recovery, governance, and education outcomes in the
   roadmap rather than silently treating agent controls as complete AI product
   security coverage.
 
@@ -1536,6 +1544,68 @@ Disposition and limitations:
   permissions, safe pull-request context, and provider availability evidence;
 - advisory coverage and ecosystem support can be incomplete, and no clean
   result proves that dependency code is non-malicious.
+
+<a id="ref-deps-003"></a>
+
+### REF-DEPS-003 — AI model artifact and ML-BOM safety guidance
+
+- Status: `adopted-partially`
+- Type: open-standard ML-BOM specification and official model serialization
+  security documentation
+- Publishers: OWASP CycloneDX, Safetensors / PyTorch Foundation, and PyTorch
+- Pinned specification source:
+  [`CycloneDX/specification` 1.7 at `4b3f59453366e27c8073fd24e98bf21ef8892c8e`](https://github.com/CycloneDX/specification/tree/4b3f59453366e27c8073fd24e98bf21ef8892c8e)
+- Pinned serialization source:
+  [`safetensors/safetensors` 0.8.0 at `a406ca3e7a90598be0cd05a50069cb9bf5ef6ba6`](https://github.com/safetensors/safetensors/tree/a406ca3e7a90598be0cd05a50069cb9bf5ef6ba6)
+- Official documentation:
+  - [CycloneDX Machine Learning Bill of Materials](https://www.cyclonedx.org/capabilities/mlbom/)
+  - [CycloneDX 1.7 JSON reference](https://cyclonedx.org/docs/1.7/json/)
+  - [AI models and model cards use case](https://cyclonedx.org/use-cases/ai-models-and-model-cards/)
+  - [PyTorch serialization semantics and `weights_only`](https://docs.pytorch.org/docs/stable/notes/serialization.html)
+- Licenses: CycloneDX specification Apache-2.0; Safetensors Apache-2.0
+- Repository review date: `2026-08-06`
+- Related controls:
+  - `PSB-DEPS-005` — immutable model and dataset acquisition, ML-BOM,
+    non-executing inspection, signed decision, quarantine, and handoff;
+  - `PSB-DEPS-003` — exact model-loader package and artifact integrity;
+  - `PSB-REL-003` — software release SBOM lifecycle and portfolio processing;
+  - `PSB-REL-004` — supplier software SBOM trust and quarantine.
+
+Adopted contribution:
+
+- represent the application, machine-learning model, dataset, and loader as
+  distinct CycloneDX 1.7 components with exact dependency relationships;
+- bind model and dataset source revisions, hashes, licenses, model-card
+  metadata, inspection, and deployment handoff instead of treating an AIBOM or
+  ML-BOM filename as authority;
+- use Safetensors as the first accepted non-code weight format and reject
+  pickle, custom loader, executable extension, and remote-code requests by
+  default;
+- inspect the raw Safetensors header length, unique JSON keys, dtype, shape,
+  offsets, and complete buffer without importing the model, framework, or
+  loader;
+- keep parser, signer-status, and cryptographic failures distinct from both a
+  clean model and a known content violation.
+
+Disposition and limitations:
+
+- these sources are implementation guidance and interchange specifications,
+  not framework mappings or proof that a model is secure;
+- the E3 adapter validates a control-specific CycloneDX 1.7 and Safetensors
+  0.8.0 structural profile rather than embedding either complete upstream
+  validator;
+- Safetensors prevents embedded Python object deserialization but does not
+  prove downstream parser, kernel, tensor value, model code, memory use, or
+  model behavior safety;
+- `torch.load(weights_only=True)` reduces dynamic unpickling behavior but the
+  current control does not accept PyTorch pickle artifacts and does not treat
+  `weights_only` as equivalent to a non-code format;
+- dataset consent, privacy, license authorization, semantic poisoning, model
+  backdoors, production scanner coverage, and live registry trust remain
+  organization-owned or follow-on evidence;
+- RAG corpus authorization and retrieval provenance are implemented separately
+  as `PSB-AI-011`; live RAG integrations and AI TEVV release gating remain
+  follow-on work.
 
 <a id="ref-detect-001"></a>
 

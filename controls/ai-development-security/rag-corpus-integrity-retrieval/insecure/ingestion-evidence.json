@@ -1,0 +1,57 @@
+{
+  "schema": "psb-rag-ingestion-evidence/v1.0",
+  "available": true,
+  "complete": true,
+  "evaluated_at": "2026-08-06T08:00:00Z",
+  "source_registry_sha256": "21f5c508bcfc818aabe070609d0e07ecd4eff2d25b1e5272c06285513e74e2b8",
+  "inspector": {
+    "id": "psb-rag-corpus-verifier",
+    "version": "1.0.0",
+    "sha256": "b06fcda7ee9a160cee7ff7af09d29a9c4626a2a87c43bd1e84b8fb47c1ca7e47"
+  },
+  "candidates": [
+    {
+      "source_id": "SRC-001",
+      "document_id": "DOC-001",
+      "content_sha256": "e4339d8a5036f57ec51d8178a201de0ea5ec376dc0ff36bbd52b3963963e8661",
+      "scanner_available": true,
+      "scanner_complete": true,
+      "finding_ids": [],
+      "decision": "INDEXED",
+      "reasons": []
+    },
+    {
+      "source_id": "SRC-002",
+      "document_id": "DOC-002",
+      "content_sha256": "db946b91a712d17bc1b59063d8e9694c8aa0a8df4b01c830743e167f0b863691",
+      "scanner_available": true,
+      "scanner_complete": true,
+      "finding_ids": [],
+      "decision": "INDEXED",
+      "reasons": []
+    },
+    {
+      "source_id": "SRC-003",
+      "document_id": "DOC-003",
+      "content_sha256": "90f732ec870c9b9d1c31106ec371b629c3ac2510c98df69bd1a61f72a7c95142",
+      "scanner_available": true,
+      "scanner_complete": true,
+      "finding_ids": [
+        "RAG-POISON-001"
+      ],
+      "decision": "INDEXED",
+      "reasons": []
+    },
+    {
+      "source_id": "SRC-004",
+      "document_id": "DOC-004",
+      "content_sha256": "e3122bd949e9f37aec803e1dd323384c96794028a18b639eb0b39dc0a5e6006e",
+      "scanner_available": true,
+      "scanner_complete": true,
+      "finding_ids": [],
+      "decision": "INDEXED",
+      "reasons": []
+    }
+  ],
+  "live_source_connectors": "PASS"
+}

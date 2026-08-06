@@ -1,0 +1,121 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:ad7d83a1-3bf3-49ed-80dc-6b51773dad55",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-08-06T00:00:00Z",
+    "component": {
+      "type": "application",
+      "bom-ref": "application:example-ai-service@1.0.0",
+      "name": "example-ai-service",
+      "version": "1.0.0"
+    }
+  },
+  "components": [
+    {
+      "type": "machine-learning-model",
+      "bom-ref": "model:example/tiny-classifier@1.0.0",
+      "name": "example/tiny-classifier",
+      "version": "1.0.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "df0c00870b43005f873ec026757af59db1956218773b4ee401df32a9536c1aed"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "Apache-2.0"
+        }
+      ],
+      "modelCard": {
+        "modelParameters": {
+          "approach": {
+            "type": "supervised"
+          },
+          "task": "classification",
+          "architectureFamily": "transformer",
+          "modelArchitecture": "synthetic-tiny-transformer",
+          "datasets": [
+            {
+              "ref": "dataset:example/synthetic-training@2026.08.01"
+            }
+          ]
+        }
+      },
+      "properties": [
+        {
+          "name": "psb:serialization",
+          "value": "safetensors"
+        },
+        {
+          "name": "psb:source-revision",
+          "value": "1111111111111111111111111111111111111111"
+        }
+      ]
+    },
+    {
+      "type": "data",
+      "bom-ref": "dataset:example/synthetic-training@2026.08.01",
+      "name": "example/synthetic-training",
+      "version": "2026.08.01",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "6a6cf544aad280f38d64d683653673092e098f8e034817f0850d8062b5f4e286"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "CC0-1.0"
+        }
+      ],
+      "properties": [
+        {
+          "name": "psb:source-revision",
+          "value": "2222222222222222222222222222222222222222"
+        },
+        {
+          "name": "psb:use-authorization",
+          "value": "synthetic-test-data"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "loader:safetensors@0.8.0",
+      "name": "safetensors",
+      "version": "0.8.0",
+      "properties": [
+        {
+          "name": "psb:source-commit",
+          "value": "a406ca3e7a90598be0cd05a50069cb9bf5ef6ba6"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "application:example-ai-service@1.0.0",
+      "dependsOn": [
+        "model:example/tiny-classifier@1.0.0"
+      ]
+    },
+    {
+      "ref": "model:example/tiny-classifier@1.0.0",
+      "dependsOn": [
+        "dataset:example/synthetic-training@2026.08.01",
+        "loader:safetensors@0.8.0"
+      ]
+    },
+    {
+      "ref": "dataset:example/synthetic-training@2026.08.01",
+      "dependsOn": []
+    },
+    {
+      "ref": "loader:safetensors@0.8.0",
+      "dependsOn": []
+    }
+  ]
+}

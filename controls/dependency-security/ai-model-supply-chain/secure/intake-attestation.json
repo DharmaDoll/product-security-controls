@@ -1,0 +1,28 @@
+{
+  "schema": "psb-ai-model-intake-attestation/v1.0",
+  "signer_id": "psb-model-intake-test-signer",
+  "issued_at": "2026-08-06T06:30:00Z",
+  "subject": {
+    "model_id": "example/tiny-classifier",
+    "model_version": "1.0.0",
+    "artifact_filename": "tiny-model.safetensors",
+    "artifact_sha256": "df0c00870b43005f873ec026757af59db1956218773b4ee401df32a9536c1aed"
+  },
+  "materials": {
+    "acquisition_sha256": "397a23d4fc3a019d8f6c8c0674e8f77ebf73c18b9d0746358597e2467e81ab14",
+    "mlbom_sha256": "a9d10782dd10abe154f68d1baeca5c90ebbbe57f944d54b2930894e8f5a65a09",
+    "dataset_sha256": "6a6cf544aad280f38d64d683653673092e098f8e034817f0850d8062b5f4e286"
+  },
+  "inspection": {
+    "receipt_id": "inspect-example-tiny-classifier-1.0.0",
+    "inspector_id": "psb-static-model-inspector",
+    "inspector_version": "1.0.0",
+    "inspector_sha256": "f434bfe66eb9266afb7c53cbf733c7158fde0d36af8bf4016b2a8b12ff85162f",
+    "available": true,
+    "complete": true,
+    "result": "CLEAN",
+    "remote_code_requested": false,
+    "unsafe_serialization_findings": [],
+    "malware_findings": []
+  }
+}

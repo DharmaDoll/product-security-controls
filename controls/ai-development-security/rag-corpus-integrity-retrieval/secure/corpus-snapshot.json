@@ -1,0 +1,39 @@
+{
+  "schema": "psb-rag-corpus-snapshot/v1.0",
+  "snapshot_id": "CORPUS-tenant-a-20260806-01",
+  "created_at": "2026-08-06T08:05:00Z",
+  "tenant_id": "tenant-a",
+  "source_registry_sha256": "21f5c508bcfc818aabe070609d0e07ecd4eff2d25b1e5272c06285513e74e2b8",
+  "ingestion_evidence_sha256": "2ddcf92e9124c07a234634d8321c32d923932614f8636faefb2ed0ded8649119",
+  "embedding_model": {
+    "upstream_control": "PSB-DEPS-005",
+    "model_id": "example/tiny-classifier",
+    "model_version": "1.0.0",
+    "artifact_sha256": "df0c00870b43005f873ec026757af59db1956218773b4ee401df32a9536c1aed"
+  },
+  "entries": [
+    {
+      "chunk_id": "CHK-DOC-001-001",
+      "source_id": "SRC-001",
+      "document_id": "DOC-001",
+      "source_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "tenant_id": "tenant-a",
+      "classification": "internal",
+      "chunk_index": 0,
+      "chunk_sha256": "e4339d8a5036f57ec51d8178a201de0ea5ec376dc0ff36bbd52b3963963e8661",
+      "embedding_binding_sha256": "c38849aa5acff8056c5470612781036aa2ef52b58777a19d83e89ec3518e12de"
+    },
+    {
+      "chunk_id": "CHK-DOC-002-001",
+      "source_id": "SRC-002",
+      "document_id": "DOC-002",
+      "source_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "tenant_id": "tenant-a",
+      "classification": "public",
+      "chunk_index": 0,
+      "chunk_sha256": "db946b91a712d17bc1b59063d8e9694c8aa0a8df4b01c830743e167f0b863691",
+      "embedding_binding_sha256": "51e8a11cd92f7524ddfc5d768fe6cdf94162eb362c7c46d65b1c2c1a46eda092"
+    }
+  ],
+  "live_vector_database": "NOT_CHECKED"
+}

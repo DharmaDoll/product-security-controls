@@ -14,6 +14,7 @@ Generated control catalog. Do not edit manually.
 | [PSB-AI-008](../controls/ai-development-security/multi-agent-trust-delegation/README.md) | ai-development-security | Authenticate and constrain multi-agent delegation | 11 | prototype | E3 |
 | [PSB-AI-009](../controls/ai-development-security/rogue-agent-containment-recovery/README.md) | ai-development-security | Independently contain and safely recover rogue agents | 11 | prototype | E3 |
 | [PSB-AI-010](../controls/ai-development-security/ai-application-gateway-data-egress/README.md) | ai-development-security | Enforce an authenticated AI application gateway and data egress policy | 11 | prototype | E3 |
+| [PSB-AI-011](../controls/ai-development-security/rag-corpus-integrity-retrieval/README.md) | ai-development-security | Govern RAG corpus integrity retrieval scope and deletion | 10 | prototype | E3 |
 | [PSB-BUILD-001](../controls/build-security/build-containment/README.md) | build-security | dependency buildを権限・credential・networkから隔離する | 6 | prototype | E3 |
 | [PSB-BUILD-002](../controls/build-security/hosted-consistent-build/README.md) | build-security | 一貫したrelease buildを承認済みhosted platformで実行する | 5 | prototype | E3 |
 | [PSB-BUILD-003](../controls/build-security/platform-provenance-generation/README.md) | build-security | Build platformがauthentic provenanceを自動生成する | 5 | prototype | E3 |
@@ -31,6 +32,7 @@ Generated control catalog. Do not edit manually.
 | [PSB-DEPS-002](../controls/dependency-security/install-script-execution/README.md) | dependency-security | install時の任意コード実行をdefault denyにする | 5 | prototype | E3 |
 | [PSB-DEPS-003](../controls/dependency-security/lockfile-integrity/README.md) | dependency-security | lockfileと取得artifactの完全性を強制する | 5 | prototype | E3 |
 | [PSB-DEPS-004](../controls/dependency-security/dependency-change-review/README.md) | dependency-security | Review dependency graph changes before merge | 9 | adopted | E3 |
+| [PSB-DEPS-005](../controls/dependency-security/ai-model-supply-chain/README.md) | dependency-security | Verify AI model and dataset supply-chain integrity | 9 | prototype | E3 |
 | [PSB-DETECT-001](../controls/detection-verification/integrity-verified-scanner/README.md) | detection-verification | Execute integrity-verified security scanning with fail-closed evidence | 8 | adopted | E3 |
 | [PSB-GOV-001](../controls/governance-operations/supply-chain-incident-readiness/README.md) | governance-operations | supply-chain incidentのbuild artifactと稼働deployment影響を即時特定する | 7 | prototype | E3 |
 | [PSB-GOV-002](../controls/governance-operations/time-bound-security-exceptions/README.md) | governance-operations | Enforce exact independently approved time-bound security exceptions | 8 | prototype | E3 |

@@ -1,0 +1,18 @@
+{
+  "schema": "psb-ai-model-deployment-handoff/v1.0",
+  "decision": "ACCEPTED",
+  "target_environment": "staging",
+  "model_id": "example/tiny-classifier",
+  "model_version": "1.0.0",
+  "artifact_sha256": "df0c00870b43005f873ec026757af59db1956218773b4ee401df32a9536c1aed",
+  "mlbom_serial_number": "urn:uuid:ad7d83a1-3bf3-49ed-80dc-6b51773dad55",
+  "mlbom_sha256": "a9d10782dd10abe154f68d1baeca5c90ebbbe57f944d54b2930894e8f5a65a09",
+  "dataset_sha256": "6a6cf544aad280f38d64d683653673092e098f8e034817f0850d8062b5f4e286",
+  "loader": {
+    "name": "safetensors",
+    "version": "0.8.0",
+    "source_commit": "a406ca3e7a90598be0cd05a50069cb9bf5ef6ba6",
+    "dependency_control": "PSB-DEPS-003"
+  },
+  "trust_remote_code": false
+}

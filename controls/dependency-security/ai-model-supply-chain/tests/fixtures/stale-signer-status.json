@@ -1,0 +1,7 @@
+{
+  "schema": "psb-ai-model-signer-status/v1.0",
+  "available": true,
+  "complete": true,
+  "collected_at": "2026-08-01T00:00:00Z",
+  "signers": []
+}

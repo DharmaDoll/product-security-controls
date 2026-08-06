@@ -1,0 +1,9 @@
+QUARANTINE AMS-001 model source revision or exact artifact identity is mutable or mismatched
+QUARANTINE AMS-003 unsafe serialization remote code or unapproved loader is requested
+QUARANTINE AMS-006 dataset provenance license use authorization or exact bytes are not approved
+QUARANTINE AMS-004 model artifact is not eligible for non-executing safetensors inspection
+QUARANTINE AMS-002 ML-BOM format version or identity does not match policy
+QUARANTINE AMS-005 signed attestation does not bind the exact model acquisition ML-BOM and dataset
+QUARANTINE AMS-005 signed inspection is unbound incomplete unavailable or contains findings
+QUARANTINE AMS-007 deployment handoff is not bound to the accepted model ML-BOM dataset and loader
+RESULT QUARANTINE

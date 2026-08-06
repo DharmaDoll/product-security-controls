@@ -1,0 +1,37 @@
+{
+  "schema": "psb-ai-model-acquisition/v1.0",
+  "model": {
+    "id": "example/tiny-classifier",
+    "version": "1.0.0",
+    "source_url": "https://models.example.invalid/example/tiny-classifier",
+    "source_revision": "1111111111111111111111111111111111111111",
+    "immutable": true,
+    "artifact_filename": "tiny-model.safetensors",
+    "fixture_path": "artifacts/tiny-model.safetensors.b64",
+    "fixture_transport": "base64",
+    "serialization": "safetensors",
+    "sha256": "df0c00870b43005f873ec026757af59db1956218773b4ee401df32a9536c1aed",
+    "size_bytes": 124,
+    "trust_remote_code": false
+  },
+  "dataset": {
+    "id": "example/synthetic-training",
+    "version": "2026.08.01",
+    "source_url": "https://datasets.example.invalid/example/synthetic-training",
+    "source_revision": "2222222222222222222222222222222222222222",
+    "immutable": true,
+    "fixture_path": "artifacts/synthetic-training.jsonl",
+    "sha256": "6a6cf544aad280f38d64d683653673092e098f8e034817f0850d8062b5f4e286",
+    "license_expression": "CC0-1.0",
+    "use_authorization": "synthetic-test-data",
+    "contains_personal_data": false
+  },
+  "loader": {
+    "name": "safetensors",
+    "version": "0.8.0",
+    "source_url": "https://github.com/safetensors/safetensors",
+    "source_commit": "a406ca3e7a90598be0cd05a50069cb9bf5ef6ba6",
+    "dependency_control": "PSB-DEPS-003",
+    "inspection_mode": "non-executing-static-header"
+  }
+}

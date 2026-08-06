@@ -238,7 +238,11 @@ Add:
   secret egress policy, fail-closed routing, and sanitized telemetry;
 - AI model, dataset, AIBOM or ML-BOM, serialized-weight, and RAG corpus
   provenance with integrity verification, safe loading, quarantine, and
-  poisoning tests;
+  poisoning tests. The model／dataset acquisition subset is implemented as
+  `PSB-DEPS-005`; RAG corpus authorization, retrieval isolation, provenance,
+  revocation, and an inert poisoning case are implemented as `PSB-AI-011`;
+  live connectors, vector stores, deletion propagation, and semantic poisoning
+  remain follow-on evidence;
 - threat-model-driven AI TEVV and red-team release gates with pinned test
   suites, deterministic scenarios, result health, and scanner failures kept
   distinct from clean results;
@@ -250,7 +254,7 @@ evidence for them:
 
 - OWASP Top 10 for Agentic Applications 2026 as a coarse agentic risk taxonomy
   — implemented with all `ASI01..ASI10` identifiers and reviewed mappings for
-  `PSB-AI-001..010` plus the GitHub MCP slice in `PSB-SOURCE-004`;
+  `PSB-AI-001..011` plus the GitHub MCP slice in `PSB-SOURCE-004`;
 - NIST SP 800-218A as the AI-specific SSDF community profile;
 - NIST AI RMF 1.0 and NIST AI 600-1 for governance, measurement, and
   generative-AI risk management;
@@ -510,20 +514,35 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
     and fail-closed health. Live application egress, IdP, provider contract,
     response and non-text filtering, and telemetry remain `NOT_CHECKED`.
 12. Use the OWASP Agentic Top 10 registry as the risk-coverage view for these
-    slices: `ASI01`, `ASI03`, `ASI06`, `ASI07`, `ASI08`, and a bounded subset
-    of `ASI09` are now implemented-partial through PSB-AI-003,
-    PSB-SOURCE-004／PSB-AI-004／010, PSB-AI-005, PSB-AI-008,
-    PSB-AI-007／008／009, and PSB-AI-006 respectively. `ASI10` is
+    slices: `ASI01`, `ASI03`, `ASI04`, `ASI06`, `ASI07`, `ASI08`, and a bounded
+    subset of `ASI09` are now implemented-partial through PSB-AI-003／011,
+    PSB-SOURCE-004／PSB-AI-004／010, PSB-AI-001／002／004／011,
+    PSB-AI-005／011, PSB-AI-008, PSB-AI-007／008／009, and PSB-AI-006
+    respectively. `ASI10` is
     implemented-partial by `PSB-AI-009`; fleet-wide kill, distributed rollback,
     concurrent containment and full-authority recovery remain gaps. Multi-agent
     concurrency remains an `ASI08` gap and human decision quality remains an `ASI09` gap. Do
     not mark an entire risk category covered from one control or roadmap text
     alone.
-13. Reconcile the seven-layer product-security and AI portfolio view from
+13. `PSB-DEPS-005` — implemented at E3 with immutable model／dataset source and
+    exact bytes, CycloneDX 1.7 ML-BOM relationships, Safetensors-only
+    non-executing structural inspection, pinned loader handoff, signed
+    exact-material inspection, current signer lifecycle, dataset license／use
+    authorization, quarantine, exact staging deployment handoff, and distinct
+    evidence `ERROR`. Live registry／HSM／scanner／dataset governance evidence and
+    semantic model or data poisoning detection remain `NOT_CHECKED`.
+14. `PSB-AI-011` — implemented at E3 with source ownership and authorization,
+    exact source／chunk／snapshot integrity, `PSB-DEPS-005` embedding-model
+    binding, pre-embedding poisoned-source quarantine, tenant／classification
+    scope at ingestion and retrieval, exact scenario result sets, result-level
+    provenance, and bounded revocation／deletion／retrieval denial. Live source
+    connectors／parsers／embedding services／vector stores／caches／replicas and
+    semantic-poisoning detection remain `NOT_CHECKED`.
+15. Reconcile the seven-layer product-security and AI portfolio view from
     [`REF-AI-003`](SECURITY_GUIDANCE_SOURCES.md#ref-ai-003). Existing controls
-    retain their current domain ownership. Prioritize the remaining unique gaps
-    as model/data/RAG supply-chain integrity and AI TEVV release gating. Extend
-    the AI application gateway and rogue-agent containment only
+    retain their current domain ownership. Prioritize the remaining unique gap
+    as AI TEVV release gating, and treat live RAG adapters as adoption evidence
+    for `PSB-AI-011`. Extend the AI application gateway and rogue-agent containment only
     with live enforcement, fleet recovery and incident-system evidence.
     Keep AI governance, training, security champions, KPI targets, PSIRT
     capability, and customer assurance as organization-owned profiles rather

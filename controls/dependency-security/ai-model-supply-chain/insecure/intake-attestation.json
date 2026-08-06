@@ -1,0 +1,32 @@
+{
+  "schema": "psb-ai-model-intake-attestation/v1.0",
+  "signer_id": "psb-model-intake-test-signer",
+  "issued_at": "2026-08-06T06:30:00Z",
+  "subject": {
+    "model_id": "example/tiny-classifier",
+    "model_version": "latest",
+    "artifact_filename": "inert-unsafe-model.pkl",
+    "artifact_sha256": "37962f8d0fbc29a202671c565e147ac681d54736b70b6d4a52adaeae756cbe20"
+  },
+  "materials": {
+    "acquisition_sha256": "0c4ba9e6183bc7847d0240bff62edfd337e84feff3ff3873fa42934b886e3e6a",
+    "mlbom_sha256": "0613903344b2785f9f9dd7ba3a43437e446ba0e61109f34304af9bbc86f17448",
+    "dataset_sha256": "6a6cf544aad280f38d64d683653673092e098f8e034817f0850d8062b5f4e286"
+  },
+  "inspection": {
+    "receipt_id": "inspect-inert-unsafe-model",
+    "inspector_id": "psb-static-model-inspector",
+    "inspector_version": "1.0.0",
+    "inspector_sha256": "f434bfe66eb9266afb7c53cbf733c7158fde0d36af8bf4016b2a8b12ff85162f",
+    "available": true,
+    "complete": true,
+    "result": "FINDING",
+    "remote_code_requested": true,
+    "unsafe_serialization_findings": [
+      "pickle-loader"
+    ],
+    "malware_findings": [
+      "synthetic-eicar-marker"
+    ]
+  }
+}

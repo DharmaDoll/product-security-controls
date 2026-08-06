@@ -1,0 +1,26 @@
+{
+  "schema": "psb-rag-deletion-evidence/v1.0",
+  "available": true,
+  "complete": true,
+  "snapshot_sha256": "9800107ac2cfd0633ae02f8fd82fa61de7c28cfeabc6ff0a005aeea95a2d2da6",
+  "source_id": "SRC-004",
+  "document_id": "DOC-004",
+  "deleted_at": "2026-08-06T07:32:00Z",
+  "removed_chunk_ids": [
+    "CHK-DOC-004-001"
+  ],
+  "index_lookup": "NOT_FOUND",
+  "retrieval_probe": {
+    "decision": "DENY",
+    "results": []
+  },
+  "tombstone": {
+    "source_id": "SRC-004",
+    "document_id": "DOC-004",
+    "content_sha256": "e3122bd949e9f37aec803e1dd323384c96794028a18b639eb0b39dc0a5e6006e",
+    "revoked_at": "2026-08-06T07:30:00Z",
+    "deleted_at": "2026-08-06T07:32:00Z",
+    "reason": "SOURCE_REVOKED"
+  },
+  "live_deletion_replication": "NOT_CHECKED"
+}

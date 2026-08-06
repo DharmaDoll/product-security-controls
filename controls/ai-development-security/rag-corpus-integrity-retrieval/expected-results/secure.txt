@@ -1,0 +1,11 @@
+PASS RAG-001 source ownership authorization and lifecycle verified
+PASS RAG-002 exact content chunk and corpus snapshot integrity verified
+PASS RAG-003 poisoned source denied before embedding and indexing
+PASS RAG-004 PSB-DEPS-005 embedding model identity verified
+PASS RAG-005 tenant and classification scope preserved at ingestion
+PASS RAG-006 retrieval principal tenant and clearance authorization verified
+PASS RAG-007 retrieval results retain exact source and snapshot provenance
+PASS RAG-008 revoked source deletion and retrieval denial verified
+PASS RAG-009 complete sanitized evidence remains fail closed
+PASS RAG-010 live RAG services remain explicitly NOT_CHECKED
+RESULT ACCEPTED_FOR_RETRIEVAL

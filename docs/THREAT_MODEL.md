@@ -179,11 +179,29 @@ bypass decisions before dispatch. Content-free fixtures do not prove live
 application routes, IdP, gateway, provider contract, semantic classification,
 response or non-text filtering, or telemetry adoption.
 
-Model and dataset supply-chain integrity, RAG corpus provenance, AI TEVV
-release gating, live application gateway evidence, and live fleet-wide
-kill-switch and recovery evidence remain planned boundaries. Coding-agent controls must not be
-used as evidence that these broader AI product and operations threats are
-covered.
+`PSB-DEPS-005` owns the pre-execution model and dataset acquisition boundary.
+It binds immutable sources and exact bytes to a CycloneDX 1.7 ML-BOM,
+statically inspects a bounded Safetensors structure without importing model
+code, rejects executable serialization and remote-code loaders, authenticates
+inspection and signer lifecycle, verifies dataset license and use metadata,
+and permits only an exact staging handoff. Synthetic fixtures do not prove live
+registry, HSM, scanner, dataset consent or privacy, semantic poisoning,
+backdoor absence, production serving, or model behavior safety.
+
+`PSB-AI-011` owns the RAG corpus admission and retrieval boundary. It binds an
+authorized source registry to exact source, chunk, corpus-snapshot, and
+embedding-model identities; rejects an inert prompt-injection candidate before
+embedding; enforces tenant and classification scope; proves result provenance;
+and verifies bounded revocation, deletion, index absence, and retrieval denial.
+Fixture evidence does not prove live connectors, OCR or parsers, embedding
+services, vector databases, caches, replicas, backups, deletion propagation, or
+semantic-poisoning detection.
+
+AI TEVV release gating, live application gateway evidence, live RAG adoption,
+and live fleet-wide kill-switch and recovery evidence remain planned
+boundaries. Coding-agent, model-acquisition, or fixture-only RAG controls must
+not be used as evidence that these broader AI product and operations threats
+are covered.
 
 ### CI/CD and release threats
 

@@ -1,0 +1,36 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:66c68125-e5be-4788-8e4e-81965cfac381",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-08-06T00:00:00Z",
+    "component": {
+      "type": "application",
+      "bom-ref": "application:example-ai-service@1.0.0",
+      "name": "example-ai-service",
+      "version": "1.0.0"
+    }
+  },
+  "components": [
+    {
+      "type": "machine-learning-model",
+      "bom-ref": "model:example/tiny-classifier@latest",
+      "name": "example/tiny-classifier",
+      "version": "latest",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "37962f8d0fbc29a202671c565e147ac681d54736b70b6d4a52adaeae756cbe20"
+        }
+      ],
+      "properties": [
+        {
+          "name": "psb:serialization",
+          "value": "pickle"
+        }
+      ]
+    }
+  ],
+  "dependencies": []
+}

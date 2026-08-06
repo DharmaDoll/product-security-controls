@@ -1,0 +1,8 @@
+ERROR RAG-009 verification unavailable: RAG ingestion evidence is unavailable or incomplete
+RESULT ERROR
+
+ERROR RAG-009 verification unavailable: cannot parse RAG retrieval evidence
+RESULT ERROR
+
+ERROR RAG-009 verification unavailable: sensitive field retrieval.query_text is prohibited
+RESULT ERROR

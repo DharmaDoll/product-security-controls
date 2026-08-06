@@ -1,0 +1,8 @@
+ERROR AMS-008 verification unavailable: signer status evidence is unavailable or incomplete
+RESULT ERROR
+
+ERROR AMS-008 verification unavailable: signer status evidence is stale or from the future
+RESULT ERROR
+
+ERROR AMS-008 verification unavailable: cannot execute OpenSSL
+RESULT ERROR

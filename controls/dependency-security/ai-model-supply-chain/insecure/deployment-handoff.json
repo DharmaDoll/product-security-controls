@@ -1,0 +1,18 @@
+{
+  "schema": "psb-ai-model-deployment-handoff/v1.0",
+  "decision": "ACCEPTED",
+  "target_environment": "production",
+  "model_id": "example/tiny-classifier",
+  "model_version": "latest",
+  "artifact_sha256": "37962f8d0fbc29a202671c565e147ac681d54736b70b6d4a52adaeae756cbe20",
+  "mlbom_serial_number": "urn:uuid:66c68125-e5be-4788-8e4e-81965cfac381",
+  "mlbom_sha256": "0613903344b2785f9f9dd7ba3a43437e446ba0e61109f34304af9bbc86f17448",
+  "dataset_sha256": "6a6cf544aad280f38d64d683653673092e098f8e034817f0850d8062b5f4e286",
+  "loader": {
+    "name": "custom-loader",
+    "version": "latest",
+    "source_commit": "main",
+    "dependency_control": "none"
+  },
+  "trust_remote_code": true
+}
