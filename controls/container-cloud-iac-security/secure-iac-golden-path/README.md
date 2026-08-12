@@ -119,14 +119,18 @@ reusable workflowは次のcontrolを組み合わせます。表の状態を保�
 | Pinned Trivy/SCA/IaC scan profile | `PSB-DETECT-001` | implemented |
 | Dockerfile／Compose remediation feedback | `PSB-DETECT-001` DockSec profile | implemented as optional non-blocking feedback |
 | Provenance distribution | `PSB-REL-002` | implemented |
+| Exact artifact signing generation | `PSB-REL-005` | implemented as provider-neutral offline E3 contract |
 | OCI provenance and workload admission | `PSB-CONTAINER-001` | implemented |
 | Cloud OIDC federation profile | `PSB-CICD-006` | implemented as signed exact-claim offline E3 contract |
 | Source／Build／Deployment SBOM identity plus artifact-bound Build SBOM publication | `PSB-REL-003` | implemented |
 | SBOM portfolio and continuous analysis | `PSB-REL-003` Dependency-Track adapter | implemented as normalized fail-closed composition |
 
-Artifact signing generationは未実装です。`PSB-REL-001`はconsumer側の署名・
-provenance検証であり、Cosign等によるsigning stepそのものと重複させません。
-新しいsigning controlを実装するまではgolden pathの達成済み機能として扱いません。
+Artifact signing generationは`PSB-REL-005`が所有します。Golden Pathはexact artifact
+digest、短寿命authorization、non-exportable sign-only signer、署名／publication receipt、
+fail-closed gateの独立証跡を要求し、このcontrol内へ署名処理を複製しません。Repositoryの
+状態はoffline E3 contractであり、live KMS／HSM／keyless、OIDC、transparency、release
+storage adoptionを達成済みとは扱いません。`PSB-REL-001`は引き続きconsumer側の署名・
+provenance検証を所有します。
 
 DockSecはGolden Pathの独立したcontrolではなく、`PSB-DETECT-001`のoptional
 adapterです。release gateは固定・ロック済みCLI環境で

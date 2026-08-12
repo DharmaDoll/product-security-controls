@@ -1,0 +1,91 @@
+{
+  "schema": "psb-credential-response-policy/1.0",
+  "max_inventory_age_hours": 24,
+  "max_authorization_hours": 4,
+  "authorization_roles": [
+    "incident-commander",
+    "credential-owner"
+  ],
+  "consumer_dispositions": [
+    "migrated",
+    "removed",
+    "quarantined",
+    "owner-approved-not-applicable"
+  ],
+  "required_coverage_surfaces": [
+    "source-access",
+    "ci-secret",
+    "package-publishing",
+    "container-registry",
+    "cloud-deployment",
+    "ssh-access",
+    "artifact-signing"
+  ],
+  "required_state_order": [
+    "SUSPECTED",
+    "CONTAINMENT_AUTHORIZED",
+    "OLD_AUTHORITY_DISABLED",
+    "DEPENDENT_AUTHORITY_INVALIDATED",
+    "REPLACEMENT_BOUND",
+    "CONSUMERS_MIGRATED",
+    "OLD_AUTHORITY_DENIED",
+    "IMPACT_REVIEWED",
+    "CLOSED"
+  ],
+  "credential_classes": {
+    "reusable-bearer": {
+      "containment_actions": [
+        "disable-old-authority",
+        "invalidate-dependent-authority"
+      ],
+      "replacement_required": true,
+      "replacement_actions": [
+        "issue-least-privilege-replacement",
+        "bind-replacement"
+      ],
+      "maximum_replacement_lifetime_hours": 720
+    },
+    "ssh-key": {
+      "containment_actions": [
+        "remove-old-key",
+        "invalidate-dependent-authority"
+      ],
+      "replacement_required": true,
+      "replacement_actions": [
+        "enroll-new-key",
+        "bind-replacement"
+      ],
+      "maximum_replacement_lifetime_hours": 2160
+    },
+    "signing-key": {
+      "containment_actions": [
+        "revoke-signer-trust",
+        "publish-fresh-signer-status",
+        "review-signed-artifacts"
+      ],
+      "replacement_required": true,
+      "replacement_actions": [
+        "distribute-replacement-trust",
+        "bind-replacement"
+      ],
+      "maximum_replacement_lifetime_hours": 2160
+    },
+    "short-lived-session": {
+      "containment_actions": [
+        "block-replay-or-issuer-path",
+        "repair-trust-policy"
+      ],
+      "replacement_required": false,
+      "replacement_actions": [],
+      "maximum_replacement_lifetime_hours": 1
+    }
+  },
+  "denial_probe": {
+    "required": true,
+    "independent_from_replacement": true,
+    "skipped_or_unsupported_state": "ERROR"
+  },
+  "live_mutation": "NOT_CHECKED",
+  "dry_run_required": true,
+  "empty_audit_result": "NOT_PROOF_OF_NO_ABUSE"
+}

@@ -1,0 +1,239 @@
+id: PSB-GOV-005
+title: Close vulnerable deployed artifact rebuild and replacement decisions
+domain: governance-operations
+summary: exact deployed artifactとSBOMをcurrent vulnerability／support evidenceへ結び、期限付きrebuild、new digestのrelease／admission、旧digest非稼働までを一つのfreshness caseとしてfail-closedで検証する。
+check_context_version: "1.0"
+security_functions:
+  - detect
+  - verify
+  - respond
+  - govern
+threats:
+  - id: DEPLOYED-ARTIFACT-STALE-RISK
+    description: A previously valid artifact remains deployed after dependency base-image support or vulnerability evidence makes it unsafe.
+  - id: REBUILD-DECISION-GAP
+    description: An affected deployment is identified but receives no owned bounded rebuild or replacement decision.
+  - id: REPLACEMENT-IDENTITY-BREAK
+    description: A replacement is built or deployed without preserving source build release SBOM and admission identity.
+  - id: OLD-ARTIFACT-PERSISTENCE
+    description: A new artifact is deployed while one active environment still runs the vulnerable old digest.
+  - id: ARTIFACT-FRESHNESS-FAIL-OPEN
+    description: Partial stale unavailable or malformed inventory scanner registry build or deployment evidence is interpreted as current or remediated.
+implementations:
+  insecure:
+    - insecure/policy.json
+    - insecure/case.json
+  secure:
+    - secure/policy.json
+    - secure/case-remediated.json
+    - secure/case-not-affected.json
+    - secure/case-in-progress.json
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-GOV-005
+  expected:
+    - complete fresh deployment inventory binds every active deployment to an immutable artifact and SBOM
+    - current vulnerability support and lifecycle evidence derives the required rebuild decision and deadline
+    - affected active artifacts cannot close without an owned clean rebuild
+    - replacement source build artifact SBOM provenance signature registry and admission identities are exact
+    - every affected old digest is proven inactive before remediation closes
+    - not affected in progress overdue remediated and evidence error remain distinct
+    - output is sanitized and contains no credential exploit payload customer data or internal endpoint
+checks:
+  - id: DAR-001
+    title: Active deployment inventory is complete fresh and digest bound
+    required_state: every in-scope active deployment has one immutable artifact digest SBOM serial environment and recent observation
+    responsible_role: incident-response
+    applies_to:
+      - deployment-inventory
+      - artifact
+      - sbom
+    context:
+      threat_actor: stale collector mutable image tag incomplete environment inventory or operator copying the wrong release identity
+      attack_or_failure_scenario: one active environment is omitted or linked to an image name rather than the exact bytes under review
+      why_required: rebuild decisions cannot close runtime risk unless all deployed copies of the affected digest are known
+    verification:
+      type: hybrid
+      method: validate the PSB-GOV-001 inventory receipt scope completeness freshness and exact deployment artifact SBOM relationships
+      expected: complete exact observations pass while stale partial duplicate mutable or mismatched inventory errors
+      evidence:
+        - sanitized deployment inventory receipt
+        - exact artifact and SBOM relationship
+    mapping_status: reviewed
+  - id: DAR-002
+    title: Current vulnerability support and lifecycle evidence determines refresh need
+    required_state: fresh complete scanner advisory support base image and registry lifecycle evidence evaluates the exact deployed digest
+    responsible_role: security
+    applies_to:
+      - vulnerability-evidence
+      - support-lifecycle
+      - registry-lifecycle
+    context:
+      threat_actor: newly disclosed vulnerability ended support stale base image incomplete scanner feed or registry lifecycle drift
+      attack_or_failure_scenario: a historically valid artifact is called current because its signature still verifies even though its contents or support state are stale
+      why_required: integrity proves identity and origin but does not prove that old bytes remain safe to operate
+    verification:
+      type: automated
+      method: verify evidence source health freshness completeness and exact artifact or component identity then derive affected or not-affected state
+      expected: complete current evidence yields a deterministic state and any evidence failure returns ERROR
+      evidence:
+        - sanitized freshness evaluation
+        - scanner support and lifecycle receipts
+    mapping_status: reviewed
+  - id: DAR-003
+    title: Affected artifact receives an owned bounded rebuild decision
+    required_state: policy derives rebuild required priority owner decision time due time target environments and clean-build requirement
+    responsible_role: release-manager
+    applies_to:
+      - refresh-case
+      - rebuild-decision
+    context:
+      threat_actor: operational neglect unsupported manual downgrade or case owner treating impact detection as remediation
+      attack_or_failure_scenario: an affected running artifact has no accountable deadline or is closed with an indefinite monitor-only decision
+      why_required: impact inventory becomes risk reduction only after a bounded owner and action are established
+    verification:
+      type: automated
+      method: recompute decision owner and deadline from reviewed policy and reject manual weakening or overdue open cases
+      expected: affected active artifacts require an owned rebuild and overdue incomplete decisions fail
+      evidence:
+        - policy-derived rebuild decision
+        - manual downgrade and overdue negative-test output
+    mapping_status: reviewed
+  - id: DAR-004
+    title: Clean rebuild preserves exact source build and artifact evidence
+    required_state: replacement uses a new digest and binds reviewed source revision hosted build invocation provenance signature and artifact-bound SBOM
+    responsible_role: build-platform
+    applies_to:
+      - clean-rebuild
+      - replacement-artifact
+      - build-evidence
+    context:
+      threat_actor: compromised build dependency cache or responder republishing old bytes under a new tag
+      attack_or_failure_scenario: the replacement cannot be distinguished from the affected artifact or from an untrusted build
+      why_required: changing a label or rerunning an untrusted pipeline does not remove the vulnerable bytes or restore supply-chain trust
+    verification:
+      type: automated
+      method: compare old and new digest and verify exact source build provenance signature SBOM and release decision identities
+      expected: a distinct evidence-complete replacement passes while same-digest mutable or mismatched rebuilds fail
+      evidence:
+        - sanitized clean-build receipt
+        - replacement artifact evidence linkage
+    mapping_status: reviewed
+  - id: DAR-005
+    title: Replacement is published and admitted by exact digest
+    required_state: immutable registry publication and admission receipt authorize the new artifact digest for every target environment
+    responsible_role: release-manager
+    applies_to:
+      - container-registry
+      - deployment-admission
+      - replacement-deployment
+    context:
+      threat_actor: registry substitution mutable tag admission bypass or deploy automation selecting a different artifact
+      attack_or_failure_scenario: the approved rebuilt bytes differ from the object published or admitted into the target environment
+      why_required: build completion alone does not prove that production received the verified replacement
+    verification:
+      type: automated
+      method: bind PSB-CONTAINER-002 immutable publication and PSB-CONTAINER-001 admission receipt to the replacement digest and target set
+      expected: exact complete publication and admission pass while missing rejected mismatched or mutable evidence fails
+      evidence:
+        - registry publication receipt
+        - per-environment admission receipt
+    mapping_status: reviewed
+  - id: DAR-006
+    title: Every affected old digest is inactive before closure
+    required_state: fresh complete post-deployment observations prove zero active instances of the affected digest across the original inventory scope
+    responsible_role: incident-response
+    applies_to:
+      - deployment-inventory
+      - remediation-closure
+    context:
+      threat_actor: partial rollout rollback hidden environment or stale observation leaving the vulnerable artifact active
+      attack_or_failure_scenario: one replacement succeeds and the case closes while another environment still runs the old digest
+      why_required: new artifact success and old artifact removal are independent claims and both are needed to reduce runtime exposure
+    verification:
+      type: hybrid
+      method: compare the complete original scope with fresh post-replacement observations and deny any active old digest or missing target
+      expected: all targets show admitted replacement and no old digest before REMEDIATED
+      evidence:
+        - exact old-digest negative inventory result
+        - complete target migration receipt
+    mapping_status: reviewed
+  - id: DAR-007
+    title: Evaluation states and evidence failures remain distinct and sanitized
+    required_state: NOT_AFFECTED IN_PROGRESS OVERDUE REMEDIATED FINDING and ERROR are distinct and output excludes sensitive values
+    responsible_role: security
+    applies_to:
+      - refresh-evaluator
+      - governance-evidence
+    context:
+      threat_actor: collector outage parser regression malicious report payload or user with broader access to raw incident data
+      attack_or_failure_scenario: failed evidence appears remediated or durable output exposes credentials exploit content customer data or internal endpoints
+      why_required: operators must repair uncertain evidence instead of closing risk and governance output must not widen sensitive-data access
+    verification:
+      type: automated
+      method: exercise affected not-affected in-progress overdue remediated partial stale malformed unavailable and sensitive fixtures
+      expected: semantic findings return FAIL evidence problems return ERROR and protected values never appear in output
+      evidence:
+        - expected-results outputs
+        - sensitive and evidence-error negative tests
+    mapping_status: reviewed
+mappings:
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: RV.1.1
+    relationship: supports
+    confidence: high
+    rationale: Exact current vulnerability and deployment evidence identifies affected released software without treating unavailable or incomplete evidence as no impact.
+    reviewer: product-security
+    review_date: "2026-08-12"
+    applies_to:
+      - DAR-001
+      - DAR-002
+      - DAR-007
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: RV.2.1
+    relationship: supports
+    confidence: high
+    rationale: The policy derives a bounded rebuild response and verifies replacement deployment and old-artifact removal for each affected artifact.
+    reviewer: product-security
+    review_date: "2026-08-12"
+    applies_to:
+      - DAR-003
+      - DAR-004
+      - DAR-005
+      - DAR-006
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-DO-04.01
+    relationship: related-to
+    confidence: medium
+    rationale: Explicit support lifecycle evidence informs when a deployed artifact is no longer within the reviewed support scope; the control does not itself publish user documentation.
+    reviewer: product-security
+    review_date: "2026-08-12"
+    applies_to:
+      - DAR-002
+      - DAR-003
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1195.002
+    relationship: mitigates
+    confidence: medium
+    rationale: Digest-bound clean rebuild and complete replacement reduce persistence of software supply-chain compromise in deployed artifacts without claiming complete prevention.
+    reviewer: product-security
+    review_date: "2026-08-12"
+    applies_to:
+      - DAR-004
+      - DAR-005
+      - DAR-006
+limitations:
+  - Offline fixtures do not prove complete live deployment scanner registry build or admission evidence.
+  - A fresh rebuild can contain a new vulnerability or malicious change and still requires the existing build release and admission controls.
+  - Support age alone does not prove vulnerability and a valid signature does not prove current safety.
+  - The reference policy uses synthetic timestamps and deadlines and is not an organization SLA.
+  - Repository output excludes raw vulnerability exploit customer credential and internal endpoint data.
+  - Emergency rollback can temporarily reintroduce an old digest only through a separately governed organization decision not implemented here.
+status: prototype
+owner: product-security
+evidence_level: E3

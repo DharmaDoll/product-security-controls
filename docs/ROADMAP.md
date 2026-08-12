@@ -70,7 +70,7 @@ Add:
 - fork-safe workflows;
 - dependency review — implemented as `PSB-DEPS-004`;
 - OIDC;
-- runner hardening;
+- runner hardening — implemented as `PSB-CICD-007`;
 - verified downloads;
 - container digest pinning.
 - container registry transport, least privilege, mutation protection, audit,
@@ -80,6 +80,13 @@ Add:
 
 Build credential, privilege, sandbox, egress, and telemetry containment is
 implemented as `PSB-BUILD-001`.
+
+CI runner hardening is implemented as `PSB-CICD-007`. It separates
+provider-owned hosted lifecycle evidence from organization-owned self-hosted
+evidence and verifies exact trust routing, digest-identified images, JIT
+one-job lifecycle, clean startup, metadata／management／host-socket isolation,
+bounded registration authority, teardown, external log correlation, and
+fail-closed evidence health. Live fleet adapters remain adoption work.
 
 Secure infrastructure golden-path composition is implemented as
 `PSB-IAC-001`. It provides a versioned multi-cloud secure-compute module
@@ -94,11 +101,14 @@ exact-claim federation, stored-key removal, and bounded credential receipts.
 artifact-bound CycloneDX publication, and a normalized Dependency-Track
 processing receipt. `PSB-REL-004` adds signed supplier product/artifact
 identity, signer lifecycle, least-privilege intake, and fail-closed
-quarantine. `PSB-CONTAINER-002` adds TLS-only exact registry trust,
+quarantine. `PSB-REL-005` adds exact digest signing requests, short-lived
+workload authorization, non-exportable sign-only signer policy, immutable
+signature publication, transparency receipts, and fail-closed release gating.
+`PSB-CONTAINER-002` adds TLS-only exact registry trust,
 repository/action-scoped authorization, short-lived identity binding,
 protected release immutability, attributable audit correlation, bounded image
-lifecycle, and fail-closed evidence health. Artifact signing generation and
-provider-specific live OIDC or registry adapters remain incomplete.
+lifecycle, and fail-closed evidence health. Provider-specific live signing,
+OIDC, transparency-log, or registry adapters remain incomplete.
 `PSB-CONTAINER-003` adds dedicated minimal Linux host scope, exact patch
 baselines, private daemon control, protected runtime paths, kernel isolation,
 operator and audit boundaries, and hardware-backed node trust with distinct
@@ -208,6 +218,12 @@ fail-closed Dependency-Track ingestion, and distinct source/build/deployment
 observation linkage are implemented as `PSB-REL-003`. Supplier-provided signed
 SBOM product/artifact identity, signer status, and quarantine are implemented
 as `PSB-REL-004`.
+Exact release-artifact signing generation is implemented as `PSB-REL-005` with
+an offline E3 contract for immutable subject identity, five-minute exact
+authorization, active non-exportable sign-only signer state, cryptographic
+statement binding, immutable publication, transparency receipt, and release
+failure blocking. Live KMS／HSM／keyless, OIDC, transparency, and publication
+adoption remains organization evidence.
 
 ## Phase 5 — AI development security
 
@@ -245,7 +261,9 @@ Add:
   remain follow-on evidence;
 - threat-model-driven AI TEVV and red-team release gates with pinned test
   suites, deterministic scenarios, result health, and scanner failures kept
-  distinct from clean results;
+  distinct from clean results — the provider-neutral E3 evidence contract is
+  implemented as `PSB-DETECT-002`; live model, external judge, red-team, runner,
+  and production release-gate adoption remain follow-on evidence;
 - rogue-agent stop, kill-switch, bounded fallback, recovery, and AI incident
   evidence that cannot be disabled by model or repository content.
 
@@ -254,7 +272,8 @@ evidence for them:
 
 - OWASP Top 10 for Agentic Applications 2026 as a coarse agentic risk taxonomy
   — implemented with all `ASI01..ASI10` identifiers and reviewed mappings for
-  `PSB-AI-001..011` plus the GitHub MCP slice in `PSB-SOURCE-004`;
+  `PSB-AI-001..011`, the GitHub MCP slice in `PSB-SOURCE-004`, and the
+  threat-derived release-gate slice in `PSB-DETECT-002`;
 - NIST SP 800-218A as the AI-specific SSDF community profile;
 - NIST AI RMF 1.0 and NIST AI 600-1 for governance, measurement, and
   generative-AI risk management;
@@ -276,7 +295,8 @@ Add:
 - metrics;
 - adoption profiles;
 - generated framework indexes;
-- control maturity dashboard;
+- control maturity dashboard — implemented as generated catalog-governance
+  CSV, Markdown, and XLSX views;
 - repository template documentation.
 
 SBOM impact search and evidence-first supply-chain incident response planning is
@@ -291,6 +311,14 @@ risk, compensation, approval, remediation, and expiry. A complete fresh
 SHA-256-bound register derives active, expiring, expired, and invalid views;
 missing, stale, unsafe, or tampered evidence remains `ERROR`.
 
+Catalog governance and maturity views are implemented without adding a
+documentation-only control. The generated views count reference status,
+evidence level, verification type, mapping debt, and assessment adapters per
+control. Organization adoption, evidence freshness, and `PSB-GOV-002`
+exception debt remain explicit `NOT_CHECKED` fields until organization-owned
+input is supplied; repository `E3` fixtures are never promoted into live
+adoption or maturity claims.
+
 Add product-vulnerability response capabilities that compose the existing
 impact lookup with CISA KEV, CVSS v4.0, and FIRST PSIRT guidance. The first
 executable boundary is implemented as `PSB-GOV-003`, with exact scanner and
@@ -299,6 +327,28 @@ policy-derived priority and deadlines, accountable case routing, and
 `PSB-GOV-002` exception composition. The broader FIRST maturity and service
 inventory remains a separate organization-owned assessment profile so
 repository fixtures cannot claim that a live PSIRT is mature.
+
+Supply-chain credential exposure containment and rotation assurance is
+implemented as `PSB-GOV-004`. It composes `PSB-SOURCE-003`, `PSB-SOURCE-004`, and
+`PSB-GOV-001` rather than duplicating exposure detection, ordinary credential
+lifecycle, or artifact-impact lookup. The control must cover source, CI,
+package-publishing, registry, cloud-deployment, SSH, and signing credentials;
+distinguish revocation, replacement, session invalidation, signer distrust,
+and short-lived-token response; verify that old authority is denied after all
+known consumers migrate; and keep incomplete inventory or provider failure
+distinct from successful rotation. Its E3 slice is provider-neutral,
+secret-free, authorization-gated, and dry-run; it verifies reusable bearer,
+signer, and short-lived-session response paths while live mutation remains
+`NOT_CHECKED` until provider adapters are reviewed.
+
+Deployed-artifact refresh closure is implemented as `PSB-GOV-005`. It composes
+`PSB-GOV-001`, `PSB-GOV-003`, build／release integrity, registry lifecycle, and
+container admission evidence to connect an exact active digest and current risk
+to an owned deadline, clean rebuild, immutable replacement, admission across
+the original target scope, and independent proof that the old digest is no
+longer active. `NOT_AFFECTED`, `IN_PROGRESS`, `OVERDUE`, `REMEDIATED`, semantic
+`FINDING`, and evidence `ERROR` remain distinct. Live provider adapters remain
+organization evidence.
 
 ## Prioritized control backlog
 
@@ -314,7 +364,10 @@ acceptance criteria are maintained in
 
 1. Import and reconcile the existing application vulnerability assessment
    checklist as described in Phase 2. This is a generation/data-model task and
-   does not become a documentation-only control.
+   does not become a documentation-only control. The source-preserving
+   CSV／XLSX importer, exact manifest, reconciliation contract, private-row
+   redaction, deterministic profile generation, and fail-closed negative tests
+   are implemented; the actual organization source remains `INPUT_REQUIRED`.
 2. `PSB-BUILD-002` — consistent build process on an approved hosted build
    platform — implemented.
 3. `PSB-BUILD-003` — platform-generated and platform-authenticated provenance
@@ -361,6 +414,18 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    adds Dockerfile and Compose remediation feedback through an offline
    scan-only fail-closed gate; AI output remains non-authoritative and the
    upstream Action is rejected because its internal downloads are mutable.
+9. `PSB-GOV-004` — supply-chain credential exposure containment and rotation
+   assurance — implemented at E3. It correlates a
+   secret-free credential inventory with source, CI, package, registry, cloud,
+   SSH, signing, release, artifact, and deployment evidence; require
+   credential-class-specific containment; migrate every known consumer; and
+   independently proves old-authority denial before closure. Live provider
+   mutation remains `NOT_CHECKED`.
+10. `PSB-GOV-005` — deployed artifact freshness, bounded clean rebuild,
+    replacement admission, and old-digest removal closure — implemented at E3
+    with exact inventory and evidence identity, policy-derived deadlines,
+    distinct lifecycle states, sanitized output, and fail-closed negative
+    fixtures. Live scanner／build／registry／cluster adapters remain external.
 
 ### P2 — Exposure reduction and release completeness
 
@@ -388,34 +453,40 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    implemented with eight atomic checks, positive and negative signed
    fixtures, least-privilege project binding, and distinct quarantine versus
    verification-error states.
-7. `PSB-CONTAINER-001` — immutable image digests, non-root execution, minimal
+7. `PSB-REL-005` — exact release-artifact signing generation — implemented at
+   E3 with immutable artifact／release／source identity, short-lived scoped
+   authorization, active non-exportable sign-only signer policy, signed
+   cross-object binding, immutable publication／transparency receipt, and
+   fail-closed release gating. Live KMS／HSM／keyless adapters remain external
+   evidence; this is not a SLSA Build level mapping.
+8. `PSB-CONTAINER-001` — immutable image digests, non-root execution, minimal
    capabilities, admission-policy verification, and a follow-on composition
    that applies existing `PSB-REL-001` SLSA provenance verification to the
    exact admitted OCI manifest digest — implemented with API-native Kubernetes
    fixtures, nine atomic admission checks, default-deny network policy,
    platform PID and fail-closed evidence, and actual `PSB-REL-001` verifier
    composition.
-8. `PSB-CONTAINER-002` — registry transport, repository-scoped authorization,
+9. `PSB-CONTAINER-002` — registry transport, repository-scoped authorization,
    short-lived identity, immutable release protection, audit, and image
    lifecycle enforcement — implemented with seven atomic checks, positive and
    negative provider-neutral fixtures, operation-to-audit correlation,
    protected-tag history, and distinct evidence `ERROR` states.
-9. `PSB-CONTAINER-003` — minimal patched container hosts, protected daemon and
+10. `PSB-CONTAINER-003` — minimal patched container hosts, protected daemon and
    runtime sockets, user and kernel isolation, management restriction, and
    host audit policy — implemented with nine atomic checks, protected-path
    integrity, hardware-backed node trust, time-bound isolation exceptions, and
    distinct `PASS`, `FAIL`, `NOT_CHECKED`, and `ERROR` outcomes.
-10. `PSB-CONTAINER-004` — implemented at E3 with workload-bound Falco and
+11. `PSB-CONTAINER-004` — implemented at E3 with workload-bound Falco and
    Sysdig event adapters, six behavior categories, sensor/drop/sequence health,
    alert delivery failure handling, sanitized evidence, and
    authorization-bound response handoff. Live privileged sensor deployment
    remains provider-specific follow-on work extending `PSB-CONTAINER-003`.
-11. `PSB-GOV-002` — implemented at E3 with exact cataloged control/check and
+12. `PSB-GOV-002` — implemented at E3 with exact cataloged control/check and
     target scope, distinct owner/risk-reviewer/approver roles, bounded expiry,
     compensating controls, approval and remediation tickets, complete
     SHA-256-bound register evidence, sanitized output, and distinct active,
     expiring, expired, invalid, and `ERROR` outcomes.
-12. `PSB-GOV-003` — exact product-vulnerability triage that combines validated
+13. `PSB-GOV-003` — exact product-vulnerability triage that combines validated
     CVSS v4 vectors, fresh complete CISA KEV evidence, product/artifact/
     deployment applicability, accountable PSIRT ownership, and policy-bound
     remediation priority without treating source failure as low risk —
@@ -518,7 +589,9 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
     subset of `ASI09` are now implemented-partial through PSB-AI-003／011,
     PSB-SOURCE-004／PSB-AI-004／010, PSB-AI-001／002／004／011,
     PSB-AI-005／011, PSB-AI-008, PSB-AI-007／008／009, and PSB-AI-006
-    respectively. `ASI10` is
+    respectively. `PSB-DETECT-002` adds release-gate scenario evidence for
+    bounded subsets of `ASI01`, `ASI02`, `ASI05`, `ASI06`, and `ASI08` without
+    converting one synthetic test into complete category coverage. `ASI10` is
     implemented-partial by `PSB-AI-009`; fleet-wide kill, distributed rollback,
     concurrent containment and full-authority recovery remain gaps. Multi-agent
     concurrency remains an `ASI08` gap and human decision quality remains an `ASI09` gap. Do
@@ -538,12 +611,21 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
     provenance, and bounded revocation／deletion／retrieval denial. Live source
     connectors／parsers／embedding services／vector stores／caches／replicas and
     semantic-poisoning detection remain `NOT_CHECKED`.
-15. Reconcile the seven-layer product-security and AI portfolio view from
+15. `PSB-DETECT-002` — implemented at E3 with exact release candidate and
+    DEPS-005／AI-003／004／010／011 bindings, immutable synthetic evaluator and
+    reviewed scenario suite, six inert threat-derived cases, separate
+    deterministic and five-run probabilistic decisions, independently owned
+    current thresholds, known-safe／known-vulnerable calibration,
+    credential-free network-free execution, sanitized evidence, and exact
+    release-decision binding. `FAIL`, `INCOMPLETE`, and `ERROR` cannot produce
+    release permission. Live model／provider／judge／red-team／runner／production
+    gate evidence remains `NOT_CHECKED`.
+16. Reconcile the seven-layer product-security and AI portfolio view from
     [`REF-AI-003`](SECURITY_GUIDANCE_SOURCES.md#ref-ai-003). Existing controls
-    retain their current domain ownership. Prioritize the remaining unique gap
-    as AI TEVV release gating, and treat live RAG adapters as adoption evidence
-    for `PSB-AI-011`. Extend the AI application gateway and rogue-agent containment only
-    with live enforcement, fleet recovery and incident-system evidence.
+    retain their current domain ownership. Treat live RAG and TEVV adapters as
+    adoption evidence for `PSB-AI-011` and `PSB-DETECT-002`. Extend the AI
+    application gateway and rogue-agent containment only with live enforcement,
+    fleet recovery and incident-system evidence.
     Keep AI governance, training, security champions, KPI targets, PSIRT
     capability, and customer assurance as organization-owned profiles rather
     than documentation-only technical controls.
@@ -572,13 +654,18 @@ Add the following only with a concrete implementation and automated evidence:
   SSDF, SLSA, and OSPS coverage may be added;
 - NIST SP 800-204D final, February 2024, as cross-control integration guidance
   for developer environment, SCM, build, repository, evidence, commit, and
-  CD/GitOps trust boundaries. Maintain a reconciliation view rather than a
-  duplicate framework registry; exact SSDF mappings continue to use the
+  CD/GitOps trust boundaries — implemented as a validated 12-row reconciliation
+  with exact current check evidence and explicit planned, gap, and out-of-scope
+  dispositions. The CSV, Markdown, and `SSC Integration` XLSX sheet are generated
+  from one reviewed policy source. This remains a reconciliation view rather
+  than a duplicate framework registry; exact SSDF mappings continue to use the
   existing `nist-ssdf` registry;
 - FIRST PSIRT Services Framework 1.1 and the PSIRT Maturity Document as sources
-  for an organization-owned capability profile after `PSB-GOV-003`; missing
-  live evidence remains `NOT_CHECKED` and no maturity level is inferred from
-  repository fixtures;
+  for an organization-owned capability profile after `PSB-GOV-003` — the
+  integrity-recorded source, 31-service inventory, 18-row cumulative profile,
+  CSV／Markdown, and workbook sheets are implemented. Missing live evidence
+  remains `NOT_CHECKED` and no maturity level is inferred from repository
+  fixtures;
 - FIRST CVSS v4.0 specification revision 1.2 and the live CISA KEV catalog as
   data semantics for `PSB-GOV-003`, not as compliance frameworks;
 - AWS security guidance as an AWS provider profile when AWS-specific IAM,

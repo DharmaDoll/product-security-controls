@@ -84,7 +84,12 @@ client経路をmanaged security proxyへ固定します。
   - proxy障害を`ERROR`として扱う
   - install用read-only proxyとpublish経路を分離
   - proxyのblocklistをcooldownの代替にしない
+- `native-cooldown-policy.json`
+  - repository-owned verifierを最終判定として維持
+  - native設定にも168時間の下限を適用
+  - metadata欠落を`ERROR`として扱い、永続的な除外を禁止
 - `clients/`
+  - npm、pip、uv、pnpm、Yarnのnative cooldown sample
   - npm、pip、Go、Composerのproxy-only client profile
 
 安全なfixtureには、公開から7日以上経過した通常dependencyと、緊急security fixを
@@ -99,6 +104,9 @@ client経路をmanaged security proxyへ固定します。
 - allowlist外registry
 - integrity欠落
 - 公開から24時間しか経過していないversion
+- 168時間未満または無効化されたnative cooldown設定
+- package wildcard等を使う永続的なnative cooldown除外
+- metadata欠落やlockfile再利用をfail-openにするpnpm設定
 - developer任意のproxy設定とpublic registry fallback
 - `pip`の`extra-index-url`、Goの`,direct`、ComposerのPackagist fallback
 - proxy blocklistをrelease cooldownと誤認するpolicy
@@ -117,6 +125,7 @@ make verify-control CONTROL=PSB-DEPS-001
 ```bash
 python3 controls/dependency-security/release-cooldown/scripts/verify.py \
   --policy controls/dependency-security/release-cooldown/secure/cooldown-policy.json \
+  --native-policy controls/dependency-security/release-cooldown/secure/native-cooldown-policy.json \
   --proxy-policy controls/dependency-security/release-cooldown/secure/registry-proxy-policy.json \
   --lockfile controls/dependency-security/release-cooldown/secure/lockfile.json \
   --metadata controls/dependency-security/release-cooldown/secure/registry-metadata.json \
@@ -158,6 +167,36 @@ providerが許可したpackageでもcooldownを通過したことにはなりま
 利用不能な場合もpublic registryへfallbackせず、検証不能な`ERROR`として扱います。
 block pathの確認にはproviderが用意する無害なtest packageだけを使い、実malwareを
 取得・実行してはいけません。
+
+## Package managerのnative cooldown
+
+`cooldowns.dev`は、package manager、dependency update bot、registry proxyに存在する
+cooldown機能を横断的に見つけるための、community-maintainedな運用リファレンスとして
+参照します。frameworkや適合基準ではなく、各設定の意味と対応versionはpackage manager
+の公式documentationを正とします。サイトで例示される待機期間に合わせて、このcontrolの
+7日（168時間）baselineを短縮してはいけません。
+
+`secure/native-cooldown-policy.json`は、現在確認済みのclient profileをまとめています。
+
+| Client | Review対象の設定 | このcontrolでの境界 |
+| --- | --- | --- |
+| npm | `min-release-age=7` | wildcardを含む永続的な`min-release-age-exclude`を許可しない |
+| pip | `uploaded-prior-to=P7D` | upload時刻を提供するindexでだけ有効。metadata不能は`ERROR` |
+| uv | `exclude-newer = "7 days"` | package単位の永続的な`exclude-newer-package`を許可しない |
+| pnpm | `minimumReleaseAge: 10080` | metadata欠落、若いversionへのfallback、lockfile再利用による再検証省略をfail-openにしない |
+| Yarn | `npmMinimalAgeGate: "7d"` | `npmPreapprovedPackages`による永続的なcooldown除外を許可しない |
+| Go／Composer | native profileなし | repository-owned verifierで公開時刻を判定する |
+
+これらはdefense in depthであり、repository-owned pre-resolution verifierを置き換えません。
+CLI option、環境変数、user-wide設定など、repository設定より優先される入力によるweakeningも
+managed endpointとCIで別途監査します。緊急時はclientに永続的な除外を残さず、既存の
+exact package・version・owner・期限付き例外へ戻します。
+
+`cooldowns` repositoryのhelper scriptは、このcontrolではdownload、実行、vendoringを
+しません。shell profileやsystem-wide設定の変更は明示的な端末管理changeとして扱う必要が
+あり、repository cloneやverificationから暗黙に行うことを禁止します。Poetry、PDM、pixi、
+Bun、Deno、Cargo、Bundler、Hex、Scala、mise等は、今後公式documentation、対応version、
+fail-closed fixtureを確認してから追加する候補であり、現時点の実装済み対象ではありません。
 
 ## 例外
 
@@ -201,6 +240,8 @@ cooldownでは次を防止できません。
 - compromised lockfileまたはregistry metadata
 - 既に採用済みversionで後から判明した脆弱性
 - internal registryやpackage manager clientの侵害
+- CLI option、環境変数、user-wide設定によるrepository profileの上書き
+- client version差異、registryのupload時刻metadata欠落、設定precedenceの変化
 
 このreference verifierは、与えられたmetadata snapshotを検査しますが、そのmetadataが
 本物のregistryから取得されたことや署名済みであることは証明しません。production
@@ -216,3 +257,11 @@ install script制御と組み合わせる必要があります。
 - [Takumi Guard quickstart](https://shisho.dev/docs/t/guard/quickstart/)
 - [Takumi Guard for Go](https://shisho.dev/docs/t/guard/quickstart/golang/)
 - [Takumi Guard limitations](https://shisho.dev/docs/t/guard/limitation/)
+- [Dependency Cooldowns](https://cooldowns.dev/)
+- [mprpic/cooldowns](https://github.com/mprpic/cooldowns)
+- [uv dependency resolution](https://docs.astral.sh/uv/concepts/resolution/)
+- [uv settings reference](https://docs.astral.sh/uv/reference/settings/)
+- [npm config reference](https://docs.npmjs.com/cli/v11/using-npm/config/)
+- [pnpm dependency resolution settings](https://pnpm.io/settings/dependency-resolution)
+- [Yarn configuration](https://yarnpkg.com/configuration/yarnrc/)
+- [pip install reference](https://pip.pypa.io/en/stable/cli/pip_install/)

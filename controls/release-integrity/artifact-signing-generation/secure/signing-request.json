@@ -1,0 +1,17 @@
+{
+  "schema": "psb-artifact-signing-request/1.0",
+  "artifact": {
+    "family": "example-cli",
+    "name": "example-cli-linux-amd64",
+    "sha256": "d18e391adbc06782960dafa7284d3ed317295865eb6aa777768a308f0e903963"
+  },
+  "release": {
+    "id": "example-cli/v1.0.0",
+    "ref": "refs/tags/v1.0.0"
+  },
+  "source": {
+    "repository": "https://github.com/example/security-reference",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "requested_at": "2026-08-10T03:00:00Z"
+}

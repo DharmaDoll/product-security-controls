@@ -61,6 +61,15 @@ security function、atomic check数、成熟度、証跡レベルも一覧でき
 
 Software supply-chain controlの関係は
 [`docs/SUPPLY_CHAIN_PRINCIPLES.md`](docs/SUPPLY_CHAIN_PRINCIPLES.md)を参照してください。
+既存controlがpipeline全体で同じidentityを受け渡せているかは、NIST SP 800-204Dを
+section-level guidanceとして使う
+[`supply-chain integration reconciliation`](generated/checklists/profiles/supply-chain-integration/reconciliation.md)
+で確認できます。`implemented`はrepository内のexact check evidenceを示すだけで、
+組織導入やNIST準拠の主張ではありません。
+稼働中artifactの時間変化を扱うclosureは
+[`PSB-GOV-005`](controls/governance-operations/deployed-artifact-refresh/README.md)
+を参照してください。脆弱性やsupport状態からclean rebuild、replacement admission、
+old digest非稼働までを一つのcaseとして検証します。
 今後実装するcontrolのgoal、既存controlとの境界、実装slice、依存関係、完了条件は
 [`docs/PLANNED_CONTROLS.md`](docs/PLANNED_CONTROLS.md)に整理しています。
 frameworkではないcheat sheet、vendor hardening guide、ユーザー提供原文などの
@@ -85,6 +94,15 @@ checklistだけを更新する場合は`make generate-checklists`を使用でき
 生成物は`generated/checklists/`に保存されます。`control.yaml`が正本であり、
 生成されたspreadsheetは直接編集しません。組織固有の担当、判定、証跡URL、
 期限、例外IDは`product-security-assessment-template.xlsx`へ記録します。
+
+control数、reference実装のstatus／evidence level、verification type、mapping debtを
+確認する場合は
+[`governance/control-readiness.md`](generated/checklists/governance/control-readiness.md)
+を使用します。Excel版には`Governance Summary`、`Catalog Governance`、
+`Governance Assessment`シートがあります。repositoryの`prototype`や`E3`は
+組織での導入済みを意味しないため、組織導入、証跡freshness、例外debtは入力が
+なければ`NOT_CHECKED`のままです。
+
 例外そのものの共通field、期限判定、fail-closedな台帳検証は
 [`PSB-GOV-002`](controls/governance-operations/time-bound-security-exceptions/README.md)
 と[`policies/exceptions/README.md`](policies/exceptions/README.md)を参照してください。
@@ -94,6 +112,23 @@ SLSA Build Level 2を目標にする場合は
 `profiles/slsa-build-l2-coverage.csv`には未マッピング要件も`gap`として残るため、
 対象行があることをLevel 2達成と解釈しません。Excel版では
 `SLSA Build L2`と`SLSA L2 Coverage`シートをフィルタできます。
+
+developer、SCM、dependency、build、release、registry、deployment間のidentity連携を
+確認する場合は、`profiles/supply-chain-integration/reconciliation.csv`またはExcelの
+`SSC Integration`シートを使用します。`planned`、`gap`、`out-of-scope`も削除せず、
+ownerと残作業または境界を同じ行に保持します。
+
+組織既存のアプリケーション脆弱性診断checklistは、source IDと原文を保持した別profileとして
+取り込みます。現在は実source未提供のため、空checklistではなく
+`profiles/application-vulnerability-assessment/status.json`へ`INPUT_REQUIRED`を出力します。
+Input contract、CSV／XLSX importer、reconciliation、private rowの扱いは
+[`docs/APPLICATION_CHECKLIST_IMPORT.md`](docs/APPLICATION_CHECKLIST_IMPORT.md)を参照してください。
+
+PSIRTの組織能力を確認する場合は、FIRST PSIRT Services Framework 1.1と
+2026-08-12時点のMaturity Documentをintegrity-recordした
+[`FIRST PSIRT capability profile`](generated/checklists/profiles/first-psirt-capability/assessment.md)
+を使用します。Basic、Intermediate、Advancedは累積評価で、repository controlの
+check参照は補助証跡にすぎません。組織証跡がなければ全行`NOT_CHECKED`です。
 
 特定のproducer、build platform、consumer、release、source revisionについて、
 7つの累積要件を組織所有の証跡で判定する場合:

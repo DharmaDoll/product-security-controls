@@ -49,6 +49,15 @@
   as a clean security result;
 - scanner evidence copying matched credentials into CI logs or artifacts;
 - unverified external downloads.
+- a leaked source, CI, package-publishing, registry, cloud-deployment, SSH, or
+  signing credential remaining usable because cleanup, replacement issuance,
+  or ordinary expiry is mistaken for verified revocation;
+- partial credential inventories, forgotten consumers, derived sessions, or
+  failed provider adapters being recorded as completed rotation while an old
+  authority can still modify source, publish packages, substitute artifacts,
+  sign evidence, or deploy software;
+- incident receipts, fixtures, audit output, or error messages copying a
+  credential value or signing material into a broader response evidence store;
 
 ### Public source and information exposure threats
 
@@ -197,11 +206,20 @@ Fixture evidence does not prove live connectors, OCR or parsers, embedding
 services, vector databases, caches, replicas, backups, deletion propagation, or
 semantic-poisoning detection.
 
-AI TEVV release gating, live application gateway evidence, live RAG adoption,
-and live fleet-wide kill-switch and recovery evidence remain planned
-boundaries. Coding-agent, model-acquisition, or fixture-only RAG controls must
-not be used as evidence that these broader AI product and operations threats
-are covered.
+`PSB-DETECT-002` owns the AI TEVV evidence and release-decision boundary. It
+binds an exact release candidate and upstream controls to an immutable evaluator
+and reviewed suite, separates deterministic assertions from complete repeated
+metrics, calibrates with known-safe and known-vulnerable subjects, isolates
+adversarial execution, and preserves distinct `FAIL`, `INCOMPLETE`, and `ERROR`
+outcomes. Synthetic evidence does not prove live model behavior, provider or
+external-judge health, production runner isolation, red-team completeness, or
+production release-gate enforcement.
+
+Live application gateway evidence, live RAG and TEVV adoption, and live
+fleet-wide kill-switch and recovery evidence remain planned boundaries.
+Coding-agent, model-acquisition, fixture-only RAG, or fixture-only TEVV controls
+must not be used as evidence that these broader AI product and operations
+threats are covered.
 
 ### CI/CD and release threats
 
@@ -211,6 +229,13 @@ are covered.
 - OIDC trust misconfiguration;
 - insecure self-hosted runners;
 - unsigned or unverifiable releases;
+- mutable release tags, wrong artifact bytes, short source revisions, or
+  request／authorization mix-ups being submitted to an otherwise valid signer;
+- broad long-lived signing authority or an exportable overprivileged shared
+  key allowing a compromised release job to create valid unauthorized
+  signatures;
+- signing, publication, transparency, parser, or crypto-tool failure being
+  treated as successful release completion;
 - missing provenance;
 - SBOMが別artifact、source tree、または誤ったrelease versionを表す一方で、
   release inventoryとして信頼されること;
@@ -266,6 +291,23 @@ These lifecycle threats are implemented by `PSB-GOV-002`. The owning scanner,
 dependency, build, release, container, or application control still determines
 the domain-specific security failure and applies a valid exception as a
 separate decision.
+
+### Deployed artifact freshness and replacement threats
+
+- a previously signed and admitted artifact remaining active after a component,
+  base image, support state, or vulnerability signal changes;
+- impact detection being treated as remediation without an owned rebuild and
+  deadline;
+- a tag change, same-digest rebuild, mutable publication, or identity mismatch
+  being accepted as a clean replacement;
+- one successful deployment hiding an old vulnerable digest in another target;
+- stale, partial, unavailable, or sensitive evidence being interpreted as
+  `NOT_AFFECTED` or `REMEDIATED`.
+
+`PSB-GOV-005` owns the cross-control closure from current runtime risk through
+clean rebuild, exact publication and admission, and zero active old digest. The
+source build, release, registry, admission, scanner, and deployment controls
+continue to own their respective evidence.
 
 ### Product vulnerability response and PSIRT threats
 

@@ -1,0 +1,25 @@
+{
+  "schema": "psb-deployed-artifact-refresh-policy/v1",
+  "policy_id": "artifact-refresh-policy@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "as_of": "2026-08-12T12:00:00Z",
+  "evidence_max_age_seconds": 3600,
+  "inventory_max_age_seconds": 900,
+  "required_evidence_sources": ["deployment-inventory", "registry-lifecycle", "support-catalog", "vulnerability-monitor"],
+  "deadlines_hours": {"critical": 24, "high": 72, "medium": 168},
+  "owners": {"rebuild": "build-platform", "release": "release-engineering", "closure": "incident-response"},
+  "closure": {
+    "require_new_digest": true,
+    "require_hosted_build": true,
+    "require_platform_provenance": true,
+    "require_artifact_bound_sbom": true,
+    "require_signature": true,
+    "require_immutable_publication": true,
+    "require_admission_for_all_targets": true,
+    "require_zero_active_old_digest": true,
+    "allow_scope_reduction": false
+  },
+  "output": {
+    "allowed_fields": ["case_id", "state", "old_digest_instances", "replacement_targets"],
+    "forbidden_fields": ["credential", "customer_data", "endpoint", "exploit", "secret", "token"]
+  }
+}

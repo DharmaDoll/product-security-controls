@@ -5,7 +5,7 @@
 このページは、実装済みcontrolを目的別に探すための入口です。
 `control.yaml`を正本として`make generate-index`で生成されます。
 
-現在、**42 controls / 390 atomic checks**を収録しています。
+現在、**47 controls / 436 atomic checks**を収録しています。
 
 ## 使い方
 
@@ -24,14 +24,14 @@
 | [Secure Design](#domain-secure-design) | 脅威モデリング、trust boundary、abuse caseなど、実装前の設計判断。 | 0 | 0 |
 | [Secure Coding](#domain-secure-coding) | 認証・認可、入力処理、secret、暗号など、application実装の安全性。 | 0 | 0 |
 | [Source Protection](#domain-source-protection) | 開発端末、Git、repository、source access credential、公開露出の保護。 | 4 | 73 |
-| [Dependency Security](#domain-dependency-security) | registry、cooldown、install script、lockfile、artifact integrityの保護。 | 5 | 36 |
-| [CI/CD Security](#domain-cicd-security) | workflow dependency、command injection、権限、未信頼PR境界の保護。 | 6 | 35 |
+| [Dependency Security](#domain-dependency-security) | registry、cooldown、install script、lockfile、artifact integrityの保護。 | 5 | 38 |
+| [CI/CD Security](#domain-cicd-security) | workflow dependency、command injection、権限、未信頼PR境界の保護。 | 7 | 44 |
 | [Build Security](#domain-build-security) | build隔離、hosted build、credential境界、provenance生成の保護。 | 3 | 16 |
 | [Container / Cloud / IaC Security](#domain-container-cloud-iac-security) | IaC Golden Path、container admission、runtime、cloud control planeの保護。 | 5 | 49 |
-| [Release Integrity](#domain-release-integrity) | 署名、provenance、SBOM、supplier artifact、配布時の完全性。 | 4 | 27 |
+| [Release Integrity](#domain-release-integrity) | 署名、provenance、SBOM、supplier artifact、配布時の完全性。 | 5 | 35 |
 | [AI Development Security](#domain-ai-development-security) | AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。 | 11 | 123 |
-| [Detection / Verification](#domain-detection-verification) | 脆弱性、secret、container、IaCなどを検出・検証する共通基盤。 | 1 | 8 |
-| [Governance / Operations](#domain-governance-operations) | 例外、ownership、証跡、影響調査、継続運用とincident readiness。 | 3 | 23 |
+| [Detection / Verification](#domain-detection-verification) | 脆弱性、secret、container、IaCなどを検出・検証する共通基盤。 | 2 | 18 |
+| [Governance / Operations](#domain-governance-operations) | 例外、ownership、証跡、影響調査、継続運用とincident readiness。 | 5 | 40 |
 
 <a id="domain-secure-design"></a>
 
@@ -70,7 +70,7 @@ registry、cooldown、install script、lockfile、artifact integrityの保護。
 
 | Control | 達成する状態 | マッピング先 | Security functions | Checks | Maturity / Evidence |
 |---|---|---|---|---:|---|
-| [PSB-DEPS-001](dependency-security/release-cooldown/README.md) | 依存パッケージの取得を管理対象プロキシへ固定し、新バージョンの採用を一定期間遅らせて、レジストリ迂回と公開直後のサプライチェーン攻撃への露出を減らす。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) | `prevent`, `verify` | 8 | `prototype` / `E3` |
+| [PSB-DEPS-001](dependency-security/release-cooldown/README.md) | 依存パッケージの取得を管理対象プロキシへ固定し、新バージョンの採用を一定期間遅らせて、レジストリ迂回と公開直後のサプライチェーン攻撃への露出を減らす。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) | `prevent`, `verify` | 10 | `prototype` / `E3` |
 | [PSB-DEPS-002](dependency-security/install-script-execution/README.md) | 依存パッケージ導入時のライフサイクルスクリプトとソースビルドを既定で拒否し、必要な実行だけを範囲を限定して承認する。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) | `prevent`, `verify` | 5 | `prototype` / `E3` |
 | [PSB-DEPS-003](dependency-security/lockfile-integrity/README.md) | 固定された依存関係グラフとマニフェスト、管理対象プロキシの取得元、正確なバージョン、成果物の完全性が一致することを検証する。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) | `prevent`, `verify` | 5 | `prototype` / `E3` |
 | [PSB-DEPS-004](dependency-security/dependency-change-review/README.md) | baseからheadまでの正確な依存関係差分を、最新の脆弱性アドバイザリ、ライセンス、取得元、来歴情報、承認、期限付き例外の証跡へ結び付ける。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify` | 9 | `adopted` / `E3` |
@@ -90,6 +90,7 @@ workflow dependency、command injection、権限、未信頼PR境界の保護。
 | [PSB-CICD-004](cicd-security/actions-least-privilege/README.md) | 暗黙のGITHUB_TOKEN権限を拒否し、各ジョブをレビュー済みの権限セット、信頼するGit参照の条件、必要な保護環境へ厳密に結び付ける。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `verify` | 6 | `prototype` / `E3` |
 | [PSB-CICD-005](cicd-security/untrusted-pr-boundary/README.md) | 攻撃者が制御できるPRコードを認証情報のないホステッドジョブへ隔離し、権限を伴う処理は別の信頼済み実行として開始させる。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `verify` | 6 | `prototype` / `E3` |
 | [PSB-CICD-006](cicd-security/audience-bound-oidc-federation/README.md) | 署名済みGitHub ActionsワークロードIDを不変かつ厳密なOIDCクレームと照合し、保存済みクラウド鍵を使わず、対象リソースに限定した短期認証情報だけを発行する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `verify` | 8 | `prototype` / `E3` |
+| [PSB-CICD-007](cicd-security/runner-hardening/README.md) | 未信頼jobをreview済みhosted runnerへ限定し、self-hosted runnerをimmutable imageから起動するJIT one-job instanceとして隔離・破棄する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify` | 9 | `prototype` / `E3` |
 
 <a id="domain-build-security"></a>
 
@@ -129,6 +130,7 @@ IaC Golden Path、container admission、runtime、cloud control planeの保護�
 | [PSB-REL-002](release-integrity/provenance-publication-distribution/README.md) | 供給者が各リリース成果物へダイジェストで結び付けた来歴情報を、不変かつ利用者が参照できる場所へ同時公開し、保持とダウングレード防止を検証する。 | [NIST SSDF](../generated/mappings/nist-ssdf.md) / [SLSA](../generated/mappings/slsa.md) | `prevent`, `verify`, `govern` | 5 | `prototype` / `E3` |
 | [PSB-REL-003](release-integrity/sbom-binding-publication/README.md) | ソース、ビルド、デプロイのCycloneDX観測結果を別々のIDと権限で関連付け、正確なリリース成果物のSBOM公開とDependency-Track処理完了をフェイルクローズで検証する。 | [NIST SSDF](../generated/mappings/nist-ssdf.md) | `detect`, `verify`, `govern` | 9 | `prototype` / `E3` |
 | [PSB-REL-004](release-integrity/supplier-sbom-trust/README.md) | 署名済みの供給者SBOMを正確な製品、成果物、署名者のライフサイクル、利用者ポリシーへ照合し、不一致を通常の管理対象から隔離する。 | [NIST SSDF](../generated/mappings/nist-ssdf.md) | `prevent`, `verify`, `govern` | 8 | `prototype` / `E3` |
+| [PSB-REL-005](release-integrity/artifact-signing-generation/README.md) | immutable artifact digestを短寿命かつleast-privilegeなworkload authorityとnon-exportable signerへ結び、署名とreceiptが揃わないreleaseをfail closedで停止する。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `verify` | 8 | `prototype` / `E3` |
 
 <a id="domain-ai-development-security"></a>
 
@@ -159,6 +161,7 @@ AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。
 | Control | 達成する状態 | マッピング先 | Security functions | Checks | Maturity / Evidence |
 |---|---|---|---|---:|---|
 | [PSB-DETECT-001](detection-verification/integrity-verified-scanner/README.md) | スキャナーのリリースとデータIDを固定して脆弱性、設定不備、シークレット、SBOMの問題を検出し、任意のDockSec修正支援をAI判定に依存しないフェイルクローズ方式のゲートへ制限する。 | [NIST SP 800-190](../generated/mappings/nist-sp-800-190.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `detect`, `verify` | 8 | `adopted` / `E3` |
+| [PSB-DETECT-002](detection-verification/ai-tevv-release-gate/README.md) | AI release candidate、上流control、評価器、scenario suite、oracle、反復metric、threshold、証跡をexact identityへ結び、FAIL／INCOMPLETE／ERRORをrelease許可と分離する。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `detect`, `verify`, `prevent`, `govern` | 10 | `prototype` / `E3` |
 
 <a id="domain-governance-operations"></a>
 
@@ -171,6 +174,8 @@ AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。
 | [PSB-GOV-001](governance-operations/supply-chain-incident-readiness/README.md) | SBOMとビルド証跡から汚染パッケージの影響をリポジトリ、ビルド、成果物、デプロイ先へ逆引きし、承認付きドライラン対応計画を生成する。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) | `detect`, `respond`, `verify`, `govern` | 7 | `prototype` / `E3` |
 | [PSB-GOV-002](governance-operations/time-bound-security-exceptions/README.md) | controlとcheck、対象、risk、owner、独立承認、代替策、期限を共通契約へ固定し、完全な例外台帳から有効・失効間近・期限切れ・不正をfail-closedで導出する。 | [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `verify`, `respond`, `govern` | 8 | `prototype` / `E3` |
 | [PSB-GOV-003](governance-operations/exploited-vulnerability-prioritization/README.md) | scanner findingをexactな製品・artifact・稼働deployment、検証済みCVSS v4、完全でfreshなCISA KEV証跡、組織policy、PSIRT ownerへ結び、対応優先度と期限をfail-closedで導出する。 | [NIST SSDF](../generated/mappings/nist-ssdf.md) | `detect`, `verify`, `respond`, `govern` | 8 | `prototype` / `E3` |
+| [PSB-GOV-004](governance-operations/credential-exposure-containment/README.md) | Secretを含まないcredential関係inventoryから全consumerと影響対象を確定し、credential種別ごとの封じ込め、限定的なreplacement、旧authority拒否、影響レビューを順序付きで検証してからincidentをcloseする。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `detect`, `respond`, `verify`, `govern` | 10 | `prototype` / `E3` |
+| [PSB-GOV-005](governance-operations/deployed-artifact-refresh/README.md) | exact deployed artifactとSBOMをcurrent vulnerability／support evidenceへ結び、期限付きrebuild、new digestのrelease／admission、旧digest非稼働までを一つのfreshness caseとしてfail-closedで検証する。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `detect`, `verify`, `respond`, `govern` | 7 | `prototype` / `E3` |
 
 ## 表示の意味
 

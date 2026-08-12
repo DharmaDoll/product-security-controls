@@ -1,0 +1,58 @@
+FAIL RNR-001 job job-pr-999 is outside exact allowed_repositories
+FAIL RNR-001 job job-pr-999 is outside exact allowed_workflows
+FAIL RNR-001 profile shared-runner has wildcard allowed_repositories
+FAIL RNR-001 profile shared-runner has wildcard allowed_workflows
+FAIL RNR-001 self-hosted profile shared-runner accepts untrusted jobs
+FAIL RNR-001 untrusted job job-pr-999 ran on self-hosted infrastructure
+FAIL RNR-002 profile shared-runner can process more than one job
+FAIL RNR-002 profile shared-runner is not just-in-time
+FAIL RNR-002 profile shared-runner is not provisioner-attested JIT
+FAIL RNR-002 profile shared-runner is persistent
+FAIL RNR-002 profile shared-runner reuses its underlying host
+FAIL RNR-002 runner for job-pr-999 accepted a second job
+FAIL RNR-002 runner for job-pr-999 processed more than one job
+FAIL RNR-003 profile shared-runner image lacks an exact digest
+FAIL RNR-003 profile shared-runner image provenance is unverified
+FAIL RNR-003 profile shared-runner mutates images in place
+FAIL RNR-003 profile shared-runner relies on a mutable image tag
+FAIL RNR-003 profile shared-runner runner version is unsupported
+FAIL RNR-003 profile shared-runner updates the runner in place
+FAIL RNR-004 job job-pr-999 can observe SSH keys
+FAIL RNR-004 job job-pr-999 can observe cloud credentials
+FAIL RNR-004 job job-pr-999 can observe foreign processes
+FAIL RNR-004 job job-pr-999 can observe host credentials
+FAIL RNR-004 job job-pr-999 runner contains a previous job identity
+FAIL RNR-004 job job-pr-999 started with a non-clean workspace
+FAIL RNR-005 IPv4 cloud metadata is not blocked
+FAIL RNR-005 IPv6 cloud metadata is not blocked
+FAIL RNR-005 host runtime socket is exposed
+FAIL RNR-005 job job-pr-999 can reach IPv4 metadata
+FAIL RNR-005 job job-pr-999 can reach IPv6 metadata
+FAIL RNR-005 job job-pr-999 can reach host runtime socket
+FAIL RNR-005 job job-pr-999 can reach management network
+FAIL RNR-005 management network is not blocked
+FAIL RNR-005 profile shared-runner can reach an internal network
+FAIL RNR-005 runner network is not exact default-deny
+FAIL RNR-006 break-glass authority is not separate
+FAIL RNR-006 job job-pr-999 retained runner registration authority
+FAIL RNR-006 ordinary interactive management ingress is allowed
+FAIL RNR-006 registration authority is not bounded to 300 seconds
+FAIL RNR-006 runner registration authority is retained
+FAIL RNR-006 runner registration authority is reusable
+FAIL RNR-007 job job-pr-999 left processes after teardown
+FAIL RNR-007 job job-pr-999 was not compute destroyed
+FAIL RNR-007 job job-pr-999 was not deregistered
+FAIL RNR-007 job job-pr-999 was not ephemeral storage key destroyed
+FAIL RNR-007 job job-pr-999 was not workspace discarded
+FAIL RNR-007 teardown deadline exceeds 600 seconds
+FAIL RNR-007 teardown does not require deregister
+FAIL RNR-007 teardown does not require destroy_compute
+FAIL RNR-007 teardown does not require destroy_ephemeral_storage_key
+FAIL RNR-007 teardown does not require discard_workspace
+FAIL RNR-007 teardown does not require terminate_job_processes
+FAIL RNR-008 job job-pr-999 log correlation is incomplete
+FAIL RNR-008 job job-pr-999 logs were not exported
+FAIL RNR-008 logs are not exported before runner destruction
+FAIL RNR-009 maximum evidence age exceeds 900 seconds
+FAIL RNR-009 policy version is not digest-pinned
+REJECT PSB-CICD-007 57 runner hardening finding(s)

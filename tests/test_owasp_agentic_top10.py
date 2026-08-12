@@ -73,6 +73,7 @@ class OwaspAgenticTop10RegistryTest(unittest.TestCase):
                 "PSB-AI-009",
                 "PSB-AI-010",
                 "PSB-AI-011",
+                "PSB-DETECT-002",
                 "PSB-SOURCE-004",
             },
         )

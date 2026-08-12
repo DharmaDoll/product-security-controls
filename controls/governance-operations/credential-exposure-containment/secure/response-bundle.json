@@ -1,0 +1,297 @@
+{
+  "schema": "psb-credential-response-bundle/1.0",
+  "inventory": {
+    "schema": "psb-credential-relationship-inventory/1.0",
+    "captured_at": "2026-08-10T00:00:00Z",
+    "adapter_status": "HEALTHY",
+    "complete": true,
+    "relationship_graph_complete": true,
+    "coverage_surfaces": [
+      "source-access",
+      "ci-secret",
+      "package-publishing",
+      "container-registry",
+      "cloud-deployment",
+      "ssh-access",
+      "artifact-signing"
+    ],
+    "credentials": [
+      {
+        "credential_id": "cred-source-oauth-001",
+        "credential_class": "reusable-bearer",
+        "surface": "source-access",
+        "provider": "source-platform",
+        "owner": "source-platform-team",
+        "purpose": "read protected source metadata",
+        "scopes": ["repository:synthetic-app:read"],
+        "resources": ["repository:synthetic-org/synthetic-app"],
+        "consumers": ["consumer-source-inventory"],
+        "expires_at": "2026-09-01T00:00:00Z"
+      },
+      {
+        "credential_id": "cred-ci-service-001",
+        "credential_class": "reusable-bearer",
+        "surface": "ci-secret",
+        "provider": "ci-platform",
+        "owner": "ci-platform-team",
+        "purpose": "read synthetic build metadata",
+        "scopes": ["build:synthetic-app:read"],
+        "resources": ["workflow:synthetic-app/release"],
+        "consumers": ["consumer-build-metadata"],
+        "expires_at": "2026-09-01T00:00:00Z"
+      },
+      {
+        "credential_id": "cred-package-publisher-001",
+        "credential_class": "reusable-bearer",
+        "surface": "package-publishing",
+        "provider": "package-registry",
+        "owner": "release-engineering",
+        "purpose": "publish synthetic-app package",
+        "scopes": ["package:synthetic-app:publish"],
+        "resources": ["package:pkg:npm/synthetic-app"],
+        "consumers": ["consumer-release-workflow", "consumer-emergency-publisher"],
+        "expires_at": "2026-12-01T00:00:00Z"
+      },
+      {
+        "credential_id": "cred-container-registry-001",
+        "credential_class": "reusable-bearer",
+        "surface": "container-registry",
+        "provider": "container-registry",
+        "owner": "container-platform-team",
+        "purpose": "push synthetic-app image",
+        "scopes": ["repository:synthetic-app:push"],
+        "resources": ["image:synthetic-app"],
+        "consumers": ["consumer-image-publisher"],
+        "expires_at": "2026-09-01T00:00:00Z"
+      },
+      {
+        "credential_id": "cred-cloud-session-001",
+        "credential_class": "short-lived-session",
+        "surface": "cloud-deployment",
+        "provider": "cloud-control-plane",
+        "owner": "cloud-platform-team",
+        "purpose": "deploy synthetic-app release",
+        "scopes": ["deployment:synthetic-app-staging:update"],
+        "resources": ["deployment:synthetic-app-staging"],
+        "consumers": ["consumer-deploy-workflow"],
+        "expires_at": "2026-08-10T11:00:00Z"
+      },
+      {
+        "credential_id": "cred-ssh-admin-001",
+        "credential_class": "ssh-key",
+        "surface": "ssh-access",
+        "provider": "source-platform",
+        "owner": "source-platform-team",
+        "purpose": "administer synthetic repository settings",
+        "scopes": ["repository:synthetic-app:admin"],
+        "resources": ["repository:synthetic-org/synthetic-app"],
+        "consumers": ["consumer-break-glass-admin"],
+        "expires_at": "2026-11-01T00:00:00Z"
+      },
+      {
+        "credential_id": "cred-release-signer-001",
+        "credential_class": "signing-key",
+        "surface": "artifact-signing",
+        "provider": "signing-service",
+        "owner": "release-engineering",
+        "purpose": "sign synthetic release artifacts",
+        "scopes": ["artifact:synthetic-app:sign"],
+        "resources": ["artifact:synthetic-app"],
+        "consumers": ["consumer-signing-workflow"],
+        "expires_at": "2027-01-01T00:00:00Z"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "incident": {
+        "schema": "psb-credential-exposure-incident/1.0",
+        "incident_id": "CRED-INC-2026-0001",
+        "credential_id": "cred-package-publisher-001",
+        "detected_at": "2026-08-10T08:05:00Z",
+        "exposure_window": {
+          "start": "2026-08-10T07:30:00Z",
+          "end": "2026-08-10T08:10:00Z"
+        },
+        "detection_evidence_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "authorization": {
+          "authorization_id": "AUTH-CRED-2026-0001",
+          "status": "AUTHORIZED",
+          "role": "incident-commander",
+          "authorized_by": "incident-commander-primary",
+          "created_at": "2026-08-10T08:12:00Z",
+          "expires_at": "2026-08-10T12:12:00Z",
+          "action_scope": ["containment", "replacement", "migration", "denial-test", "impact-review", "closure"]
+        },
+        "dry_run": true,
+        "live_mutation": "NOT_CHECKED",
+        "state_transitions": [
+          {"state": "SUSPECTED", "at": "2026-08-10T08:05:00Z", "outcome": "COMPLETED"},
+          {"state": "CONTAINMENT_AUTHORIZED", "at": "2026-08-10T08:12:00Z", "outcome": "COMPLETED"},
+          {"state": "OLD_AUTHORITY_DISABLED", "at": "2026-08-10T08:18:00Z", "outcome": "COMPLETED"},
+          {"state": "DEPENDENT_AUTHORITY_INVALIDATED", "at": "2026-08-10T08:22:00Z", "outcome": "COMPLETED"},
+          {"state": "REPLACEMENT_BOUND", "at": "2026-08-10T08:35:00Z", "outcome": "COMPLETED"},
+          {"state": "CONSUMERS_MIGRATED", "at": "2026-08-10T08:50:00Z", "outcome": "COMPLETED"},
+          {"state": "OLD_AUTHORITY_DENIED", "at": "2026-08-10T09:00:00Z", "outcome": "COMPLETED"},
+          {"state": "IMPACT_REVIEWED", "at": "2026-08-10T09:20:00Z", "outcome": "COMPLETED"},
+          {"state": "CLOSED", "at": "2026-08-10T09:30:00Z", "outcome": "COMPLETED"}
+        ],
+        "response_plan": [
+          {"sequence": 1, "action": "preserve-evidence", "requires_state": "SUSPECTED"},
+          {"sequence": 2, "action": "disable-old-authority", "requires_state": "CONTAINMENT_AUTHORIZED"},
+          {"sequence": 3, "action": "migrate-consumers", "requires_state": "REPLACEMENT_BOUND"},
+          {"sequence": 4, "action": "repository-cleanup", "requires_state": "OLD_AUTHORITY_DENIED"},
+          {"sequence": 5, "action": "close-incident", "requires_state": "IMPACT_REVIEWED"}
+        ]
+      },
+      "evidence": {
+        "schema": "psb-credential-response-evidence/1.0",
+        "credential_id": "cred-package-publisher-001",
+        "authorization_id": "AUTH-CRED-2026-0001",
+        "adapter_status": "HEALTHY",
+        "provider_receipts_complete": true,
+        "consumer_inventory_complete": true,
+        "operation_receipts": [
+          {"receipt_id": "REC-0001", "action": "disable-old-authority", "status": "SUCCESS", "at": "2026-08-10T08:18:00Z", "idempotency_id": "IDEMP-0001", "live_mutation": false},
+          {"receipt_id": "REC-0002", "action": "invalidate-dependent-authority", "status": "SUCCESS", "at": "2026-08-10T08:22:00Z", "idempotency_id": "IDEMP-0002", "live_mutation": false},
+          {"receipt_id": "REC-0003", "action": "issue-least-privilege-replacement", "status": "SUCCESS", "at": "2026-08-10T08:30:00Z", "idempotency_id": "IDEMP-0003", "live_mutation": false},
+          {"receipt_id": "REC-0004", "action": "bind-replacement", "status": "SUCCESS", "at": "2026-08-10T08:35:00Z", "idempotency_id": "IDEMP-0004", "live_mutation": false}
+        ],
+        "consumer_dispositions": [
+          {"consumer_id": "consumer-release-workflow", "disposition": "migrated", "owner": "release-engineering"},
+          {"consumer_id": "consumer-emergency-publisher", "disposition": "removed", "owner": "release-engineering"}
+        ],
+        "replacement": {
+          "credential_id": "cred-package-publisher-002",
+          "owner": "release-engineering",
+          "purpose": "publish synthetic-app package",
+          "scopes": ["package:synthetic-app:publish"],
+          "resources": ["package:pkg:npm/synthetic-app"],
+          "consumers": ["consumer-release-workflow"],
+          "bound_at": "2026-08-10T08:35:00Z",
+          "expires_at": "2026-09-09T08:35:00Z"
+        },
+        "replacement_probe": {"status": "SUCCESS", "credential_id": "cred-package-publisher-002", "at": "2026-08-10T08:55:00Z"},
+        "old_authority_probe": {"status": "SUCCESS", "credential_id": "cred-package-publisher-001", "result": "DENIED", "independent_from_replacement": true, "at": "2026-08-10T09:00:00Z"},
+        "audit": {"status": "COMPLETE", "window_start": "2026-08-10T07:30:00Z", "window_end": "2026-08-10T08:10:00Z", "event_ids": ["AUDIT-PUBLISH-0001"], "empty_result_claim": "NOT_PROOF_OF_NO_ABUSE"},
+        "impact_references": [
+          {"kind": "repository", "id": "repository:synthetic-org/synthetic-app"},
+          {"kind": "workflow", "id": "workflow:synthetic-app/release"},
+          {"kind": "package", "id": "package:pkg:npm/synthetic-app@1.2.3"},
+          {"kind": "release", "id": "release:synthetic-app/1.2.3"},
+          {"kind": "artifact", "id": "artifact:sha256:aaaaaaaa"},
+          {"kind": "deployment", "id": "deployment:synthetic-app-staging"}
+        ]
+      }
+    },
+    {
+      "incident": {
+        "schema": "psb-credential-exposure-incident/1.0",
+        "incident_id": "CRED-INC-2026-0002",
+        "credential_id": "cred-release-signer-001",
+        "detected_at": "2026-08-10T08:05:00Z",
+        "exposure_window": {"start": "2026-08-10T07:00:00Z", "end": "2026-08-10T08:10:00Z"},
+        "detection_evidence_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "authorization": {"authorization_id": "AUTH-CRED-2026-0002", "status": "AUTHORIZED", "role": "credential-owner", "authorized_by": "release-security-owner", "created_at": "2026-08-10T08:12:00Z", "expires_at": "2026-08-10T12:12:00Z", "action_scope": ["containment", "replacement", "migration", "denial-test", "impact-review", "closure"]},
+        "dry_run": true,
+        "live_mutation": "NOT_CHECKED",
+        "state_transitions": [
+          {"state": "SUSPECTED", "at": "2026-08-10T08:05:00Z", "outcome": "COMPLETED"},
+          {"state": "CONTAINMENT_AUTHORIZED", "at": "2026-08-10T08:12:00Z", "outcome": "COMPLETED"},
+          {"state": "OLD_AUTHORITY_DISABLED", "at": "2026-08-10T08:18:00Z", "outcome": "COMPLETED"},
+          {"state": "DEPENDENT_AUTHORITY_INVALIDATED", "at": "2026-08-10T08:24:00Z", "outcome": "COMPLETED"},
+          {"state": "REPLACEMENT_BOUND", "at": "2026-08-10T08:40:00Z", "outcome": "COMPLETED"},
+          {"state": "CONSUMERS_MIGRATED", "at": "2026-08-10T08:50:00Z", "outcome": "COMPLETED"},
+          {"state": "OLD_AUTHORITY_DENIED", "at": "2026-08-10T09:00:00Z", "outcome": "COMPLETED"},
+          {"state": "IMPACT_REVIEWED", "at": "2026-08-10T09:20:00Z", "outcome": "COMPLETED"},
+          {"state": "CLOSED", "at": "2026-08-10T09:30:00Z", "outcome": "COMPLETED"}
+        ],
+        "response_plan": [
+          {"sequence": 1, "action": "preserve-evidence", "requires_state": "SUSPECTED"},
+          {"sequence": 2, "action": "revoke-signer-trust", "requires_state": "CONTAINMENT_AUTHORIZED"},
+          {"sequence": 3, "action": "review-signed-artifacts", "requires_state": "OLD_AUTHORITY_DISABLED"},
+          {"sequence": 4, "action": "artifact-quarantine", "requires_state": "IMPACT_REVIEWED"},
+          {"sequence": 5, "action": "close-incident", "requires_state": "IMPACT_REVIEWED"}
+        ]
+      },
+      "evidence": {
+        "schema": "psb-credential-response-evidence/1.0",
+        "credential_id": "cred-release-signer-001",
+        "authorization_id": "AUTH-CRED-2026-0002",
+        "adapter_status": "HEALTHY",
+        "provider_receipts_complete": true,
+        "consumer_inventory_complete": true,
+        "operation_receipts": [
+          {"receipt_id": "REC-1001", "action": "revoke-signer-trust", "status": "SUCCESS", "at": "2026-08-10T08:18:00Z", "idempotency_id": "IDEMP-1001", "live_mutation": false},
+          {"receipt_id": "REC-1002", "action": "publish-fresh-signer-status", "status": "SUCCESS", "at": "2026-08-10T08:22:00Z", "idempotency_id": "IDEMP-1002", "live_mutation": false},
+          {"receipt_id": "REC-1003", "action": "review-signed-artifacts", "status": "SUCCESS", "at": "2026-08-10T08:24:00Z", "idempotency_id": "IDEMP-1003", "live_mutation": false},
+          {"receipt_id": "REC-1004", "action": "distribute-replacement-trust", "status": "SUCCESS", "at": "2026-08-10T08:35:00Z", "idempotency_id": "IDEMP-1004", "live_mutation": false},
+          {"receipt_id": "REC-1005", "action": "bind-replacement", "status": "SUCCESS", "at": "2026-08-10T08:40:00Z", "idempotency_id": "IDEMP-1005", "live_mutation": false}
+        ],
+        "consumer_dispositions": [{"consumer_id": "consumer-signing-workflow", "disposition": "migrated", "owner": "release-engineering"}],
+        "replacement": {"credential_id": "cred-release-signer-002", "owner": "release-engineering", "purpose": "sign synthetic release artifacts", "scopes": ["artifact:synthetic-app:sign"], "resources": ["artifact:synthetic-app"], "consumers": ["consumer-signing-workflow"], "bound_at": "2026-08-10T08:40:00Z", "expires_at": "2026-11-08T08:40:00Z"},
+        "replacement_probe": {"status": "SUCCESS", "credential_id": "cred-release-signer-002", "at": "2026-08-10T08:55:00Z"},
+        "old_authority_probe": {"status": "SUCCESS", "credential_id": "cred-release-signer-001", "result": "DENIED", "independent_from_replacement": true, "at": "2026-08-10T09:00:00Z"},
+        "audit": {"status": "COMPLETE", "window_start": "2026-08-10T07:00:00Z", "window_end": "2026-08-10T08:10:00Z", "event_ids": ["AUDIT-SIGN-0001"], "empty_result_claim": "NOT_PROOF_OF_NO_ABUSE"},
+        "impact_references": [
+          {"kind": "attestation", "id": "attestation:synthetic-app/1.2.3"},
+          {"kind": "artifact", "id": "artifact:sha256:bbbbbbbb"},
+          {"kind": "release", "id": "release:synthetic-app/1.2.3"},
+          {"kind": "image", "id": "image:synthetic-app@sha256:cccccccc"}
+        ]
+      }
+    },
+    {
+      "incident": {
+        "schema": "psb-credential-exposure-incident/1.0",
+        "incident_id": "CRED-INC-2026-0003",
+        "credential_id": "cred-cloud-session-001",
+        "detected_at": "2026-08-10T08:05:00Z",
+        "exposure_window": {"start": "2026-08-10T07:45:00Z", "end": "2026-08-10T08:10:00Z"},
+        "detection_evidence_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "authorization": {"authorization_id": "AUTH-CRED-2026-0003", "status": "AUTHORIZED", "role": "incident-commander", "authorized_by": "incident-commander-primary", "created_at": "2026-08-10T08:12:00Z", "expires_at": "2026-08-10T12:12:00Z", "action_scope": ["containment", "replacement", "migration", "denial-test", "impact-review", "closure"]},
+        "dry_run": true,
+        "live_mutation": "NOT_CHECKED",
+        "state_transitions": [
+          {"state": "SUSPECTED", "at": "2026-08-10T08:05:00Z", "outcome": "COMPLETED"},
+          {"state": "CONTAINMENT_AUTHORIZED", "at": "2026-08-10T08:12:00Z", "outcome": "COMPLETED"},
+          {"state": "OLD_AUTHORITY_DISABLED", "at": "2026-08-10T08:18:00Z", "outcome": "COMPLETED"},
+          {"state": "DEPENDENT_AUTHORITY_INVALIDATED", "at": "2026-08-10T08:22:00Z", "outcome": "COMPLETED"},
+          {"state": "REPLACEMENT_BOUND", "at": "2026-08-10T08:24:00Z", "outcome": "NOT_REQUIRED"},
+          {"state": "CONSUMERS_MIGRATED", "at": "2026-08-10T08:30:00Z", "outcome": "COMPLETED"},
+          {"state": "OLD_AUTHORITY_DENIED", "at": "2026-08-10T08:40:00Z", "outcome": "COMPLETED"},
+          {"state": "IMPACT_REVIEWED", "at": "2026-08-10T09:00:00Z", "outcome": "COMPLETED"},
+          {"state": "CLOSED", "at": "2026-08-10T09:10:00Z", "outcome": "COMPLETED"}
+        ],
+        "response_plan": [
+          {"sequence": 1, "action": "preserve-evidence", "requires_state": "SUSPECTED"},
+          {"sequence": 2, "action": "block-replay-or-issuer-path", "requires_state": "CONTAINMENT_AUTHORIZED"},
+          {"sequence": 3, "action": "repair-trust-policy", "requires_state": "OLD_AUTHORITY_DISABLED"},
+          {"sequence": 4, "action": "close-incident", "requires_state": "IMPACT_REVIEWED"}
+        ]
+      },
+      "evidence": {
+        "schema": "psb-credential-response-evidence/1.0",
+        "credential_id": "cred-cloud-session-001",
+        "authorization_id": "AUTH-CRED-2026-0003",
+        "adapter_status": "HEALTHY",
+        "provider_receipts_complete": true,
+        "consumer_inventory_complete": true,
+        "operation_receipts": [
+          {"receipt_id": "REC-2001", "action": "block-replay-or-issuer-path", "status": "SUCCESS", "at": "2026-08-10T08:18:00Z", "idempotency_id": "IDEMP-2001", "live_mutation": false},
+          {"receipt_id": "REC-2002", "action": "repair-trust-policy", "status": "SUCCESS", "at": "2026-08-10T08:22:00Z", "idempotency_id": "IDEMP-2002", "live_mutation": false}
+        ],
+        "consumer_dispositions": [{"consumer_id": "consumer-deploy-workflow", "disposition": "quarantined", "owner": "cloud-platform-team"}],
+        "replacement": null,
+        "replacement_probe": {"status": "NOT_REQUIRED"},
+        "old_authority_probe": {"status": "SUCCESS", "credential_id": "cred-cloud-session-001", "result": "DENIED", "independent_from_replacement": true, "at": "2026-08-10T08:40:00Z"},
+        "audit": {"status": "COMPLETE", "window_start": "2026-08-10T07:45:00Z", "window_end": "2026-08-10T08:10:00Z", "event_ids": ["AUDIT-DEPLOY-0001"], "empty_result_claim": "NOT_PROOF_OF_NO_ABUSE"},
+        "impact_references": [
+          {"kind": "workflow", "id": "workflow:synthetic-app/deploy"},
+          {"kind": "image", "id": "image:synthetic-app@sha256:cccccccc"},
+          {"kind": "deployment", "id": "deployment:synthetic-app-staging"}
+        ]
+      }
+    }
+  ]
+}

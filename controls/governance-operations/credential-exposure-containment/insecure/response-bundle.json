@@ -1,0 +1,68 @@
+{
+  "schema": "psb-credential-response-bundle/1.0",
+  "inventory": {
+    "schema": "psb-credential-relationship-inventory/1.0",
+    "captured_at": "2026-08-10T00:00:00Z",
+    "adapter_status": "HEALTHY",
+    "complete": true,
+    "relationship_graph_complete": true,
+    "coverage_surfaces": ["package-publishing"],
+    "credentials": [
+      {
+        "credential_id": "cred-package-publisher-9001",
+        "credential_class": "reusable-bearer",
+        "surface": "package-publishing",
+        "provider": "package-registry",
+        "owner": "release-engineering",
+        "purpose": "publish synthetic-app package",
+        "scopes": ["package:synthetic-app:publish"],
+        "resources": ["package:pkg:npm/synthetic-app"],
+        "consumers": ["consumer-release-workflow"],
+        "expires_at": "2026-09-01T00:00:00Z"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "incident": {
+        "schema": "psb-credential-exposure-incident/1.0",
+        "incident_id": "CRED-INC-2026-9001",
+        "credential_id": "cred-package-publisher-9001",
+        "detected_at": "2026-08-10T08:05:00Z",
+        "exposure_window": {"start": "2026-08-10T07:30:00Z", "end": "2026-08-10T08:10:00Z"},
+        "detection_evidence_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "authorization": {"authorization_id": "AUTH-CRED-2026-9001", "status": "AUTHORIZED", "role": "credential-user", "authorized_by": "same-credential-user", "created_at": "2026-08-10T08:12:00Z", "expires_at": "2026-09-09T08:12:00Z", "action_scope": ["replacement", "closure"]},
+        "dry_run": false,
+        "live_mutation": "ALLOWED",
+        "state_transitions": [
+          {"state": "SUSPECTED", "at": "2026-08-10T08:05:00Z", "outcome": "COMPLETED"},
+          {"state": "REPLACEMENT_BOUND", "at": "2026-08-10T08:30:00Z", "outcome": "COMPLETED"},
+          {"state": "CLOSED", "at": "2026-08-10T08:35:00Z", "outcome": "COMPLETED"}
+        ],
+        "response_plan": [
+          {"sequence": 1, "action": "repository-cleanup", "requires_state": "SUSPECTED"},
+          {"sequence": 2, "action": "issue-least-privilege-replacement", "requires_state": "SUSPECTED"},
+          {"sequence": 3, "action": "close-incident", "requires_state": "REPLACEMENT_BOUND"}
+        ]
+      },
+      "evidence": {
+        "schema": "psb-credential-response-evidence/1.0",
+        "credential_id": "cred-package-publisher-9001",
+        "authorization_id": "AUTH-CRED-2026-9001",
+        "adapter_status": "HEALTHY",
+        "provider_receipts_complete": true,
+        "consumer_inventory_complete": true,
+        "operation_receipts": [
+          {"receipt_id": "REC-9001", "action": "issue-least-privilege-replacement", "status": "SUCCESS", "at": "2026-08-10T08:25:00Z", "idempotency_id": "IDEMP-9001", "live_mutation": true},
+          {"receipt_id": "REC-9002", "action": "bind-replacement", "status": "SUCCESS", "at": "2026-08-10T08:30:00Z", "idempotency_id": "IDEMP-9002", "live_mutation": true}
+        ],
+        "consumer_dispositions": [{"consumer_id": "consumer-release-workflow", "disposition": "pending", "owner": "release-engineering"}],
+        "replacement": {"credential_id": "cred-package-publisher-9002", "owner": "release-engineering", "purpose": "publish any package", "scopes": ["package:*:publish"], "resources": ["package:*"], "consumers": ["consumer-release-workflow"], "bound_at": "2026-08-10T08:30:00Z", "expires_at": "2027-08-10T08:30:00Z"},
+        "replacement_probe": {"status": "SUCCESS", "credential_id": "cred-package-publisher-9002", "at": "2026-08-10T08:31:00Z"},
+        "old_authority_probe": {"status": "SUCCESS", "credential_id": "cred-package-publisher-9001", "result": "ALLOWED", "independent_from_replacement": false, "at": "2026-08-10T08:32:00Z"},
+        "audit": {"status": "COMPLETE", "window_start": "2026-08-10T07:30:00Z", "window_end": "2026-08-10T08:10:00Z", "event_ids": [], "empty_result_claim": "NO_ABUSE"},
+        "impact_references": [{"kind": "package", "id": "package:pkg:npm/synthetic-app@1.2.3"}]
+      }
+    }
+  ]
+}

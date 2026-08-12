@@ -35,8 +35,11 @@ PSB-CICD-004 ──> PSB-CICD-005 ──> PSB-CICD-006
        │
        └────────> PSB-DETECT-001 ──> reusable Golden Path integration
 
+PSB-CICD-005 + PSB-BUILD-001 ──> PSB-CICD-007 runner hardening
+
 PSB-REL-002 + PSB-DETECT-001 ──> PSB-REL-003 ──> Golden Path + PSB-GOV-001
 PSB-REL-003 + PSB-REL-001 ─────> PSB-REL-004 supplier SBOM trust
+PSB-CICD-006 + PSB-REL-001..003 ──> PSB-REL-005 artifact signing generation
 
 PSB-DETECT-001 + PSB-IAC-001 ──> PSB-CONTAINER-001
 PSB-BUILD-003 + PSB-REL-002 + PSB-REL-001 ──> image provenance admission
@@ -53,6 +56,11 @@ PSB-GOV-002 ──> shared exception enforcement across later controls
 PSB-GOV-001 + PSB-DETECT-001 + PSB-GOV-002 ──> PSB-GOV-003
 PSB-GOV-003 ──> organization-owned FIRST PSIRT capability profile
 
+PSB-SOURCE-003 + PSB-SOURCE-004 + PSB-GOV-001 ──> PSB-GOV-004
+PSB-CICD-006 + PSB-REL-004 ──────────────────────> PSB-GOV-004 adapters
+
+PSB-GOV-001 + PSB-GOV-003 + build/release/container evidence ──> PSB-GOV-005
+
 PSB-AI-001 ──> PSB-AI-002 ──┐
                              ├──> PSB-AI-003
 PSB-AI-004 ──────────────────┘
@@ -66,7 +74,7 @@ Application workload identity + mandatory inference egress ──> PSB-AI-010
 
 Within one priority, complete one E3 vertical slice before starting the next.
 The application-checklist import still requires its organization-owned source.
-`PSB-CICD-005`, `PSB-CICD-006`, `PSB-DEPS-004`, `PSB-DETECT-001`, `PSB-REL-003`,
+`PSB-CICD-005`, `PSB-CICD-006`, `PSB-CICD-007`, `PSB-DEPS-004`, `PSB-DETECT-001`, `PSB-REL-003`,
 `PSB-REL-004`, `PSB-CONTAINER-001`, `PSB-CONTAINER-002`,
 `PSB-CONTAINER-003`, and `PSB-CONTAINER-004` are implemented.
 Lifecycle-linked artifact-bound SBOM publication now composes into the Golden
@@ -82,7 +90,7 @@ adapters remain organization evidence and a dependency for live identity use.
 
 ## Prerequisite: application checklist reconciliation
 
-Status: `input-required`  
+Status: `input-required` — importer and deterministic generation infrastructure implemented
 Control ID: none; this is a data-model and generation prerequisite.
 
 ### Goal
@@ -102,17 +110,28 @@ control.
 No source workbook or CSV is currently present in this repository. Do not infer
 the missing checklist from ASVS or from generic vulnerability lists.
 
+The repository now includes the read-only CSV／XLSX importer, explicit manifest
+schema, traceable reconciliation model, formula and malformed-workbook negative
+tests, deterministic CSV／XLSX generation, private-row redaction, and an
+`INPUT_REQUIRED` status artifact. This completes the import infrastructure, not
+the organization source reconciliation.
+
 ### Implementation plan
 
-1. Add a read-only importer with an explicit source schema.
-2. Preserve source row ID and wording before normalization.
-3. Split compound questions only with a traceable one-to-many relationship.
+1. Add a read-only importer with an explicit source schema — implemented.
+2. Preserve source row ID and wording before normalization — implemented and
+   verified with public synthetic rows.
+3. Split compound questions only with a traceable one-to-many relationship —
+   implemented as `same-as-source`／`split-from`.
 4. Record each source row as `implemented`, `planned`, `duplicate`,
    `out-of-scope`, or `mapping-review-required`.
-5. Generate an application assessment CSV and filterable XLSX worksheet.
+   The contract is implemented; real dispositions await the source.
+5. Generate an application assessment CSV and filterable XLSX worksheet —
+   implemented for supplied input; missing input generates status only.
 6. Add negative fixtures for duplicate IDs, missing source version, unknown
-   columns, formula cells, and malformed workbooks.
-7. Keep organization evidence and completed answers outside generated guidance.
+   columns, formula cells, and malformed workbooks — implemented.
+7. Keep organization evidence and completed answers outside generated guidance
+   — enforced by public/private output separation and documented external output.
 
 ### Acceptance criteria
 
@@ -1204,6 +1223,164 @@ Implemented by
   Services Framework 1.1;
 - [`REF-GOV-005`](SECURITY_GUIDANCE_SOURCES.md#ref-gov-005) — CVSS v4.0.
 
+### PSB-GOV-004 — Supply-chain credential exposure containment and rotation assurance
+
+Status: `implemented` at E3 as a provider-neutral, secret-free dry-run slice;
+it composes implemented `PSB-SOURCE-003`, `PSB-SOURCE-004`, and `PSB-GOV-001`
+
+Domain: `governance-operations`
+
+#### Goal
+
+When a credential used anywhere in the software supply chain is exposed or
+suspected compromised, identify every bound identity, resource, consumer,
+operation, release, and artifact; contain the old authority; migrate to a
+least-privilege replacement where replacement is appropriate; and prove that
+the old authority can no longer be used before the incident is closed.
+
+#### Boundary and non-goals
+
+- `PSB-SOURCE-003` owns public-source exposure discovery and requires
+  credential invalidation before repository cleanup.
+- `PSB-SOURCE-004` owns the normal lifecycle of GitHub OAuth grants, PATs, SSH
+  keys, GitHub Apps, storage, review, revocation triggers, and audit.
+- `PSB-GOV-001` owns dependency-to-build-to-artifact-to-deployment impact
+  lookup and evidence-first supply-chain response planning.
+- `PSB-CICD-006` owns exact-claim short-lived cloud federation and removal of
+  duplicated static deployment credentials.
+- `PSB-CODE-001` will own application runtime secret injection, redaction, and
+  rotation without source changes or artifact rebuilds.
+- This control owns cross-system incident correlation, credential-class-aware
+  containment, replacement migration, old-authority denial evidence, and the
+  closure decision. It does not duplicate secret scanning, ordinary credential
+  hygiene, application secret consumption, or artifact provenance generation.
+- The first slice is offline and provider-neutral. It must not revoke a live
+  credential, rotate a production signing key, rewrite history, republish an
+  artifact, or modify a cloud, registry, package, or source platform.
+
+#### Threat or failure scenario
+
+A secret-harvesting bot, phisher, infostealer, malicious dependency or Action,
+compromised maintainer or build job, insider, or failed automation obtains a
+GitHub credential, package-publishing token, container-registry credential,
+cloud deployment identity, SSH key, or signing key. The organization deletes
+the exposed value or issues a replacement but leaves the old authority,
+derived sessions, one forgotten consumer, or an affected release usable. A
+partial or failed provider response is then recorded as successful rotation,
+allowing continued source modification, malicious package publication,
+artifact substitution, or deployment.
+
+#### Assumptions
+
+- credential inventories expose stable identifiers, owners, classes, scopes,
+  consumers, and resource bindings without returning secret values;
+- provider adapters can produce sanitized, attributable receipts for
+  revocation, replacement issuance, consumer migration, and an old-credential
+  denial test;
+- destructive response remains separately authorized and idempotent, and
+  evidence is preserved before caches, releases, or artifacts are changed;
+- a replacement is not always the correct response: revocation-only,
+  trust-policy repair, signer distrust, session invalidation, or waiting for a
+  bounded token expiry may be required by the credential class.
+
+#### First runnable slice
+
+1. Define a secret-free incident contract that binds an incident ID to one
+   stable credential identifier, credential class, provider, owner, scope,
+   consumers, resources, detection evidence digest, and suspected exposure
+   window.
+2. Build a provider-neutral credential relationship graph covering source
+   access, GitHub Actions or CI secrets, package publishing, container
+   registries, cloud deployment, SSH access, and artifact or SBOM signing.
+3. Generate an authorization-gated response plan with an explicit state
+   machine: `SUSPECTED`, `CONTAINMENT_AUTHORIZED`, `OLD_AUTHORITY_DISABLED`,
+   `DEPENDENT_AUTHORITY_INVALIDATED`, `REPLACEMENT_BOUND`,
+   `CONSUMERS_MIGRATED`, `OLD_AUTHORITY_DENIED`, `IMPACT_REVIEWED`, and
+   `CLOSED`.
+4. Apply a credential-class response policy:
+   - revoke and replace reusable bearer secrets;
+   - remove SSH keys, invalidate related sessions, and re-enroll a new key;
+   - revoke signer trust, publish fresh status, review signatures and
+     artifacts, and distribute replacement trust deliberately;
+   - for short-lived OIDC or session credentials, block replay or the issuing
+     path where supported, repair the trust policy, and never treat ordinary
+     expiry alone as proof that incident impact is resolved.
+5. Verify a synthetic old-credential denial separately from successful
+   replacement use. A new credential working does not prove the old one is
+   disabled.
+6. Join the exposure window and credential audit events to repositories,
+   workflows, packages, images, attestations, releases, artifacts, and active
+   deployments; hand artifact and deployment lookup to `PSB-GOV-001` where
+   applicable.
+7. Reject missing consumers, stale inventories, partial provider receipts,
+   ambiguous credential identifiers, out-of-order state transitions, leaked
+   secret values, unavailable denial tests, and adapter failures as `ERROR`,
+   never as completed rotation.
+8. Emit a sanitized dry-run plan and closure record. Live provider adapters
+   remain `NOT_CHECKED` until separately reviewed with least privilege,
+   idempotency, rollback, rate-limit, and audit guarantees.
+
+#### Acceptance criteria
+
+- `make verify-control CONTROL=PSB-GOV-004` exercises successful,
+  leaked-secret, missing-consumer, stale-inventory, partial-revocation,
+  replacement-only, old-authority-still-valid, out-of-order, signer-revocation,
+  short-lived-token, malformed, secret-bearing, and adapter-error fixtures;
+- revocation or containment precedes repository cleanup, replacement issuance,
+  incident closure, and any destructive artifact action;
+- every known consumer has an explicit migrated, removed, quarantined, or
+  owner-approved disposition, and an incomplete inventory cannot produce
+  `CLOSED`;
+- replacement authority is no broader or longer-lived than the reviewed
+  policy and is bound to an exact owner, purpose, resource, and consumer;
+- old-authority denial is tested independently and a skipped, unsupported, or
+  failed denial test is `ERROR`, not `PASS`;
+- operations during the exposure window are correlated to exact source,
+  package, image, artifact, release, and deployment identities where evidence
+  exists, without claiming that an empty audit result proves no abuse;
+- fixtures, logs, receipts, generated evidence, and failure messages never
+  contain a credential value, private key, signing material, or production
+  endpoint;
+- reviewed row-level mappings use NIST SSDF, MITRE ATT&CK, and the OpenSSF
+  OSPS Baseline without claiming compliance. NIST SP 800-61 Rev. 3 remains
+  operational response guidance rather than a registered mapping target.
+
+Implemented by
+[`controls/governance-operations/credential-exposure-containment/`](../controls/governance-operations/credential-exposure-containment/).
+
+### PSB-GOV-005 — Deployed artifact refresh and replacement closure
+
+Status: `implemented` at E3 as an offline cross-control closure evaluator
+
+Domain: `governance-operations`
+
+Goal: ensure a vulnerable, unsupported, or stale active artifact receives a
+policy-derived rebuild deadline and cannot close until a distinct clean-build
+digest is immutably published, admitted across the complete original target
+scope, and the affected old digest is no longer active.
+
+Boundary: `PSB-GOV-001` owns exact runtime impact inventory, `PSB-GOV-003` owns
+vulnerability priority, build and release controls own replacement evidence,
+and container controls own registry and admission evidence. `PSB-GOV-005` owns
+their temporal join and the closure state; it does not run live rebuilds or
+deployments.
+
+Implemented slice:
+
+- validates complete, fresh, immutable deployment／artifact／SBOM identity;
+- requires healthy current vulnerability, support, registry, and inventory
+  sources before deriving affected or not-affected;
+- derives owner and due time from a reviewed policy and rejects weakening;
+- binds a distinct replacement digest to hosted build, platform provenance,
+  SBOM, signature, immutable publication, and every target admission;
+- independently proves zero active old-digest instances over the original
+  scope before `REMEDIATED`;
+- preserves `NOT_AFFECTED`, `IN_PROGRESS`, `OVERDUE`, `REMEDIATED`, semantic
+  `FINDING`, and evidence `ERROR`, with sanitized output and negative fixtures.
+
+Implemented by
+[`controls/governance-operations/deployed-artifact-refresh/`](../controls/governance-operations/deployed-artifact-refresh/).
+
 ## P3: extended application and AI development security
 
 ### Application controls with IDs assigned after reconciliation
@@ -1955,14 +2132,14 @@ not duplicated into the registry.
 
 | Agentic risk | Current disposition | Evidence boundary or next owner |
 |---|---|---|
-| `ASI01` Agent Goal Hijack | Implemented-partial | `PSB-AI-003` executes six direct and indirect goal-hijack fixtures against PSB-AI-004 policy identities and verifies legitimate task continuation; `PSB-AI-011` rejects an inert poisoned RAG source before embedding. Live model, delayed, semantic, multimodal, memory, and multi-agent evidence remain gaps. |
-| `ASI02` Tool Misuse and Exploitation | Implemented-partial | `PSB-AI-004` enforces runtime capabilities and approvals; `PSB-AI-006` independently validates typed proposal scope, exact authorization/execution identity, single dispatch, result schema, and uncertain outcomes. Approved malicious tools and live gateway enforcement remain out of scope. |
+| `ASI01` Agent Goal Hijack | Implemented-partial | `PSB-AI-003` executes six direct and indirect goal-hijack fixtures, `PSB-AI-011` rejects an inert poisoned RAG source, and `PSB-DETECT-002` binds one goal-hijack oracle and vulnerable calibration to a release decision. Live model, delayed, semantic, multimodal, memory, and multi-agent evidence remain gaps. |
+| `ASI02` Tool Misuse and Exploitation | Implemented-partial | `PSB-AI-004` enforces runtime capabilities and approvals; `PSB-AI-006` independently validates typed action integrity; `PSB-DETECT-002` adds one release-blocking out-of-scope tool scenario. Approved malicious tools and live gateway enforcement remain out of scope. |
 | `ASI03` Identity and Privilege Abuse | Implemented-partial | `PSB-SOURCE-004` verifies OAuth-first GitHub MCP configuration and bounded PAT fallback; `PSB-AI-004` verifies coding-agent authority; `PSB-AI-010` verifies signed application workload identity, exact gateway audience, and provider-tenant authority. Live IDE keychain, application IdP, process inheritance, provider enforcement, and enterprise identity lifecycle remain deployment evidence. |
 | `ASI04` Agentic Supply Chain Vulnerabilities | Implemented-partial | `PSB-AI-001` pins repository guidance; `PSB-AI-002` verifies external dependency provenance, semantic review, capabilities, benchmark, expiry, and revocation; `PSB-AI-004` detects runtime extension drift; `PSB-AI-011` binds RAG sources, snapshots, embedding-model identity, and revocation evidence. Live publisher, remote MCP deployment, source connectors, vector stores, and revocation propagation remain gaps. |
-| `ASI05` Unexpected Code Execution | Implemented-partial | `PSB-AI-004` verifies isolation, bypass denial, pre-tool enforcement, hook failure containment, and command indirection; `PSB-AI-006` rejects free-form actions and decision/execution substitution. Live sandbox exploit resistance remains unproven. |
-| `ASI06` Memory and Context Poisoning | Implemented-partial | `PSB-AI-005` verifies agent-memory admission, scope, retention, and deletion; `PSB-AI-011` verifies RAG source admission, corpus integrity, exact retrieval scope and provenance, poisoned-source quarantine, revocation, index absence, and deletion. Live provider, vector database, semantic-poisoning, deletion-propagation, and non-text evidence remain gaps. |
+| `ASI05` Unexpected Code Execution | Implemented-partial | `PSB-AI-004` verifies isolation, bypass denial, pre-tool enforcement, hook failure containment, and command indirection; `PSB-AI-006` rejects free-form actions and substitution; `PSB-DETECT-002` adds one exact no-execution release scenario. Live sandbox exploit resistance remains unproven. |
+| `ASI06` Memory and Context Poisoning | Implemented-partial | `PSB-AI-005` verifies agent-memory lifecycle; `PSB-AI-011` verifies RAG corpus and retrieval boundaries; `PSB-DETECT-002` requires one poisoned-context rejection and vulnerable calibration before release. Live provider, vector database, semantic-poisoning, deletion-propagation, and non-text evidence remain gaps. |
 | `ASI07` Insecure Inter-Agent Communication | Implemented-partial | `PSB-AI-008` verifies Ed25519 agent identity, exact parent and sender-recipient edge, capability／tenant／data scope, freshness, replay, one-hop isolation, and signed response binding. Live key custody, transport, atomic ledger, dynamic discovery, and multi-hop evidence remain gaps. |
-| `ASI08` Cascading Failures | Implemented-partial | `PSB-AI-007` verifies single-agent budgets and circuit breaking; `PSB-AI-008` adds non-amplifying child budgets, replay denial, one-hop limits, and invalid-delegation stop semantics; `PSB-AI-009` adds multi-channel stop, authority revocation, action quarantine, bounded fallback, and replay-tested read-only recovery. Concurrent fan-out, tenant-wide reservation, distributed rollback, and fleet-wide recovery remain gaps. |
+| `ASI08` Cascading Failures | Implemented-partial | `PSB-AI-007` verifies single-agent budgets and circuit breaking; `PSB-AI-008` adds non-amplifying delegation; `PSB-AI-009` adds containment and bounded recovery; `PSB-DETECT-002` release-gates a five-run resource-budget metric. Concurrent fan-out, tenant-wide reservation, distributed rollback, and fleet-wide recovery remain gaps. |
 | `ASI09` Human-Agent Trust Exploitation | Implemented-partial | `PSB-AI-004` supplies parameter-bound authorization and `PSB-AI-006` prevents request substitution, replay, and silent approval restoration. Deceptive explanation, approval-UI comprehension, and human decision-quality tests remain gaps. |
 | `ASI10` Rogue Agents | Implemented-partial | `PSB-AI-009` verifies model-independent signed exact-session containment, distributed authority inventory, evidence-first quarantine, model-free fallback, recovery readiness, independent dual authorization, and new-identity read-only canary fixtures. Live gateway, key custody, process, SIEM, fleet and full-authority recovery evidence remain gaps. |
 
@@ -2026,6 +2203,8 @@ an unrelated oversized control.
 
 ### Software supply-chain integration reconciliation
 
+Status: `implemented` — deterministic cross-control profile and generated views
+
 Goal: verify that security identities and decisions remain connected across
 developer environment, SCM, dependency intake, build, evidence generation,
 repository operations, release, and CD/GitOps rather than counting isolated
@@ -2037,6 +2216,19 @@ integration guidance. Generate a reconciliation with `implemented`, `planned`,
 `gap`, and `out-of-scope` dispositions. Do not create a second SSDF registry or
 copy Appendix A mappings; exact SSDF relationships remain in the pinned
 `nist-ssdf` registry and require row-level implementation evidence.
+
+Implementation result: the reviewed source at
+[`policies/integration/supply-chain-reconciliation.json`](../policies/integration/supply-chain-reconciliation.json)
+defines 12 atomic identity or decision handoffs with repository-owned `SCIR-*`
+IDs. Validation resolves every current full check reference, requires owners
+and remaining work for planned or gap rows, preserves an owned out-of-scope
+boundary, and fails closed on missing or malformed source. CSV and Markdown are
+generated under
+[`generated/checklists/profiles/supply-chain-integration/`](../generated/checklists/profiles/supply-chain-integration/),
+and both XLSX workbooks include a filterable `SSC Integration` sheet. Current
+repository evidence leaves application-security integration planned and leaves
+CI/CD control-plane administrator identity plus running-artifact rebuild closure
+as explicit gaps; no row claims live adoption or NIST compliance.
 
 ### CIS software supply-chain provider profiles
 
@@ -2054,6 +2246,8 @@ separate from provider Benchmark identifiers.
 
 ### FIRST PSIRT capability profile
 
+Status: `implemented` — deterministic organization-assessment template
+
 Goal: assess charter, sponsorship, stakeholders, product inventory,
 vulnerability intake, qualification, analysis, remediation, disclosure,
 post-incident improvement, training, and metrics without converting missing
@@ -2067,16 +2261,44 @@ source with integrity metadata first. Results must distinguish `PASS`, `FAIL`,
 `NOT_CHECKED`, `ERROR`, and reviewed `N/A`; a repository fixture is never a
 live PSIRT maturity claim.
 
-### CI runner hardening
+Implementation result: the source at
+[`policies/organization-assessments/first-psirt-capability.json`](../policies/organization-assessments/first-psirt-capability.json)
+records SHA-256 and byte size for the FIRST PSIRT Services Framework 1.1 and
+mutable Maturity Document as observed on `2026-08-12`. It preserves a 31-entry
+service catalog and generates 18 paraphrased capability rows: six Basic, six
+Intermediate, and six Advanced. The levels are cumulative, exact repository
+checks remain supporting evidence only, and public assessment/freshness fields
+remain `NOT_CHECKED`. Unknown source, service, or check identity, a missing
+digest, or any public `PASS` claim fails generation. CSV and Markdown are under
+[`generated/checklists/profiles/first-psirt-capability/`](../generated/checklists/profiles/first-psirt-capability/),
+with `PSIRT Capability` and `PSIRT Assessment` workbook sheets. Live charter,
+staffing, capacity, intake, disclosure, metrics, training, and service evidence
+must still be supplied by the adopting organization.
+
+### PSB-CICD-007 — CI runner hardening
+
+Status: `implemented` — E3 hosted／self-hosted separated evidence slice
 
 Goal: isolate ephemeral hosted and self-hosted runners from prior jobs, host
 credentials, management networks, persistent workspace state, and untrusted
 pull requests.
 
-Disposition: define the boundary after `PSB-CICD-005` establishes untrusted-run
-semantics and `PSB-BUILD-001` containment overlap is reviewed. Do not reserve a
-new ID until hosted versus self-hosted evidence and cleanup behavior are
-separated.
+Implemented boundary:
+
+- `PSB-CICD-005` continues to own untrusted pull-request classification;
+- `PSB-BUILD-001` continues to own job-internal credential, privilege,
+  application egress, sandbox, and telemetry containment;
+- `PSB-CICD-007` owns exact runner routing, immutable image identity, JIT
+  one-job self-hosted lifecycle, clean startup, host／metadata／management
+  isolation, registration authority, teardown, and external log correlation;
+- managed-hosted lifecycle assurance and organization-owned self-hosted
+  teardown receipts remain separate evidence types.
+
+The first runnable slice includes secure and insecure fleet fixtures, nine
+atomic checks, deterministic expected output, and fail-closed tests for stale,
+unavailable, malformed, mismatched-generation, and credential-bearing
+evidence. Live provider, provisioner, network-probe, and log-backend adapters
+remain adoption work and are not implied by the prototype.
 
 ### Verified external downloads
 
@@ -2088,25 +2310,82 @@ Disposition: implement the first reusable download-and-verify interface inside
 separate shared control only when a second domain consumes the same interface
 and a unique adoption checklist boundary exists.
 
-### Artifact signing generation
+### PSB-REL-005 — Artifact signing generation
+
+Status: `implemented` — E3 provider-neutral exact-digest signing and
+fail-closed release-gate slice
+
+Domain: `release-integrity`
 
 Goal: sign exact release artifact digests with a protected short-lived or
 KMS-backed identity and publish verifiable signature material.
 
-Disposition: keep separate from consumer verification in `PSB-REL-001`,
-provenance publication in `PSB-REL-002`, and SBOM publication in
-`PSB-REL-003`. Review and assign an ID after those release-manifest interfaces
-stabilize; do not claim Cosign or other signing generation from documentation
-alone.
+Boundary: keep generation separate from consumer verification in
+`PSB-REL-001`, provenance publication in `PSB-REL-002`, SBOM publication in
+`PSB-REL-003`, and exposure response in `PSB-GOV-004`. It does not map to a
+SLSA Build level requirement.
+
+Implemented slice:
+
+- exact artifact SHA-256, versioned release tag, full source revision, and
+  request identity are fixed before signing;
+- a five-minute exact workload／audience／scope authorization is bound to one
+  signer, artifact family, digest, and release without retaining its token;
+- only fresh active KMS／HSM／keyless signer evidence with an exact
+  non-exportable sign-only key version is accepted;
+- an Ed25519 statement binds request, authorization, artifact, release,
+  source, signer, key version, algorithm, and signing time;
+- the signature is verified against a policy-pinned public-key digest, and an
+  immutable HTTPS publication plus transparency receipt is required;
+- missing, mutable, mismatched, broad, exportable, overprivileged, fail-open,
+  sensitive, malformed, or crypto-unavailable evidence cannot release;
+- a local ephemeral-key generator exercises the contract without retaining a
+  private key, while live KMS／HSM／keyless and transparency adapters remain
+  `NOT_CHECKED` organization evidence.
+
+Acceptance criteria:
+
+- `make verify-control CONTROL=PSB-REL-005` accepts exact complete evidence;
+- a cryptographically valid but mutable, broadly authorized, exportable, or
+  fail-open fixture is rejected;
+- artifact tampering, invalid signature, malformed input, missing OpenSSL, and
+  unsafe fixture key permissions fail closed;
+- evidence output excludes artifact digest, token, signature, and key material;
+- reviewed row mappings use NIST SSDF, OpenSSF OSPS Baseline, and MITRE ATT&CK
+  without claiming compliance or SLSA level achievement.
+
+Implemented by
+[`controls/release-integrity/artifact-signing-generation/`](../controls/release-integrity/artifact-signing-generation/).
 
 ### Governance metrics and maturity views
+
+Status: `implemented` — deterministic catalog-governance views
 
 Goal: show adoption, exception debt, evidence freshness, unmapped rows, and
 control maturity without treating missing assessment data as a passing state.
 
-Disposition: extend generated views after `PSB-GOV-002` defines a canonical
-exception lifecycle and organization assessment input remains separate from
-repository-owned guidance.
+Implemented disposition: `make generate-checklists` now produces a filterable
+per-control governance CSV, Markdown summary, and workbook sheets. They expose
+repository `status`, reference evidence level, verification-type counts,
+assessment-adapter availability, reviewed／provisional／unmapped check counts,
+and framework relationship counts. `Organization Adoption`, evidence
+freshness, active／expiring／expired-or-invalid exception debt, and the final
+governance result are initialized as `NOT_CHECKED`.
+
+The view deliberately does not reserve a new control ID: it reports metadata
+about existing controls and consumes, but does not replace, `PSB-GOV-002`
+exception decisions. Repository `prototype`, `adopted`, or `E3` values never
+become organization adoption. Users copy the assessment workbook outside the
+generated directory before recording organization-owned results; regeneration
+keeps public guidance free of completed assessment evidence.
+
+Implemented outputs:
+
+- `generated/checklists/governance/control-readiness.csv`;
+- `generated/checklists/governance/control-readiness.md`;
+- `generated/checklists/governance/summary.csv`;
+- `Governance Summary` and `Catalog Governance` guideline sheets;
+- `Governance Summary` and `Governance Assessment` assessment-template sheets.
 
 ### AI agent memory, context, and data lifecycle
 
@@ -2214,20 +2493,23 @@ connectors, OCR and parsers, embedding services, vector databases, caches,
 replicas, backups, deletion propagation, and semantic-poisoning detection remain
 `NOT_CHECKED`.
 
-### AI TEVV and adversarial release gate
+### AI TEVV and adversarial release gate — implemented as PSB-DETECT-002
 
 Goal: run threat-model-derived testing, evaluation, validation, verification,
 and red-team scenarios before an AI product release without treating tool or
 judge failure as a passing model.
 
-Disposition: create a `detection-verification` control only after the scenario
-contract is independent of Garak, Giskard, Counterfit, ART, or another tool.
-The first slice must pin tool and test-suite identities, preserve model and
-system-under-test version, separate deterministic security assertions from
-probabilistic metrics, define repeat count and threshold ownership, include
-known vulnerable and safe fixtures, sanitize prompts and outputs, and expose
-`PASS`, `FAIL`, `INCOMPLETE`, and `ERROR`. CI integration must not grant
-untrusted tests production credentials or network authority.
+Disposition: the first provider-neutral E3 slice is implemented as
+`PSB-DETECT-002`, independent of Garak, Giskard, Counterfit, ART, or another
+tool. It binds the exact release candidate and DEPS-005／AI-003／004／010／011
+artifacts, evaluator bytes, reviewed suite, six inert threat-derived scenarios,
+and independently owned thresholds. Deterministic security assertions remain
+separate from a five-run probabilistic metric; a known-safe candidate and
+known-vulnerable calibration exercise both paths. Credential-free,
+network-free, ephemeral execution and sanitized evidence produce distinct
+`PASS`, `FAIL`, `INCOMPLETE`, and `ERROR` states, and only exact `PASS` evidence
+can produce `ACCEPTED`. Live model, provider, external judge, production runner,
+and production release-gate adoption remain `NOT_CHECKED`.
 
 ### Rogue-agent stop, fallback, and AI incident recovery — implemented as PSB-AI-009
 

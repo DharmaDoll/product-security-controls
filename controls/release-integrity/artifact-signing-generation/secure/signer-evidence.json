@@ -1,0 +1,15 @@
+{
+  "schema": "psb-artifact-signer-evidence/1.0",
+  "available": true,
+  "observed_at": "2026-08-10T02:55:00Z",
+  "provider_type": "kms",
+  "signer_id": "kms://example.invalid/release-signing",
+  "key_version": "7",
+  "key_status": "ACTIVE",
+  "key_exportable": false,
+  "allowed_operations": [
+    "sign"
+  ],
+  "public_key_sha256": "1b2e83758fa94ed96086e47d9663d88c03201ec76482096e22528f69d1a82e77",
+  "private_key_material_in_evidence": false
+}

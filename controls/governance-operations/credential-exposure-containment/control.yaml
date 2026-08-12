@@ -1,0 +1,274 @@
+id: PSB-GOV-004
+title: supply-chain credential漏洩を封じ込めてrotation完了を検証する
+domain: governance-operations
+summary: Secretを含まないcredential関係inventoryから全consumerと影響対象を確定し、credential種別ごとの封じ込め、限定的なreplacement、旧authority拒否、影響レビューを順序付きで検証してからincidentをcloseする。
+check_context_version: "1.0"
+security_functions:
+  - detect
+  - respond
+  - verify
+  - govern
+threats:
+  - id: SUPPLY-CHAIN-LEAKED-CREDENTIAL-PERSISTENCE
+    description: 漏洩したsource、CI、package、registry、cloud、SSH、signing credentialまたは派生sessionがreplacement後も使用可能で、source改変、malicious publication、artifact substitution、deploymentが継続する。
+  - id: SUPPLY-CHAIN-CREDENTIAL-ROTATION-GAP
+    description: 不完全なinventory、未移行consumer、過大なreplacement、partial provider receipt、旧authority denial未確認がsuccessful rotationとしてcloseされる。
+  - id: SUPPLY-CHAIN-CREDENTIAL-RESPONSE-EVIDENCE-LEAK
+    description: Incident log、receipt、fixture、audit evidenceがcredential値やsigning materialを複製し、response自体が新たな漏洩経路になる。
+implementations:
+  insecure:
+    - insecure/policy.json
+    - insecure/response-bundle.json
+  secure:
+    - secure/policy.json
+    - secure/response-bundle.json
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-GOV-004
+  expected:
+    - source access CI package registry cloud SSH signingのsecret-free relationship inventoryが完全かつfreshである
+    - reusable bearer signing key short-lived sessionにcredential-class-specific containmentが適用される
+    - replacement authorityがold authorityより広く長くならずexact owner purpose resource consumerへbindされる
+    - 全known consumerにmigrated removed quarantinedまたはowner-approved-not-applicableの決定がある
+    - successful replacementとは独立してold authorityがDENIEDであることを確認する
+    - exposure windowのauditとsource package image attestation release artifact deployment identityを関連付ける
+    - missing stale partial out-of-order malformed secret-bearing adapter-error evidenceはERRORになる
+    - provider-neutral fixtureのlive mutationはNOT_CHECKEDでありproduction rotation完了を主張しない
+checks:
+  - id: CRR-001
+    title: Credential relationship inventory is complete fresh and secret free
+    required_state: stable credential identifiers owners classes scopes consumers and resources across seven supply-chain surfaces without credential values
+    responsible_role: security
+    applies_to:
+      - credential-inventory
+      - supply-chain-incident
+    context:
+      threat_actor: secret harvester compromised automation or incomplete provider inventory hiding a credential relationship
+      attack_or_failure_scenario: responders revoke one visible token while another consumer derived session or bound resource remains outside incident scope
+      why_required: a complete relationship graph establishes the response population without copying the credential value into a broader evidence store
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-GOV-004 and inspect live provider inventory completeness and freshness
+      expected: all seven surfaces have stable secret-free identities and incomplete stale ambiguous or unhealthy inventory is ERROR
+      evidence:
+        - sanitized credential relationship inventory
+        - inventory adapter health and coverage receipt
+    mapping_status: reviewed
+  - id: CRR-002
+    title: Verification failure cannot become successful rotation
+    required_state: missing stale partial malformed out-of-order and adapter-error evidence returns ERROR
+    responsible_role: incident-response
+    applies_to:
+      - credential-response-evidence
+    context:
+      threat_actor: failed provider API parser outage or automation reporting a partial response as complete
+      attack_or_failure_scenario: inability to establish consumer migration revocation or denial is normalized into a closed incident
+      why_required: a distinct fail-closed error state prevents operational uncertainty from preserving attacker authority under a success label
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-GOV-004
+      expected: all incomplete and unavailable evidence fixtures exit with ERROR rather than PASS
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
+  - id: CRR-003
+    title: Evidence preservation and independent authorization precede containment
+    required_state: evidence-first dry-run with exact short-lived response authorization
+    responsible_role: incident-response
+    applies_to:
+      - credential-response-plan
+    context:
+      threat_actor: rushed responder insider or compromised automation performing destructive credential or artifact operations
+      attack_or_failure_scenario: revocation cleanup or deletion destroys investigation evidence or disrupts production before an accountable owner reviews scope
+      why_required: evidence-first independently authorized planning makes high-impact response attributable bounded and reviewable before mutation
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-GOV-004 and inspect live authorization and evidence-preservation records
+      expected: plans without evidence-first ordering exact response scope approved role and four-hour maximum authorization are rejected
+      evidence:
+        - sanitized response plan
+        - authorization receipt
+    mapping_status: reviewed
+  - id: CRR-004
+    title: Containment matches the credential class
+    required_state: reusable bearer SSH signing and short-lived authority use distinct mandatory response actions
+    responsible_role: shared
+    applies_to:
+      - credential-containment
+    context:
+      threat_actor: attacker retaining an old token key signer trust or replayable session after generic rotation automation runs
+      attack_or_failure_scenario: one revoke-and-replace recipe ignores SSH sessions signer trust artifact review or short-lived issuer-policy repair
+      why_required: credential-class-specific containment closes the authority mechanism actually available to the attacker rather than only changing a stored value
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-GOV-004
+      expected: bearer signer and short-lived fixtures require their exact containment actions and partial receipts are ERROR
+      evidence:
+        - sanitized provider-neutral operation receipts
+    mapping_status: reviewed
+  - id: CRR-005
+    title: Replacement authority is no broader or longer lived
+    required_state: replacement owner purpose scopes resources consumers and lifetime are equal to or narrower than the reviewed old authority and class ceiling
+    responsible_role: shared
+    applies_to:
+      - credential-replacement
+      - ci-credential
+    context:
+      threat_actor: responder or automation restoring service with a convenient wildcard or long-lived replacement
+      attack_or_failure_scenario: incident response removes one leaked credential but creates a more powerful durable authority for future compromise
+      why_required: exact subset and lifetime checks make rotation reduce authority instead of transferring or increasing the original blast radius
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-GOV-004
+      expected: wildcard different-purpose extra-resource extra-consumer and overlong replacements are rejected
+      evidence:
+        - replacement metadata comparison
+        - negative-test output
+    mapping_status: reviewed
+  - id: CRR-006
+    title: Every known consumer has an accountable disposition
+    required_state: exact consumer set is migrated removed quarantined or owner-approved not applicable
+    responsible_role: shared
+    applies_to:
+      - credential-consumer
+      - ci-credential
+    context:
+      threat_actor: forgotten workflow emergency publisher developer machine or stale service retaining old authority
+      attack_or_failure_scenario: the primary consumer moves to the replacement while one secondary consumer remains valid or later restores the leaked credential
+      why_required: exact complete consumer reconciliation prevents a successful primary migration from hiding residual use paths
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-GOV-004 and compare live consumer inventory with disposition records
+      expected: missing duplicate pending or unowned consumer disposition prevents closure
+      evidence:
+        - sanitized consumer migration record
+        - inventory-to-disposition comparison
+    mapping_status: reviewed
+  - id: CRR-007
+    title: Old authority denial is verified independently
+    required_state: an exact old-credential negative probe succeeds with DENIED independently from replacement success
+    responsible_role: security
+    applies_to:
+      - credential-denial-test
+    context:
+      threat_actor: credential thief continuing to use an old token key signer identity or replayable session after replacement
+      attack_or_failure_scenario: teams prove only that the new credential works and infer without testing that old authority is disabled
+      why_required: an independent negative probe directly tests the attacker's remaining path and separates containment from service-restoration evidence
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-GOV-004 and execute a harmless provider-specific old-authority denial probe
+      expected: ALLOWED is FAIL while skipped unsupported unavailable or failed probes are ERROR
+      evidence:
+        - sanitized old-authority denial receipt
+        - separate replacement probe receipt
+    mapping_status: reviewed
+  - id: CRR-008
+    title: Exposure-window operations are correlated to exact supply-chain identities
+    required_state: complete exact audit window and source workflow package image attestation release artifact and deployment references where evidence exists
+    responsible_role: incident-response
+    applies_to:
+      - credential-impact-review
+      - supply-chain-incident
+    context:
+      threat_actor: attacker using leaked authority before revocation or incomplete audit collection omitting an affected release or deployment
+      attack_or_failure_scenario: credential access is disabled but malicious operations and resulting artifacts remain trusted or deployed because the exposure window was not investigated
+      why_required: time-bound exact identity correlation carries containment into artifact and deployment impact review without treating credential rotation as incident resolution
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-GOV-004 and compose exact artifact and deployment lookup with PSB-GOV-001
+      expected: audit window and impact identities are complete and an empty event result never proves no abuse
+      evidence:
+        - sanitized exposure-window audit result
+        - exact impact reference set
+        - PSB-GOV-001 handoff evidence where applicable
+    mapping_status: reviewed
+  - id: CRR-009
+    title: Closure follows the complete containment state machine
+    required_state: containment migration denial and impact review precede cleanup destructive artifact action and CLOSED
+    responsible_role: incident-response
+    applies_to:
+      - credential-incident-closure
+    context:
+      threat_actor: automation or responder closing the incident after replacement before residual authority and impact are resolved
+      attack_or_failure_scenario: repository cleanup artifact deletion or closure occurs out of order and removes evidence while attacker access or malicious releases remain
+      why_required: an exact monotonic state machine turns closure into a verifiable security decision rather than a manual status label
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-GOV-004
+      expected: skipped duplicate future-dated and out-of-order states plus early cleanup closure or artifact action are rejected
+      evidence:
+        - sanitized state transition record
+        - negative-test output
+    mapping_status: reviewed
+  - id: CRR-010
+    title: Response evidence cannot leak credentials or overclaim live mutation
+    required_state: metadata-only evidence excludes credential and key material while fixture-only live mutation remains NOT_CHECKED
+    responsible_role: security
+    applies_to:
+      - credential-response-evidence
+    context:
+      threat_actor: log reader artifact consumer or compromised evidence store gaining a copied credential during incident response
+      attack_or_failure_scenario: receipts logs fixtures or failure messages reproduce the leaked value and a synthetic PASS is presented as proof of production revocation
+      why_required: secret-free output prevents response amplification and explicit NOT_CHECKED preserves the distinction between E3 contract tests and live enforcement
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-GOV-004
+      expected: forbidden sensitive fields and credential patterns are ERROR without value echo and all fixture receipts keep live mutation false
+      evidence:
+        - sanitized verifier output
+        - secret-bearing negative-test output
+    mapping_status: unmapped
+mappings:
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1078
+    relationship: mitigates
+    confidence: medium
+    rationale: Leaked valid credentials and derived sessions are disabled, migrated, and independently denied to reduce continued use of valid accounts, without claiming that rotation detects all attacker activity.
+    reviewer: product-security
+    review_date: "2026-08-10"
+    applies_to:
+      - CRR-004
+      - CRR-005
+      - CRR-006
+      - CRR-007
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: RV.2.1
+    relationship: supports
+    confidence: high
+    rationale: Credential exposure is analyzed across consumers operations artifacts releases and deployments, and an evidence-preserving containment and recovery response is verified before closure.
+    reviewer: product-security
+    review_date: "2026-08-10"
+    applies_to:
+      - CRR-001
+      - CRR-003
+      - CRR-004
+      - CRR-005
+      - CRR-006
+      - CRR-007
+      - CRR-008
+      - CRR-009
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-AC-04.01
+    relationship: supports
+    confidence: medium
+    rationale: The CI credential subset requires a purpose resource consumer and lifetime-bounded replacement plus complete migration, supporting least privilege for CI/CD pipeline authority without assessing the complete baseline.
+    reviewer: product-security
+    review_date: "2026-08-10"
+    applies_to:
+      - CRR-005
+      - CRR-006
+limitations:
+  - The E3 verifier evaluates provider-neutral synthetic metadata and does not revoke issue rotate or probe a live credential.
+  - Live mutation remains NOT_CHECKED until each provider adapter is reviewed for least privilege idempotency rollback rate limits audit and independent authorization.
+  - Stable identifier and inventory gaps can omit derived sessions emergency consumers cloned credentials or implicit provider authority.
+  - Exact set comparison cannot model every provider-specific permission hierarchy or implicit grant.
+  - Empty audit results do not prove absence of abuse and incomplete audit collection is ERROR.
+  - Signing response requires live revocation timestamp transparency trust-store propagation and artifact consumer evidence beyond this fixture.
+  - Ordinary expiry of a short-lived credential does not prove issuer repair replay prevention or impact resolution.
+  - Repository cleanup history rewrite artifact deletion quarantine and republishing are dry-run plan steps and are never automatically executed.
+status: prototype
+owner: product-security
+evidence_level: E3

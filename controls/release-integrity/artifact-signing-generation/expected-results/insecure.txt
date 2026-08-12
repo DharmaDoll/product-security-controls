@@ -1,0 +1,9 @@
+FAIL PSB-REL-005/ASG-001 signing request does not bind the exact immutable release artifact
+FAIL PSB-REL-005/ASG-002 signing authorization is broad stale retained or not request-bound
+FAIL PSB-REL-005/ASG-003 signer is unavailable stale exportable overprivileged or outside policy
+PASS PSB-REL-005/ASG-004 signed statement binds request artifact release source and signer
+PASS PSB-REL-005/ASG-005 signature verifies with the policy-pinned public key
+FAIL PSB-REL-005/ASG-006 signature publication or transparency receipt is missing mutable or mismatched
+FAIL PSB-REL-005/ASG-007 release gate can complete without successful signing
+FAIL PSB-REL-005/ASG-008 evidence policy retains signing credentials or signature body
+RESULT FAIL profile=insecure checks=8 failures=6

@@ -138,7 +138,9 @@ Limitations and review notes:
   - `PSB-AI-010` — authenticated application gateway, exact inference target,
     classification, minimization, redaction, retention, and bypass control;
   - `PSB-AI-011` — RAG source admission, corpus integrity, retrieval scope and
-    provenance, revocation, and deletion.
+    provenance, revocation, and deletion;
+  - `PSB-DETECT-002` — threat-derived AI TEVV suite, known-safe／vulnerable
+    calibration, fail-closed evidence, and exact release-decision binding.
 
 Adopted or planned contributions:
 
@@ -159,7 +161,8 @@ Adopted or planned contributions:
 - RAG source ownership and authorization, content and snapshot integrity,
   tenant／classification retrieval isolation, result provenance, poisoned-source
   quarantine, and bounded deletion;
-- repeatable abuse-case tests and security release gates.
+- repeatable abuse-case tests and security release gates, implemented as the
+  first provider-neutral `PSB-DETECT-002` E3 evidence contract.
 
 Limitations and review notes:
 
@@ -201,6 +204,8 @@ Limitations and review notes:
   - `PSB-DEPS-005` — model／dataset immutable acquisition, ML-BOM,
     non-executing inspection, quarantine, and deployment handoff;
   - `PSB-DETECT-001` — integrity-verified multi-surface scanning;
+  - `PSB-DETECT-002` — immutable threat-derived AI TEVV suite, calibration,
+    fail-closed evidence, and release-decision binding;
   - `PSB-REL-003..004` — artifact-bound and supplier SBOM lifecycle;
   - `PSB-CONTAINER-004` — production runtime detection;
   - `PSB-GOV-001..003` — impact lookup, exceptions, and PSIRT triage.
@@ -212,7 +217,7 @@ Reconciliation by product-security layer:
 | Application | Secure design and coding, SAST, DAST, API testing, and the organization checklist remain in the existing application-control plan; AI prompt and output boundaries are partially implemented by `PSB-AI-003` and `PSB-AI-006`. |
 | Platform and infrastructure | Source, dependency, CI/CD, build, IaC, container, release, and coding-agent boundaries are represented; `PSB-AI-010` adds a provider-neutral E3 application-facing gateway and data-egress contract while live route, IdP, provider and telemetry evidence remains planned. |
 | Operations | Container runtime detection, supply-chain incident lookup, AI coding-agent telemetry, per-session resource budgets, anomaly stops, alert delivery, and an E3 independent kill-switch／fallback／read-only recovery contract are implemented subsets; live AI application anomaly detection, gateway enforcement, fleet recovery, and incident-system adoption remain planned. |
-| PSIRT and vulnerability management | `PSB-GOV-003` implements evidence-bound triage; intake, disclosure, organization capability, AI TEVV, red teaming, and AI-specific release gating remain planned or organization-owned. |
+| PSIRT and vulnerability management | `PSB-GOV-003` implements evidence-bound triage and `PSB-DETECT-002` implements a provider-neutral E3 AI TEVV release-evidence contract; intake, disclosure, organization capability, live red teaming, and production gate adoption remain planned or organization-owned. |
 | External and supply chain | SBOM, supplier SBOM, provenance, agent extension dependencies, and E3 model／dataset／ML-BOM／serialized-weight and RAG corpus／retrieval contracts are represented; live RAG connectors, vector stores, deletion propagation, and semantic-poisoning detection remain gaps. |
 | Governance | Time-bound exceptions and generated evidence views exist; AI risk governance, accountable inventory, KPI inputs, and live policy adoption require organization-owned evidence. |
 | Education and culture | Role-based training and security-champion outcomes are not executable controls yet; they belong to a governance capability profile and must not be inferred from technical fixture success. |
@@ -225,8 +230,8 @@ Adopted contributions:
   outside the model, consistent with `PSB-AI-003`, `PSB-AI-004`, and
   `PSB-AI-006`;
 - preserve immutable Skill and MCP dependency identity in `PSB-AI-002`;
-- expose the missing live AI gateway adoption, live model/data and RAG adoption,
-  semantic-poisoning evidence, TEVV, live fleet recovery, governance, and education outcomes in the
+- expose the missing live AI gateway adoption, live model/data, RAG and TEVV adoption,
+  semantic-poisoning evidence, live red-team breadth, live fleet recovery, governance, and education outcomes in the
   roadmap rather than silently treating agent controls as complete AI product
   security coverage.
 
@@ -411,7 +416,7 @@ Disposition:
 
 ### REF-USER-004 — Application vulnerability assessment checklist
 
-- Status: `input-required`
+- Status: `input-required` — import infrastructure implemented; source absent
 - Type: organization-owned assessment workbook or CSV
 - Provider: repository user or organization
 - Original input: not present in the repository
@@ -419,11 +424,15 @@ Disposition:
   constraints: not yet supplied
 - Related plan:
   [application checklist reconciliation](PLANNED_CONTROLS.md#prerequisite-application-checklist-reconciliation)
+- Import contract:
+  [Application vulnerability assessment checklist import](APPLICATION_CHECKLIST_IMPORT.md)
 
 Disposition:
 
 - do not reconstruct the missing checklist from ASVS or generic vulnerability
   lists;
+- use the implemented digest-bound read-only CSV／XLSX importer and preserve an
+  explicit `INPUT_REQUIRED` state until the source is supplied;
 - when supplied, preserve source identifiers and wording, split compound rows
   traceably, and record every row as implemented, planned, duplicate, out of
   scope, or mapping review required;
@@ -859,7 +868,7 @@ Disposition and limitations:
 
 ### REF-CICD-011 — Common Threat Matrix for CI/CD Pipeline
 
-- Status: `reviewed`
+- Status: `adopted-partially`
 - Type: community CI/CD threat taxonomy and mitigation catalog
 - Publisher: repository maintained by Hiroki Suezawa (`rung`); the source
   states that the matrix was created by Mercari Security Team and reviewed by
@@ -878,8 +887,10 @@ Disposition and limitations:
 - Related controls and plans:
   - implemented CI/CD, build, dependency, release, IaC, and source-protection
     controls listed in the reconciliation;
-  - `PSB-CICD-006`, `PSB-DEPS-004`, and `PSB-REL-003`;
-  - roadmap gaps for CI runner hardening and artifact-signing generation.
+  - `PSB-CICD-006`, `PSB-CICD-007`, `PSB-DEPS-004`, `PSB-REL-003`, and
+    `PSB-REL-005`;
+  - remaining provider-control-plane, CI availability, cache, monorepo,
+    protected-change, and production-data gaps recorded by the reconciliation.
 
 Adopted contribution:
 
@@ -908,7 +919,7 @@ Disposition and limitations:
 
 ### REF-CICD-012 — NIST SP 800-204D software supply-chain integration guidance
 
-- Status: `reviewed`
+- Status: `adopted-partially`
 - Type: official software supply-chain security integration guidance for
   DevSecOps CI/CD pipelines
 - Publisher: National Institute of Standards and Technology (NIST)
@@ -925,9 +936,13 @@ Disposition and limitations:
     permission, untrusted-input, and identity boundaries;
   - `PSB-DEPS-001..004`, `PSB-BUILD-001..003`, and `PSB-REL-001..004` for
     dependency, build, evidence, provenance, and SBOM outcomes;
-  - `PSB-IAC-001` and `PSB-CONTAINER-001` for deployment policy and admission.
+  - `PSB-IAC-001` and `PSB-CONTAINER-001` for deployment policy and admission;
+  - `PSB-CICD-007`, `PSB-REL-005`, and `PSB-GOV-001` for runner authority,
+    signed release evidence, and runtime impact inventory handoffs;
+  - `PSB-GOV-005` for the current-risk, clean-rebuild, replacement-admission,
+    and old-digest-removal closure.
 
-Adopted planning contribution:
+Adopted contribution:
 
 - use the publication as a cross-control integration review for developer
   environment risk, SCM interaction, secure build, repository pull/push,
@@ -941,6 +956,10 @@ Adopted planning contribution:
 - verify that artifact, actor, step, repository, and evidence identities stay
   linked across the pipeline rather than treating individually passing tools
   as an integrated secure supply chain.
+- generate the 12-row reconciliation from
+  [`policies/integration/supply-chain-reconciliation.json`](../policies/integration/supply-chain-reconciliation.json),
+  with exact check references and explicit planned, gap, and out-of-scope
+  dispositions.
 
 Disposition and limitations:
 
@@ -952,8 +971,9 @@ Disposition and limitations:
 - the publication explicitly leaves evolving SBOM and attestation artifact
   specifications to their respective standards, so SLSA, CycloneDX, and SPDX
   identities remain independently versioned;
-- a future reconciliation must cite section-level text and executable evidence
-  before claiming that a strategy is addressed.
+- the generated reconciliation cites section-level guidance and exact current
+  check evidence, while live adoption and the explicit planned or gap rows
+  remain unproven.
 
 <a id="ref-cicd-013"></a>
 
@@ -1002,6 +1022,53 @@ Disposition and limitations:
   update signals, not immutable evidence;
 - third-party mirrors, paraphrased recommendation lists, and product names in
   the general Guide must not be used as framework identifiers.
+
+<a id="ref-cicd-014"></a>
+
+### REF-CICD-014 — GitHub self-hosted runner lifecycle and secure-use guidance
+
+- Status: `adopted-partially`
+- Type: official provider runner reference and operational hardening guidance
+- Publisher: GitHub
+- Official sources:
+  - [Self-hosted runners reference](https://docs.github.com/en/actions/reference/runners/self-hosted-runners);
+  - [Secure use reference](https://docs.github.com/en/actions/reference/security/secure-use);
+  - [Monitoring and troubleshooting self-hosted runners](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/monitor-and-troubleshoot);
+  - [Managing access to self-hosted runners](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/manage-access).
+- Repository review date: `2026-08-11`
+- Related controls:
+  - `PSB-CICD-005` — untrusted pull-request runner routing;
+  - `PSB-CICD-007` — runner image, JIT lifecycle, host isolation, teardown,
+    and external log evidence;
+  - `PSB-BUILD-001` — job-internal credential, privilege, egress, sandbox,
+    and telemetry containment.
+
+Adopted contribution:
+
+- keep untrusted public or fork-controlled jobs off self-hosted runners;
+- prefer ephemeral and just-in-time self-hosted registration with one assigned
+  job instead of persistent autoscaled runners;
+- restrict runner groups to exact repositories and trusted workflow scope;
+- start each organization-owned runner from a clean immutable image and wipe
+  the underlying compute and storage after use, because registration semantics
+  alone do not prove clean reused hardware;
+- export diagnostic and security logs before ephemeral runner destruction;
+- treat host credentials, cloud metadata, internal services, and management
+  ingress as runner-level assets outside ordinary job-token permissions.
+
+Disposition and limitations:
+
+- GitHub documentation pages are mutable operational references, not a new
+  framework namespace; exact `control.yaml` mappings use the pinned
+  `github-security-guidance` registry;
+- provider-hosted VM creation, destruction, and tenant isolation remain a
+  provider-owned assurance boundary and are not proven by repository fixtures;
+- GitHub's runner update support window is normalized by a live adapter into a
+  version-support decision; the offline verifier does not query the mutable
+  page;
+- the implemented E3 slice uses synthetic provider-neutral evidence and needs
+  provider API, provisioner, network-probe, and log-backend adapters before a
+  production fleet can be assessed.
 
 <a id="ref-build-001"></a>
 
@@ -1097,7 +1164,7 @@ Planned adoption boundary:
   - `PSB-DETECT-001` and `PSB-DEPS-004` as finding and dependency-change
     sources, not KEV applicability authorities.
 
-Adopted planning contribution:
+Adopted contribution:
 
 - make an exact CVE match in a fresh, complete KEV snapshot a priority signal
   for an affected product case;
@@ -1129,12 +1196,14 @@ Disposition and limitations:
 - Version state: the official page does not declare an independent document
   version; treat it as mutable guidance and record the assessment review date
 - Repository review date: `2026-08-04`
+- Adopted snapshot: `2026-08-12`, 82,743 bytes, SHA-256
+  `16d7987dfb3a9f6512f4de84732464c3ad2a18af3b52abf7b4c51d21bdc52552`
 - Related plans:
   - `PSB-GOV-003` for the implemented executable vulnerability triage subset;
-  - a later organization-owned PSIRT capability profile for maturity levels 1,
-    2, and 3.
+  - the generated organization-owned PSIRT capability profile for maturity
+    levels 1, 2, and 3.
 
-Adopted planning contribution:
+Adopted contribution:
 
 - preserve separate evidence for charter, sponsorship, stakeholders, intake,
   qualification, analysis, remediation, disclosure, product inventory,
@@ -1143,6 +1212,9 @@ Adopted planning contribution:
   outcomes cumulative and visible as gaps;
 - require organization evidence for operational claims instead of treating
   repository fixtures as proof that a PSIRT exists or is mature.
+- generate the cumulative organization profile from
+  [`policies/organization-assessments/first-psirt-capability.json`](../policies/organization-assessments/first-psirt-capability.json)
+  with every public result and freshness field initialized to `NOT_CHECKED`.
 
 Disposition and limitations:
 
@@ -1166,12 +1238,14 @@ Disposition and limitations:
 - Official source:
   [PSIRT Services Framework 1.1](https://www.first.org/standards/frameworks/psirts/psirt_services_framework_v1.1)
 - Repository review date: `2026-08-04`
+- Adopted snapshot: `2026-08-12`, 232,100 bytes, SHA-256
+  `b543b4970d6c708bc97915cee4655c75b99252670b4824a303236c6fa2b3a34e`
 - Related plans:
   - `PSB-GOV-003` for vulnerability intake, analysis, prioritization,
     remediation ownership, and response evidence;
-  - a later PSIRT capability profile for service-area assessment.
+  - the generated PSIRT capability profile for service-area assessment.
 
-Adopted planning contribution:
+Adopted contribution:
 
 - use stable service, function, and sub-function identities when building the
   future assessment inventory;
@@ -1180,6 +1254,9 @@ Adopted planning contribution:
   distinguishable;
 - reconcile service outcomes with existing release, SBOM impact, exception,
   and incident-readiness controls before adding new control boundaries.
+- preserve the 31 service and operational-foundation identifiers in the
+  generated organization profile while paraphrasing capability rows rather
+  than copying the source text.
 
 Disposition and limitations:
 
@@ -1187,8 +1264,9 @@ Disposition and limitations:
   `NOT_CHECKED` rather than a repository-generated pass;
 - a service-framework relationship is not automatically a control mapping or
   proof of service quality, timeliness, capacity, or maturity;
-- the future profile must record which functions are in scope, not applicable,
-  externally provided, or unsupported instead of copying all source text.
+- organization assessments must record which functions are in scope, not
+  applicable, externally provided, or unsupported instead of copying all
+  source text.
 
 <a id="ref-gov-005"></a>
 
@@ -1206,6 +1284,8 @@ Disposition and limitations:
   - [CVSS v4.0 implementation guide](https://www.first.org/cvss/v4.0/implementation-guide).
 - Repository review date: `2026-08-04`
 - Related control: `PSB-GOV-003`
+- Related refresh closure: `PSB-GOV-005` consumes current severity evidence
+  only after exact deployed-artifact applicability is established.
 
 Adopted planning contribution:
 
@@ -1227,6 +1307,58 @@ Disposition and limitations:
   tested algorithm and malformed-vector fixtures; documentation alone cannot
   produce E3 evidence;
 - CVSS is not used as a `control.yaml` compliance relationship.
+
+<a id="ref-gov-006"></a>
+
+### REF-GOV-006 — NIST SP 800-61 Rev. 3 incident response guidance
+
+- Status: `adopted-partially`
+- Type: official cybersecurity incident-response recommendations and CSF 2.0
+  Community Profile
+- Publisher: National Institute of Standards and Technology (NIST)
+- Exact publication: `NIST SP 800-61 Rev. 3`, published April 2025
+- Official sources:
+  - [NIST CSRC publication page](https://csrc.nist.gov/pubs/sp/800/61/r3/final);
+  - [DOI 10.6028/NIST.SP.800-61r3](https://doi.org/10.6028/NIST.SP.800-61r3).
+- Repository review date: `2026-08-10`
+- Related controls:
+  - `PSB-GOV-001` — evidence-first supply-chain impact and response planning;
+  - `PSB-GOV-004` — credential exposure containment, recovery evidence, and
+    closure assurance;
+  - `PSB-GOV-005` — vulnerable deployed-artifact rebuild, replacement,
+    old-digest removal, and recovery closure.
+
+Adopted contribution:
+
+- treat incident response as preparation, detection, response, and recovery
+  capabilities integrated with risk management rather than a one-time secret
+  replacement task;
+- preserve evidence and accountable authorization before destructive response;
+- distinguish containment, recovery, impact analysis, and closure evidence;
+- retain lessons learned and live organization adoption as operational
+  evidence outside deterministic repository fixtures.
+
+Extended repository requirements:
+
+- bind a credential incident to exact secret-free credential, consumer,
+  resource, operation, artifact, release, and deployment identities;
+- require credential-class-specific containment and an independent old-
+  authority denial probe before closure;
+- treat incomplete inventory, partial provider receipts, unavailable probes,
+  and adapter failure as `ERROR` rather than successful recovery;
+- keep live credential mutation `NOT_CHECKED` in the provider-neutral E3 slice.
+- keep live rebuild, rollout, registry, admission, and deployment-inventory
+  mutation `NOT_CHECKED` in the `PSB-GOV-005` offline E3 slice.
+
+Disposition and limitations:
+
+- SP 800-61 Rev. 3 is operational guidance in this repository, not a registered
+  `control.yaml` mapping framework or a compliance claim;
+- local fixtures cannot prove that an organization has adopted the complete
+  CSF 2.0 Community Profile or operates an effective incident-response program;
+- provider-specific revocation, session invalidation, signing trust,
+  communication, legal, privacy, and recovery evidence remains organization
+  owned.
 
 <a id="ref-source-001"></a>
 
@@ -1498,6 +1630,76 @@ Disposition and limitations:
 - local fixtures cannot prove MDM deployment, live provider availability, or
   actual public-registry egress denial.
 
+<a id="ref-deps-004"></a>
+
+### REF-DEPS-004 — Dependency Cooldowns operational compatibility index
+
+- Status: `adopted-partially`
+- Type: community-maintained operational compatibility index and optional
+  configuration helper
+- Publisher: mprpic / Dependency Cooldowns contributors
+- Live URLs:
+  - [Dependency Cooldowns](https://cooldowns.dev/)
+  - [mprpic/cooldowns](https://github.com/mprpic/cooldowns)
+- Official client references used to verify the adopted slice:
+  - [uv dependency resolution](https://docs.astral.sh/uv/concepts/resolution/)
+  - [uv settings reference](https://docs.astral.sh/uv/reference/settings/)
+  - [npm config reference](https://docs.npmjs.com/cli/v11/using-npm/config/)
+  - [pnpm dependency resolution settings](https://pnpm.io/settings/dependency-resolution)
+  - [Yarn configuration](https://yarnpkg.com/configuration/yarnrc/)
+  - [pip install reference](https://pip.pypa.io/en/stable/cli/pip_install/)
+- Source license: MIT
+- Immutable reviewed snapshot: not vendored or executed; the live index is used
+  only for discovery and client behavior is checked against official
+  documentation before adoption
+- Repository review date: `2026-08-10`
+- Related controls:
+  - `PSB-DEPS-001` — repository-owned cooldown decision and tested native
+    package-manager profiles;
+  - `PSB-DEPS-003` — lockfile and artifact origin binding;
+  - `PSB-GOV-002` — controlled rollout and exception governance.
+
+Adopted contribution:
+
+- distinguish native package-manager gates, update-bot delays, and registry
+  proxy enforcement instead of treating them as interchangeable;
+- use the ecosystem inventory to discover candidate configuration surfaces;
+- provide the first tested native slice for npm, pip, uv, pnpm, and Yarn while
+  retaining the repository verifier for Go and Composer;
+- review bypass, reset, lockfile, metadata-availability, and configuration
+  precedence behavior as part of operational adoption.
+
+Extended repository requirements:
+
+- retain the repository's 168-hour baseline even when an external example uses
+  a shorter delay;
+- keep the repository-owned pre-resolution verifier authoritative across
+  ecosystems;
+- treat missing or unusable publication metadata as `ERROR`, not clean;
+- prohibit persistent package exclusions and route urgent adoption through the
+  exact, owned, approved, expiring repository exception;
+- distribute configuration through repository or explicitly managed endpoint
+  templates without silent global mutation.
+
+Rejected or separate contribution:
+
+- the helper script is not downloaded, executed, or vendored because it can
+  modify shell profiles and system-wide or user-wide package-manager settings;
+- no unpinned runtime dependency on the live repository is introduced;
+- the site's example delay and outcome estimates are not treated as this
+  repository's policy baseline or guaranteed risk reduction;
+- ecosystems without official-version review and fail-closed fixtures remain
+  discovery candidates rather than implemented coverage.
+
+Disposition and limitations:
+
+- this source is an implementation discovery aid, not a security framework,
+  compliance mapping, or authoritative package-manager specification;
+- it is a living source and may change independently of this repository;
+- production adoption still requires version inventory, configuration
+  precedence checks, managed-distribution evidence, and end-to-end tests against
+  the organization's registries.
+
 <a id="ref-deps-002"></a>
 
 ### REF-DEPS-002 — GitHub dependency review guidance
@@ -1604,7 +1806,8 @@ Disposition and limitations:
   backdoors, production scanner coverage, and live registry trust remain
   organization-owned or follow-on evidence;
 - RAG corpus authorization and retrieval provenance are implemented separately
-  as `PSB-AI-011`; live RAG integrations and AI TEVV release gating remain
+  as `PSB-AI-011`, and the provider-neutral AI TEVV release-evidence contract is
+  implemented as `PSB-DETECT-002`; live RAG and TEVV integrations remain
   follow-on work.
 
 <a id="ref-detect-001"></a>
@@ -1851,6 +2054,51 @@ Disposition and limitations:
   boundary; production PKI, transparency, and remote revocation adapters remain
   deployment-specific.
 
+<a id="ref-rel-003"></a>
+
+### REF-REL-003 — Sigstore／Cosign artifact signing and identity guidance
+
+- Status: `adopted-partially`
+- Type: official artifact-signing implementation and operational guidance
+- Publisher: Sigstore project
+- Official sources:
+  - [Cosign signing overview](https://docs.sigstore.dev/cosign/signing/overview/)
+  - [Signing blobs and files](https://docs.sigstore.dev/cosign/signing/signing_with_blobs/)
+  - [Cosign key-management overview](https://docs.sigstore.dev/cosign/key_management/overview/)
+  - [Verifying signatures](https://docs.sigstore.dev/cosign/verifying/verify/)
+  - [Verifying Cosign releases](https://docs.sigstore.dev/cosign/system_config/installation/)
+- Repository review date: `2026-08-10`
+- Related controls:
+  - `PSB-REL-005` — exact artifact signing generation and release gating;
+  - `PSB-REL-001` — consumer-side signature and provenance verification;
+  - `PSB-CICD-006` — exact-claim short-lived workload federation;
+  - `PSB-GOV-004` — signer exposure containment and old-authority distrust.
+
+Adopted contribution:
+
+- prefer identity-bound ephemeral key signing or non-exportable KMS／hardware
+  signing over a long-lived private key stored in CI;
+- sign an artifact blob or OCI manifest by exact digest and retain a bundle
+  containing the signature and verification metadata;
+- verify exact certificate identity and OIDC issuer rather than accepting an
+  unconstrained signer;
+- retain timestamp and transparency-log inclusion evidence when the selected
+  signing profile requires it;
+- treat Cosign itself as a supply-chain dependency whose version and release
+  bytes must be integrity-verified before execution.
+
+Disposition and limitations:
+
+- Sigstore and Cosign are implementation mechanisms, not a framework mapping
+  source and not mandatory products for `PSB-REL-005`;
+- the repository E3 fixture uses OpenSSL and an ephemeral local test key so it
+  remains deterministic and network-free; it does not claim live Fulcio,
+  Rekor, TUF, KMS, HSM, or OIDC adoption;
+- mutable documentation URLs are reviewed guidance, not downloaded execution
+  dependencies; a production adapter must pin its client and trust material;
+- signing and transparency do not establish that artifact contents are safe,
+  vulnerability-free, or built by an uncompromised platform.
+
 ## Chat-history reconciliation
 
 The reviewed collaboration history contained:
@@ -1866,9 +2114,10 @@ The reviewed collaboration history contained:
   plus the CI/CD threat taxonomy recorded as `REF-CICD-011`;
 - implementation sources selected while delivering and extending
   `PSB-DETECT-001` and the SBOM consumption path, recorded as
-  `REF-DETECT-001..002` and `REF-REL-001..002`;
-- dependency registry proxy documentation selected for the managed acquisition
-  path in `PSB-DEPS-001`, recorded as `REF-DEPS-001`;
+  `REF-DETECT-001..002` and `REF-REL-001..003`;
+- dependency registry proxy and native cooldown compatibility sources selected
+  for the managed acquisition path in `PSB-DEPS-001`, recorded as
+  `REF-DEPS-001` and `REF-DEPS-004`;
 - Kubernetes platform guidance selected while delivering
   `PSB-CONTAINER-001`, recorded as `REF-CONTAINER-002`;
 - four substantial user-supplied source texts or tables, recorded as

@@ -1,0 +1,7 @@
+BLOCK TEV-004 deterministic scenario TEVV-S001 did not satisfy its exact oracle
+BLOCK TEV-004 deterministic scenario TEVV-S003 did not satisfy its exact oracle
+BLOCK TEV-004 deterministic scenario TEVV-S004 did not satisfy its exact oracle
+BLOCK TEV-005 probabilistic scenario TEVV-S005 pass rate 400000 ppm is below threshold 800000
+BLOCK TEV-004 deterministic scenario TEVV-S006 did not satisfy its exact oracle
+BLOCK TEV-008 release decision ACCEPTED contradicts FAIL evaluation
+RESULT BLOCKED

@@ -1,0 +1,12 @@
+{
+  "schema": "psb-deployed-artifact-refresh-case/v1",
+  "case_id": "REFRESH-2026-0003",
+  "requested_state": "NOT_AFFECTED",
+  "artifact": {"digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "sbom_serial": "urn:uuid:33333333-3333-4333-8333-333333333333", "source_revision": "4444444444444444444444444444444444444444", "built_at": "2026-08-10T09:00:00Z"},
+  "inventory": {"status": "COMPLETE", "collected_at": "2026-08-12T11:55:00Z", "scope_id": "production-catalog@sha256:1111111111111111111111111111111111111111111111111111111111111111", "expected_targets": ["prod-catalog"], "deployments": [{"deployment_id": "dep-cat-001", "environment": "prod-catalog", "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "sbom_serial": "urn:uuid:33333333-3333-4333-8333-333333333333", "active": true}]},
+  "risk_evidence": {"status": "COMPLETE", "collected_at": "2026-08-12T11:50:00Z", "sources": [{"id": "deployment-inventory", "status": "HEALTHY"}, {"id": "registry-lifecycle", "status": "HEALTHY"}, {"id": "support-catalog", "status": "HEALTHY"}, {"id": "vulnerability-monitor", "status": "HEALTHY"}], "artifact_digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "affected": false, "severity": "medium", "support_state": "supported", "reason_class": "NO_MATCH"},
+  "decision": {"decision_id": "DEC-REFRESH-0003", "status": "NO_REBUILD", "owner": "build-platform", "decided_at": "2026-08-12T10:00:00Z", "due_at": "2026-08-19T10:00:00Z", "target_scope_id": "production-catalog@sha256:1111111111111111111111111111111111111111111111111111111111111111"},
+  "replacement": null,
+  "admissions": [],
+  "post_inventory": null
+}

@@ -115,6 +115,26 @@ the same generic control summary across every check.
 Context is reviewed control metadata, not generated filler. Do not copy one
 generic paragraph across rows merely to satisfy validation.
 
+## Imported application assessment profiles
+
+An organization-owned application vulnerability assessment is a source profile,
+not a control package and not a substitute for executable `PSB-CODE-*`
+implementations. Its original row ID and wording remain source-owned. A separate
+reconciliation record may split one compound source row into multiple atomic
+rows, but must retain a traceable `same-as-source` or `split-from` relationship.
+
+Every imported source row has an explicit `implemented`, `planned`, `duplicate`,
+`out-of-scope`, or `mapping-review-required` disposition. Framework mappings
+use exact registry version and identifier fields and remain row-specific;
+missing mappings are not inferred from a referenced control. Missing source,
+manifest, version, row, or reconciliation is an input or import error, never a
+zero-row clean assessment.
+
+Public generated views exclude organization-only wording and completed
+assessment evidence. The source manifest, importer behavior, output contract,
+and use of repository-external private input are defined in
+[`APPLICATION_CHECKLIST_IMPORT.md`](APPLICATION_CHECKLIST_IMPORT.md).
+
 ## One-page README contract
 
 `control.yaml` is the machine-readable source for generated checklist rows.
@@ -151,6 +171,24 @@ target and excludes higher-level requirements. Its coverage view must retain
 unmapped requirements as explicit gaps. A mapped row is evidence relevant to a
 requirement; it is not by itself a framework level or compliance claim.
 
+Cross-control integration profiles use repository-owned row IDs and exact
+full check references to test whether an identity or security decision survives
+handoffs between controls. They do not add framework identifiers to
+`control.yaml`. The NIST SP 800-204D profile requires one of `implemented`,
+`planned`, `gap`, or `out-of-scope` for every row. Implemented rows require
+resolvable current checks; planned and gap rows require an owner and remaining
+work; out-of-scope rows require an owned boundary rationale. A missing,
+malformed, or stale reference is a generation error, never an empty clean view.
+
+Organization capability profiles may reference exact repository checks as
+supporting evidence, but must not turn fixture success into an organization
+result. The FIRST PSIRT profile records integrity-bound source snapshots,
+service references, responsible roles, and required organization evidence.
+Its public `Assessment Result` and `Evidence Freshness` fields remain
+`NOT_CHECKED`. Maturity levels are cumulative: Level 2 requires all applicable
+Level 1 and Level 2 rows, and Level 3 also requires Level 3 rows. Missing source
+identity, unknown check/service references, or malformed input fails generation.
+
 ## Security exception contract
 
 Controls do not invent weaker local exception lifecycle semantics. The shared
@@ -181,6 +219,22 @@ secrets and unnecessary host identifiers, and is written below the ignored
 `generated/assessments/` directory. Fixture verification and live assessment
 remain separate: a passing secure fixture is not evidence that a live endpoint
 meets the requirement.
+
+## Catalog governance views
+
+`generated/checklists/governance/` summarizes repository-owned metadata per
+control: catalog status, reference evidence level, verification type,
+assessment-adapter availability, and reviewed, provisional, or unmapped check
+counts. These fields describe the blueprint implementation, not an adopting
+organization.
+
+Organization adoption, evidence freshness, active or expiring exceptions, and
+expired or invalid exception debt require organization-owned assessment and a
+current `PSB-GOV-002` register. Generated public views initialize every such
+field to `NOT_CHECKED`. They must never derive `PASS` or adoption from
+`prototype`, `adopted`, `E3`, a framework mapping, or a successful fixture.
+Completed assessments are recorded only in a copied assessment workbook or an
+organization evidence system and are not committed as public guidance.
 
 ## Control maturity
 

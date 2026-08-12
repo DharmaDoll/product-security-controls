@@ -1,0 +1,9 @@
+PASS PSB-REL-005/ASG-001 exact immutable artifact and release request
+PASS PSB-REL-005/ASG-002 short-lived exact workload signing authorization
+PASS PSB-REL-005/ASG-003 active non-exportable sign-only signer
+PASS PSB-REL-005/ASG-004 signed statement binds request artifact release source and signer
+PASS PSB-REL-005/ASG-005 signature verifies with the policy-pinned public key
+PASS PSB-REL-005/ASG-006 immutable signature publication and transparency receipt
+PASS PSB-REL-005/ASG-007 signing failure blocks release completion
+PASS PSB-REL-005/ASG-008 metadata-only evidence and fail-closed evaluation
+RESULT PASS profile=secure checks=8 failures=0

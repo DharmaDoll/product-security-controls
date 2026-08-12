@@ -1,0 +1,12 @@
+{
+  "schema": "psb-ai-release-decision/v1.0",
+  "identity": {
+    "sut_manifest_sha256": "63df89af242c5dac1a9a60cc9160b6dc26d2f183acd6c4e7edea756335ec4a9b",
+    "candidate_subject_sha256": "668d3642e0a4f3295bf0723e959be20da6e95757d08906ebd4f9d7a1734c89a5",
+    "evaluation_evidence_sha256": "f3277c7235fad77007fc00cb4699040a4e8fef442e38de4d375e830d73787540"
+  },
+  "evaluation_state": "FAIL",
+  "decision": "ACCEPTED",
+  "decider_role": "release-manager",
+  "decided_at": "2026-08-06T11:05:00Z"
+}

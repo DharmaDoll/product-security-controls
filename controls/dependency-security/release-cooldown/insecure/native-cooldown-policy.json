@@ -1,0 +1,32 @@
+{
+  "schema": "psb-native-cooldown-policy/1.0",
+  "baseline_hours": 0,
+  "authoritative_decision": "native-client-only",
+  "metadata_missing_state": "CLEAN",
+  "configuration_scope": "developer-global-script",
+  "global_user_config_mutation": true,
+  "persistent_bypass": "allowed",
+  "clients": [
+    {
+      "ecosystem": "npm",
+      "path": "clients/npmrc"
+    },
+    {
+      "ecosystem": "pip",
+      "path": "clients/pip.conf"
+    },
+    {
+      "ecosystem": "uv",
+      "path": "clients/uv.toml"
+    },
+    {
+      "ecosystem": "pnpm",
+      "path": "clients/pnpm-workspace.yaml"
+    },
+    {
+      "ecosystem": "yarn",
+      "path": "clients/yarnrc.yml"
+    }
+  ],
+  "repository_verifier_ecosystems": []
+}

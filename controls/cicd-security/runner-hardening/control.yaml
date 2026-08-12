@@ -1,0 +1,307 @@
+id: PSB-CICD-007
+title: CI runnerをjobごとに隔離し使用後に破棄する
+domain: cicd-security
+summary: 未信頼jobをreview済みhosted runnerへ限定し、self-hosted runnerをimmutable imageから起動するJIT one-job instanceとして隔離・破棄する。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - verify
+threats:
+  - id: CICD-RUNNER-PERSISTENCE
+    description: Malicious job or implanted runner image leaves processes workspace state or tooling that affects a later job.
+  - id: CICD-RUNNER-HOST-CREDENTIAL-ACCESS
+    description: Job code reaches host credentials cloud metadata runtime sockets or management services outside the intended CI boundary.
+  - id: CICD-RUNNER-MANAGEMENT-COMPROMISE
+    description: Reusable registration authority broad runner groups or interactive ingress lets an attacker register control or persist on a runner.
+implementations:
+  insecure:
+    - insecure/runner-policy.json
+    - insecure/fleet-snapshot.json
+    - insecure/image-evidence.json
+    - insecure/teardown-receipts.json
+  secure:
+    - secure/runner-policy.json
+    - secure/fleet-snapshot.json
+    - secure/image-evidence.json
+    - secure/teardown-receipts.json
+    - secure/evidence-health.json
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-CICD-007
+  expected:
+    - untrusted jobs route only to an exact reviewed managed-hosted profile
+    - self-hosted runners use exact groups repositories workflow commits and events
+    - self-hosted runners are JIT ephemeral one-job instances from digest-verified images
+    - clean startup and network probes exclude prior state host credentials metadata management networks and runtime sockets
+    - registration authority is short-lived one-use and not retained
+    - teardown receipts prove deregistration destruction workspace disposal and external log correlation
+    - missing stale malformed incomplete or credential-bearing evidence returns ERROR rather than PASS
+checks:
+  - id: RNR-001
+    title: Trust class routes to an exact runner profile
+    required_state: untrusted jobs use reviewed managed-hosted runners and self-hosted profiles use exact trusted scope
+    responsible_role: ci-platform
+    applies_to:
+      - ci-job-dispatch
+      - runner-group
+      - workflow-identity
+    context:
+      threat_actor: malicious fork contributor or compromised workflow selecting an organization-controlled runner
+      attack_or_failure_scenario: untrusted code runs on a self-hosted runner or a wildcard group repository workflow or event bypasses the reviewed runner boundary
+      why_required: exact routing keeps attacker-controlled jobs away from persistent organization assets and prevents an overly broad runner group from silently expanding trust
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-CICD-007 and compare live dispatch audit with provider runner-group settings
+      expected: every dispatch matches one exact profile and no untrusted job uses self-hosted infrastructure
+      evidence:
+        - sanitized verifier output
+        - fleet dispatch snapshot
+        - runner-group access export
+    mapping_status: reviewed
+  - id: RNR-002
+    title: Self-hosted runner accepts exactly one job
+    required_state: provisioner-attested JIT ephemeral instance with maximum_jobs one and no underlying host reuse
+    responsible_role: ci-platform
+    applies_to:
+      - self-hosted-runner
+      - runner-provisioner
+    context:
+      threat_actor: malicious job persisting code state or processes for a later trusted job
+      attack_or_failure_scenario: a registered runner or its underlying machine is reused and attacker changes survive into a second job
+      why_required: one-job compute lifecycle removes the cross-job persistence channel that token minimization cannot address
+    verification:
+      type: automated
+      method: correlate dispatch and teardown receipts by job ID and runner generation
+      expected: self-hosted runner is JIT ephemeral processes one job and never returns to a reusable pool
+      evidence:
+        - provisioner request
+        - teardown receipt
+    mapping_status: reviewed
+  - id: RNR-003
+    title: Runner starts from an immutable verified image
+    required_state: exact image digest verified provenance supported runner version and image replacement updates
+    responsible_role: ci-platform
+    applies_to:
+      - runner-image
+      - runner-binary
+    context:
+      threat_actor: supply-chain attacker or operator introducing a modified stale or mutable runner image
+      attack_or_failure_scenario: an implanted image or in-place update executes before job controls and persists outside review
+      why_required: immutable image identity and replacement make runner contents reviewable and prevent a mutable host from becoming the hidden deployment artifact
+    verification:
+      type: hybrid
+      method: verify image provenance and normalize the supported runner-version decision into image evidence
+      expected: mutable tags unverified provenance unsupported runner versions and in-place self-hosted updates are rejected
+      evidence:
+        - image digest
+        - provenance verification receipt
+        - runner version support decision
+    mapping_status: reviewed
+  - id: RNR-004
+    title: Runner starts without prior-job or host credential state
+    required_state: clean workspace no previous job foreign process host credential cloud credential or SSH key
+    responsible_role: ci-platform
+    applies_to:
+      - runner-startup-state
+      - runner-workspace
+      - host-credential-store
+    context:
+      threat_actor: prior malicious job compromised image or accidental credential provisioning
+      attack_or_failure_scenario: current job reads residual files processes or host identities that were not intentionally granted to it
+      why_required: startup observation proves isolation exists at job assignment time instead of relying only on an intended image configuration
+    verification:
+      type: automated
+      method: evaluate a pre-job startup probe bound to the runner generation
+      expected: any prior job identity dirty workspace foreign process or host credential produces a finding
+      evidence:
+        - sanitized startup probe
+    mapping_status: reviewed
+  - id: RNR-005
+    title: Runner cannot reach host or management identities
+    required_state: default-deny boundary blocks metadata IPv4 and IPv6 management networks internal networks and host runtime sockets
+    responsible_role: security
+    applies_to:
+      - runner-network
+      - cloud-metadata-endpoint
+      - management-network
+      - host-runtime-socket
+    context:
+      threat_actor: malicious dependency workflow or test executing inside a runner job
+      attack_or_failure_scenario: job code obtains cloud identity from metadata escapes through a host socket or laterally moves to a management service
+      why_required: host-level denial prevents job compromise from inheriting infrastructure authority even when application-level egress controls are incomplete
+    verification:
+      type: hybrid
+      method: evaluate policy and run isolated probes from the same runner namespace
+      expected: IPv4 and IPv6 metadata management network internal network and host socket probes are denied
+      evidence:
+        - sanitized network-probe results
+        - runner firewall policy
+    mapping_status: reviewed
+  - id: RNR-006
+    title: Runner registration and management authority is bounded
+    required_state: no ordinary interactive ingress with separate break-glass and one-use unretained registration authority of at most 300 seconds
+    responsible_role: ci-platform
+    applies_to:
+      - runner-registration
+      - runner-management-plane
+      - break-glass-access
+    context:
+      threat_actor: external attacker compromised operator account or leaked runner registration authority
+      attack_or_failure_scenario: attacker registers an unauthorized runner or uses SSH or another remote service to persist on an active runner
+      why_required: short-lived one-use registration and isolated break-glass access reduce the window and paths for unauthorized fleet membership or management takeover
+    verification:
+      type: hybrid
+      method: inspect provisioner receipt runner group and management-ingress policy
+      expected: reusable retained long-lived registration authority and ordinary interactive ingress are rejected
+      evidence:
+        - sanitized registration receipt
+        - management network policy
+        - break-glass approval record
+    mapping_status: reviewed
+  - id: RNR-007
+    title: Self-hosted runner is deregistered and destroyed after the job
+    required_state: exact-generation receipt proves deregistration compute destruction workspace disposal storage-key destruction and process termination within 600 seconds
+    responsible_role: ci-platform
+    applies_to:
+      - runner-teardown
+      - ephemeral-compute
+      - ephemeral-storage
+    context:
+      threat_actor: malicious job attempting persistence or a provisioner teardown failure
+      attack_or_failure_scenario: job finishes but the runner remains registered reachable or retains recoverable workspace and process state
+      why_required: verified teardown closes persistence after execution and makes one-job lifecycle an observed property rather than a configuration claim
+    verification:
+      type: automated
+      method: correlate job completion and provisioner destruction receipt by exact runner generation
+      expected: missing mismatched late or incomplete teardown receipt produces a finding
+      evidence:
+        - teardown receipt
+        - deregistration event
+        - compute and storage destruction event
+    mapping_status: reviewed
+  - id: RNR-008
+    title: Runner security logs survive teardown with exact correlation
+    required_state: logs exported before destruction and correlated by job ID and runner generation
+    responsible_role: security
+    applies_to:
+      - runner-security-log
+      - log-exporter
+      - incident-evidence
+    context:
+      threat_actor: malicious job hiding activity or a teardown sequence deleting the only local evidence
+      attack_or_failure_scenario: ephemeral runner is destroyed before process network registration and teardown evidence reaches an external system
+      why_required: external correlated logs retain detection and investigation evidence without weakening the ephemeral lifecycle
+    verification:
+      type: hybrid
+      method: compare teardown receipt correlation with the security log backend
+      expected: local-only missing or incorrectly correlated logs produce a finding
+      evidence:
+        - log export receipt
+        - external log query result
+    mapping_status: reviewed
+  - id: RNR-009
+    title: Runner evidence evaluation fails closed
+    required_state: digest-pinned policy and complete fresh available credential-free evidence with distinct ERROR state
+    responsible_role: ci-platform
+    applies_to:
+      - runner-evidence-collector
+      - runner-hardening-verifier
+    context:
+      threat_actor: collector outage stale evidence malformed input or credential accidentally copied into an evidence bundle
+      attack_or_failure_scenario: runner state cannot be evaluated safely but a missing scan is reported as satisfying the control or leaks a credential into logs
+      why_required: explicit ERROR and secret-field rejection prevent unavailable or unsafe evidence from becoming false assurance
+    verification:
+      type: automated
+      method: run negative tests for unavailable stale malformed incomplete and credential-bearing evidence
+      expected: evaluation failures return exit 2 without echoing credential values
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
+mappings:
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHAS-CONCEPT-COMPROMISED-RUNNERS
+    relationship: mitigates
+    confidence: high
+    rationale: The control keeps untrusted jobs off self-hosted infrastructure and verifies one-job lifecycle clean startup host isolation and teardown evidence for organization-owned runners.
+    reviewer: product-security
+    review_date: "2026-08-11"
+    applies_to:
+      - RNR-001
+      - RNR-002
+      - RNR-004
+      - RNR-005
+      - RNR-007
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHAS-REF-SECURE-USE
+    relationship: verifies
+    confidence: high
+    rationale: Exact runner groups restricted self-hosted scope ephemeral execution and external log evidence operationalize GitHub secure-use guidance with fail-closed fixtures.
+    reviewer: product-security
+    review_date: "2026-08-11"
+    applies_to:
+      - RNR-001
+      - RNR-002
+      - RNR-006
+      - RNR-008
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PW.6.1
+    relationship: supports
+    confidence: medium
+    rationale: A reviewed isolated and observable runner fleet supports secure build-tool execution but does not assess all build practices or provider control-plane assurance.
+    reviewer: product-security
+    review_date: "2026-08-11"
+    applies_to:
+      - RNR-002
+      - RNR-003
+      - RNR-004
+      - RNR-005
+      - RNR-007
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-BR-01.03
+    relationship: supports
+    confidence: medium
+    rationale: Runner routing and one-job destruction support separation of untrusted code snapshots from privileged CI assets while PSB-CICD-005 owns the workflow trust decision.
+    reviewer: product-security
+    review_date: "2026-08-11"
+    applies_to:
+      - RNR-001
+      - RNR-002
+      - RNR-004
+      - RNR-005
+      - RNR-007
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1552.005
+    relationship: mitigates
+    confidence: high
+    rationale: IPv4 and IPv6 metadata probes plus default-deny runner networking directly mitigate job access to cloud instance metadata credentials.
+    reviewer: product-security
+    review_date: "2026-08-11"
+    applies_to:
+      - RNR-005
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1133
+    relationship: mitigates
+    confidence: medium
+    rationale: Denying ordinary interactive runner ingress and separating break-glass management reduces remote-service access paths without claiming complete service-control-plane coverage.
+    reviewer: product-security
+    review_date: "2026-08-11"
+    applies_to:
+      - RNR-006
+limitations:
+  - Reference evidence is synthetic and does not attest any live GitHub-hosted or self-hosted runner fleet.
+  - GitHub-hosted VM lifecycle and provider tenant isolation remain provider-owned assurance boundaries.
+  - The verifier consumes normalized runner-version and image-provenance decisions and does not contact GitHub or an image registry.
+  - Job-internal credentials privilege application egress sandbox and telemetry remain PSB-BUILD-001.
+  - Workflow trust classification and untrusted pull-request event semantics remain PSB-CICD-005.
+  - CI service control-plane compromise and availability are not verified.
+  - External log content still requires masking access control and retention policies.
+status: prototype
+owner: product-security
+evidence_level: E3

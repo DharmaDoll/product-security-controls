@@ -1,0 +1,58 @@
+{
+  "schema": "psb-ci-runner-policy/v1",
+  "policy_version": "runner-hardening@sha256:8c3c09c426e9168f1b556a1f38b3ebd297d9d6ca02f2f2f0cb38a6c69132cc84",
+  "maximum_evidence_age_seconds": 900,
+  "maximum_registration_token_seconds": 300,
+  "maximum_teardown_seconds": 600,
+  "profiles": [
+    {
+      "id": "hosted-untrusted",
+      "provider_type": "managed-hosted",
+      "accepted_trust_classes": ["untrusted"],
+      "runner_labels": ["ubuntu-24.04"],
+      "lifecycle_assurance_source": "provider-contract",
+      "self_hosted": false,
+      "internal_network_access": false
+    },
+    {
+      "id": "self-hosted-trusted-release",
+      "provider_type": "self-hosted-jit",
+      "accepted_trust_classes": ["trusted"],
+      "runner_labels": ["self-hosted", "linux", "x64", "release-jit"],
+      "runner_group": "release-jit",
+      "allowed_repositories": ["acme/release-service"],
+      "allowed_workflows": ["acme/release-service/.github/workflows/release.yml@8bba820e4356ce7835c4f885c95c867326922a71"],
+      "allowed_events": ["push"],
+      "lifecycle_assurance_source": "organization-provisioner",
+      "self_hosted": true,
+      "ephemeral": true,
+      "jit": true,
+      "maximum_jobs": 1,
+      "reuse_underlying_host": false,
+      "image_update_mode": "replace-image",
+      "internal_network_access": false
+    }
+  ],
+  "network_boundary": {
+    "default_egress": "deny",
+    "allowed_control_plane_origins": ["https://github.com", "https://api.github.com"],
+    "cloud_metadata_ipv4_blocked": true,
+    "cloud_metadata_ipv6_blocked": true,
+    "management_network_blocked": true,
+    "host_runtime_sockets_absent": true
+  },
+  "management": {
+    "interactive_ingress": "deny",
+    "break_glass_separate": true,
+    "registration_token_one_use": true,
+    "registration_token_retained": false
+  },
+  "teardown": {
+    "deregister": true,
+    "destroy_compute": true,
+    "discard_workspace": true,
+    "destroy_ephemeral_storage_key": true,
+    "terminate_job_processes": true,
+    "export_logs_before_destroy": true
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "psb-artifact-signing-authorization/1.0",
+  "status": "ACTIVE",
+  "workload_identity": "repo:example/security-reference:ref:refs/tags/v1.0.0",
+  "audience": "https://signer.example.invalid",
+  "scopes": [
+    "artifact:sign:example-cli:v1.0.0"
+  ],
+  "artifact_family": "example-cli",
+  "artifact_sha256": "d18e391adbc06782960dafa7284d3ed317295865eb6aa777768a308f0e903963",
+  "release_id": "example-cli/v1.0.0",
+  "signer_id": "kms://example.invalid/release-signing",
+  "issued_at": "2026-08-10T03:00:00Z",
+  "expires_at": "2026-08-10T03:05:00Z",
+  "nonce": "d1f3bb2bd36b42e9a0a1f739cf44ff92",
+  "token_retained": false
+}

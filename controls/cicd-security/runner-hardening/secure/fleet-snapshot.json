@@ -1,0 +1,49 @@
+{
+  "schema": "psb-ci-runner-fleet/v1",
+  "collected_at": "2026-08-11T03:05:00Z",
+  "dispatches": [
+    {
+      "job_id": "job-pr-410",
+      "profile_id": "hosted-untrusted",
+      "trust_class": "untrusted",
+      "repository": "acme/release-service",
+      "workflow": "acme/release-service/.github/workflows/verify.yml@15952bf6142d9db699d2263049c1268430c94b13",
+      "event": "pull_request",
+      "runner_labels": ["ubuntu-24.04"],
+      "runner_generation": "github-hosted-job-410",
+      "previous_job_id": null,
+      "clean_workspace": true,
+      "foreign_processes": false,
+      "host_credentials_present": false,
+      "cloud_credentials_present": false,
+      "ssh_keys_present": false,
+      "metadata_ipv4_reachable": false,
+      "metadata_ipv6_reachable": false,
+      "management_network_reachable": false,
+      "host_runtime_socket_present": false
+    },
+    {
+      "job_id": "job-release-731",
+      "profile_id": "self-hosted-trusted-release",
+      "trust_class": "trusted",
+      "repository": "acme/release-service",
+      "workflow": "acme/release-service/.github/workflows/release.yml@8bba820e4356ce7835c4f885c95c867326922a71",
+      "event": "push",
+      "runner_labels": ["self-hosted", "linux", "x64", "release-jit"],
+      "runner_group": "release-jit",
+      "runner_generation": "release-jit-20260811-731",
+      "previous_job_id": null,
+      "clean_workspace": true,
+      "foreign_processes": false,
+      "host_credentials_present": false,
+      "cloud_credentials_present": false,
+      "ssh_keys_present": false,
+      "metadata_ipv4_reachable": false,
+      "metadata_ipv6_reachable": false,
+      "management_network_reachable": false,
+      "host_runtime_socket_present": false,
+      "registration_token_ttl_seconds": 180,
+      "registration_token_retained": false
+    }
+  ]
+}

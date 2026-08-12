@@ -1,4 +1,23 @@
 FAIL policy.minimum_release_age_hours is 0; reference minimum is 168
+FAIL native cooldown baseline is 0 hours; reference minimum is 168
+FAIL native client configuration is incorrectly treated as authoritative
+FAIL missing release-time metadata can appear clean
+FAIL native cooldown configuration is not reviewably distributed
+FAIL native cooldown setup may silently modify global user configuration
+FAIL persistent native cooldown bypasses are permitted
+FAIL npm native cooldown is 0 hours; minimum is 168 hours
+FAIL npm config contains a persistent cooldown exclusion
+FAIL pip native cooldown is 24 hours; minimum is 168 hours
+FAIL uv native cooldown is disabled
+FAIL uv config contains a persistent cooldown exclusion
+FAIL pnpm native cooldown is 1 hour; minimum is 168 hours
+FAIL pnpm permits packages with missing publish time
+FAIL pnpm can fall back to a release younger than the cooldown
+FAIL pnpm skips cooldown revalidation for lockfile entries
+FAIL pnpm config contains a persistent cooldown exclusion
+FAIL Yarn native cooldown is 24 hours; minimum is 168 hours
+FAIL Yarn config contains a persistent cooldown exclusion
+FAIL Go and Composer must remain on the repository-owned cooldown verifier
 FAIL dependency proxy is optional or unmanaged
 FAIL dependency proxy configuration is not centrally distributed
 FAIL public registry egress can bypass the proxy
@@ -20,4 +39,4 @@ FAIL proxy path is not verified with a harmless blocking canary
 FAIL brand-new-lib@9.9.9 uses unapproved registry https://registry-typo.example.invalid
 FAIL brand-new-lib@9.9.9 has missing or invalid sha256 integrity
 FAIL brand-new-lib@9.9.9 age is 24 hours; minimum is 168
-REJECTED 22 cooldown finding(s)
+REJECTED 41 cooldown finding(s)

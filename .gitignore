@@ -26,6 +26,10 @@ coverage/
 generated/assessments/
 generated/advisories/
 
+# Organization-owned application assessment source input
+inputs/application-vulnerability-assessment/*
+!inputs/application-vulnerability-assessment/README.md
+
 # Local environment and secrets
 .env
 .env.*

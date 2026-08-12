@@ -1,0 +1,11 @@
+PASS TEV-001 exact release candidate and upstream control identities verified
+PASS TEV-002 immutable evaluator artifact and test-suite identities verified
+PASS TEV-003 six inert threat-derived scenarios and exact oracles verified
+PASS TEV-004 deterministic security assertions passed
+PASS TEV-005 probabilistic repetitions and independently owned threshold passed
+PASS TEV-006 known-safe candidate passed and known-vulnerable calibration was detected
+PASS TEV-007 credential-free network-free ephemeral execution evidence verified
+PASS TEV-008 exact passing evidence is bound to the release decision
+PASS TEV-009 complete fresh sanitized evidence verified
+PASS TEV-010 live model provider judge and production gate remain NOT_CHECKED
+RESULT ACCEPTED_FOR_RELEASE

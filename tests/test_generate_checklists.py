@@ -63,6 +63,10 @@ class GenerateChecklistsTest(unittest.TestCase):
                 workbook_xml = archive.read("xl/workbook.xml").decode("utf-8")
                 self.assertIn('name="Checklist"', workbook_xml)
                 self.assertIn('name="Framework Mappings"', workbook_xml)
+                self.assertIn('name="Governance Summary"', workbook_xml)
+                self.assertIn('name="Catalog Governance"', workbook_xml)
+                self.assertIn('name="SSC Integration"', workbook_xml)
+                self.assertIn('name="PSIRT Capability"', workbook_xml)
                 for name in archive.namelist():
                     if name.endswith((".xml", ".rels")):
                         ET.fromstring(archive.read(name))
@@ -85,6 +89,69 @@ class GenerateChecklistsTest(unittest.TestCase):
             self.assertTrue(row["Threat Actor or Source"])
             self.assertTrue(row["Row Attack or Failure Scenario"])
             self.assertTrue(row["Why This Check Is Required"])
+
+    def test_governance_view_keeps_catalog_maturity_separate_from_adoption(self) -> None:
+        rows, summary = generate_checklists.build_governance_rows(self.controls)
+        self.assertEqual(len(rows), len(self.controls))
+        self.assertEqual(
+            {row["Control ID"] for row in rows},
+            {control["id"] for control in self.controls},
+        )
+        for row in rows:
+            self.assertEqual(row["Catalog Claim Boundary"], "REFERENCE_IMPLEMENTATION_ONLY")
+            self.assertEqual(row["Organization Adoption"], "NOT_CHECKED")
+            self.assertEqual(row["Evidence Freshness"], "NOT_CHECKED")
+            self.assertEqual(row["Active Exceptions"], "NOT_CHECKED")
+            self.assertEqual(row["Expiring Exceptions"], "NOT_CHECKED")
+            self.assertEqual(row["Expired or Invalid Exceptions"], "NOT_CHECKED")
+            self.assertEqual(row["Governance Result"], "NOT_CHECKED")
+            self.assertEqual(
+                int(row["Reviewed Mapping Checks"])
+                + int(row["Provisional Mapping Checks"])
+                + int(row["Unmapped Checks"]),
+                int(row["Atomic Checks"]),
+            )
+        summary_by_metric = {item["Metric"]: item for item in summary}
+        self.assertEqual(
+            summary_by_metric["Organization adoption"]["Value"], "NOT_CHECKED"
+        )
+        self.assertEqual(
+            summary_by_metric["Evidence freshness"]["Value"], "NOT_CHECKED"
+        )
+        self.assertEqual(summary_by_metric["Exception debt"]["Value"], "NOT_CHECKED")
+        self.assertEqual(
+            int(summary_by_metric["Reviewed mapping checks"]["Value"])
+            + int(summary_by_metric["Provisional mapping checks"]["Value"])
+            + int(summary_by_metric["Unmapped checks"]["Value"]),
+            int(summary_by_metric["Atomic checks"]["Value"]),
+        )
+
+    def test_governance_csv_and_assessment_sheet_are_filterable(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary)
+            generate_checklists.generate_checklists(self.controls, output)
+            governance_csv = output / "governance" / "control-readiness.csv"
+            self.assertTrue(governance_csv.read_bytes().startswith(b"\xef\xbb\xbf"))
+            with governance_csv.open(encoding="utf-8-sig", newline="") as handle:
+                rows = list(csv.DictReader(handle))
+            self.assertEqual(len(rows), len(self.controls))
+            self.assertTrue(all(row["Governance Result"] == "NOT_CHECKED" for row in rows))
+
+            workbook = output / "product-security-assessment-template.xlsx"
+            with zipfile.ZipFile(workbook) as archive:
+                workbook_xml = archive.read("xl/workbook.xml").decode("utf-8")
+                self.assertIn('name="Governance Assessment"', workbook_xml)
+                worksheet_names = [
+                    name
+                    for name in archive.namelist()
+                    if name.startswith("xl/worksheets/") and name.endswith(".xml")
+                ]
+                self.assertTrue(
+                    any(b"Governance Result" in archive.read(name) for name in worksheet_names)
+                )
+                self.assertTrue(
+                    any(b"autoFilter" in archive.read(name) for name in worksheet_names)
+                )
 
     def test_csv_formula_prefixes_are_neutralized(self) -> None:
         for value in ("=cmd()", "+SUM(A1:A2)", "-1+2", "@example"):
@@ -125,6 +192,43 @@ class GenerateChecklistsTest(unittest.TestCase):
             7,
         )
         self.assertEqual(sum(row["Status"] == "gap" for row in coverage), 0)
+
+    def test_supply_chain_reconciliation_is_generated_with_all_dispositions(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary)
+            generate_checklists.generate_checklists(self.controls, output)
+            csv_path = (
+                output
+                / "profiles"
+                / "supply-chain-integration"
+                / "reconciliation.csv"
+            )
+            markdown_path = csv_path.with_suffix(".md")
+            with csv_path.open(encoding="utf-8-sig", newline="") as handle:
+                rows = list(csv.DictReader(handle))
+            self.assertEqual(len(rows), 12)
+            self.assertEqual(
+                {row["Disposition"] for row in rows},
+                {"implemented", "planned", "gap", "out-of-scope"},
+            )
+            self.assertTrue(
+                all(row["Claim Boundary"] for row in rows)
+            )
+            self.assertNotIn("complies-with", markdown_path.read_text(encoding="utf-8"))
+
+    def test_psirt_profile_keeps_organization_results_not_checked(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary)
+            generate_checklists.generate_checklists(self.controls, output)
+            csv_path = output / "profiles" / "first-psirt-capability" / "assessment.csv"
+            with csv_path.open(encoding="utf-8-sig", newline="") as handle:
+                rows = list(csv.DictReader(handle))
+            self.assertEqual(len(rows), 18)
+            self.assertTrue(all(row["Assessment Result"] == "NOT_CHECKED" for row in rows))
+            self.assertTrue(all(row["Evidence Freshness"] == "NOT_CHECKED" for row in rows))
+            self.assertEqual(
+                {row["Cumulative Minimum Level"] for row in rows}, {"1", "2", "3"}
+            )
 
 
 if __name__ == "__main__":

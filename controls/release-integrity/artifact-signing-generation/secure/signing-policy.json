@@ -1,0 +1,58 @@
+{
+  "schema": "psb-artifact-signing-policy/1.0",
+  "profile": "secure",
+  "expected": {
+    "artifact_family": "example-cli",
+    "artifact_name": "example-cli-linux-amd64",
+    "release_id": "example-cli/v1.0.0",
+    "release_ref": "refs/tags/v1.0.0",
+    "source_repository": "https://github.com/example/security-reference",
+    "source_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "workload_identity": "repo:example/security-reference:ref:refs/tags/v1.0.0",
+    "audience": "https://signer.example.invalid",
+    "scope": "artifact:sign:example-cli:v1.0.0",
+    "signer_id": "kms://example.invalid/release-signing",
+    "key_version": "7"
+  },
+  "signature_algorithm": "ed25519",
+  "digest_algorithm": "sha256",
+  "maximum_authorization_seconds": 300,
+  "maximum_signer_status_age_hours": 24,
+  "allowed_signer_provider_types": [
+    "hsm",
+    "keyless",
+    "kms"
+  ],
+  "required_signer_operations": [
+    "sign"
+  ],
+  "forbidden_signer_operations": [
+    "admin",
+    "decrypt",
+    "export"
+  ],
+  "require_non_exportable_key": true,
+  "require_token_non_retention": true,
+  "require_transparency_receipt": true,
+  "release_gate_failure_policy": "BLOCK",
+  "trusted_public_key": "signer-public-key.pem",
+  "trusted_public_key_sha256": "1b2e83758fa94ed96086e47d9663d88c03201ec76482096e22528f69d1a82e77",
+  "publication": {
+    "location": "https://releases.example.invalid/example-cli/v1.0.0/example-cli-linux-amd64.sig",
+    "immutable": true
+  },
+  "evidence": {
+    "allowed_fields": [
+      "artifact_family",
+      "check_id",
+      "decision",
+      "key_version",
+      "release_id",
+      "signer_id",
+      "status"
+    ],
+    "include_identity_token": false,
+    "include_private_key_material": false,
+    "include_signature_body": false
+  }
+}

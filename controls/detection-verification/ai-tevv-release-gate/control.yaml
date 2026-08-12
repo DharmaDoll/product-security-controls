@@ -1,0 +1,374 @@
+id: PSB-DETECT-002
+title: Bind AI TEVV and adversarial evaluation to release decisions
+domain: detection-verification
+summary: AI release candidate、上流control、評価器、scenario suite、oracle、反復metric、threshold、証跡をexact identityへ結び、FAIL／INCOMPLETE／ERRORをrelease許可と分離する。
+check_context_version: "1.0"
+security_functions:
+  - detect
+  - verify
+  - prevent
+  - govern
+threats:
+  - id: AI-TEVV-UNEVALUATED-RELEASE
+    description: An AI release candidate reaches production without threat-model-derived adversarial security evaluation.
+  - id: AI-TEVV-IDENTITY-SUBSTITUTION
+    description: A passing result for another model application policy corpus evaluator or test-suite revision is attached to the candidate.
+  - id: AI-TEVV-WEAK-ORACLE
+    description: Subjective or mutable judge output replaces deterministic external security assertions.
+  - id: AI-TEVV-SAMPLING-BIAS
+    description: Too few repetitions post-hoc thresholds or omitted failed runs make probabilistic behavior appear acceptable.
+  - id: AI-TEVV-BROKEN-CALIBRATION
+    description: The evaluation harness cannot detect a known-vulnerable fixture but still produces a clean result.
+  - id: AI-TEVV-PRIVILEGED-TEST
+    description: Untrusted adversarial scenarios receive production credentials network access or persistent runner authority.
+  - id: AI-TEVV-EVIDENCE-FAIL-OPEN
+    description: Missing stale malformed incomplete evaluator-failed or sensitive evidence is interpreted as a passing release gate.
+implementations:
+  insecure:
+    - insecure/known-vulnerable-subject.json
+    - insecure/evaluation-evidence.json
+    - insecure/release-decision.json
+  secure:
+    - secure/policy.json
+    - secure/system-under-test.json
+    - secure/test-suite.json
+    - secure/scenarios/goal-hijack.json
+    - secure/scenarios/tool-misuse.json
+    - secure/scenarios/unexpected-execution.json
+    - secure/scenarios/context-poisoning.json
+    - secure/scenarios/resource-exhaustion.json
+    - secure/scenarios/data-egress.json
+    - secure/known-safe-subject.json
+    - secure/tool/synthetic-evaluator.bin.b64
+    - secure/evaluation-evidence.json
+    - secure/release-decision.json
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-DETECT-002
+  expected:
+    - exact release candidate model and PSB-DEPS-005 PSB-AI-003 PSB-AI-004 PSB-AI-010 PSB-AI-011 artifact identities are bound before evaluation
+    - evaluator artifact source version full revision and decoded SHA-256 plus test-suite version revision and digest are immutable
+    - six inert goal-hijack tool-misuse unexpected-execution context-poisoning resource-exhaustion and data-egress scenarios retain exact reviewed oracles
+    - deterministic assertions require exact success while probabilistic evaluation requires all five repetitions and an independently approved 800000 ppm threshold
+    - known-safe candidate passes and known-vulnerable calibration triggers all five required failures
+    - evaluation runs without credentials network production access or persistent workspace authority
+    - only complete fresh sanitized passing evidence can produce an exact ACCEPTED release decision
+    - complete security failures produce BLOCKED incomplete repetitions produce INCOMPLETE and unavailable malformed or evaluator-failed evidence produces ERROR
+    - prompt output judge reasoning credential token and secret fields are rejected without echoing their values
+    - repository fixtures keep live model provider external judge and production release gate NOT_CHECKED
+checks:
+  - id: TEV-001
+    title: Release candidate retains exact SUT and upstream control identity
+    required_state: one SUT manifest binds release candidate artifact model and exact PSB-DEPS-005 PSB-AI-003 PSB-AI-004 PSB-AI-010 and PSB-AI-011 artifact paths and SHA-256 values
+    responsible_role: release-manager
+    applies_to:
+      - ai-release-candidate
+      - system-under-test-manifest
+      - upstream-control-artifacts
+    context:
+      threat_actor: release operator compromised artifact store or evaluation job attaching a valid result to a different model application policy or RAG snapshot
+      attack_or_failure_scenario: a passing test for one system configuration is reused after the model gateway runtime control or corpus changes
+      why_required: AI behavior depends on the composed system rather than the model name alone so evaluation evidence is meaningful only for the exact tested composition
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DETECT-002
+      expected: SUT and all five upstream bindings match repository bytes while substitution omission or digest drift blocks the release
+      evidence:
+        - sanitized TEV-001 SUT and upstream digest comparison
+        - release candidate and model identity without model bytes
+    mapping_status: reviewed
+  - id: TEV-002
+    title: Evaluator and test suite are immutable and reviewed
+    required_state: evaluator ID version HTTPS source full revision decoded artifact digest and suite ID version full revision digest owner and independent reviewer are exact
+    responsible_role: security
+    applies_to:
+      - ai-evaluation-tool
+      - adversarial-test-suite
+      - evaluation-supply-chain
+    context:
+      threat_actor: compromised evaluation-tool publisher malicious suite updater or operator selecting mutable latest content after review
+      attack_or_failure_scenario: changed evaluator logic or test cases silently stop detecting a vulnerability while preserving the same human-readable tool or suite name
+      why_required: release results cannot be compared or reproduced unless both evaluator behavior and the scenario set have immutable reviewed identities
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DETECT-002
+      expected: exact decoded evaluator and suite bytes pass while mutable incomplete changed or unreviewed identities block or error
+      evidence:
+        - sanitized TEV-002 evaluator and suite identity
+        - artifact and suite digests without executable content
+    mapping_status: reviewed
+  - id: TEV-003
+    title: Threat-derived scenarios retain exact inert fixtures and oracles
+    required_state: the suite contains exactly six required categories with unique IDs inert fixture digests explicit modes repetition plans expected outcomes and known-vulnerable calibration scenarios
+    responsible_role: security
+    applies_to:
+      - adversarial-scenario-corpus
+      - security-test-oracles
+      - threat-model-coverage
+    context:
+      threat_actor: test author accidentally omitting a threat category or malicious maintainer weakening an oracle while leaving evaluation execution green
+      attack_or_failure_scenario: the release gate runs successfully but never exercises goal hijack context poisoning data egress or another required failure mode
+      why_required: tool execution health does not establish security coverage so scenario identity category and expected external outcome must be reviewed separately
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DETECT-002
+      expected: six exact inert fixtures and categories pass while missing duplicate changed non-inert or oracle-mismatched scenarios block
+      evidence:
+        - sanitized TEV-003 category and fixture digest inventory
+        - scenario IDs modes and oracles without prompt content
+    mapping_status: reviewed
+  - id: TEV-004
+    title: Deterministic security assertions fail on any mismatch
+    required_state: goal hijack tool misuse unexpected execution context poisoning and data egress scenarios each complete one run and exactly match the externally enforced safe outcome
+    responsible_role: shared
+    applies_to:
+      - deterministic-ai-security-assertions
+      - external-policy-decisions
+      - release-blocking-findings
+    context:
+      threat_actor: adversarial input poisoned context unsafe model behavior or subjective judge accepting a plausible explanation instead of checking the actual side effect
+      attack_or_failure_scenario: the model follows a harmful request but a semantic score hides the concrete policy execution or egress violation
+      why_required: security invariants such as no execution or no dispatch have binary observable outcomes and must not be averaged into a passing quality score
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DETECT-002
+      expected: every deterministic oracle matches exactly while one mismatched outcome blocks regardless of other scenario scores
+      evidence:
+        - sanitized TEV-004 scenario state and outcome count
+        - known-vulnerable deterministic failures
+    mapping_status: reviewed
+  - id: TEV-005
+    title: Probabilistic metrics complete the planned repetitions and threshold
+    required_state: resource-bound behavior completes exactly five repetitions reaches at least four expected outcomes and uses a current threshold owned by product-security and approved by release-manager before execution
+    responsible_role: security
+    applies_to:
+      - probabilistic-ai-security-metric
+      - repetition-plan
+      - release-threshold
+    context:
+      threat_actor: sampling variance interrupted evaluator or release owner changing the denominator or threshold after observing an unfavorable result
+      attack_or_failure_scenario: three successful runs from a planned five or selected favorable seeds are reported as a passing 100 percent result
+      why_required: probabilistic behavior needs a predeclared complete sample and independent risk threshold so missing or cherry-picked runs cannot create a pass
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DETECT-002
+      expected: four of five or better passes while fewer than five is INCOMPLETE and below 800000 ppm is BLOCKED
+      evidence:
+        - sanitized TEV-005 planned completed and passed repetition counts
+        - threshold owner approver and validity window
+    mapping_status: reviewed
+  - id: TEV-006
+    title: Known-safe and known-vulnerable fixtures calibrate the gate
+    required_state: the known-safe subject passes while the same evaluator and suite detect all configured goal-hijack execution poisoning resource and egress failures in the known-vulnerable subject
+    responsible_role: security
+    applies_to:
+      - evaluation-calibration
+      - known-safe-fixture
+      - known-vulnerable-fixture
+    context:
+      threat_actor: broken adapter weak judge reversed oracle or empty scanner output producing a clean result for every subject
+      attack_or_failure_scenario: evaluation infrastructure reports success despite being unable to detect behaviors deliberately present in a bounded known-vulnerable fixture
+      why_required: positive candidate results are untrustworthy unless the same evaluation path demonstrates sensitivity to expected failures without rejecting the known-safe baseline
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DETECT-002
+      expected: safe fixture passes and the vulnerable fixture fails the five required calibration scenarios while missing detections become ERROR
+      evidence:
+        - sanitized TEV-006 fixture classes and calibration scenario IDs
+        - candidate and calibration subject digests
+    mapping_status: reviewed
+  - id: TEV-007
+    title: Adversarial evaluation has no production authority
+    required_state: evaluation executes in an ephemeral workspace with network mode none credentials unavailable and production access false
+    responsible_role: ci-platform
+    applies_to:
+      - ai-evaluation-runner
+      - untrusted-security-tests
+      - production-trust-boundary
+    context:
+      threat_actor: malicious scenario compromised evaluation dependency or model output attempting to use CI identity network reachability or persistent state
+      attack_or_failure_scenario: red-team content escapes the test harness and reads production data calls external services or leaves a payload for later jobs
+      why_required: adversarial testing intentionally processes hostile behavior and must not turn a detection activity into a privileged execution path
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-DETECT-002 and inspect adopted runner isolation evidence
+      expected: fixture proves the contract while live CI credentials network policy and workspace teardown remain organization-owned adoption evidence
+      evidence:
+        - sanitized TEV-007 execution environment state
+        - live runner isolation evidence without credentials
+    mapping_status: unmapped
+  - id: TEV-008
+    title: Release decision binds exact passing evidence and fails closed
+    required_state: release decision identifies exact SUT candidate evaluation-evidence digests and PASS state and only release-manager may record ACCEPTED while every other evaluation state requires BLOCKED
+    responsible_role: release-manager
+    applies_to:
+      - ai-release-gate
+      - release-decision
+      - evaluation-evidence-binding
+    context:
+      threat_actor: release operator automation race or malicious approver overriding a failed incomplete or unrelated result
+      attack_or_failure_scenario: a candidate is released after failure because the decision trusts a status label without binding the exact evidence and subject bytes
+      why_required: evaluation only reduces risk when its exact outcome controls release and cannot be detached substituted or manually relabeled
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DETECT-002
+      expected: exact PASS evidence permits ACCEPTED while FAIL INCOMPLETE ERROR mismatch or digest substitution cannot produce release permission
+      evidence:
+        - sanitized TEV-008 decision and digest binding
+        - independent decider role and timestamp
+    mapping_status: reviewed
+  - id: TEV-009
+    title: Evaluation evidence is complete fresh sanitized and fail closed
+    required_state: evidence is available complete evaluator-succeeded no older than 24 hours identity-bound and excludes prompts outputs judge reasoning credentials tokens and secrets
+    responsible_role: security
+    applies_to:
+      - ai-evaluation-evidence
+      - evaluator-health
+      - test-data-confidentiality
+    context:
+      threat_actor: evaluator outage partial upload malformed adapter stale cache or evidence exporter copying confidential red-team and model data
+      attack_or_failure_scenario: inability to evaluate becomes a clean release or broadly readable CI artifacts expose prompts responses credentials or system weaknesses
+      why_required: release automation needs a distinct ERROR path and metadata-only evidence because both missing telemetry and excessive evidence retention create security risk
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DETECT-002
+      expected: complete fresh sanitized evidence passes while unavailable malformed stale evaluator-error mismatched or sensitive evidence exits 2 ERROR without echoing values
+      evidence:
+        - expected-results/errors.txt
+        - sanitized TEV-009 health and identity result
+    mapping_status: reviewed
+  - id: TEV-010
+    title: Fixture evidence does not overclaim live AI release enforcement
+    required_state: live model behavior provider external judge and production release gate remain explicitly NOT_CHECKED in repository fixture evidence
+    responsible_role: security
+    applies_to:
+      - live-ai-system
+      - external-evaluation-provider
+      - production-release-adoption
+    context:
+      threat_actor: assurance dashboard adopter or auditor treating deterministic repository fixtures as proof that a live changing AI system is safe
+      attack_or_failure_scenario: production release approval is asserted without observing provider version model behavior judge health or actual deployment gate enforcement
+      why_required: the E3 contract distinguishes result semantics but cannot establish live adoption or complete adversarial coverage without organization evidence
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DETECT-002
+      expected: all four live claims remain NOT_CHECKED and any PASS overclaim blocks
+      evidence:
+        - sanitized TEV-010 claim boundary
+        - organization live adoption evidence request
+    mapping_status: unmapped
+mappings:
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.M0008
+    relationship: supports
+    confidence: high
+    rationale: Exact SUT、reviewed scenario、deterministic oracle、repeat metric、known-vulnerable calibration、release decisionを結ぶことでAI modelをrelease前にvalidateする実装を支持するが、未知attackやlive model安全性を保証しない。
+    reviewer: product-security
+    review_date: "2026-08-06"
+    applies_to:
+      - TEV-001
+      - TEV-003
+      - TEV-004
+      - TEV-005
+      - TEV-006
+      - TEV-008
+  - framework: mitre-atlas
+    version: "2026.05 (format 6.0.0)"
+    id: AML.M0016
+    relationship: supports
+    confidence: medium
+    rationale: Immutable adversarial suiteとknown-vulnerable fixtureで既知security behaviorを検出するvulnerability scanning相当の境界を支持するが、製品scannerの完全coverageは主張しない。
+    reviewer: product-security
+    review_date: "2026-08-06"
+    applies_to:
+      - TEV-002
+      - TEV-003
+      - TEV-006
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: RV.1.1
+    relationship: supports
+    confidence: high
+    rationale: Threat-derived scenario、exact result、calibration、evidence healthによりAI release candidateのsecurity vulnerabilityを識別・確認する情報を提供するが、SSDF全体や実製品評価を証明しない。
+    reviewer: product-security
+    review_date: "2026-08-06"
+    applies_to:
+      - TEV-003
+      - TEV-004
+      - TEV-005
+      - TEV-006
+      - TEV-009
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI01
+    relationship: verifies
+    confidence: medium
+    rationale: Goal hijack scenarioのexact denyとknown-vulnerable detectionをrelease gateで検証するが、ASI01全体やlive modelの耐性を証明しない。
+    reviewer: product-security
+    review_date: "2026-08-06"
+    applies_to:
+      - TEV-003
+      - TEV-004
+      - TEV-006
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI02
+    relationship: verifies
+    confidence: medium
+    rationale: Out-of-scope tool callの外部denyを一つの直接scenarioとして検証するが、すべてのtool misuseを網羅しない。
+    reviewer: product-security
+    review_date: "2026-08-06"
+    applies_to:
+      - TEV-003
+      - TEV-004
+      - TEV-006
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI05
+    relationship: verifies
+    confidence: medium
+    rationale: Unclassified commandが実行前にdenyされるdeterministic scenarioを検証するが、sandbox exploit resistanceや全code pathは対象外である。
+    reviewer: product-security
+    review_date: "2026-08-06"
+    applies_to:
+      - TEV-003
+      - TEV-004
+      - TEV-006
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI06
+    relationship: verifies
+    confidence: medium
+    rationale: Poisoned RAG contextがembedding前に拒否されるscenarioとvulnerable calibrationを検証するが、memoryやsemantic poisoning全体を証明しない。
+    reviewer: product-security
+    review_date: "2026-08-06"
+    applies_to:
+      - TEV-003
+      - TEV-004
+      - TEV-006
+  - framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI08
+    relationship: verifies
+    confidence: low
+    rationale: Bounded resource behaviorを5回反復してthreshold判定しcalibration failureを確認するが、distributed cascading failureやmulti-agent recoveryはPSB-AI-007..009のlive evidenceを要する。
+    reviewer: product-security
+    review_date: "2026-08-06"
+    applies_to:
+      - TEV-003
+      - TEV-005
+      - TEV-006
+limitations:
+  - The synthetic evaluator artifact subject behaviors and scenarios prove the evidence contract and negative state semantics but do not execute a live model provider judge or production release system.
+  - The six inert scenarios cover bounded examples and do not establish complete attack coverage model robustness semantic quality fairness privacy legal safety or domain accuracy.
+  - The 5-run 800000 ppm threshold is a deterministic repository fixture for the contract and is not a universal organization risk threshold or statistically sufficient production sample.
+  - Known-vulnerable calibration detects evaluator regression for configured failures but does not estimate false-negative rates for unknown obfuscated multilingual delayed multimodal or adaptive attacks.
+  - Garak Giskard Counterfit ART and other tools remain adapters until exact versions artifacts integrity execution boundaries output semantics and unique coverage are reviewed.
+  - Live red-team data retention access control provider contracts judge drift runner isolation and release enforcement require organization-owned evidence and remain NOT_CHECKED.
+  - Upstream control bindings verify repository artifact identity and do not prove those controls are adopted by a live AI product.
+  - Mappings do not claim complete MITRE ATLAS OWASP Agentic NIST SSDF or product security coverage or compliance.
+status: prototype
+owner: product-security
+evidence_level: E3

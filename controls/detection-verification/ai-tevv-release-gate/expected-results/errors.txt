@@ -1,0 +1,4 @@
+ERROR TEV-009 verification unavailable: AI TEVV evidence is unavailable or incomplete
+ERROR TEV-009 verification unavailable: cannot parse AI TEVV evidence
+ERROR TEV-009 verification unavailable: AI TEVV evaluator did not complete successfully
+ERROR TEV-009 verification unavailable: sensitive field evidence.prompt is prohibited

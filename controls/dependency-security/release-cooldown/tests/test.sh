@@ -8,6 +8,7 @@ trap 'rm -rf "$temporary_directory"' EXIT
 
 python3 "$control/scripts/verify.py" \
   --policy "$control/secure/cooldown-policy.json" \
+  --native-policy "$control/secure/native-cooldown-policy.json" \
   --proxy-policy "$control/secure/registry-proxy-policy.json" \
   --lockfile "$control/secure/lockfile.json" \
   --metadata "$control/secure/registry-metadata.json" \
@@ -17,6 +18,7 @@ diff -u "$control/expected-results/secure.txt" "$temporary_directory/secure.txt"
 set +e
 python3 "$control/scripts/verify.py" \
   --policy "$control/insecure/cooldown-policy.json" \
+  --native-policy "$control/insecure/native-cooldown-policy.json" \
   --proxy-policy "$control/insecure/registry-proxy-policy.json" \
   --lockfile "$control/insecure/lockfile.json" \
   --metadata "$control/insecure/registry-metadata.json" \
@@ -32,6 +34,7 @@ diff -u "$control/expected-results/insecure.txt" "$temporary_directory/insecure.
 set +e
 python3 "$control/scripts/verify.py" \
   --policy "$control/tests/fixtures/expired-policy.json" \
+  --native-policy "$control/secure/native-cooldown-policy.json" \
   --proxy-policy "$control/secure/registry-proxy-policy.json" \
   --lockfile "$control/secure/lockfile.json" \
   --metadata "$control/secure/registry-metadata.json" \
@@ -53,6 +56,7 @@ printf '%s\n' "tampered bytes" \
 set +e
 python3 "$control/scripts/verify.py" \
   --policy "$temporary_directory/tampered/cooldown-policy.json" \
+  --native-policy "$temporary_directory/tampered/native-cooldown-policy.json" \
   --proxy-policy "$temporary_directory/tampered/registry-proxy-policy.json" \
   --lockfile "$temporary_directory/tampered/lockfile.json" \
   --metadata "$temporary_directory/tampered/registry-metadata.json" \
@@ -69,6 +73,7 @@ grep -F "stable-lib@1.4.0 artifact sha256 does not match lockfile" \
 set +e
 python3 "$control/scripts/verify.py" \
   --policy "$control/secure/cooldown-policy.json" \
+  --native-policy "$control/secure/native-cooldown-policy.json" \
   --proxy-policy "$control/secure/registry-proxy-policy.json" \
   --lockfile "$control/secure/lockfile.json" \
   --metadata "$temporary_directory/missing-metadata.json" \
@@ -84,6 +89,7 @@ printf '%s\n' '{"packages":' >"$temporary_directory/malformed-metadata.json"
 set +e
 python3 "$control/scripts/verify.py" \
   --policy "$control/secure/cooldown-policy.json" \
+  --native-policy "$control/secure/native-cooldown-policy.json" \
   --proxy-policy "$control/secure/registry-proxy-policy.json" \
   --lockfile "$control/secure/lockfile.json" \
   --metadata "$temporary_directory/malformed-metadata.json" \
@@ -98,6 +104,7 @@ test "$malformed_status" -eq 2 || {
 set +e
 python3 "$control/scripts/verify.py" \
   --policy "$control/secure/cooldown-policy.json" \
+  --native-policy "$control/secure/native-cooldown-policy.json" \
   --proxy-policy "$control/tests/fixtures/malformed-proxy-policy.json" \
   --lockfile "$control/secure/lockfile.json" \
   --metadata "$control/secure/registry-metadata.json" \
@@ -109,9 +116,25 @@ test "$malformed_proxy_status" -eq 2 || {
   exit 1
 }
 
+set +e
+python3 "$control/scripts/verify.py" \
+  --policy "$control/secure/cooldown-policy.json" \
+  --native-policy "$control/tests/fixtures/malformed-native-policy.json" \
+  --proxy-policy "$control/secure/registry-proxy-policy.json" \
+  --lockfile "$control/secure/lockfile.json" \
+  --metadata "$control/secure/registry-metadata.json" \
+  --as-of "$as_of" >"$temporary_directory/malformed-native.txt" 2>&1
+malformed_native_status=$?
+set -e
+test "$malformed_native_status" -eq 2 || {
+  echo "expected malformed native cooldown policy exit 2, got $malformed_native_status" >&2
+  exit 1
+}
+
 echo "PASS stable and exact-exception dependencies accepted"
 echo "PASS zero cooldown fresh version unapproved registry and missing integrity rejected"
 echo "PASS expired cooldown exception rejected"
 echo "PASS tampered artifact rejected"
 echo "PASS missing and malformed metadata fail closed"
 echo "PASS managed registry proxy enforced and malformed proxy policy fails closed"
+echo "PASS native cooldown clients preserve the baseline and reject persistent bypasses"

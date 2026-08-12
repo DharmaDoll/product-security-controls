@@ -9,13 +9,25 @@ import io
 import shutil
 import tempfile
 import zipfile
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
 from xml.sax.saxutils import escape
 
 from control_metadata import REPOSITORY_ROOT, discover_controls, validate_controls
 from framework_registry import discover_registries, validate_registries
+from application_checklist_import import (
+    load_application_profile,
+    write_application_profile,
+)
+from supply_chain_reconciliation import (
+    build_reconciliation_rows,
+    load_reconciliation,
+)
+from psirt_capability_profile import (
+    build_rows as build_psirt_rows,
+    load_profile as load_psirt_profile,
+)
 
 
 GUIDELINE_HEADERS = [
@@ -105,6 +117,68 @@ SLSA_COVERAGE_HEADERS = [
     "Status",
     "Mapped Checks",
     "Mapping Rationale",
+]
+GOVERNANCE_HEADERS = [
+    "Control ID",
+    "Domain",
+    "Control Status",
+    "Reference Evidence Level",
+    "Atomic Checks",
+    "Automated Checks",
+    "Hybrid Checks",
+    "Manual Checks",
+    "External Evidence Checks",
+    "Reviewed Mapping Checks",
+    "Provisional Mapping Checks",
+    "Unmapped Checks",
+    "Framework Relationships",
+    "Assessment Adapter",
+    "Catalog Claim Boundary",
+    "Organization Adoption",
+    "Evidence Freshness",
+    "Active Exceptions",
+    "Expiring Exceptions",
+    "Expired or Invalid Exceptions",
+    "Governance Result",
+]
+GOVERNANCE_SUMMARY_HEADERS = ["Metric", "Value", "Meaning"]
+SUPPLY_CHAIN_RECONCILIATION_HEADERS = [
+    "Profile Row ID",
+    "Source Reference ID",
+    "Source Publication",
+    "Official Source",
+    "Source Sections",
+    "Integration Boundary",
+    "Threat or Failure",
+    "Required Connection",
+    "Disposition",
+    "Current Check Evidence",
+    "Planned Controls",
+    "Gap or Boundary Owner",
+    "Remaining Work or Boundary",
+    "Rationale",
+    "Limitations",
+    "Claim Boundary",
+]
+PSIRT_CAPABILITY_HEADERS = [
+    "Profile Row ID",
+    "Cumulative Minimum Level",
+    "Capability Area",
+    "Capability",
+    "Threat or Failure",
+    "Responsible Role",
+    "Required Organization Evidence",
+    "FIRST Service References",
+    "Repository Supporting Checks",
+    "Assessment Result",
+    "Evidence Freshness",
+    "Assignee",
+    "Evidence URL",
+    "Exception ID",
+    "Notes",
+    "Limitations",
+    "Source Snapshot Identity",
+    "Claim Boundary",
 ]
 FIXED_ZIP_TIME = (2026, 7, 27, 0, 0, 0)
 
@@ -359,6 +433,116 @@ def build_slsa_l2_profile(
     return selected_checks, coverage_rows
 
 
+def build_governance_rows(
+    controls: list[dict[str, Any]],
+) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
+    """Build catalog metrics without inferring organization adoption."""
+
+    rows: list[dict[str, str]] = []
+    for control in sorted(controls, key=lambda item: item["id"]):
+        checks = control["checks"]
+        verification_counts: dict[str, int] = defaultdict(int)
+        mapping_counts: dict[str, int] = defaultdict(int)
+        for check in checks:
+            verification_counts[check["verification"]["type"]] += 1
+            mapping_counts[check["mapping_status"]] += 1
+        rows.append(
+            {
+                "Control ID": control["id"],
+                "Domain": control["domain"],
+                "Control Status": control["status"],
+                "Reference Evidence Level": control["evidence_level"],
+                "Atomic Checks": str(len(checks)),
+                "Automated Checks": str(verification_counts["automated"]),
+                "Hybrid Checks": str(verification_counts["hybrid"]),
+                "Manual Checks": str(verification_counts["manual"]),
+                "External Evidence Checks": str(
+                    verification_counts["external-evidence"]
+                ),
+                "Reviewed Mapping Checks": str(mapping_counts["reviewed"]),
+                "Provisional Mapping Checks": str(mapping_counts["provisional"]),
+                "Unmapped Checks": str(mapping_counts["unmapped"]),
+                "Framework Relationships": str(len(control["mappings"])),
+                "Assessment Adapter": (
+                    "available" if control.get("assessment") else "not-provided"
+                ),
+                "Catalog Claim Boundary": "REFERENCE_IMPLEMENTATION_ONLY",
+                "Organization Adoption": "NOT_CHECKED",
+                "Evidence Freshness": "NOT_CHECKED",
+                "Active Exceptions": "NOT_CHECKED",
+                "Expiring Exceptions": "NOT_CHECKED",
+                "Expired or Invalid Exceptions": "NOT_CHECKED",
+                "Governance Result": "NOT_CHECKED",
+            }
+        )
+
+    total_checks = sum(len(control["checks"]) for control in controls)
+    reviewed_checks = sum(
+        check["mapping_status"] == "reviewed"
+        for control in controls
+        for check in control["checks"]
+    )
+    provisional_checks = sum(
+        check["mapping_status"] == "provisional"
+        for control in controls
+        for check in control["checks"]
+    )
+    unmapped_checks = sum(
+        check["mapping_status"] == "unmapped"
+        for control in controls
+        for check in control["checks"]
+    )
+    assessment_adapters = sum(bool(control.get("assessment")) for control in controls)
+    summary = [
+        {
+            "Metric": "Catalog controls",
+            "Value": str(len(controls)),
+            "Meaning": "Repository control packages; not organization adoption.",
+        },
+        {
+            "Metric": "Atomic checks",
+            "Value": str(total_checks),
+            "Meaning": "Assessable catalog rows generated from control metadata.",
+        },
+        {
+            "Metric": "Reviewed mapping checks",
+            "Value": str(reviewed_checks),
+            "Meaning": "Checks with at least one reviewed framework relationship.",
+        },
+        {
+            "Metric": "Provisional mapping checks",
+            "Value": str(provisional_checks),
+            "Meaning": "Checks whose framework relationship still needs review.",
+        },
+        {
+            "Metric": "Unmapped checks",
+            "Value": str(unmapped_checks),
+            "Meaning": "Explicit framework mapping debt; not silently inherited.",
+        },
+        {
+            "Metric": "Assessment adapters",
+            "Value": str(assessment_adapters),
+            "Meaning": "Controls with a repository read-only assessment interface.",
+        },
+        {
+            "Metric": "Organization adoption",
+            "Value": "NOT_CHECKED",
+            "Meaning": "Organization-owned assessment results are not committed here.",
+        },
+        {
+            "Metric": "Evidence freshness",
+            "Value": "NOT_CHECKED",
+            "Meaning": "No current organization evidence bundle was supplied.",
+        },
+        {
+            "Metric": "Exception debt",
+            "Value": "NOT_CHECKED",
+            "Meaning": "Consume a current PSB-GOV-002 register outside public guidance.",
+        },
+    ]
+    return rows, summary
+
+
 def write_csv(path: Path, headers: list[str], rows: list[dict[str, str]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8-sig", newline="") as handle:
@@ -417,6 +601,175 @@ def write_markdown(path: Path, rows: list[dict[str, str]]) -> None:
         lines.append(
             "| " + " | ".join(_markdown_cell(row[header]) for header in headers) + " |"
         )
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_governance_markdown(
+    path: Path,
+    rows: list[dict[str, str]],
+    summary: list[dict[str, str]],
+) -> None:
+    lines = [
+        "# Control catalog governance readiness",
+        "",
+        "Generated from repository control metadata. Do not edit manually.",
+        "",
+        "`Control Status` and `Reference Evidence Level` describe the repository "
+        "implementation. They are not organization adoption or live evidence. "
+        "Until organization-owned results, evidence timestamps, and a current "
+        "PSB-GOV-002 exception register are supplied, those fields remain "
+        "`NOT_CHECKED`.",
+        "",
+        "## Summary",
+        "",
+        "| Metric | Value | Meaning |",
+        "|---|---:|---|",
+    ]
+    for item in summary:
+        lines.append(
+            "| "
+            + " | ".join(
+                _markdown_cell(item[header])
+                for header in GOVERNANCE_SUMMARY_HEADERS
+            )
+            + " |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Per-control readiness",
+            "",
+            "| Control ID | Domain | Status | Reference Evidence | Checks | Reviewed | Provisional | Unmapped | Assessment Adapter | Organization Adoption | Evidence Freshness | Exception Debt | Governance Result |",
+            "|---|---|---|---|---:|---:|---:|---:|---|---|---|---|---|",
+        ]
+    )
+    for row in rows:
+        exception_debt = (
+            "NOT_CHECKED"
+            if all(
+                row[field] == "NOT_CHECKED"
+                for field in (
+                    "Active Exceptions",
+                    "Expiring Exceptions",
+                    "Expired or Invalid Exceptions",
+                )
+            )
+            else "RECORDED"
+        )
+        values = (
+            row["Control ID"],
+            row["Domain"],
+            row["Control Status"],
+            row["Reference Evidence Level"],
+            row["Atomic Checks"],
+            row["Reviewed Mapping Checks"],
+            row["Provisional Mapping Checks"],
+            row["Unmapped Checks"],
+            row["Assessment Adapter"],
+            row["Organization Adoption"],
+            row["Evidence Freshness"],
+            exception_debt,
+            row["Governance Result"],
+        )
+        lines.append("| " + " | ".join(_markdown_cell(value) for value in values) + " |")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_supply_chain_reconciliation_markdown(
+    path: Path, rows: list[dict[str, str]]
+) -> None:
+    counts: dict[str, int] = defaultdict(int)
+    for row in rows:
+        counts[row["Disposition"]] += 1
+    lines = [
+        "# Software supply-chain integration reconciliation",
+        "",
+        "Generated from the reviewed NIST SP 800-204D integration profile. "
+        "Do not edit manually.",
+        "",
+        "This view verifies whether identities and decisions stay connected "
+        "between controls. `SCIR-*` values are repository profile row IDs, not "
+        "NIST requirement identifiers. `implemented` means the repository has "
+        "exact executable check evidence for this connection; it does not prove "
+        "live organization adoption or compliance.",
+        "",
+        "## Disposition summary",
+        "",
+        "| Disposition | Rows | Meaning |",
+        "|---|---:|---|",
+        f"| implemented | {counts['implemented']} | Exact current control checks support the connection. |",
+        f"| planned | {counts['planned']} | A named owner and planned control remain necessary. |",
+        f"| gap | {counts['gap']} | Partial or absent evidence leaves an owned integration gap. |",
+        f"| out-of-scope | {counts['out-of-scope']} | The boundary is intentionally assessed elsewhere. |",
+        "",
+        "## Reconciliation rows",
+        "",
+        "| Row | NIST sections | Integration boundary | Disposition | Current check evidence | Planned controls | Owner | Remaining work or boundary |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    for row in rows:
+        values = (
+            row["Profile Row ID"],
+            row["Source Sections"],
+            row["Integration Boundary"],
+            row["Disposition"],
+            row["Current Check Evidence"],
+            row["Planned Controls"],
+            row["Gap or Boundary Owner"],
+            row["Remaining Work or Boundary"],
+        )
+        lines.append("| " + " | ".join(_markdown_cell(value) for value in values) + " |")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_psirt_capability_markdown(
+    path: Path, rows: list[dict[str, str]]
+) -> None:
+    counts = Counter(row["Cumulative Minimum Level"] for row in rows)
+    lines = [
+        "# FIRST PSIRT capability assessment profile",
+        "",
+        "Generated from a reviewed, integrity-recorded FIRST PSIRT Maturity "
+        "Document snapshot and PSIRT Services Framework 1.1 snapshot. Do not "
+        "edit manually.",
+        "",
+        "This is an organization assessment template, not a control package or "
+        "compliance claim. Repository check references are supporting evidence "
+        "only. Every public result and evidence-freshness field starts as "
+        "`NOT_CHECKED`.",
+        "",
+        "The levels are cumulative: assessing Level 2 includes Level 1 rows, "
+        "and assessing Level 3 includes Levels 1 and 2. A level is never inferred "
+        "from a partial set of rows.",
+        "",
+        "## Row inventory",
+        "",
+        "| Minimum level | Rows | Cumulative rows |",
+        "|---:|---:|---:|",
+        f"| 1 (Basic) | {counts['1']} | {counts['1']} |",
+        f"| 2 (Intermediate) | {counts['2']} | {counts['1'] + counts['2']} |",
+        f"| 3 (Advanced) | {counts['3']} | {len(rows)} |",
+        "",
+        "## Capability rows",
+        "",
+        "| Row | Minimum level | Capability area | Capability | Responsible role | FIRST services | Repository supporting checks | Result |",
+        "|---|---:|---|---|---|---|---|---|",
+    ]
+    for row in rows:
+        values = (
+            row["Profile Row ID"],
+            row["Cumulative Minimum Level"],
+            row["Capability Area"],
+            row["Capability"],
+            row["Responsible Role"],
+            row["FIRST Service References"],
+            row["Repository Supporting Checks"],
+            row["Assessment Result"],
+        )
+        lines.append("| " + " | ".join(_markdown_cell(value) for value in values) + " |")
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -581,12 +934,44 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
         checklist_rows,
         registries["slsa"],
     )
+    governance_rows, governance_summary = build_governance_rows(controls)
+    supply_chain_reconciliation = load_reconciliation(
+        REPOSITORY_ROOT
+        / "policies"
+        / "integration"
+        / "supply-chain-reconciliation.json",
+        controls,
+    )
+    supply_chain_rows = build_reconciliation_rows(supply_chain_reconciliation)
+    psirt_profile = load_psirt_profile(
+        REPOSITORY_ROOT
+        / "policies"
+        / "organization-assessments"
+        / "first-psirt-capability.json",
+        controls,
+    )
+    psirt_rows = build_psirt_rows(psirt_profile)
     output.mkdir(parents=True, exist_ok=True)
 
     write_csv(output / "product-security-checklist.csv", ASSESSMENT_HEADERS, checklist_rows)
     write_csv(output / "framework-mappings.csv", MAPPING_HEADERS, mapping_rows)
     write_csv(output / "required-evidence.csv", EVIDENCE_HEADERS, evidence_rows)
     write_markdown(output / "product-security-checklist.md", checklist_rows)
+    write_csv(
+        output / "governance" / "control-readiness.csv",
+        GOVERNANCE_HEADERS,
+        governance_rows,
+    )
+    write_csv(
+        output / "governance" / "summary.csv",
+        GOVERNANCE_SUMMARY_HEADERS,
+        governance_summary,
+    )
+    write_governance_markdown(
+        output / "governance" / "control-readiness.md",
+        governance_rows,
+        governance_summary,
+    )
     write_csv(
         output / "profiles" / "slsa-build-l2.csv",
         ASSESSMENT_HEADERS,
@@ -597,6 +982,30 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
         SLSA_COVERAGE_HEADERS,
         slsa_l2_coverage,
     )
+    write_csv(
+        output
+        / "profiles"
+        / "supply-chain-integration"
+        / "reconciliation.csv",
+        SUPPLY_CHAIN_RECONCILIATION_HEADERS,
+        supply_chain_rows,
+    )
+    write_supply_chain_reconciliation_markdown(
+        output
+        / "profiles"
+        / "supply-chain-integration"
+        / "reconciliation.md",
+        supply_chain_rows,
+    )
+    write_csv(
+        output / "profiles" / "first-psirt-capability" / "assessment.csv",
+        PSIRT_CAPABILITY_HEADERS,
+        psirt_rows,
+    )
+    write_psirt_capability_markdown(
+        output / "profiles" / "first-psirt-capability" / "assessment.md",
+        psirt_rows,
+    )
 
     domains: dict[str, list[dict[str, str]]] = defaultdict(list)
     for row in checklist_rows:
@@ -606,6 +1015,14 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
 
     mapping_table = _dict_rows(mapping_rows, MAPPING_HEADERS)
     evidence_table = _dict_rows(evidence_rows, EVIDENCE_HEADERS)
+    governance_table = _dict_rows(governance_rows, GOVERNANCE_HEADERS)
+    governance_summary_table = _dict_rows(
+        governance_summary, GOVERNANCE_SUMMARY_HEADERS
+    )
+    supply_chain_table = _dict_rows(
+        supply_chain_rows, SUPPLY_CHAIN_RECONCILIATION_HEADERS
+    )
+    psirt_table = _dict_rows(psirt_rows, PSIRT_CAPABILITY_HEADERS)
     domain_sheets = [
         (domain[:31], GUIDELINE_HEADERS, _dict_rows(rows, GUIDELINE_HEADERS))
         for domain, rows in sorted(domains.items())
@@ -616,6 +1033,12 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
         ("Framework Mappings", MAPPING_HEADERS, mapping_table),
         ("Evidence", EVIDENCE_HEADERS, evidence_table),
         (
+            "Governance Summary",
+            GOVERNANCE_SUMMARY_HEADERS,
+            governance_summary_table,
+        ),
+        ("Catalog Governance", GOVERNANCE_HEADERS, governance_table),
+        (
             "SLSA Build L2",
             GUIDELINE_HEADERS,
             _dict_rows(slsa_l2_rows, GUIDELINE_HEADERS),
@@ -625,6 +1048,12 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
             SLSA_COVERAGE_HEADERS,
             _dict_rows(slsa_l2_coverage, SLSA_COVERAGE_HEADERS),
         ),
+        (
+            "SSC Integration",
+            SUPPLY_CHAIN_RECONCILIATION_HEADERS,
+            supply_chain_table,
+        ),
+        ("PSIRT Capability", PSIRT_CAPABILITY_HEADERS, psirt_table),
         *domain_sheets,
     ]
     assessment_sheets = [
@@ -632,6 +1061,12 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
         ("Checklist", ASSESSMENT_HEADERS, _dict_rows(checklist_rows, ASSESSMENT_HEADERS)),
         ("Framework Mappings", MAPPING_HEADERS, mapping_table),
         ("Evidence", EVIDENCE_HEADERS, evidence_table),
+        (
+            "Governance Summary",
+            GOVERNANCE_SUMMARY_HEADERS,
+            governance_summary_table,
+        ),
+        ("Governance Assessment", GOVERNANCE_HEADERS, governance_table),
         (
             "SLSA Build L2",
             ASSESSMENT_HEADERS,
@@ -642,10 +1077,31 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
             SLSA_COVERAGE_HEADERS,
             _dict_rows(slsa_l2_coverage, SLSA_COVERAGE_HEADERS),
         ),
+        (
+            "SSC Integration",
+            SUPPLY_CHAIN_RECONCILIATION_HEADERS,
+            supply_chain_table,
+        ),
+        ("PSIRT Assessment", PSIRT_CAPABILITY_HEADERS, psirt_table),
         ("Exceptions", EXCEPTION_HEADERS, []),
     ]
     write_xlsx(output / "product-security-guideline.xlsx", guideline_sheets)
     write_xlsx(output / "product-security-assessment-template.xlsx", assessment_sheets)
+
+    application_result = load_application_profile(
+        REPOSITORY_ROOT
+        / "inputs"
+        / "application-vulnerability-assessment"
+        / "source-manifest.json",
+        REPOSITORY_ROOT,
+        registries,
+        {control["id"] for control in controls},
+    )
+    write_application_profile(
+        output / "profiles" / "application-vulnerability-assessment",
+        application_result,
+        write_xlsx,
+    )
 
     readme = (
         "# Generated adoption checklists\n\n"
@@ -658,7 +1114,25 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
         "replaces the blank template.\n\n"
         "`profiles/slsa-build-l2.csv` is the cumulative L1+L2 check view. "
         "`profiles/slsa-build-l2-coverage.csv` keeps unmapped requirements "
-        "visible as gaps; mapped evidence is not a SLSA level claim.\n"
+        "visible as gaps; mapped evidence is not a SLSA level claim.\n\n"
+        "`profiles/application-vulnerability-assessment/status.json` records "
+        "`INPUT_REQUIRED` until an organization source manifest is supplied; "
+        "the generator never represents a missing source as an empty checklist.\n\n"
+        "`governance/control-readiness.csv` and `.md` show repository maturity, "
+        "mapping debt, and assessment-adapter availability. Organization "
+        "adoption, evidence freshness, and exception debt remain `NOT_CHECKED` "
+        "until populated in a copied assessment workbook; repository E3 fixtures "
+        "are never converted into live adoption.\n\n"
+        "`profiles/supply-chain-integration/reconciliation.csv` and `.md` "
+        "connect exact control checks across developer, SCM, dependency, build, "
+        "release, repository, and deployment boundaries using NIST SP 800-204D "
+        "as section-level guidance. `SCIR-*` identifiers are repository rows, "
+        "and every planned, gap, or out-of-scope boundary remains explicit.\n"
+        "\n`profiles/first-psirt-capability/assessment.csv` and `.md` provide a "
+        "cumulative Basic, Intermediate, and Advanced organization assessment "
+        "from integrity-recorded FIRST sources. Repository checks are supporting "
+        "evidence only; public assessment and freshness values remain "
+        "`NOT_CHECKED`.\n"
     )
     (output / "README.md").write_text(readme, encoding="utf-8")
 

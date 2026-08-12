@@ -38,6 +38,12 @@ cooldownを通過したmalicious packageはinstall script controlやSCAで扱い
 持つartifactも署名・provenanceとmeaningful reviewで検証し、すべてを通過したcodeが
 侵害されていた場合はbuild containmentとincident responseでblast radiusを抑えます。
 
+control間でidentityが切れていないかは、生成済みの
+[`Software supply-chain integration reconciliation`](../generated/checklists/profiles/supply-chain-integration/reconciliation.md)
+で確認します。このprofileはcommit、dependency graph、build invocation、artifact
+digest、release evidence、registry object、deployment ID、runtime inventoryのhandoffを
+exact check参照で結び、未完了を`planned`または`gap`として残します。
+
 ## 共通運用要件
 
 - dependency updateと通常installを分離する
@@ -51,6 +57,7 @@ cooldownを通過したmalicious packageはinstall script controlやSCAで扱い
 - Source SBOMを早期feedback、Build SBOMをrelease authority、Deployment inventoryを稼働観測として分離する
 - commit SHA、artifact digest、deployment IDをimmutable graphで関連付け、同じserialへ上書きしない
 - destructive responseはevidence保全後にmanual approvalで実施する
+- active artifactのcurrent riskからrebuild、replacement admission、old digest非稼働までを`PSB-GOV-005`で閉じる
 
 これらのcontrolはformal complianceやSLSA levelを自動的に証明しません。
 framework mappingは、実装が各requirementをどのように支援するかを示す関係です。

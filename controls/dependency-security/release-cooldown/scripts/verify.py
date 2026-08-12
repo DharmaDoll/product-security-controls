@@ -4,10 +4,12 @@
 from __future__ import annotations
 
 import argparse
+import configparser
 import hashlib
 import json
 import re
 import sys
+import tomllib
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -20,6 +22,8 @@ REFERENCE_MAX_EXCEPTION_HOURS = 72
 INTEGRITY_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 PACKAGE_RE = re.compile(r"^[A-Za-z0-9@][A-Za-z0-9@._/-]*$")
 VERSION_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9.+_-]*$")
+SIMPLE_DURATION_RE = re.compile(r"^(\d+)\s*(h|hour|hours|d|day|days|w|week|weeks)$")
+ISO_DAY_DURATION_RE = re.compile(r"^P(\d+)D$")
 
 
 class InputError(ValueError):
@@ -253,6 +257,205 @@ def read_text(path: Path, label: str) -> str:
         raise InputError(f"cannot read {label} {path}: {error}") from error
 
 
+def parse_duration_hours(value: Any, label: str) -> int:
+    if not isinstance(value, str):
+        raise InputError(f"{label} must be a duration string")
+    normalized = value.strip().lower()
+    iso_match = ISO_DAY_DURATION_RE.fullmatch(value.strip().upper())
+    if iso_match:
+        return int(iso_match.group(1)) * 24
+    simple_match = SIMPLE_DURATION_RE.fullmatch(normalized)
+    if not simple_match:
+        raise InputError(f"{label} has unsupported duration syntax: {value!r}")
+    amount = int(simple_match.group(1))
+    unit = simple_match.group(2)
+    if unit in {"h", "hour", "hours"}:
+        return amount
+    if unit in {"d", "day", "days"}:
+        return amount * 24
+    return amount * 7 * 24
+
+
+def parse_key_value_lines(text: str, label: str) -> dict[str, list[str]]:
+    values: dict[str, list[str]] = {}
+    for line_number, raw_line in enumerate(text.splitlines(), start=1):
+        line = raw_line.strip()
+        if not line or line.startswith(("#", ";")):
+            continue
+        if "=" not in line:
+            raise InputError(f"{label} line {line_number} must use key=value")
+        key, raw_value = line.split("=", 1)
+        key = key.strip()
+        if not key:
+            raise InputError(f"{label} line {line_number} has an empty key")
+        values.setdefault(key, []).append(raw_value.strip())
+    return values
+
+
+def parse_flat_yaml_values(text: str, label: str) -> dict[str, str]:
+    values: dict[str, str] = {}
+    for line_number, raw_line in enumerate(text.splitlines(), start=1):
+        line = raw_line.strip()
+        if not line or line.startswith("#") or line.startswith("-"):
+            continue
+        if ":" not in line:
+            raise InputError(f"{label} line {line_number} must use key: value")
+        key, raw_value = line.split(":", 1)
+        key = key.strip()
+        if not key:
+            raise InputError(f"{label} line {line_number} has an empty key")
+        if key in values:
+            raise InputError(f"{label} duplicates key {key}")
+        values[key] = raw_value.strip().strip('"').strip("'")
+    return values
+
+
+def validate_native_client_config(
+    ecosystem: str, path: Path, minimum_hours: int
+) -> list[str]:
+    findings: list[str] = []
+    text = read_text(path, f"{ecosystem} native cooldown config")
+    if ecosystem == "npm":
+        values = parse_key_value_lines(text, "npm native cooldown config")
+        ages = values.get("min-release-age", [])
+        if len(ages) != 1 or not ages[0].isdigit():
+            raise InputError("npm min-release-age must be one integer day value")
+        configured_hours = int(ages[0]) * 24
+        if configured_hours < minimum_hours:
+            findings.append(
+                f"npm native cooldown is {format_hours(configured_hours)}; minimum is {minimum_hours} hours"
+            )
+        if any(key.startswith("min-release-age-exclude") for key in values):
+            findings.append("npm config contains a persistent cooldown exclusion")
+    elif ecosystem == "pip":
+        parser = configparser.ConfigParser(interpolation=None)
+        try:
+            parser.read_string(text)
+        except configparser.Error as error:
+            raise InputError(f"cannot parse pip native cooldown config {path}: {error}") from error
+        if not parser.has_option("install", "uploaded-prior-to"):
+            raise InputError("pip install.uploaded-prior-to is required")
+        configured_hours = parse_duration_hours(
+            parser.get("install", "uploaded-prior-to"),
+            "pip install.uploaded-prior-to",
+        )
+        if configured_hours < minimum_hours:
+            findings.append(
+                f"pip native cooldown is {format_hours(configured_hours)}; minimum is {minimum_hours} hours"
+            )
+    elif ecosystem == "uv":
+        try:
+            config = tomllib.loads(text)
+        except tomllib.TOMLDecodeError as error:
+            raise InputError(f"cannot parse uv native cooldown config {path}: {error}") from error
+        raw_age = config.get("exclude-newer")
+        if raw_age is False:
+            findings.append("uv native cooldown is disabled")
+        else:
+            configured_hours = parse_duration_hours(raw_age, "uv exclude-newer")
+            if configured_hours < minimum_hours:
+                findings.append(
+                    f"uv native cooldown is {format_hours(configured_hours)}; minimum is {minimum_hours} hours"
+                )
+        exclusions = config.get("exclude-newer-package")
+        if exclusions:
+            findings.append("uv config contains a persistent cooldown exclusion")
+    elif ecosystem == "pnpm":
+        values = parse_flat_yaml_values(text, "pnpm native cooldown config")
+        raw_age = values.get("minimumReleaseAge")
+        if raw_age is None or not raw_age.isdigit():
+            raise InputError("pnpm minimumReleaseAge must be integer minutes")
+        configured_hours = int(raw_age) // 60
+        if configured_hours < minimum_hours:
+            findings.append(
+                f"pnpm native cooldown is {format_hours(configured_hours)}; minimum is {minimum_hours} hours"
+            )
+        if values.get("minimumReleaseAgeIgnoreMissingTime") != "false":
+            findings.append("pnpm permits packages with missing publish time")
+        if values.get("minimumReleaseAgeStrict") != "true":
+            findings.append("pnpm can fall back to a release younger than the cooldown")
+        if values.get("trustLockfile") != "false":
+            findings.append("pnpm skips cooldown revalidation for lockfile entries")
+        if "minimumReleaseAgeExclude" in values:
+            findings.append("pnpm config contains a persistent cooldown exclusion")
+    elif ecosystem == "yarn":
+        values = parse_flat_yaml_values(text, "Yarn native cooldown config")
+        configured_hours = parse_duration_hours(
+            values.get("npmMinimalAgeGate"), "Yarn npmMinimalAgeGate"
+        )
+        if configured_hours < minimum_hours:
+            findings.append(
+                f"Yarn native cooldown is {format_hours(configured_hours)}; minimum is {minimum_hours} hours"
+            )
+        if "npmPreapprovedPackages" in values:
+            findings.append("Yarn config contains a persistent cooldown exclusion")
+    else:
+        raise InputError(f"unsupported native cooldown ecosystem: {ecosystem}")
+    return findings
+
+
+def format_hours(hours: int) -> str:
+    unit = "hour" if hours == 1 else "hours"
+    return f"{hours} {unit}"
+
+
+def validate_native_cooldown_policy(
+    policy_path: Path,
+    value: dict[str, Any],
+    minimum_release_age_hours: int,
+) -> list[str]:
+    findings: list[str] = []
+    if value.get("schema") != "psb-native-cooldown-policy/1.0":
+        findings.append("native cooldown policy schema is unsupported")
+    baseline_hours = value.get("baseline_hours")
+    if not isinstance(baseline_hours, int) or baseline_hours < 0:
+        raise InputError("native policy.baseline_hours must be a non-negative integer")
+    if baseline_hours != minimum_release_age_hours:
+        findings.append("native cooldown baseline does not match repository policy")
+    effective_minimum = max(minimum_release_age_hours, REFERENCE_MINIMUM_HOURS)
+    if baseline_hours < REFERENCE_MINIMUM_HOURS:
+        findings.append(
+            f"native cooldown baseline is {baseline_hours} hours; "
+            f"reference minimum is {REFERENCE_MINIMUM_HOURS}"
+        )
+    if value.get("authoritative_decision") != "repository-owned-pre-resolution-verifier":
+        findings.append("native client configuration is incorrectly treated as authoritative")
+    if value.get("metadata_missing_state") != "ERROR":
+        findings.append("missing release-time metadata can appear clean")
+    if value.get("configuration_scope") != "repository-or-managed-template":
+        findings.append("native cooldown configuration is not reviewably distributed")
+    if value.get("global_user_config_mutation") is not False:
+        findings.append("native cooldown setup may silently modify global user configuration")
+    if value.get("persistent_bypass") != "prohibited":
+        findings.append("persistent native cooldown bypasses are permitted")
+
+    clients = value.get("clients")
+    if not isinstance(clients, list) or not clients:
+        raise InputError("native policy.clients must be a non-empty list")
+    seen: set[str] = set()
+    for index, client in enumerate(clients):
+        label = f"native policy.clients[{index}]"
+        if not isinstance(client, dict):
+            raise InputError(f"{label} must be an object")
+        ecosystem = require_nonempty_text(client.get("ecosystem"), f"{label}.ecosystem")
+        if ecosystem in seen:
+            raise InputError(f"{label} duplicates ecosystem {ecosystem}")
+        seen.add(ecosystem)
+        config_path = resolve_client_config(policy_path, client.get("path"), f"{label}.path")
+        findings.extend(
+            validate_native_client_config(ecosystem, config_path, effective_minimum)
+        )
+
+    non_native = value.get("repository_verifier_ecosystems")
+    if not isinstance(non_native, list) or not all(isinstance(item, str) for item in non_native):
+        raise InputError("native policy.repository_verifier_ecosystems must be a string list")
+    if set(non_native) != {"go", "composer"}:
+        findings.append("Go and Composer must remain on the repository-owned cooldown verifier")
+    if seen & set(non_native):
+        raise InputError("an ecosystem cannot be both native and repository-verifier-only")
+    return findings
+
+
 def validate_client_config(
     ecosystem: str, path: Path, endpoint: str
 ) -> list[str]:
@@ -404,6 +607,7 @@ def validate_proxy_policy(
 
 def verify(
     policy_path: Path,
+    native_policy_path: Path,
     proxy_policy_path: Path,
     lockfile_path: Path,
     metadata_path: Path,
@@ -419,6 +623,13 @@ def verify(
         exceptions,
         findings,
     ) = load_policy(policy, as_of)
+    findings.extend(
+        validate_native_cooldown_policy(
+            native_policy_path,
+            load_json(native_policy_path, "native cooldown policy"),
+            minimum_hours,
+        )
+    )
     findings.extend(
         validate_proxy_policy(
             proxy_policy_path,
@@ -527,6 +738,7 @@ def verify(
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--policy", required=True, type=Path)
+    parser.add_argument("--native-policy", required=True, type=Path)
     parser.add_argument("--proxy-policy", required=True, type=Path)
     parser.add_argument("--lockfile", required=True, type=Path)
     parser.add_argument("--metadata", required=True, type=Path)
@@ -537,6 +749,7 @@ def main() -> int:
         as_of = parse_timestamp(args.as_of, "--as-of")
         dependencies, used_exceptions, findings = verify(
             args.policy,
+            args.native_policy,
             args.proxy_policy,
             args.lockfile,
             args.metadata,

@@ -20,8 +20,12 @@ implementations:
     - insecure/registry-metadata.json
     - insecure/artifacts/brand-new-lib-9.9.9.artifact
     - insecure/registry-proxy-policy.json
+    - insecure/native-cooldown-policy.json
     - insecure/clients/npmrc
     - insecure/clients/pip.conf
+    - insecure/clients/uv.toml
+    - insecure/clients/pnpm-workspace.yaml
+    - insecure/clients/yarnrc.yml
     - insecure/clients/go.env
     - insecure/clients/composer.json
   secure:
@@ -31,8 +35,12 @@ implementations:
     - secure/artifacts/stable-lib-1.4.0.artifact
     - secure/artifacts/urgent-security-fix-2.0.1.artifact
     - secure/registry-proxy-policy.json
+    - secure/native-cooldown-policy.json
     - secure/clients/npmrc
     - secure/clients/pip.conf
+    - secure/clients/uv.toml
+    - secure/clients/pnpm-workspace.yaml
+    - secure/clients/yarnrc.yml
     - secure/clients/go.env
     - secure/clients/composer.json
 verification:
@@ -46,6 +54,8 @@ verification:
     - metadata欠落、JSON破損、artifact読取失敗がcleanな結果と区別される
     - npm、pip、Go、Composerがmanaged registry proxyだけを使用し、direct fallbackを持たない
     - proxy障害はERRORとなり、malicious-package blocklistを168時間cooldownの代替として扱わない
+    - npm、pip、uv、pnpm、Yarnのnative cooldown sampleが168時間baselineを維持する
+    - metadata欠落をfail-openにする設定と永続的なpackage除外が拒否される
 checks:
   - id: COOL-001
     title: New dependency releases observe the minimum cooldown
@@ -189,6 +199,45 @@ checks:
         - sanitized verifier output
         - proxy capability review
     mapping_status: reviewed
+  - id: COOL-009
+    title: Native package-manager cooldown profiles preserve the baseline
+    required_state: reviewed repository or managed templates enforce at least 168 hours and fail closed
+    responsible_role: repository-admin
+    applies_to:
+      - dependency-update
+      - developer-endpoint
+      - build-environment
+    context:
+      threat_actor: compromised maintainer publishing a malicious release or contributor weakening a local client setting
+      attack_or_failure_scenario: a package manager resolves a release before the repository verifier or treats missing publication metadata as eligible
+      why_required: native client gates reduce accidental early resolution while the repository-owned verifier remains the authoritative cross-ecosystem decision
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-DEPS-001 and inspect the managed client configuration inventory
+      expected: npm pip uv pnpm and Yarn retain the 168-hour floor; missing metadata and precedence overrides are not accepted as clean
+      evidence:
+        - sanitized verifier output
+        - managed client configuration inventory
+    mapping_status: reviewed
+  - id: COOL-010
+    title: Native cooldown bypasses are non-persistent and exception-bound
+    required_state: no package wildcard or durable client exclusion; emergency adoption uses the exact expiring repository exception
+    responsible_role: security
+    applies_to:
+      - dependency-update
+      - dependency-policy
+    context:
+      threat_actor: maintainer requesting an urgent update or attacker exploiting a broad package-manager exclusion
+      attack_or_failure_scenario: a temporary bypass remains in client configuration and silently admits later malicious releases
+      why_required: binding emergency adoption to the reviewed exact-version exception avoids creating a permanent alternate path around cooldown
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-DEPS-001 and review active exception records
+      expected: persistent native exclusions are rejected and urgent bypasses are represented only by exact owner-approved expiring exceptions
+      evidence:
+        - negative-test output
+        - exception approval
+    mapping_status: reviewed
 mappings:
   - framework: mitre-attack
     version: "v19.1"
@@ -204,6 +253,8 @@ mappings:
       - COOL-003
       - COOL-007
       - COOL-008
+      - COOL-009
+      - COOL-010
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: PW.4.1
@@ -220,6 +271,8 @@ mappings:
       - COOL-005
       - COOL-007
       - COOL-008
+      - COOL-009
+      - COOL-010
 limitations:
   - 7日のcooldownは運用baselineであり、packageが安全になることを保証する時間ではない。
   - 待機期間を過ぎたmalware、長期潜伏、typosquatting、dependency confusionは別controlが必要である。
@@ -229,6 +282,9 @@ limitations:
   - Metadata取得または検証器の失敗をcleanな結果として扱ってはいけない。
   - Proxy blocklistは既知またはproviderが検知したpackageに依存し、malicious packageをすべて遮断できるとは限らない。
   - このlocal fixtureはMDM適用状態、public registryへの実network egress拒否、またはproxy serviceの可用性を単独では証明しない。
+  - Native profileはpackage managerの対応version、設定precedence、registryのpublish-time metadataに依存し、local fixtureだけでは実端末への適用状態を証明しない。
+  - cooldowns.devはcommunity-maintainedな機能発見用referenceであり、framework mappingまたは公式な設定仕様として扱わない。
+  - cooldowns helper scriptは実行せず、global user configurationを暗黙変更する導入方法をこのcontrolは許可しない。
 status: prototype
 owner: product-security
 evidence_level: E3

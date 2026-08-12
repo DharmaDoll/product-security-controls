@@ -1,0 +1,36 @@
+{
+  "schema": "psb-ai-system-under-test/v1.0",
+  "subject_id": "synthetic-product-assistant",
+  "release_candidate": "2026.08.0-rc1",
+  "artifact_sha256": "7ed6f01e8f32b3782d9afc17a6e089c6764d9542f19da041705e4e8a217fd35a",
+  "model_id": "synthetic/tiny-secure-model",
+  "model_version": "1.0.0",
+  "environment": "synthetic-fixture",
+  "upstream_bindings": [
+    {
+      "control_id": "PSB-DEPS-005",
+      "path": "controls/dependency-security/ai-model-supply-chain/secure/acquisition.json",
+      "sha256": "397a23d4fc3a019d8f6c8c0674e8f77ebf73c18b9d0746358597e2467e81ab14"
+    },
+    {
+      "control_id": "PSB-AI-003",
+      "path": "controls/ai-development-security/prompt-document-injection-containment/secure/scenario-corpus.json",
+      "sha256": "d95ad1b1fd0c1988e8366f9896475eb0d2cc5d71bdb230413add2d5ae0d4e271"
+    },
+    {
+      "control_id": "PSB-AI-004",
+      "path": "controls/ai-development-security/ai-coding-agent-runtime-hardening/secure/profile.json",
+      "sha256": "752993831c421542bef176342419ab66e516bc92840a8021d308cd7b1836269f"
+    },
+    {
+      "control_id": "PSB-AI-010",
+      "path": "controls/ai-development-security/ai-application-gateway-data-egress/secure/policy.json",
+      "sha256": "078c8ad2b5991696824b85bd310ee213976c8b00c71374b8a6fefb8aa8a19b92"
+    },
+    {
+      "control_id": "PSB-AI-011",
+      "path": "controls/ai-development-security/rag-corpus-integrity-retrieval/secure/corpus-snapshot.json",
+      "sha256": "9800107ac2cfd0633ae02f8fd82fa61de7c28cfeabc6ff0a005aeea95a2d2da6"
+    }
+  ]
+}

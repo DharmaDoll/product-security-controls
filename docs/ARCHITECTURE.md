@@ -40,6 +40,31 @@ The human-facing `controls/README.md` is also generated from the same metadata
 so the root navigation and exported views do not require a second catalog
 source.
 
+Catalog-governance CSV, Markdown, and XLSX sheets are generated from the same
+metadata. They separate repository implementation status and reference
+evidence level from organization adoption, evidence freshness, and exception
+debt; absent organization input remains `NOT_CHECKED`.
+
+An optional organization application-assessment source is imported through a
+digest-bound read-only manifest and explicit reconciliation contract. It is not
+converted into a control automatically. Missing input remains
+`INPUT_REQUIRED`, public source rows become a separate generated profile, and
+organization-only wording is not exported.
+
+The NIST SP 800-204D supply-chain integration profile is a separate reviewed
+policy source, not a framework registry or control package. Its generated
+CSV, Markdown, and XLSX view resolves exact control/check references and keeps
+`implemented`, `planned`, `gap`, and `out-of-scope` dispositions visible across
+developer, SCM, dependency, build, release, registry, and deployment identity
+handoffs. Missing or invalid profile input fails generation.
+
+The FIRST PSIRT organization-assessment profile is likewise separate from the
+control catalog. It pins observed source identities, preserves the Services
+Framework service inventory, and generates cumulative Basic, Intermediate, and
+Advanced rows. Existing governance checks are supporting references only;
+organization result and evidence freshness remain `NOT_CHECKED` in public
+outputs.
+
 ### 5. Experiments
 
 `experiments/` contains comparative evaluations such as CodeGuard-enabled versus baseline Codex execution.
@@ -56,6 +81,7 @@ The following are external or semi-trusted inputs:
 - MCP servers;
 - AI-generated code;
 - framework mapping data;
+- organization-owned assessment workbooks and reconciliation files;
 - downloaded tools;
 - pull-request content.
 

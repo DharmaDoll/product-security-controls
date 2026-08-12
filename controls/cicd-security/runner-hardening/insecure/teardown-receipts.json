@@ -1,0 +1,21 @@
+{
+  "schema": "psb-ci-runner-teardown/v1",
+  "collected_at": "2026-08-11T03:08:00Z",
+  "receipts": [
+    {
+      "job_id": "job-pr-999",
+      "runner_generation": "shared-runner-01",
+      "jobs_processed": 12,
+      "job_finished_at": "2026-08-11T02:30:00Z",
+      "destroyed_at": "2026-08-11T03:07:00Z",
+      "deregistered": false,
+      "compute_destroyed": false,
+      "workspace_discarded": false,
+      "ephemeral_storage_key_destroyed": false,
+      "job_processes_remaining": true,
+      "logs_exported": false,
+      "log_correlation": "",
+      "second_job_observed": true
+    }
+  ]
+}

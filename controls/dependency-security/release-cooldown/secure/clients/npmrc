@@ -1,1 +1,2 @@
 registry=https://npm.security-proxy.example.invalid/
+min-release-age=7

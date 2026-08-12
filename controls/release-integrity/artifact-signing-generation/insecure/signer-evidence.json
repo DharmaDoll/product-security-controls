@@ -1,0 +1,18 @@
+{
+  "schema": "psb-artifact-signer-evidence/1.0",
+  "available": true,
+  "observed_at": "2026-07-01T00:00:00Z",
+  "provider_type": "file",
+  "signer_id": "file://shared-release-key",
+  "key_version": "shared",
+  "key_status": "ACTIVE",
+  "key_exportable": true,
+  "allowed_operations": [
+    "admin",
+    "decrypt",
+    "export",
+    "sign"
+  ],
+  "public_key_sha256": "1b2e83758fa94ed96086e47d9663d88c03201ec76482096e22528f69d1a82e77",
+  "private_key_material_in_evidence": true
+}

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DharmaDoll/product-security-controls/schemas/application-checklist-source-manifest.schema.json",
+  "title": "Application vulnerability assessment checklist source manifest",
+  "type": "object",
+  "required": ["schema", "source", "input", "columns", "reconciliation"],
+  "properties": {
+    "schema": {"const": "psb-application-checklist-source/v1.0"},
+    "source": {
+      "type": "object",
+      "required": ["title", "owner", "version", "review_date"],
+      "properties": {
+        "title": {"type": "string", "minLength": 1},
+        "owner": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "review_date": {"type": "string", "format": "date"}
+      },
+      "additionalProperties": false
+    },
+    "input": {
+      "type": "object",
+      "required": ["path", "format", "sheet", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "format": {"enum": ["csv", "xlsx"]},
+        "sheet": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "additionalProperties": false
+    },
+    "columns": {
+      "type": "object",
+      "required": ["source_id", "wording", "category", "publication"],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1},
+        "wording": {"type": "string", "minLength": 1},
+        "category": {"type": "string", "minLength": 1},
+        "publication": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "reconciliation": {
+      "type": "object",
+      "required": ["path", "format", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "format": {"const": "csv"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

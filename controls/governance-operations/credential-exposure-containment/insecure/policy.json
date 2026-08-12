@@ -1,0 +1,39 @@
+{
+  "schema": "psb-credential-response-policy/1.0",
+  "max_inventory_age_hours": 720,
+  "max_authorization_hours": 720,
+  "authorization_roles": [
+    "credential-user"
+  ],
+  "consumer_dispositions": [
+    "migrated",
+    "pending"
+  ],
+  "required_coverage_surfaces": [
+    "package-publishing"
+  ],
+  "required_state_order": [
+    "SUSPECTED",
+    "REPLACEMENT_BOUND",
+    "CLOSED"
+  ],
+  "credential_classes": {
+    "reusable-bearer": {
+      "containment_actions": [],
+      "replacement_required": true,
+      "replacement_actions": [
+        "issue-least-privilege-replacement",
+        "bind-replacement"
+      ],
+      "maximum_replacement_lifetime_hours": 8760
+    }
+  },
+  "denial_probe": {
+    "required": false,
+    "independent_from_replacement": false,
+    "skipped_or_unsupported_state": "PASS"
+  },
+  "live_mutation": "ALLOWED",
+  "dry_run_required": false,
+  "empty_audit_result": "NO_ABUSE"
+}

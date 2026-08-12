@@ -1,0 +1,17 @@
+{
+  "schema": "psb-ci-runner-images/v1",
+  "collected_at": "2026-08-11T03:04:00Z",
+  "images": [
+    {
+      "profile_id": "shared-runner",
+      "evidence_boundary": "local-tag",
+      "image_reference": "registry.example.invalid/ci/runner:latest",
+      "image_digest": "",
+      "provenance_verified": false,
+      "runner_version": "2.300.0",
+      "runner_version_supported": false,
+      "mutable_tag_only": true,
+      "in_place_auto_update": true
+    }
+  ]
+}

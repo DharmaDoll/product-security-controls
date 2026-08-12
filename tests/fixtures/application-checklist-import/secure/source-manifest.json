@@ -1,0 +1,26 @@
+{
+  "schema": "psb-application-checklist-source/v1.0",
+  "source": {
+    "title": "Synthetic application vulnerability assessment",
+    "owner": "synthetic-product-security",
+    "version": "2026.08-test",
+    "review_date": "2026-08-06"
+  },
+  "input": {
+    "path": "source.csv",
+    "format": "csv",
+    "sheet": "CSV",
+    "sha256": "272bb7f3c8ebfe58b7c04174b5a7a609433ca8c7d60a31801110583affe21ca7"
+  },
+  "columns": {
+    "source_id": "Check ID",
+    "wording": "Question",
+    "category": "Category",
+    "publication": "Publication"
+  },
+  "reconciliation": {
+    "path": "reconciliation.csv",
+    "format": "csv",
+    "sha256": "c59973ab243c31998b8365eb105b54ecd98c1729b3d7ce3d75662a44fd30104c"
+  }
+}

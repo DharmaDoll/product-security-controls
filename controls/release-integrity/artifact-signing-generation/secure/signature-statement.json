@@ -1,0 +1,24 @@
+{
+  "artifact": {
+    "family": "example-cli",
+    "name": "example-cli-linux-amd64",
+    "sha256": "d18e391adbc06782960dafa7284d3ed317295865eb6aa777768a308f0e903963"
+  },
+  "authorization_sha256": "e27bdb6531b88261d490e1d3950463a60083a614203e730c0461b9418b84feda",
+  "release": {
+    "id": "example-cli/v1.0.0",
+    "ref": "refs/tags/v1.0.0"
+  },
+  "request_sha256": "524ceeadc71060bb17bf25662056caaec69970711545cc01c94d1d7d2fc06c4a",
+  "schema": "psb-artifact-signature-statement/1.0",
+  "signed_at": "2026-08-10T03:02:00Z",
+  "signer": {
+    "algorithm": "ed25519",
+    "id": "kms://example.invalid/release-signing",
+    "key_version": "7"
+  },
+  "source": {
+    "repository": "https://github.com/example/security-reference",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  }
+}

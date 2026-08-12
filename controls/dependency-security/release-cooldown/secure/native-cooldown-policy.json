@@ -1,0 +1,35 @@
+{
+  "schema": "psb-native-cooldown-policy/1.0",
+  "baseline_hours": 168,
+  "authoritative_decision": "repository-owned-pre-resolution-verifier",
+  "metadata_missing_state": "ERROR",
+  "configuration_scope": "repository-or-managed-template",
+  "global_user_config_mutation": false,
+  "persistent_bypass": "prohibited",
+  "clients": [
+    {
+      "ecosystem": "npm",
+      "path": "clients/npmrc"
+    },
+    {
+      "ecosystem": "pip",
+      "path": "clients/pip.conf"
+    },
+    {
+      "ecosystem": "uv",
+      "path": "clients/uv.toml"
+    },
+    {
+      "ecosystem": "pnpm",
+      "path": "clients/pnpm-workspace.yaml"
+    },
+    {
+      "ecosystem": "yarn",
+      "path": "clients/yarnrc.yml"
+    }
+  ],
+  "repository_verifier_ecosystems": [
+    "go",
+    "composer"
+  ]
+}

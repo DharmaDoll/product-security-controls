@@ -1,0 +1,6 @@
+minimumReleaseAge: 60
+minimumReleaseAgeIgnoreMissingTime: true
+minimumReleaseAgeStrict: false
+trustLockfile: true
+minimumReleaseAgeExclude:
+  - "*"

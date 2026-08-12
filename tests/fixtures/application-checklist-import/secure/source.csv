@@ -1,0 +1,4 @@
+Check ID,Question,Category,Publication
+APP-001,アプリケーションの秘密情報をソースコードへ保存せず外部の管理基盤から取得する,Secret management,public
+APP-002,認証成功後に安全なsessionを発行しlogoutとcredential変更時に失効させる,Authentication and session,public
+APP-PRIVATE-001,この非公開診断項目の文言は生成物へ出力してはならない,Organization-specific,organization-only

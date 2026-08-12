@@ -1,0 +1,29 @@
+{
+  "schema": "psb-artifact-signing-receipt/1.0",
+  "status": "SIGNED",
+  "request_sha256": "524ceeadc71060bb17bf25662056caaec69970711545cc01c94d1d7d2fc06c4a",
+  "statement_sha256": "a8fa21b2ac5e27d26e43f9e0d75618dd2b9c0b021daa5c3b00b6f7c83aa3077a",
+  "signature_sha256": "be4c7a38ccbcd40811547c9569380808e97f4bc3a82d7e9ad2d790427019534f",
+  "artifact_sha256": "d18e391adbc06782960dafa7284d3ed317295865eb6aa777768a308f0e903963",
+  "signer_id": "kms://example.invalid/release-signing",
+  "key_version": "7",
+  "signed_at": "2026-08-10T03:02:00Z",
+  "publication": {
+    "location": "https://releases.example.invalid/example-cli/v1.0.0/example-cli-linux-amd64.sig",
+    "immutable": true
+  },
+  "transparency": {
+    "included": true,
+    "log_id": "synthetic-log-01",
+    "integrated_at": "2026-08-10T03:02:30Z"
+  },
+  "release_gate": {
+    "status": "ALLOW",
+    "failure_policy": "BLOCK"
+  },
+  "evidence": {
+    "contains_identity_token": false,
+    "contains_private_key_material": false,
+    "contains_signature_body": false
+  }
+}

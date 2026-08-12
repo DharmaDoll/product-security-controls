@@ -1,0 +1,5 @@
+source_id,atomic_id,atomic_wording,disposition,control_ids,responsible_role,verification_method,expected_evidence,framework_mappings,notes
+APP-001,APP-001-A,秘密情報をsource treeへ保存せず承認済みsecret providerから取得する,planned,PSB-CODE-001,developer,planned PSB-CODE-001 automated negative leakage test,configuration and negative test evidence,owasp-asvs|5.0.0|v5.0.0-13.3.1|supports|high,Source control planned after organization checklist review
+APP-002,APP-002-A,認証成功後にsecure属性を持つsessionを発行する,planned,PSB-CODE-002,developer,planned PSB-CODE-002 session issuance test,session cookie and issuance test evidence,owasp-asvs|5.0.0|v5.0.0-7.1.1|supports|medium,Compound source row split one-to-many
+APP-002,APP-002-B,logoutとcredential変更時に既存sessionを失効させる,planned,PSB-CODE-002,developer,planned PSB-CODE-002 invalidation negative test,logout credential-change and replay evidence,owasp-asvs|5.0.0|v5.0.0-7.4.1|supports|medium,Compound source row split one-to-many
+APP-PRIVATE-001,APP-PRIVATE-001-A,organization-only atomic wording,mapping-review-required,,security,organization-owned manual review,organization-owned evidence,,Never export this row wording

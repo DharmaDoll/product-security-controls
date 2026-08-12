@@ -1,0 +1,34 @@
+FAIL policy permits credential inventory older than 24 hours
+FAIL policy permits response authorization longer than 4 hours
+FAIL policy authorization roles are not independently bounded
+FAIL policy consumer dispositions permit incomplete migration
+FAIL policy does not require all seven supply-chain credential surfaces
+FAIL policy state machine does not require containment migration denial and impact review before closure
+FAIL policy credential-class response coverage is incomplete
+FAIL policy reusable-bearer containment actions are incomplete
+FAIL policy reusable-bearer replacement lifetime exceeds the reference ceiling
+FAIL policy does not require an independent fail-closed old-authority denial probe
+FAIL policy permits unreviewed live provider mutation
+FAIL policy does not require a dry-run response plan
+FAIL policy treats an empty audit result as proof of no abuse
+FAIL credential relationship graph does not cover all seven supply-chain surfaces
+FAIL incident CRED-INC-2026-9001 authorization role is not independently approved
+FAIL incident CRED-INC-2026-9001 authorization exceeds 4 hours
+FAIL incident CRED-INC-2026-9001 authorization does not bind the complete response scope
+FAIL incident CRED-INC-2026-9001 is not a dry-run response
+FAIL incident CRED-INC-2026-9001 overclaims or permits live provider mutation
+FAIL incident CRED-INC-2026-9001 closure path omits mandatory containment states
+FAIL incident CRED-INC-2026-9001 permits repository cleanup before old-authority denial
+FAIL incident CRED-INC-2026-9001 permits closure before impact review
+FAIL incident CRED-INC-2026-9001 response plan does not preserve evidence first
+FAIL incident CRED-INC-2026-9001 credential-class containment or replacement actions are absent
+FAIL incident CRED-INC-2026-9001 receipts perform unreviewed live mutation
+FAIL incident CRED-INC-2026-9001 consumer consumer-release-workflow remains unresolved
+FAIL incident CRED-INC-2026-9001 replacement purpose is broader or different
+FAIL incident CRED-INC-2026-9001 replacement scopes exceed the old authority
+FAIL incident CRED-INC-2026-9001 replacement resources exceed the old authority
+FAIL incident CRED-INC-2026-9001 replacement is longer lived than allowed
+FAIL incident CRED-INC-2026-9001 old authority is still valid
+FAIL incident CRED-INC-2026-9001 old-authority denial is not independent from replacement success
+FAIL incident CRED-INC-2026-9001 treats empty audit results as proof of no abuse
+FAIL PSB-GOV-004 closure not ready: incident=CRED-INC-2026-9001 credential=cred-package-publisher-9001 findings=19

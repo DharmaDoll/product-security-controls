@@ -1,0 +1,271 @@
+id: PSB-REL-005
+title: exact release artifactへ保護されたidentityで署名する
+domain: release-integrity
+summary: immutable artifact digestを短寿命かつleast-privilegeなworkload authorityとnon-exportable signerへ結び、署名とreceiptが揃わないreleaseをfail closedで停止する。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - verify
+threats:
+  - id: RELEASE-SIGNING-SUBSTITUTION
+    description: Compromised release jobまたはoperatorがmutable tag、別artifact、別source revisionを正規release signerへ渡して署名する。
+  - id: RELEASE-SIGNER-AUTHORITY-ABUSE
+    description: 長寿命またはbroadなcredential、exportable shared key、overprivileged signer operationが盗用されて不正artifactを署名する。
+  - id: RELEASE-SIGNING-FAIL-OPEN
+    description: Signing、transparency、publication、parser、crypto toolの失敗後もrelease pipelineが成功を記録してunsignedまたはunverifiable artifactを配布する。
+implementations:
+  insecure:
+    - insecure/README.md
+    - insecure/artifact/release.bin
+    - insecure/signing-policy.json
+    - insecure/signing-request.json
+    - insecure/authorization.json
+    - insecure/signer-evidence.json
+    - insecure/signature-statement.json
+    - insecure/signature.b64
+    - insecure/signing-receipt.json
+  secure:
+    - secure/artifact/release.bin
+    - secure/signing-policy.json
+    - secure/signing-request.json
+    - secure/authorization.json
+    - secure/signer-evidence.json
+    - secure/signature-statement.json
+    - secure/signature.b64
+    - secure/signing-receipt.json
+    - secure/signer-public-key.pem
+    - scripts/generate_fixture_bundle.py
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-REL-005
+  expected:
+    - artifact bytes SHA-256 immutable release tag and full source revision form one exact signing request
+    - signing authorization is exact-workload exact-audience exact-scope nonce-bound and no longer than five minutes
+    - signer status is fresh active non-exportable and limited to the exact sign operation and key version
+    - statement cryptographically binds request authorization artifact release source signer and signing time
+    - signature verifies with the policy-pinned public key
+    - immutable HTTPS publication and transparency receipt bind the exact statement and signature
+    - signing or receipt failure blocks release completion
+    - evidence remains metadata-only while malformed or unavailable evaluation returns ERROR
+checks:
+  - id: ASG-001
+    title: Signing request binds one immutable artifact release and source revision
+    required_state: exact artifact SHA-256 versioned release tag and full source revision
+    responsible_role: release-manager
+    applies_to:
+      - release-artifact
+      - signing-request
+      - source-revision
+    context:
+      threat_actor: compromised release job malicious maintainer or operator selecting mutable or wrong release input
+      attack_or_failure_scenario: a valid signer signs bytes reached through latest a branch a short revision or a request digest that differs from the finalized artifact
+      why_required: cryptography authenticates its input but cannot correct ambiguous or substituted input so exact immutable subject identity must be fixed before signing
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-005
+      expected: mutable mismatched or non-full artifact release and source identities are rejected
+      evidence:
+        - sanitized ASG-001 decision
+        - release request identity without digest values
+    mapping_status: reviewed
+  - id: ASG-002
+    title: Signing authorization is short-lived and exact-request scoped
+    required_state: exact workload audience signer artifact release scope nonce and maximum five-minute lifetime
+    responsible_role: ci-platform
+    applies_to:
+      - signing-authorization
+      - release-workload
+    context:
+      threat_actor: credential thief compromised CI job or another repository reusing signing authority
+      attack_or_failure_scenario: a broad retained or long-lived token signs another artifact release or signer after the original job ends
+      why_required: request-bound short-lived authority limits replay and blast radius independently of key protection and signature verification
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-005
+      expected: wildcard retained expired overlong or identity-mismatched authorization is rejected
+      evidence:
+        - sanitized ASG-002 decision
+        - authorization metadata without token value
+    mapping_status: reviewed
+  - id: ASG-003
+    title: Signer is current non-exportable and sign-only
+    required_state: active fresh KMS HSM or keyless signer with exact key version and only sign operation
+    responsible_role: security
+    applies_to:
+      - signing-key
+      - signing-service
+      - signer-status-source
+    context:
+      threat_actor: signing-key thief overprivileged release identity stale lifecycle cache or compromised signing client
+      attack_or_failure_scenario: an exportable retired unknown or broadly privileged key is used to create a technically valid unauthorized signature
+      why_required: non-exportability current lifecycle and one-purpose operations reduce signer theft and misuse that artifact binding alone cannot prevent
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-REL-005 and inspect live provider key policy
+      expected: file-based exportable stale inactive wrong-version or overprivileged signer evidence is rejected
+      evidence:
+        - sanitized ASG-003 decision
+        - provider key policy and status without key material
+    mapping_status: reviewed
+  - id: ASG-004
+    title: Signed statement binds every signing decision identity
+    required_state: request authorization artifact release source signer key version algorithm and signing time are one signed statement
+    responsible_role: release-manager
+    applies_to:
+      - signature-statement
+      - signing-request
+      - signing-authorization
+    context:
+      threat_actor: release-channel substituter retry race or automation mixing receipts from concurrent signing jobs
+      attack_or_failure_scenario: a signature or authorization from one release is attached to a different artifact source signer or request
+      why_required: signed cross-object digests prevent valid evidence from being replayed across release identities and close TOCTOU gaps after preflight
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-005
+      expected: any request authorization artifact release source signer or time mismatch is rejected
+      evidence:
+        - sanitized ASG-004 decision
+        - statement identity fields without signature body
+    mapping_status: reviewed
+  - id: ASG-005
+    title: Artifact statement has a valid signature under the policy trust root
+    required_state: Ed25519 signature verifies with the exact SHA-256-pinned public key
+    responsible_role: release-manager
+    applies_to:
+      - artifact-signature
+      - signature-statement
+      - signer-public-key
+    context:
+      threat_actor: external forger release-channel attacker or unauthorized signer presenting fabricated signing evidence
+      attack_or_failure_scenario: a statement is modified or signed with a key outside the release policy while preserving plausible metadata
+      why_required: cryptographic verification authenticates statement integrity and signer possession before semantic receipt checks can be trusted
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-005
+      expected: invalid signature wrong key unsupported algorithm and key-digest mismatch are rejected
+      evidence:
+        - sanitized ASG-005 decision
+        - trust-root digest identity without public key or signature body
+    mapping_status: reviewed
+  - id: ASG-006
+    title: Signature is published immutably with a bound transparency receipt
+    required_state: exact statement and signature digests at a versioned HTTPS location with transparency inclusion
+    responsible_role: release-manager
+    applies_to:
+      - signature-publication
+      - transparency-receipt
+      - release-manifest
+    context:
+      threat_actor: release storage operator attacker deleting or replacing signatures or signing service omitting an audit record
+      attack_or_failure_scenario: a valid signature is unavailable mutable attached to another statement or lacks the required auditable issuance receipt
+      why_required: generation without durable exact publication cannot be consumed or audited and may silently downgrade at the release boundary
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-REL-005 and probe live immutable publication
+      expected: HTTP latest mutable missing mismatched or non-transparent publication evidence is rejected
+      evidence:
+        - sanitized ASG-006 decision
+        - publication and transparency receipt metadata
+    mapping_status: reviewed
+  - id: ASG-007
+    title: Release completion fails closed when signing is incomplete
+    required_state: signature receipt and publication success are mandatory and every failure policy is BLOCK
+    responsible_role: ci-platform
+    applies_to:
+      - release-gate
+      - signing-job
+    context:
+      threat_actor: failed signing service timeout malformed output or operator configuring continue-on-error
+      attack_or_failure_scenario: release automation publishes unsigned or unverifiable bytes because signing execution did not return a successful complete receipt
+      why_required: mandatory gating ensures operational failure cannot become an accepted unsigned legacy path
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-005
+      expected: continue warn skip timeout missing or unsuccessful signing states block the release
+      evidence:
+        - sanitized ASG-007 gate decision
+        - negative-test output
+    mapping_status: reviewed
+  - id: ASG-008
+    title: Signing evidence is metadata-only and evaluation errors stay distinct
+    required_state: no token private key or signature body in evidence and unavailable evaluation returns ERROR
+    responsible_role: security
+    applies_to:
+      - signing-evidence
+      - signing-verifier
+    context:
+      threat_actor: evidence exporter log viewer malformed trusted input unavailable cryptographic tool or failed status adapter
+      attack_or_failure_scenario: control evidence creates a second credential copy or inability to verify signing is reported as a clean signed result
+      why_required: minimal evidence avoids expanding key and token exposure while a distinct ERROR prevents missing verification from authorizing release
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-REL-005
+      expected: sensitive evidence policy is rejected and malformed missing or crypto-unavailable input exits with ERROR
+      evidence:
+        - sanitized ASG-008 decision
+        - execution error class without sensitive input
+    mapping_status: unmapped
+mappings:
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PS.2.1
+    relationship: supports
+    confidence: high
+    rationale: Exact release artifact digestへconsumerが検証可能な署名情報を生成・公開し、software integrity verification informationの提供を支援するが、consumer側検証と配布保持はPSB-REL-001／002が別に必要である。
+    reviewer: product-security
+    review_date: "2026-08-10"
+    applies_to:
+      - ASG-001
+      - ASG-004
+      - ASG-005
+      - ASG-006
+      - ASG-007
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-BR-06.01
+    relationship: evidence-for
+    confidence: high
+    rationale: Releaseへexact artifact-bound cryptographic signatureを生成してimmutable locationへ公開する証跡を提供するが、repository fixtureだけでlive releaseへのsignature inclusionを主張しない。
+    reviewer: product-security
+    review_date: "2026-08-10"
+    applies_to:
+      - ASG-001
+      - ASG-004
+      - ASG-005
+      - ASG-006
+      - ASG-007
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-AC-04.01
+    relationship: supports
+    confidence: high
+    rationale: Release workloadをexact audience／scope／signerへ限定し、sign-onlyかつnon-exportableなkey authorityを要求することでCI/CD least privilegeを支援する。
+    reviewer: product-security
+    review_date: "2026-08-10"
+    applies_to:
+      - ASG-002
+      - ASG-003
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1553.002
+    relationship: mitigates
+    confidence: medium
+    rationale: ATT&CKのCode Signing trust subversionに関連し、exact artifact binding、protected signer、short-lived authorization、consumer-verifiable signatureによって不正署名と署名差替えを難しくするが、ATT&CK mappingはcomplianceまたは完全な防御を意味しない。
+    reviewer: product-security
+    review_date: "2026-08-10"
+    applies_to:
+      - ASG-002
+      - ASG-003
+      - ASG-004
+      - ASG-005
+limitations:
+  - Offline fixtures and the local ephemeral-key harness do not prove live KMS HSM keyless OIDC transparency publication or key-custody adoption.
+  - The committed transparency receipt is synthetic and cannot substitute for an authenticated live log proof and trusted root.
+  - The offline contract binds a nonce but does not prove issuer-side atomic nonce uniqueness or replay-ledger durability.
+  - A compromised authorized signer or release workflow can create internally consistent malicious signatures.
+  - Artifact signing does not replace provenance generation distribution consumer verification SBOM vulnerability testing or two-person release governance.
+  - This control is not a SLSA Build level requirement and does not establish framework product or release compliance.
+status: prototype
+owner: product-security
+evidence_level: E3

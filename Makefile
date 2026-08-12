@@ -1,4 +1,4 @@
-.PHONY: bootstrap lint verify verify-control assess-control collect-github-action-advisories verify-github-action-advisories collect-github-actions-build-platform collect-github-releases-evidence collect-slsa-consumer-evidence collect-slsa-security-review-evidence build-slsa-build-l2-evidence assess-slsa-build-l2 assess-slsa-build-l2-bundles test generate generate-index generate-mappings generate-checklists validate-controls clean
+.PHONY: bootstrap lint verify verify-control assess-control import-application-checklist collect-github-action-advisories verify-github-action-advisories collect-github-actions-build-platform collect-github-releases-evidence collect-slsa-consumer-evidence collect-slsa-security-review-evidence build-slsa-build-l2-evidence assess-slsa-build-l2 assess-slsa-build-l2-bundles test generate generate-index generate-mappings generate-checklists validate-controls clean
 
 bootstrap:
 	@echo "No external bootstrap required."
@@ -21,6 +21,13 @@ verify-control:
 assess-control:
 	@test -n "$(CONTROL)" || (echo "CONTROL is required" >&2; exit 2)
 	@python3 scripts/run-assessments.py --control "$(CONTROL)"
+
+import-application-checklist:
+	@test -n "$(APPLICATION_CHECKLIST_MANIFEST)" || (echo "APPLICATION_CHECKLIST_MANIFEST is required" >&2; exit 2)
+	@test -n "$(APPLICATION_CHECKLIST_OUTPUT)" || (echo "APPLICATION_CHECKLIST_OUTPUT is required" >&2; exit 2)
+	@python3 scripts/import-application-checklist.py \
+		--manifest "$(APPLICATION_CHECKLIST_MANIFEST)" \
+		--output "$(APPLICATION_CHECKLIST_OUTPUT)"
 
 collect-github-action-advisories:
 	@python3 controls/cicd-security/action-sha-pinning/scripts/collect-advisories.py \

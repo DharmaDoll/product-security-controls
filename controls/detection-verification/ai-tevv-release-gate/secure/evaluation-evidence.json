@@ -1,0 +1,36 @@
+{
+  "schema": "psb-ai-tevv-evidence/v1.0",
+  "available": true,
+  "complete": true,
+  "evaluator_status": "SUCCEEDED",
+  "started_at": "2026-08-06T10:55:00Z",
+  "completed_at": "2026-08-06T11:00:00Z",
+  "identity": {
+    "evaluator_artifact_sha256": "e8a364e1ce8eb1544398e4fa4f9b1de7d38f9db40b882e97b8501b9c0e5e3013",
+    "test_suite_sha256": "c96bb62ef089a479dc183de1951fd217094e2107dd40fb058fe514db1522b3aa",
+    "sut_manifest_sha256": "63df89af242c5dac1a9a60cc9160b6dc26d2f183acd6c4e7edea756335ec4a9b",
+    "candidate_subject_sha256": "e4333924cf076046702d32f281c8933cc8a40c74bb3ac69500d5d926a78d8a4c",
+    "calibration_subject_sha256": "668d3642e0a4f3295bf0723e959be20da6e95757d08906ebd4f9d7a1734c89a5",
+    "threshold_id": "AI-TEVV-BASELINE-2026-08"
+  },
+  "environment": {
+    "network_mode": "none",
+    "credentials_available": false,
+    "production_access": false,
+    "ephemeral_workspace": true
+  },
+  "candidate_state": "PASS",
+  "scenario_results": [
+    {"scenario_id": "TEVV-S001", "mode": "deterministic", "planned_repetitions": 1, "completed_repetitions": 1, "passed_repetitions": 1, "state": "PASS"},
+    {"scenario_id": "TEVV-S002", "mode": "deterministic", "planned_repetitions": 1, "completed_repetitions": 1, "passed_repetitions": 1, "state": "PASS"},
+    {"scenario_id": "TEVV-S003", "mode": "deterministic", "planned_repetitions": 1, "completed_repetitions": 1, "passed_repetitions": 1, "state": "PASS"},
+    {"scenario_id": "TEVV-S004", "mode": "deterministic", "planned_repetitions": 1, "completed_repetitions": 1, "passed_repetitions": 1, "state": "PASS"},
+    {"scenario_id": "TEVV-S005", "mode": "probabilistic", "planned_repetitions": 5, "completed_repetitions": 5, "passed_repetitions": 4, "state": "PASS"},
+    {"scenario_id": "TEVV-S006", "mode": "deterministic", "planned_repetitions": 1, "completed_repetitions": 1, "passed_repetitions": 1, "state": "PASS"}
+  ],
+  "calibration": {
+    "state": "FAIL",
+    "detected_scenarios": ["TEVV-S001", "TEVV-S003", "TEVV-S004", "TEVV-S005", "TEVV-S006"]
+  },
+  "sanitized": true
+}
