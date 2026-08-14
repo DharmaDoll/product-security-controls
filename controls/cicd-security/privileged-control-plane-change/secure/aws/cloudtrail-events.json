@@ -1,0 +1,78 @@
+{
+  "schema": "psb-aws-cloudtrail-export/v1",
+  "account_id": "111122223333",
+  "collected_at": "2026-08-12T04:08:00Z",
+  "complete": true,
+  "collection": {
+    "source": "organization-trail-management-events",
+    "event_source": "iam.amazonaws.com",
+    "event_name": "UpdateAssumeRolePolicy",
+    "account_id": "111122223333",
+    "window_start": "2026-08-12T03:00:00Z",
+    "window_end": "2026-08-12T03:47:00Z",
+    "pages": 1,
+    "selected_events": 1,
+    "complete": true,
+    "pagination_complete": true,
+    "collector_identity": "aws-cloudtrail-exporter@sha256:25b847be904b7353faf2f27c7bfd1100c57191140498d878145f664ca3c78e5c"
+  },
+  "events": [
+    {
+      "eventVersion": "1.11",
+      "eventID": "1ed0ce32-3fcb-48e8-8131-3faf7078f092",
+      "requestID": "44dc21ca-d760-4dbc-90a8-d68b40a5f382",
+      "eventTime": "2026-08-12T03:44:00Z",
+      "eventSource": "iam.amazonaws.com",
+      "eventName": "UpdateAssumeRolePolicy",
+      "awsRegion": "us-east-1",
+      "recipientAccountId": "111122223333",
+      "managementEvent": true,
+      "readOnly": false,
+      "eventCategory": "Management",
+      "userIdentity": {
+        "type": "AssumedRole",
+        "principalId": "AROACLOUDADMIN0001:alice@example.invalid",
+        "arn": "arn:aws:sts::111122223333:assumed-role/CloudControlPlaneAdmin/alice@example.invalid",
+        "accountId": "111122223333",
+        "accessKeyId": "REDACTED-SYNTHETIC-NOT-A-CREDENTIAL",
+        "sessionContext": {
+          "sessionIssuer": {
+            "type": "Role",
+            "principalId": "AROACLOUDADMIN0001",
+            "arn": "arn:aws:iam::111122223333:role/CloudControlPlaneAdmin",
+            "accountId": "111122223333",
+            "userName": "CloudControlPlaneAdmin"
+          },
+          "attributes": {
+            "creationDate": "2026-08-12T03:40:00Z",
+            "mfaAuthenticated": "true"
+          },
+          "sourceIdentity": "user-04"
+        }
+      },
+      "requestParameters": {
+        "roleName": "GitHubActionsReleaseProd",
+        "policyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::111122223333:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example-org/product-api:environment:production"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "sourceIPAddress": "192.0.2.44",
+      "userAgent": "synthetic-client-detail"
+    }
+  ]
+}

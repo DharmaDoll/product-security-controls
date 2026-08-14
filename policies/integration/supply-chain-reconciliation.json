@@ -142,13 +142,13 @@
       "integration_boundary": "CI/CD human and control-plane identity to privileged configuration change",
       "threat_or_failure": "A compromised administrator or provider control-plane session changes branch rules, environments, runners, federated trust, or signing policy outside the reviewed pipeline.",
       "required_connection": "Collect current provider-side administrator identity, phishing-resistant session, approval, policy version, and audit event for each privileged configuration change.",
-      "disposition": "gap",
-      "check_refs": ["PSB-CICD-007-RNR-006", "PSB-CICD-007-RNR-008"],
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-008-CPC-001", "PSB-CICD-008-CPC-002", "PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-004", "PSB-CICD-008-CPC-005", "PSB-CICD-008-CPC-006", "PSB-CICD-008-CPC-007"],
       "planned_control_ids": [],
-      "gap_owner": "ci-platform",
-      "gap_description": "No cross-provider adapter currently reconciles human administrator sessions and control-plane changes across SCM, CI, cloud federation, registry, and signing services.",
-      "rationale": "Runner authority and audit checks are partial evidence but do not establish the wider CI/CD control-plane identity chain.",
-      "limitations": "This gap must not be reported as clean merely because repository workflow checks pass."
+      "gap_owner": "",
+      "gap_description": "",
+      "rationale": "PSB-CICD-008 joins named administrator assurance, bounded session, exact before-after policy identity, independent approval, execution, provider audit, and emergency review across the required service inventory.",
+      "limitations": "The provider-neutral E3 verifier does not prove live provider configuration, organization membership, authenticator custody, audit-backend independence, or provider control-plane integrity."
     },
     {
       "id": "SCIR-011",

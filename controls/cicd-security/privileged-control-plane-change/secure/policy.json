@@ -1,0 +1,38 @@
+{
+  "schema": "psb-cicd-control-plane-policy/v1",
+  "policy_version": "sha256:7d3a56a21d9049bb248663752c53a09428f51104f7528245ef8b394ddd9cd261",
+  "maximum_evidence_age_seconds": 900,
+  "maximum_session_seconds": 3600,
+  "maximum_reauthentication_age_seconds": 900,
+  "minimum_independent_approvals": 1,
+  "emergency_review_deadline_seconds": 3600,
+  "required_services": [
+    "scm",
+    "ci",
+    "cloud-identity",
+    "artifact-registry",
+    "signing-service"
+  ],
+  "allowed_change_types": [
+    "branch-protection",
+    "tag-protection",
+    "push-protection",
+    "environment-protection",
+    "runner-registration-policy",
+    "federated-trust-policy",
+    "registry-protection",
+    "signing-policy"
+  ],
+  "authorized_roles_by_service": {
+    "scm": ["repository-admin"],
+    "ci": ["ci-admin"],
+    "cloud-identity": ["cloud-admin"],
+    "artifact-registry": ["registry-admin"],
+    "signing-service": ["signing-admin"]
+  },
+  "required_identity_assurance": "phishing-resistant",
+  "require_human_actor": true,
+  "require_exact_before_after_digest": true,
+  "require_provider_audit_event": true,
+  "fail_closed": true
+}

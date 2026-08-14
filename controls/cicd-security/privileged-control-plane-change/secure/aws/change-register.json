@@ -1,0 +1,31 @@
+{
+  "schema": "psb-aws-privileged-change-register/v1",
+  "collected_at": "2026-08-12T04:05:00Z",
+  "complete": true,
+  "changes": [
+    {
+      "change_id": "chg-aws-20260812-001",
+      "provider_event_id": "1ed0ce32-3fcb-48e8-8131-3faf7078f092",
+      "aws_request_id": "44dc21ca-d760-4dbc-90a8-d68b40a5f382",
+      "role_id": "AROARELEASEPROD0001",
+      "role_arn": "arn:aws:iam::111122223333:role/GitHubActionsReleaseProd",
+      "request_id": "request:change-873",
+      "requested_at": "2026-08-12T03:42:00Z",
+      "policy_version": "sha256:7d3a56a21d9049bb248663752c53a09428f51104f7528245ef8b394ddd9cd261",
+      "before_digest": "sha256:195ecfc3d392014b52f20e1983b698a1f87b5be8b694c8559fd98f75ebd02535",
+      "after_digest": "sha256:56da6e8c92672fd0053120b742a91333d6668536341d7c5713f1809d6fbbad3f",
+      "reason": "replace organization-wide GitHub subject with the production environment subject",
+      "ticket": "CHG-873",
+      "approvals": [
+        {
+          "actor_id": "principal:security-reviewer-09",
+          "role": "security",
+          "request_id": "request:change-873",
+          "after_digest": "sha256:56da6e8c92672fd0053120b742a91333d6668536341d7c5713f1809d6fbbad3f",
+          "approved_at": "2026-08-12T03:43:00Z"
+        }
+      ],
+      "emergency": {"used": false}
+    }
+  ]
+}

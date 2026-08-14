@@ -1,0 +1,13 @@
+{
+  "schema": "psb-cicd-control-plane-change-evidence/v1",
+  "collected_at": "2026-08-12T04:08:00Z",
+  "window_start": "2026-08-12T03:00:00Z",
+  "window_end": "2026-08-12T04:05:00Z",
+  "collector": {
+    "available": false,
+    "complete": false,
+    "identity": "control-plane-audit-collector@sha256:ca55e3ac0db9a277966e02f4876737cc0af52e59b2d35f095c512e40aeccf03b",
+    "covered_services": []
+  },
+  "changes": []
+}

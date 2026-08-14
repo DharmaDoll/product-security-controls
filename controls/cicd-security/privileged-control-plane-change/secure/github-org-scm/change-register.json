@@ -1,0 +1,36 @@
+{
+  "schema": "psb-github-privileged-change-register/v1",
+  "collected_at": "2026-08-12T04:06:00Z",
+  "complete": true,
+  "changes": [
+    {
+      "change_id": "chg-github-org-scm-20260812-001",
+      "provider_event_id": "audit-doc-554",
+      "github_request_id": "github-request-554",
+      "organization_id": 88001,
+      "organization_node_id": "O_kgDOExampleOrg",
+      "ruleset_id": 74,
+      "ruleset_node_id": "RRS_lAOrganizationProtect",
+      "ruleset_target": "branch",
+      "before_version_id": 8,
+      "after_version_id": 9,
+      "request_id": "request:change-877",
+      "requested_at": "2026-08-12T03:20:00Z",
+      "policy_version": "sha256:7d3a56a21d9049bb248663752c53a09428f51104f7528245ef8b394ddd9cd261",
+      "before_digest": "sha256:569a1ac9d05705463f5311d0237fa789c2b80658a1973b515f41b3dfe1ba9bb2",
+      "after_digest": "sha256:ebd2d02bd494b9be3d41496f4ea25bffa23d9706acc56710e0057837d3ec26db",
+      "reason": "apply reviewed main-branch protections to the protected product repository set",
+      "ticket": "CHG-877",
+      "approvals": [
+        {
+          "actor_id": "principal:security-reviewer-09",
+          "role": "security",
+          "request_id": "request:change-877",
+          "after_digest": "sha256:ebd2d02bd494b9be3d41496f4ea25bffa23d9706acc56710e0057837d3ec26db",
+          "approved_at": "2026-08-12T03:25:00Z"
+        }
+      ],
+      "emergency": {"used": false}
+    }
+  ]
+}

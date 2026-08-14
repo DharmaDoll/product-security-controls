@@ -1,0 +1,22 @@
+{
+  "schema": "psb-aws-admin-session-export/v1",
+  "collected_at": "2026-08-12T04:06:00Z",
+  "complete": true,
+  "sessions": [
+    {
+      "aws_session_principal_id": "AROAREGISTRYADMIN01:bob@example.invalid",
+      "aws_session_arn": "arn:aws:sts::111122223333:assumed-role/RegistryControlPlaneAdmin/bob@example.invalid",
+      "aws_session_issuer_principal_id": "AROAREGISTRYADMIN01",
+      "aws_session_issuer_arn": "arn:aws:iam::111122223333:role/RegistryControlPlaneAdmin",
+      "aws_source_identity": "user-05",
+      "principal_id": "principal:registry-admin-05",
+      "role": "registry-admin",
+      "organization_member": true,
+      "identity_assurance": "phishing-resistant",
+      "session_id": "session:aws:2253",
+      "session_issued_at": "2026-08-12T03:45:00Z",
+      "session_expires_at": "2026-08-12T04:15:00Z",
+      "reauthenticated_at": "2026-08-12T03:46:00Z"
+    }
+  ]
+}

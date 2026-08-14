@@ -179,6 +179,19 @@ mappings:
     review_date: "2026-07-30"
     applies_to:
       - PRB-002
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GH-ADMIN-ACTIONS-REPOSITORY
+    relationship: related-to
+    confidence: medium
+    rationale: Repository fork-workflow approval and Actions execution settings affect the live untrusted-PR boundary, while this control verifies workflow text and leaves hosted-setting evidence external.
+    reviewer: product-security
+    review_date: "2026-08-14"
+    applies_to:
+      - PRB-001
+      - PRB-002
+      - PRB-004
+      - PRB-005
   - framework: openssf-osps-baseline
     version: "2026.02.19"
     id: OSPS-BR-01.03

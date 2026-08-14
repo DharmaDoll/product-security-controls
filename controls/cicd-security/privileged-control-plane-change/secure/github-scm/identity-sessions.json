@@ -1,0 +1,20 @@
+{
+  "schema": "psb-github-admin-session-export/v1",
+  "collected_at": "2026-08-12T04:07:00Z",
+  "complete": true,
+  "sessions": [
+    {
+      "github_actor_id": 17021,
+      "github_actor": "repository-admin-21",
+      "request_id": "github-request-553",
+      "principal_id": "principal:repository-admin-21",
+      "role": "repository-admin",
+      "organization_member": true,
+      "identity_assurance": "phishing-resistant",
+      "session_id": "session:github:6320",
+      "session_issued_at": "2026-08-12T03:15:00Z",
+      "session_expires_at": "2026-08-12T03:45:00Z",
+      "reauthenticated_at": "2026-08-12T03:16:00Z"
+    }
+  ]
+}

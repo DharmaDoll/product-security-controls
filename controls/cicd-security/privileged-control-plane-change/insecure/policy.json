@@ -1,0 +1,19 @@
+{
+  "schema": "psb-cicd-control-plane-policy/v1",
+  "policy_version": "latest",
+  "maximum_evidence_age_seconds": 86400,
+  "maximum_session_seconds": 43200,
+  "maximum_reauthentication_age_seconds": 43200,
+  "minimum_independent_approvals": 0,
+  "emergency_review_deadline_seconds": 604800,
+  "required_services": ["scm"],
+  "allowed_change_types": ["*"],
+  "authorized_roles_by_service": {
+    "scm": ["owner"]
+  },
+  "required_identity_assurance": "password",
+  "require_human_actor": false,
+  "require_exact_before_after_digest": false,
+  "require_provider_audit_event": false,
+  "fail_closed": false
+}

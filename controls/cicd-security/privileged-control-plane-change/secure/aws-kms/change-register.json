@@ -1,0 +1,33 @@
+{
+  "schema": "psb-aws-kms-privileged-change-register/v1",
+  "collected_at": "2026-08-12T04:05:00Z",
+  "complete": true,
+  "changes": [
+    {
+      "change_id": "chg-kms-20260812-001",
+      "provider_event_id": "5ed0ce32-3fcb-48e8-8131-3faf7078f096",
+      "aws_request_id": "94dc21ca-d760-4dbc-90a8-d68b40a5f387",
+      "key_id": "1234abcd-12ab-34cd-56ef-1234567890ab",
+      "key_arn": "arn:aws:kms:us-east-1:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab",
+      "policy_name": "default",
+      "bypass_policy_lockout_safety_check": false,
+      "request_id": "request:change-875",
+      "requested_at": "2026-08-12T03:52:00Z",
+      "policy_version": "sha256:7d3a56a21d9049bb248663752c53a09428f51104f7528245ef8b394ddd9cd261",
+      "before_digest": "sha256:3a3d9f31e6db3fecd971fb9f73a53051118870e637522776b3090adc2c0f611a",
+      "after_digest": "sha256:4fd124786cd59b334aa4aae7ecf177990a5a94f5268a003b65722770e760bb2b",
+      "reason": "remove key-policy administration from the release signer",
+      "ticket": "CHG-875",
+      "approvals": [
+        {
+          "actor_id": "principal:security-reviewer-09",
+          "role": "security",
+          "request_id": "request:change-875",
+          "after_digest": "sha256:4fd124786cd59b334aa4aae7ecf177990a5a94f5268a003b65722770e760bb2b",
+          "approved_at": "2026-08-12T03:53:00Z"
+        }
+      ],
+      "emergency": {"used": false}
+    }
+  ]
+}

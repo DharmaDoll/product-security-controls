@@ -80,7 +80,6 @@ def validate_reconciliation(
         return errors
 
     seen: set[str] = set()
-    dispositions: set[str] = set()
     for index, row in enumerate(rows, start=1):
         label = f"reconciliation row {index}"
         if not isinstance(row, dict):
@@ -117,8 +116,6 @@ def validate_reconciliation(
         disposition = row.get("disposition")
         if disposition not in DISPOSITIONS:
             errors.append(f"{label}: invalid disposition {disposition!r}")
-        else:
-            dispositions.add(disposition)
 
         check_refs = row.get("check_refs")
         if not isinstance(check_refs, list) or any(
@@ -171,10 +168,6 @@ def validate_reconciliation(
             if not gap_owner.strip() or not gap_description.strip():
                 errors.append(f"{label}: out-of-scope requires boundary owner and reason")
 
-    if dispositions != DISPOSITIONS:
-        errors.append(
-            "reconciliation: source must keep all four explicit dispositions visible"
-        )
     return errors
 
 

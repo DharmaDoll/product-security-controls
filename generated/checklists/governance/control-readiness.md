@@ -8,11 +8,11 @@ Generated from repository control metadata. Do not edit manually.
 
 | Metric | Value | Meaning |
 |---|---:|---|
-| Catalog controls | 47 | Repository control packages; not organization adoption. |
-| Atomic checks | 436 | Assessable catalog rows generated from control metadata. |
-| Reviewed mapping checks | 382 | Checks with at least one reviewed framework relationship. |
+| Catalog controls | 48 | Repository control packages; not organization adoption. |
+| Atomic checks | 443 | Assessable catalog rows generated from control metadata. |
+| Reviewed mapping checks | 388 | Checks with at least one reviewed framework relationship. |
 | Provisional mapping checks | 0 | Checks whose framework relationship still needs review. |
-| Unmapped checks | 54 | Explicit framework mapping debt; not silently inherited. |
+| Unmapped checks | 55 | Explicit framework mapping debt; not silently inherited. |
 | Assessment adapters | 1 | Controls with a repository read-only assessment interface. |
 | Organization adoption | NOT_CHECKED | Organization-owned assessment results are not committed here. |
 | Evidence freshness | NOT_CHECKED | No current organization evidence bundle was supplied. |
@@ -43,6 +43,7 @@ Generated from repository control metadata. Do not edit manually.
 | PSB-CICD-005 | cicd-security | prototype | E3 | 6 | 5 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CICD-006 | cicd-security | prototype | E3 | 8 | 7 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CICD-007 | cicd-security | prototype | E3 | 9 | 8 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
+| PSB-CICD-008 | cicd-security | prototype | E3 | 7 | 6 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CONTAINER-001 | container-cloud-iac-security | adopted | E3 | 9 | 9 | 0 | 0 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CONTAINER-002 | container-cloud-iac-security | prototype | E3 | 7 | 6 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CONTAINER-003 | container-cloud-iac-security | prototype | E3 | 9 | 8 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |

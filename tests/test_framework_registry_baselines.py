@@ -19,7 +19,7 @@ EXPECTED_BASELINES = {
     },
     "github-security-guidance": {
         "version": "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)",
-        "count": 15,
+        "count": 24,
         "known_id": "GHAS-CONCEPT-SCRIPT-INJECTIONS",
     },
     "mitre-atlas": {

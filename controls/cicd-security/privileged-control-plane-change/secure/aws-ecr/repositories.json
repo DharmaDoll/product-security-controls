@@ -1,0 +1,45 @@
+{
+  "schema": "psb-aws-ecr-repository-snapshot/v1",
+  "account_id": "111122223333",
+  "region": "us-east-1",
+  "collected_at": "2026-08-12T03:50:00Z",
+  "complete": true,
+  "collection": {
+    "describe_api": "ecr:DescribeRepositories",
+    "policy_api": "ecr:GetRepositoryPolicy",
+    "registry_id": "111122223333",
+    "repository_name": "product-api",
+    "repository_arn": "arn:aws:ecr:us-east-1:111122223333:repository/product-api",
+    "created_at": "2026-07-01T00:00:00Z",
+    "describe_request_id": "75dc21ca-d760-4dbc-90a8-d68b40a5f385",
+    "policy_request_id": "85dc21ca-d760-4dbc-90a8-d68b40a5f386",
+    "collector_identity": "aws-ecr-readonly-exporter@sha256:feafcda3574028161c394fbe9e7b066d4f2b224ee204a78c8aa1b6fa50b3d51e"
+  },
+  "repositories": [
+    {
+      "configuration": {
+        "registry_id": "111122223333",
+        "repository_name": "product-api",
+        "repository_arn": "arn:aws:ecr:us-east-1:111122223333:repository/product-api",
+        "created_at": "2026-07-01T00:00:00Z",
+        "repository_policy": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "ReleasePublisher",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "arn:aws:iam::111122223333:role/GitHubActionsReleaseProd"
+              },
+              "Action": [
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:PutImage"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

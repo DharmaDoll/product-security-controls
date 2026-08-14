@@ -19,6 +19,37 @@ The source repeats some technique labels under more than one tactic. This
 review consolidates those repetitions into 28 unique labels while retaining
 all tactic occurrences.
 
+## Authoritative and public-sector source cross-check
+
+The 28 rows below remain keyed only to the pinned community matrix. Two
+public-sector sources are used as independent design cross-checks and do not
+lend their headings or recommendation numbers to `control.yaml`:
+
+- [`REF-CICD-015`](SECURITY_GUIDANCE_SOURCES.md#ref-cicd-015) — デジタル庁
+  DS-202, including the integrity-recorded GitHub Actions／Terraform appendix;
+- [`REF-CICD-016`](SECURITY_GUIDANCE_SOURCES.md#ref-cicd-016) — NSA／CISA
+  *Defending Continuous Integration/Continuous Delivery Environments*, June
+  2023, Version 1.0. Its official PDF digest remains `input-required`, so it is
+  reviewed guidance rather than an artifact-backed mapping source.
+
+| Cross-check theme | Existing evidence and owner | Remaining boundary |
+|---|---|---|
+| Developer and administrator identity | `PSB-SOURCE-001`, `PSB-SOURCE-004`, and `PSB-CICD-008` address endpoint state, credential lifecycle, named administrators, bounded sessions, and privileged-change evidence. | Live GitHub SAML／SCIM enforcement, credential authorization, deprovisioning, and IdP recovery evidence remain organization-owned and provider-specific. |
+| Repository, branch, workflow-definition, and two-person change protection | `PSB-CICD-005` separates untrusted PR execution; `PSB-CICD-008` collects branch／tag／push ruleset and selected legacy branch changes. | Current CODEOWNERS coverage, required code-owner review, stale approvals, all ruleset selectors, administrator bypass, and protected workflow paths are not yet verified end to end. |
+| Least privilege and separation of duties | `PSB-CICD-004` verifies explicit job-token permissions; `PSB-BUILD-001` separates untrusted build from credentialed deployment; `PSB-CICD-008` requires independent approval for privileged settings. | Organization and enterprise Actions defaults, custom roles, environment approvers, and live privilege inventories require provider evidence. |
+| Short-lived credentials, secrets, and federation | `PSB-SOURCE-004`, `PSB-CICD-004..006`, and `PSB-BUILD-001` cover credential lifecycle, token permissions, exact-claim federation, and credential-free untrusted builds. | Live issuer, IdP, secret-manager, cloud authorization, masking, and revocation evidence remain external. |
+| Audit logging and control-plane monitoring | `PSB-CICD-008` binds selected provider audit events to exact actor, request, target, and resulting state. | Complete GitHub event coverage, independent retention, organization-wide drift, alert delivery, and provider compromise remain outside local fixtures. |
+| Dependency, scanner, and SBOM layers | `PSB-DEPS-001..004`, `PSB-DETECT-001`, and `PSB-REL-003..004` separate acquisition, execution, integrity, review, scanner failure, and SBOM lifecycle evidence. | Unknown malicious-but-valid dependencies, live database freshness, and organization portfolio completeness remain residual risk. |
+| Build, artifact authenticity, and release | `PSB-BUILD-001..003` and `PSB-REL-001..005` address containment, platform selection, provenance, consumer verification, publication, lifecycle SBOM, and exact artifact signing. | Live signing authority, provider build assurance, artifact-store policy, and production deployment binding still need provider adapters. |
+| Runner, endpoint, network, and runtime boundaries | `PSB-SOURCE-001`, `PSB-CICD-007`, and `PSB-BUILD-001` address managed endpoints, one-job runners, clean images, teardown, egress, and runtime containment. | Live network segmentation, EDR, provider-hosted isolation, telemetry health, and complete fleet inventory remain organization evidence. |
+
+This cross-check confirms that the primary missing GitHub outcomes are hosted
+administration evidence rather than another workflow linter. The pinned GitHub
+administration collection now records Actions policy, CODEOWNERS, rulesets,
+SAML／SCIM, audit-event, and credential references. `REF-CICD-017` supplies
+non-normative Japanese operational context, while `REF-CICD-018` records
+Allstar only as an unadopted organization-monitoring candidate.
+
 ## Disposition rules
 
 - `existing-partial`: one or more implemented controls reduce, detect, or

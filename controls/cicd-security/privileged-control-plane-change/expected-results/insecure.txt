@@ -1,0 +1,23 @@
+FAIL CPC-001 change 1 actor is not a current named human with required assurance
+FAIL CPC-001 policy does not require a named human with phishing-resistant authentication
+FAIL CPC-002 change 1 executes outside the request or authenticated session window
+FAIL CPC-002 session or reauthentication policy is too broad
+FAIL CPC-003 change 1 lacks an owned reason or change record
+FAIL CPC-003 change 1 lacks distinct exact before and after digests
+FAIL CPC-003 change 1 target is wildcarded
+FAIL CPC-003 change 1 type is not explicitly allowed
+FAIL CPC-003 policy allows unclassified privileged changes
+FAIL CPC-003 policy does not require exact before and after digests
+FAIL CPC-003 policy omits required privileged change types
+FAIL CPC-003 policy version is not digest-pinned
+FAIL CPC-004 ordinary changes do not require independent approval
+FAIL CPC-005 change 1 execution identity does not match its request and session
+FAIL CPC-005 change 1 provider audit event is missing duplicated or incorrectly bound
+FAIL CPC-005 policy does not require a provider audit event
+FAIL CPC-006 change 1 emergency path is unowned or too long
+FAIL CPC-006 change 1 emergency path lacks post-change review
+FAIL CPC-006 emergency review deadline exceeds one hour
+FAIL CPC-007 collector identity is not digest-pinned
+FAIL CPC-007 maximum evidence age exceeds 900 seconds
+FAIL CPC-007 policy does not require the complete control-plane service inventory
+FAIL CPC-007 policy permits evidence failure to pass

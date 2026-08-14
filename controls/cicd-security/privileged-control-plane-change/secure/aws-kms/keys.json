@@ -1,0 +1,54 @@
+{
+  "schema": "psb-aws-kms-key-snapshot/v1",
+  "account_id": "111122223333",
+  "region": "us-east-1",
+  "collected_at": "2026-08-12T03:55:00Z",
+  "complete": true,
+  "collection": {
+    "describe_api": "kms:DescribeKey",
+    "policy_api": "kms:GetKeyPolicy",
+    "key_id": "1234abcd-12ab-34cd-56ef-1234567890ab",
+    "key_arn": "arn:aws:kms:us-east-1:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab",
+    "policy_name": "default",
+    "describe_request_id": "a5dc21ca-d760-4dbc-90a8-d68b40a5f388",
+    "policy_request_id": "b5dc21ca-d760-4dbc-90a8-d68b40a5f389",
+    "collector_identity": "aws-kms-readonly-exporter@sha256:26d872bb9de2aab8d24c455277f9c99a2e3445a9695d051bfa5ba221e8cde039"
+  },
+  "keys": [
+    {
+      "configuration": {
+        "account_id": "111122223333",
+        "key_id": "1234abcd-12ab-34cd-56ef-1234567890ab",
+        "key_arn": "arn:aws:kms:us-east-1:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab",
+        "creation_date": "2026-07-01T00:00:00Z",
+        "enabled": true,
+        "key_state": "Enabled",
+        "key_manager": "CUSTOMER",
+        "key_usage": "SIGN_VERIFY",
+        "key_spec": "ECC_NIST_P256",
+        "signing_algorithms": ["ECDSA_SHA_256"],
+        "multi_region": false,
+        "key_policy": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "EnableAccountAdministration",
+              "Effect": "Allow",
+              "Principal": {"AWS": "arn:aws:iam::111122223333:root"},
+              "Action": "kms:*",
+              "Resource": "*"
+            },
+            {
+              "Sid": "ReleaseSigner",
+              "Effect": "Allow",
+              "Principal": {"AWS": "arn:aws:iam::111122223333:role/GitHubActionsReleaseProd"},
+              "Action": ["kms:DescribeKey", "kms:GetPublicKey", "kms:Sign"],
+              "Resource": "*",
+              "Condition": {"StringEquals": {"kms:SigningAlgorithm": "ECDSA_SHA_256"}}
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

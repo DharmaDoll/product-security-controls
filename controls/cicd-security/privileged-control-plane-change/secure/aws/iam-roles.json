@@ -1,0 +1,42 @@
+{
+  "schema": "psb-aws-iam-role-snapshot/v1",
+  "account_id": "111122223333",
+  "collected_at": "2026-08-12T03:45:00Z",
+  "complete": true,
+  "collection": {
+    "api": "iam:GetRole",
+    "role_name": "GitHubActionsReleaseProd",
+    "role_id": "AROARELEASEPROD0001",
+    "request_id": "5f8caed2-c010-4829-bf6e-771886967a8e",
+    "collector_identity": "aws-iam-readonly-exporter@sha256:82209f04559567e7b181715f4184c00e08d0dbeb01d6101530e79b7777dfc5cc"
+  },
+  "roles": [
+    {
+      "configuration": {
+        "path": "/",
+        "role_name": "GitHubActionsReleaseProd",
+        "role_id": "AROARELEASEPROD0001",
+        "arn": "arn:aws:iam::111122223333:role/GitHubActionsReleaseProd",
+        "max_session_duration": 3600,
+        "assume_role_policy_document": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::111122223333:oidc-provider/token.actions.githubusercontent.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringEquals": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": "repo:example-org/product-api:environment:production"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

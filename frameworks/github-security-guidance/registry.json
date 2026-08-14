@@ -53,6 +53,22 @@
         "GHAS-REF-SECRETS",
         "GHAS-REF-OIDC"
       ]
+    },
+    {
+      "id": "GH-ADMINISTRATION-SECURITY",
+      "title": "GitHub repository and organization security administration",
+      "index_url": "https://docs.github.com/en/organizations/keeping-your-organization-secure",
+      "page_ids": [
+        "GH-ADMIN-ACTIONS-REPOSITORY",
+        "GH-ADMIN-ACTIONS-ORGANIZATION",
+        "GH-ADMIN-CODEOWNERS",
+        "GH-ADMIN-RULESETS",
+        "GH-ADMIN-RULESET-RULES",
+        "GH-ADMIN-SAML-IAM",
+        "GH-ADMIN-SCIM-ORGANIZATIONS",
+        "GH-ADMIN-AUDIT-EVENTS",
+        "GH-ADMIN-CREDENTIAL-TYPES"
+      ]
     }
   ],
   "entries": [
@@ -149,6 +165,87 @@
       "title": "OpenID Connect reference",
       "type": "guidance-page",
       "source_url": "https://docs.github.com/en/actions/reference/security/oidc"
+    },
+    {
+      "id": "GH-ADMIN-ACTIONS-REPOSITORY",
+      "title": "Managing GitHub Actions settings for a repository",
+      "type": "administration-page",
+      "source_url": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository",
+      "source_path": "content/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository.md",
+      "source_sha256": "23c54cbd0ef340172b33d430cd3b4e06b4d8536c8a2f438eebef03c56ecb8045",
+      "aliases": [
+        "https://docs.github.com/ja/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository"
+      ]
+    },
+    {
+      "id": "GH-ADMIN-ACTIONS-ORGANIZATION",
+      "title": "Disabling or limiting GitHub Actions for your organization",
+      "type": "administration-page",
+      "source_url": "https://docs.github.com/en/organizations/managing-organization-settings/disabling-or-limiting-github-actions-for-your-organization",
+      "source_path": "content/organizations/managing-organization-settings/disabling-or-limiting-github-actions-for-your-organization.md",
+      "source_sha256": "56127d633a2ed132819da0fd97439ee75c8f525e3693c76c9c1bb13862738e61"
+    },
+    {
+      "id": "GH-ADMIN-CODEOWNERS",
+      "title": "About code owners",
+      "type": "administration-page",
+      "source_url": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners",
+      "source_path": "content/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners.md",
+      "source_sha256": "4ba9e48415e0f34067f2e0d05f76911cd280ae26c84416a1c2f8766003fe51f3",
+      "aliases": [
+        "https://docs.github.com/ja/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners"
+      ]
+    },
+    {
+      "id": "GH-ADMIN-RULESETS",
+      "title": "About rulesets",
+      "type": "administration-page",
+      "source_url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets",
+      "source_path": "content/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets.md",
+      "source_sha256": "63a2d719cb3a3fc62afd460ff13a53b6d350e2540d39108337538154c7b2e996"
+    },
+    {
+      "id": "GH-ADMIN-RULESET-RULES",
+      "title": "Available rules for rulesets",
+      "type": "administration-page",
+      "source_url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets",
+      "source_path": "content/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets.md",
+      "source_sha256": "6f95d754e108b4c9def969aab29eb3fa00c704af963bf93ec7cf03890c31e4ce"
+    },
+    {
+      "id": "GH-ADMIN-SAML-IAM",
+      "title": "About identity and access management with SAML single sign-on",
+      "type": "administration-page",
+      "source_url": "https://docs.github.com/en/enterprise-cloud@latest/organizations/managing-saml-single-sign-on-for-your-organization/about-identity-and-access-management-with-saml-single-sign-on",
+      "source_path": "content/organizations/managing-saml-single-sign-on-for-your-organization/about-identity-and-access-management-with-saml-single-sign-on.md",
+      "source_sha256": "d8a3f3bf0fdcd1594bbb1a46a7d140d54780ba3a674a5a8d094d675f92c8d83e",
+      "aliases": [
+        "https://docs.github.com/ja/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on"
+      ]
+    },
+    {
+      "id": "GH-ADMIN-SCIM-ORGANIZATIONS",
+      "title": "About SCIM for organizations",
+      "type": "administration-page",
+      "source_url": "https://docs.github.com/en/enterprise-cloud@latest/organizations/managing-saml-single-sign-on-for-your-organization/about-scim-for-organizations",
+      "source_path": "content/organizations/managing-saml-single-sign-on-for-your-organization/about-scim-for-organizations.md",
+      "source_sha256": "703054c52df8ad431d6201252f83293a884d0ebef47213bdc16ade66f53c575b"
+    },
+    {
+      "id": "GH-ADMIN-AUDIT-EVENTS",
+      "title": "Audit log events for your organization",
+      "type": "reference-page",
+      "source_url": "https://docs.github.com/en/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/audit-log-events-for-your-organization",
+      "source_path": "content/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/audit-log-events-for-your-organization.md",
+      "source_sha256": "e4b7806e2cce05935931188395ed904ce8d6560e276022ebf77c8dd8390ad615"
+    },
+    {
+      "id": "GH-ADMIN-CREDENTIAL-TYPES",
+      "title": "GitHub credential types reference",
+      "type": "reference-page",
+      "source_url": "https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/github-credential-types",
+      "source_path": "content/organizations/managing-programmatic-access-to-your-organization/github-credential-types.md",
+      "source_sha256": "a32f63447dc398af6c8f4ec19af95557f0e1ea96bf2aca062df99e8ce935a167"
     }
   ],
   "supporting_references": [
@@ -171,6 +268,14 @@
     {
       "title": "REST API endpoints for global security advisories",
       "url": "https://docs.github.com/en/rest/security-advisories/global-advisories"
+    },
+    {
+      "title": "Deciding whether to configure SAML for an enterprise or organizations",
+      "url": "https://docs.github.com/en/enterprise-cloud@latest/admin/managing-iam/using-saml-for-enterprise-iam/deciding-whether-to-configure-saml-for-your-enterprise-or-your-organizations"
+    },
+    {
+      "title": "Managing rulesets for repositories in an organization",
+      "url": "https://docs.github.com/en/enterprise-cloud@latest/organizations/managing-organization-settings/managing-rulesets-for-repositories-in-your-organization"
     }
   ]
 }

@@ -193,7 +193,7 @@ class GenerateChecklistsTest(unittest.TestCase):
         )
         self.assertEqual(sum(row["Status"] == "gap" for row in coverage), 0)
 
-    def test_supply_chain_reconciliation_is_generated_with_all_dispositions(self) -> None:
+    def test_supply_chain_reconciliation_generates_explicit_current_dispositions(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             output = Path(temporary)
             generate_checklists.generate_checklists(self.controls, output)
@@ -209,8 +209,9 @@ class GenerateChecklistsTest(unittest.TestCase):
             self.assertEqual(len(rows), 12)
             self.assertEqual(
                 {row["Disposition"] for row in rows},
-                {"implemented", "planned", "gap", "out-of-scope"},
+                {"implemented", "planned", "out-of-scope"},
             )
+            self.assertEqual(sum(row["Disposition"] == "gap" for row in rows), 0)
             self.assertTrue(
                 all(row["Claim Boundary"] for row in rows)
             )

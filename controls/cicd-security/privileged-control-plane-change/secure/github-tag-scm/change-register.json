@@ -1,0 +1,36 @@
+{
+  "schema": "psb-github-privileged-change-register/v1",
+  "collected_at": "2026-08-12T04:06:00Z",
+  "complete": true,
+  "changes": [
+    {
+      "change_id": "chg-github-tag-scm-20260812-001",
+      "provider_event_id": "audit-doc-555",
+      "github_request_id": "github-request-555",
+      "repository_id": 19001,
+      "repository_node_id": "R_kgDOProductApi",
+      "ruleset_id": 75,
+      "ruleset_node_id": "RRS_lAProtectReleaseTags",
+      "ruleset_target": "tag",
+      "before_version_id": 2,
+      "after_version_id": 3,
+      "request_id": "request:change-878",
+      "requested_at": "2026-08-12T03:23:00Z",
+      "policy_version": "sha256:7d3a56a21d9049bb248663752c53a09428f51104f7528245ef8b394ddd9cd261",
+      "before_digest": "sha256:180abde74f3180dfd8bbd2c5bfe9daab6ceddf049a3a41d70e15d7b9d47c40f3",
+      "after_digest": "sha256:15e6950525fdb305395d34dcba2ad51e39f39a709396dac0f61046fe8d6d8432",
+      "reason": "activate deletion, rewrite, and signature protections for release tags",
+      "ticket": "CHG-878",
+      "approvals": [
+        {
+          "actor_id": "principal:security-reviewer-09",
+          "role": "security",
+          "request_id": "request:change-878",
+          "after_digest": "sha256:15e6950525fdb305395d34dcba2ad51e39f39a709396dac0f61046fe8d6d8432",
+          "approved_at": "2026-08-12T03:28:00Z"
+        }
+      ],
+      "emergency": {"used": false}
+    }
+  ]
+}

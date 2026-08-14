@@ -394,6 +394,52 @@ mappings:
       - SCL-015
       - SCL-016
       - SCL-017
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GH-ADMIN-CREDENTIAL-TYPES
+    relationship: supports
+    confidence: high
+    rationale: The control distinguishes user App workflow and SSH credential identities lifetimes SSO authorization storage review and revocation using the provider credential taxonomy while requiring organization evidence for live grants.
+    reviewer: product-security
+    review_date: "2026-08-14"
+    applies_to:
+      - SCL-001
+      - SCL-002
+      - SCL-003
+      - SCL-004
+      - SCL-005
+      - SCL-008
+      - SCL-009
+      - SCL-010
+      - SCL-011
+      - SCL-013
+      - SCL-014
+      - SCL-015
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GH-ADMIN-SAML-IAM
+    relationship: supports
+    confidence: medium
+    rationale: Organization SAML authentication and credential authorization support the phishing-resistant source-access boundary, but the repository does not prove live IdP enforcement session policy or every credential authorization.
+    reviewer: product-security
+    review_date: "2026-08-14"
+    applies_to:
+      - SCL-007
+      - SCL-009
+      - SCL-010
+      - SCL-013
+      - SCL-014
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GH-ADMIN-SCIM-ORGANIZATIONS
+    relationship: supports
+    confidence: medium
+    rationale: SCIM-based membership removal supports credential offboarding and recurring access review while provider latency IdP correctness and unsupported account models remain external evidence.
+    reviewer: product-security
+    review_date: "2026-08-14"
+    applies_to:
+      - SCL-009
+      - SCL-010
   - framework: mitre-attack
     version: "v19.1"
     id: T1078

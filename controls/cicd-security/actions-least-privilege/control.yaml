@@ -171,6 +171,28 @@ mappings:
       - PERM-003
       - PERM-004
       - PERM-005
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GH-ADMIN-ACTIONS-REPOSITORY
+    relationship: related-to
+    confidence: medium
+    rationale: Repository Actions settings define hosted defaults and allowed execution policy that compose with explicit job permissions, while this static control does not claim to collect the live repository setting.
+    reviewer: product-security
+    review_date: "2026-08-14"
+    applies_to:
+      - PERM-001
+      - PERM-004
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GH-ADMIN-ACTIONS-ORGANIZATION
+    relationship: related-to
+    confidence: medium
+    rationale: Organization Actions policy can override or constrain repository execution and token defaults, so adopters need separate live evidence in addition to this workflow-local least-privilege verifier.
+    reviewer: product-security
+    review_date: "2026-08-14"
+    applies_to:
+      - PERM-001
+      - PERM-004
   - framework: openssf-osps-baseline
     version: "2026.02.19"
     id: OSPS-AC-04.01

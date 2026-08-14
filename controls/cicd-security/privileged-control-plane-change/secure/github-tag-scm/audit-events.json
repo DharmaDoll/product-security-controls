@@ -1,0 +1,42 @@
+{
+  "schema": "psb-github-audit-export/v1",
+  "organization": "example-org",
+  "collected_at": "2026-08-12T04:08:00Z",
+  "complete": true,
+  "collection": {
+    "api_endpoint": "https://api.github.com/orgs/example-org/audit-log",
+    "api_version": "2026-03-10",
+    "include": "all",
+    "order": "asc",
+    "per_page": 100,
+    "window_start": "2026-08-12T03:00:00Z",
+    "window_end": "2026-08-12T03:34:00Z",
+    "pages": 1,
+    "raw_events": 1,
+    "selected_events": 1,
+    "pagination_complete": true
+  },
+  "events": [
+    {
+      "_document_id": "audit-doc-555",
+      "action": "repository_ruleset.update",
+      "actor": "repository-admin-21",
+      "actor_id": 17021,
+      "actor_is_bot": false,
+      "org": "example-org",
+      "repo": "example-org/product-api",
+      "repository_id": 19001,
+      "request_id": "github-request-555",
+      "operation_type": "modify",
+      "@timestamp": "2026-08-12T03:30:00Z",
+      "ruleset_id": 75,
+      "ruleset_name": "protect-release-tags",
+      "ruleset_old_name": "protect-release-tags",
+      "ruleset_enforcement": "active",
+      "ruleset_old_enforcement": "evaluate",
+      "ruleset_source_type": "Repository",
+      "ruleset_rules_updated": ["deletion", "non_fast_forward", "required_signatures"],
+      "hashed_token": "redacted-provider-token-identifier"
+    }
+  ]
+}

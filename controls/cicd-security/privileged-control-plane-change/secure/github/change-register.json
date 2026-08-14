@@ -1,0 +1,52 @@
+{
+  "schema": "psb-github-privileged-change-register/v1",
+  "collected_at": "2026-08-12T04:06:00Z",
+  "complete": true,
+  "changes": [
+    {
+      "change_id": "chg-github-20260812-001",
+      "provider_event_id": "audit-doc-551",
+      "github_request_id": "github-request-551",
+      "request_id": "request:change-871",
+      "requested_at": "2026-08-12T03:10:00Z",
+      "policy_version": "sha256:7d3a56a21d9049bb248663752c53a09428f51104f7528245ef8b394ddd9cd261",
+      "before_digest": "sha256:fef754a40174e9bec23f4d35761c97cc427b5538583e9d5c862004cac76ecfea",
+      "after_digest": "sha256:ce1c6062112121c6cd7e48962652ea95c16c4d18d1694abf8d73aae17e7aa761",
+      "reason": "require two reviewers and prevent self review",
+      "ticket": "CHG-871",
+      "approvals": [
+        {
+          "actor_id": "principal:security-reviewer-09",
+          "role": "security",
+          "request_id": "request:change-871",
+          "after_digest": "sha256:ce1c6062112121c6cd7e48962652ea95c16c4d18d1694abf8d73aae17e7aa761",
+          "approved_at": "2026-08-12T03:14:00Z"
+        }
+      ],
+      "emergency": {"used": false}
+    },
+    {
+      "change_id": "chg-github-20260812-002",
+      "provider_event_id": "audit-doc-552",
+      "github_request_id": "github-request-552",
+      "runner_group_id": 42,
+      "request_id": "request:change-872",
+      "requested_at": "2026-08-12T03:11:00Z",
+      "policy_version": "sha256:7d3a56a21d9049bb248663752c53a09428f51104f7528245ef8b394ddd9cd261",
+      "before_digest": "sha256:3ded938befd4c92e6a899a0961c6d68bd3c68f59041c1175eccd45c5f44662f9",
+      "after_digest": "sha256:94aa203abf1bc6002fdd2dd37a4e6b9152beaf49906efd030d9afa29e9eae938",
+      "reason": "limit release runners to one reviewed workflow and deny public repositories",
+      "ticket": "CHG-872",
+      "approvals": [
+        {
+          "actor_id": "principal:security-reviewer-09",
+          "role": "security",
+          "request_id": "request:change-872",
+          "after_digest": "sha256:94aa203abf1bc6002fdd2dd37a4e6b9152beaf49906efd030d9afa29e9eae938",
+          "approved_at": "2026-08-12T03:15:00Z"
+        }
+      ],
+      "emergency": {"used": false}
+    }
+  ]
+}

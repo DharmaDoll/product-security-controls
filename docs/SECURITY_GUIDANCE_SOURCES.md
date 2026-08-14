@@ -988,6 +988,8 @@ Disposition and limitations:
 - Guide publication date: `2022-08-31`
 - Official benchmark page:
   [CIS Software Supply Chain Security](https://www.cisecurity.org/benchmark/Software-Supply-Chain-Security)
+- Discovery alias supplied during review:
+  [CIS GitHub Benchmark](https://www.cisecurity.org/benchmark/github)
 - Versions displayed by the official page on `2026-08-04`:
   - CIS GitHub Benchmark `1.2.0`;
   - CIS GitLab Benchmark `1.0.1`.
@@ -1069,6 +1071,187 @@ Disposition and limitations:
 - the implemented E3 slice uses synthetic provider-neutral evidence and needs
   provider API, provisioner, network-probe, and log-backend adapters before a
   production fleet can be assessed.
+
+<a id="ref-cicd-015"></a>
+
+### REF-CICD-015 — デジタル庁 DS-202 CI/CDパイプライン技術レポート
+
+- Status: `adopted-partially`
+- Type: official informative technical report and implementation example
+- Publisher: デジタル庁
+- Official catalog:
+  [デジタル社会推進標準ガイドライン](https://www.digital.go.jp/resources/standard_guidelines/)
+- Primary report:
+  [DS-202 CI/CDパイプラインにおけるセキュリティの留意点に関する技術レポート](https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/504c3218-1eb0-4287-ba16-01641fdc038c/d377749c/20240329_policies_development_management_outline_08.pdf)
+- Publication date: `2024-03-29`
+- Primary PDF SHA-256:
+  `964217f43a8ac33fa1d1fef56eed246c0350938762b710b7f04f5cc0d534f40f`
+- Implementation example:
+  [別添 CI/CDパイプラインによるInfrastructure as Code実装例](https://www.digital.go.jp/assets/contents/node/basic_page/field_ref_resources/c1bdb4a2-850f-48ec-a938-a8369f820ac1/c20761db/20250325_policies_development_management_outline_02.pdf)
+- Catalog publication date for the appendix: `2025-06-30`
+- Appendix PDF SHA-256:
+  `d679eeafe653aa9632dd2f2b02d60ab0dbe0a87557d79d6694fac734ed386e7b`
+- Repository review date: `2026-08-14`
+- Related controls:
+  - `PSB-SOURCE-001..004` — endpoint, repository, and identity boundaries;
+  - `PSB-CICD-001..008` — workflow, credential, runner, and control-plane
+    protections;
+  - `PSB-IAC-001`, `PSB-BUILD-001..003`, and `PSB-REL-001..005` — IaC,
+    build, provenance, SBOM, verification, and signing outcomes.
+
+Adopted contribution:
+
+- inventory the pipeline, plugins, repositories, third-party applications,
+  credentials, build systems, and delivery destinations as security assets;
+- prefer short-lived workload authentication, avoid credential reuse between
+  build and delivery, and separate pipeline administration from ordinary use;
+- retain pipeline, target-environment, and integrated-service change and
+  activity logs for investigation;
+- protect repositories and important branches with access control, review,
+  force-update restrictions, and stronger protection for pipeline definitions;
+- bind work to attributable identities and verify artifact integrity,
+  authenticity, and traceability across pipeline phases;
+- use the GitHub Actions and Terraform appendix as an illustrative provider
+  profile, not as the provider-neutral control boundary.
+
+Disposition and limitations:
+
+- DS-202 is explicitly informative and is not a compliance framework or proof
+  that a control is deployed;
+- government-system assumptions, named products, and example architecture may
+  not apply to every adopter and do not replace product threat modeling;
+- the appendix records an implementation snapshot and must be revalidated
+  against current GitHub, Terraform, and cloud-provider behavior;
+- the PDFs are linked and integrity-recorded but not redistributed by this
+  repository; quoted or adapted content remains subject to publisher terms;
+- recommendations already owned by existing controls are reconciled rather
+  than duplicated as documentation-only control IDs.
+
+<a id="ref-cicd-016"></a>
+
+### REF-CICD-016 — NSA／CISA Defending CI/CD Environments
+
+- Status: `reviewed`
+- Type: official Cybersecurity Information Sheet and CI/CD threat guidance
+- Publishers: National Security Agency (NSA) and Cybersecurity and
+  Infrastructure Security Agency (CISA)
+- Official landing page:
+  [CSI: Defending Continuous Integration/Continuous Delivery Environments](https://www.nsa.gov/Press-Room/Digital-Media-Center/Document-Gallery/igphoto/2003249466/)
+- Official PDF:
+  [CSI_DEFENDING_CI_CD_ENVIRONMENTS.PDF](https://media.defense.gov/2023/Jun/28/2003249466/-1/-1/0/CSI_DEFENDING_CI_CD_ENVIRONMENTS.PDF)
+- Publication date: `2023-06-28`
+- Document identifiers: `U/OO/170159-23`, `PP-23-1680`, `June 2023`,
+  `Version 1.0`, `TLP:CLEAR`
+- PDF integrity status: `input-required` — the official media endpoint was
+  semantically reviewed but rejected automated byte retrieval with HTTP 403 on
+  `2026-08-14`; no third-party mirror digest is substituted
+- Repository review date: `2026-08-14`
+- Related controls:
+  - `PSB-SOURCE-001..004`, `PSB-CICD-001..008`, `PSB-DEPS-001..004`,
+    `PSB-BUILD-001..003`, `PSB-DETECT-001`, and `PSB-REL-001..005`;
+  - [`CICD_THREAT_MATRIX_RECONCILIATION.md`](CICD_THREAT_MATRIX_RECONCILIATION.md)
+    for explicit cross-source dispositions.
+
+Reviewed contribution:
+
+- cross-check credential theft, supply-chain compromise, CI/CD configuration
+  modification, malicious dependency, runner, secret, lateral-movement, and
+  exfiltration scenarios against the repository threat inventory;
+- reinforce short-lived credentials, multi-factor authentication,
+  least-privilege access, separation of duties, two-person code review,
+  signed configuration, audit retention, segmentation, scanning, dependency
+  restriction, and SBOM as separate layers;
+- distinguish tool-independent CI/CD threats from the GitHub-specific provider
+  administration pages in the pinned GitHub guidance registry.
+
+Disposition and limitations:
+
+- this source is guidance, not a new compliance framework or an assertion of
+  NSA／CISA approval;
+- ATT&CK and D3FEND identifiers in the report are cross-references, not local
+  framework IDs; exact ATT&CK mappings continue to use the pinned
+  `mitre-attack` registry and row-level control rationale;
+- its broad recommendations do not prove implementation, current provider
+  state, complete threat coverage, or that one scanner is sufficient;
+- artifact-integrity-dependent extraction or redistribution remains blocked
+  until the official PDF bytes and SHA-256 can be recorded.
+
+<a id="ref-cicd-017"></a>
+
+### REF-CICD-017 — GitHub Organizationの安全な運用と継続的モニタリング
+
+- Status: `identified`
+- Type: practitioner operational presentation
+- Publisher: GMO Flatt Security / Shisho Cloud
+- Publication date: `2022-05-16`
+- Live URL:
+  [開発者のためのGitHub Organizationの安全な運用と継続的なモニタリング](https://speakerdeck.com/flatt_security/kai-fa-zhe-notameno-github-organization-noan-quan-nayun-yong-to-ji-sok-de-namonitaringu)
+- Immutable public source: not identified
+- License or redistribution terms: slide content remains owned by its creator;
+  link and paraphrase only
+- Repository review date: `2026-08-14`
+- Related controls and plans:
+  - `PSB-SOURCE-004` — source credential lifecycle;
+  - `PSB-CICD-004..008` — Actions privilege, trust, runner, and administrator
+    boundaries;
+  - `PSB-GOV-002..003` — exceptions and adoption evidence.
+
+Potential contribution:
+
+- provide Japanese operational context for organization-wide configuration
+  inventory, policy drift, access review, installed application review, and
+  continuous monitoring;
+- inform provider-adapter evidence and ownership questions that static
+  workflow analysis cannot answer.
+
+Disposition and limitations:
+
+- a 2022 practitioner presentation cannot establish current GitHub defaults,
+  API fields, product availability, or universal best practice;
+- recommendations require current official GitHub documentation and positive
+  and negative provider fixtures before becoming checklist requirements;
+- this source is non-normative and creates no framework mapping or adopted
+  external dependency.
+
+<a id="ref-cicd-018"></a>
+
+### REF-CICD-018 — OpenSSF Allstar
+
+- Status: `identified`
+- Type: organization and repository security-policy monitoring／enforcement App
+- Publisher: OpenSSF
+- Live URL: [ossf/allstar](https://github.com/ossf/allstar)
+- Pinned reference source:
+  [`ossf/allstar` at `738a9480c5b870892c890f92217c059ff338569b`](https://github.com/ossf/allstar/tree/738a9480c5b870892c890f92217c059ff338569b)
+- Source commit date: `2026-08-02`
+- License:
+  [Apache-2.0](https://github.com/ossf/allstar/blob/738a9480c5b870892c890f92217c059ff338569b/LICENSE)
+- Repository review date: `2026-08-14`
+- Related controls and plans:
+  - `PSB-CICD-008` — privileged provider-setting change and audit evidence;
+  - `PSB-GOV-002` — narrow, owned, expiring exceptions;
+  - future GitHub organization posture and drift adapters, not yet reserved.
+
+Potential contribution:
+
+- continuously evaluate selected organization and repository settings against
+  explicit policy;
+- separate alert-only findings from intentionally enabled remediation and
+  retain target, policy revision, observed state, action, and result;
+- provide organization-scale drift evidence where repository-local workflow
+  validation cannot observe hosted settings.
+
+Disposition and limitations:
+
+- Allstar is not installed, authorized, or executed by this repository;
+- automatic remediation is a privileged external mutation and requires
+  least-privilege GitHub App permissions, independent change audit, dry-run
+  fixtures, rollback, bounded exceptions, and fail-closed collection health;
+- adoption requires a unique provider-evidence gap beyond existing GitHub
+  collectors and must not convert issue creation, aggregate posture, missing
+  API access, or App failure into a clean control result;
+- pinned source review does not authorize the public App, its hosting
+  environment, or future source changes.
 
 <a id="ref-build-001"></a>
 
@@ -1928,6 +2111,51 @@ Disposition and limitations:
 - AI suggestions can be incomplete or incorrect and require validation against
   the original structured scanner finding and human review.
 
+<a id="ref-detect-003"></a>
+
+### REF-DETECT-003 — Checkov GitHub configuration policy index
+
+- Status: `rejected`
+- Type: generated product policy index and secondary scanner candidate
+- Publisher: Checkov / Bridgecrew
+- Live policy index:
+  [github_configuration resource scans](https://www.checkov.io/5.Policy%20Index/github_configuration.html)
+- Policy-index review date: `2026-08-14`
+- Policies observed at review: `CKV_GITHUB_1..6` for organization 2FA, SSO,
+  IP allow list, signed commits, force-push restriction, and HTTPS organization
+  webhooks
+- Pinned comparison distribution: Checkov `3.3.8` PyPI sdist
+- Reviewed distribution SHA-256:
+  `a65e5cda0337e7770436eeadabb1f65c6ce4ad7f5b145a7f801bfdf14f1aea05`
+- Decision record:
+  [`secure/checkov-comparison.json`](../controls/detection-verification/integrity-verified-scanner/secure/checkov-comparison.json)
+- Related controls:
+  - `PSB-DETECT-001` — scanner integrity, result, and failure semantics;
+  - `PSB-IAC-001` — resolved-plan policy and provider enforcement;
+  - `PSB-SOURCE-004` and `PSB-CICD-008` — identity and hosted control-plane
+    evidence that a source configuration scan alone cannot prove.
+
+Reviewed contribution:
+
+- record GitHub configuration as a distinct Checkov framework rather than
+  assuming its ordinary Terraform or workflow findings cover hosted settings;
+- use the six observed policy outcomes as possible comparison fixtures when a
+  repository manages equivalent GitHub configuration as reviewed code.
+
+Disposition and limitations:
+
+- Checkov remains uninstalled and is not an execution dependency because the
+  first pinned comparison demonstrated no unique blocking IaC outcome beyond
+  the adopted Trivy slice;
+- the live generated policy index is mutable and is not claimed to describe
+  the exact rule implementation shipped in the pinned `3.3.8` distribution;
+- a configuration-file finding does not prove current GitHub organization or
+  repository state, enforcement, bypass actors, drift, or audit completeness;
+- adoption requires an isolated positive and negative fixture that proves a
+  unique required outcome, plus pinned executable integrity, explicit network
+  behavior, and separate `clean`, `finding`, `NOT_CHECKED`, and `ERROR`
+  semantics.
+
 <a id="ref-rel-001"></a>
 
 ### REF-REL-001 — OWASP Dependency-Track SBOM portfolio and analysis platform
@@ -2103,18 +2331,19 @@ Disposition and limitations:
 
 The reviewed collaboration history contained:
 
-- twenty unique explicit external URLs: the three AI design sources recorded
-  as `REF-AI-001..003` (the repeated AwesomeProductSecurity URL is one source),
-  three GitHub Actions documentation URLs
-  represented by the pinned GitHub guidance registry, and the Advisory
-  Database web query recorded with its API as `REF-CICD-001`, plus the six
-  security diagnostic and monitoring projects recorded as `REF-CICD-002..004`,
-  `REF-BUILD-001`, `REF-GOV-001`, and `REF-SOURCE-001`, plus the six
-  practitioner and security-research sources recorded as `REF-CICD-005..010`,
-  plus the CI/CD threat taxonomy recorded as `REF-CICD-011`;
+- the AI design sources recorded as `REF-AI-001..003`, the GitHub Actions and
+  administration documentation represented by the pinned GitHub guidance
+  registry, and the Advisory Database query recorded with its API as
+  `REF-CICD-001`;
+- the CI/CD tools, practitioner guidance, public-sector reports, and threat
+  sources recorded as `REF-CICD-002..018`, including デジタル庁 DS-202,
+  NSA／CISA Version 1.0, the FLATT organization-monitoring presentation, and
+  source-pinned but unadopted Allstar;
 - implementation sources selected while delivering and extending
   `PSB-DETECT-001` and the SBOM consumption path, recorded as
-  `REF-DETECT-001..002` and `REF-REL-001..003`;
+  `REF-DETECT-001..003` and `REF-REL-001..003`; the Checkov GitHub policy index
+  is explicitly rejected for the current scanner slice rather than silently
+  treated as adopted coverage;
 - dependency registry proxy and native cooldown compatibility sources selected
   for the managed acquisition path in `PSB-DEPS-001`, recorded as
   `REF-DEPS-001` and `REF-DEPS-004`;
@@ -2125,8 +2354,8 @@ The reviewed collaboration history contained:
 - one referenced but not yet supplied application assessment source, recorded
   as `REF-USER-004`;
 - implementation requests for pre-commit examples, Gitleaks and alternative
-  scanners, GitHub web-search dorking, Checkov, source credentials, SLSA Build
-  L2 filtering, and future controls.
+  scanners, GitHub web-search dorking, source credentials, SLSA Build L2
+  filtering, and future controls.
 
 The implementation requests in the last item are requirements and design
 decisions, not bibliographic sources. They remain in their control packages,

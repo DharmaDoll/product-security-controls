@@ -1,0 +1,20 @@
+{
+  "schema": "psb-github-branch-protection-snapshot/v1",
+  "organization": "example-org",
+  "collected_at": "2026-08-12T03:31:00Z",
+  "complete": true,
+  "collection": {
+    "api_version": "2026-03-10",
+    "repository_endpoint": "https://api.github.com/repos/example-org/product-api",
+    "protection_endpoint": "https://api.github.com/repos/example-org/product-api/branches/main/protection",
+    "repository_request_id": "github-state-request-701",
+    "protection_request_id": "github-state-request-702"
+  },
+  "repository": {
+    "id": 19001,
+    "node_id": "R_kgDOProductApi",
+    "full_name": "example-org/product-api"
+  },
+  "branch": {"name": "main"},
+  "protection": {"allow_force_pushes": false}
+}

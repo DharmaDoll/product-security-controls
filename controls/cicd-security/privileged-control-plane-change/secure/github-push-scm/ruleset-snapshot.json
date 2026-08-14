@@ -1,0 +1,91 @@
+{
+  "schema": "psb-github-repository-ruleset-snapshot/v1",
+  "organization": "example-org",
+  "collected_at": "2026-08-12T03:36:00Z",
+  "complete": true,
+  "collection": {
+    "api_version": "2026-03-10",
+    "repository_endpoint": "https://api.github.com/repos/example-org/product-api",
+    "ruleset_endpoint": "https://api.github.com/repos/example-org/product-api/rulesets/76?includes_parents=false",
+    "history_endpoint": "https://api.github.com/repos/example-org/product-api/rulesets/76/history?per_page=100",
+    "history_pages": 1,
+    "history_complete": true,
+    "repository_request_id": "github-state-request-633",
+    "ruleset_request_id": "github-state-request-634",
+    "history_request_ids": ["github-state-request-635"],
+    "version_request_ids": ["github-state-request-636", "github-state-request-637"]
+  },
+  "repository": {"id": 19001, "node_id": "R_kgDOProductApi", "full_name": "example-org/product-api"},
+  "ruleset": {
+    "id": 76,
+    "node_id": "RRS_lAProtectForkNetwork",
+    "before_version_id": 1,
+    "after_version_id": 2,
+    "history": [
+      {"version_id": 2, "actor_id": 17021, "updated_at": "2026-08-12T03:35:00Z"},
+      {"version_id": 1, "actor_id": 17018, "updated_at": "2026-08-05T02:00:00Z"}
+    ],
+    "versions": [
+      {
+        "version_id": 1,
+        "actor_id": 17018,
+        "updated_at": "2026-08-05T02:00:00Z",
+        "state": {
+          "id": 76,
+          "node_id": "RRS_lAProtectForkNetwork",
+          "name": "protect-fork-network-pushes",
+          "target": "push",
+          "source_type": "Repository",
+          "source": "example-org/product-api",
+          "enforcement": "evaluate",
+          "bypass_actors": [],
+          "conditions": null,
+          "rules": [
+            {"type": "file_extension_restriction", "parameters": {"restricted_file_extensions": ["exe", "dll"]}}
+          ],
+          "created_at": "2026-08-05T02:00:00Z",
+          "updated_at": "2026-08-05T02:00:00Z"
+        }
+      },
+      {
+        "version_id": 2,
+        "actor_id": 17021,
+        "updated_at": "2026-08-12T03:35:00Z",
+        "state": {
+          "id": 76,
+          "node_id": "RRS_lAProtectForkNetwork",
+          "name": "protect-fork-network-pushes",
+          "target": "push",
+          "source_type": "Repository",
+          "source": "example-org/product-api",
+          "enforcement": "active",
+          "bypass_actors": [],
+          "conditions": null,
+          "rules": [
+            {"type": "file_extension_restriction", "parameters": {"restricted_file_extensions": ["exe", "dll"]}},
+            {"type": "max_file_size", "parameters": {"max_file_size": 50}}
+          ],
+          "created_at": "2026-08-05T02:00:00Z",
+          "updated_at": "2026-08-12T03:35:00Z"
+        }
+      }
+    ],
+    "current": {
+      "id": 76,
+      "node_id": "RRS_lAProtectForkNetwork",
+      "name": "protect-fork-network-pushes",
+      "target": "push",
+      "source_type": "Repository",
+      "source": "example-org/product-api",
+      "enforcement": "active",
+      "bypass_actors": [],
+      "conditions": null,
+      "rules": [
+        {"type": "file_extension_restriction", "parameters": {"restricted_file_extensions": ["exe", "dll"]}},
+        {"type": "max_file_size", "parameters": {"max_file_size": 50}}
+      ],
+      "created_at": "2026-08-05T02:00:00Z",
+      "updated_at": "2026-08-12T03:35:00Z"
+    }
+  }
+}

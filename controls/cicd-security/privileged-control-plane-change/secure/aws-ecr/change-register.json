@@ -1,0 +1,32 @@
+{
+  "schema": "psb-aws-ecr-privileged-change-register/v1",
+  "collected_at": "2026-08-12T04:05:00Z",
+  "complete": true,
+  "changes": [
+    {
+      "change_id": "chg-ecr-20260812-001",
+      "provider_event_id": "3ed0ce32-3fcb-48e8-8131-3faf7078f094",
+      "aws_request_id": "64dc21ca-d760-4dbc-90a8-d68b40a5f384",
+      "repository_arn": "arn:aws:ecr:us-east-1:111122223333:repository/product-api",
+      "repository_created_at": "2026-07-01T00:00:00Z",
+      "force": false,
+      "request_id": "request:change-874",
+      "requested_at": "2026-08-12T03:47:00Z",
+      "policy_version": "sha256:7d3a56a21d9049bb248663752c53a09428f51104f7528245ef8b394ddd9cd261",
+      "before_digest": "sha256:30d8a16affc3fa2bd978f3b4de302fbb6d6b4e77e100ebd93aac2c92c753150b",
+      "after_digest": "sha256:6fb83aaf3a140f05d5a78ccf993fe0a7239e8dc6e42bb76878f8da5380381c60",
+      "reason": "remove repository-policy administration from the release publisher",
+      "ticket": "CHG-874",
+      "approvals": [
+        {
+          "actor_id": "principal:security-reviewer-09",
+          "role": "security",
+          "request_id": "request:change-874",
+          "after_digest": "sha256:6fb83aaf3a140f05d5a78ccf993fe0a7239e8dc6e42bb76878f8da5380381c60",
+          "approved_at": "2026-08-12T03:48:00Z"
+        }
+      ],
+      "emergency": {"used": false}
+    }
+  ]
+}

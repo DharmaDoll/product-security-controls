@@ -8,9 +8,9 @@ This view verifies whether identities and decisions stay connected between contr
 
 | Disposition | Rows | Meaning |
 |---|---:|---|
-| implemented | 9 | Exact current control checks support the connection. |
+| implemented | 10 | Exact current control checks support the connection. |
 | planned | 1 | A named owner and planned control remain necessary. |
-| gap | 1 | Partial or absent evidence leaves an owned integration gap. |
+| gap | 0 | Partial or absent evidence leaves an owned integration gap. |
 | out-of-scope | 1 | The boundary is intentionally assessed elsewhere. |
 
 ## Reconciliation rows
@@ -26,6 +26,6 @@ This view verifies whether identities and decisions stay connected between contr
 | SCIR-007 | 5.1.2; 5.2 | Published registry object to deployment admission identity | implemented | PSB-CONTAINER-002-REG-002; PSB-CONTAINER-002-REG-003; PSB-CONTAINER-002-REG-004; PSB-CONTAINER-001-CNT-001; PSB-CONTAINER-001-CNT-002; PSB-CONTAINER-001-CNT-009 |  |  |  |
 | SCIR-008 | 5.2; 5.2.1 | Deployment identity to runtime impact inventory | implemented | PSB-IAC-001-IAC-007; PSB-IAC-001-IAC-008; PSB-IAC-001-IAC-009; PSB-REL-003-SBM-008; PSB-REL-003-SBM-009; PSB-GOV-001-INC-007 |  |  |  |
 | SCIR-009 | 5.1.4 | Application security results to source revision | planned | PSB-SOURCE-001-DEH-004; PSB-DEPS-004-DCR-001; PSB-DEPS-004-DCR-004 | PSB-CODE-001; PSB-CODE-002; PSB-CODE-003; PSB-CODE-004 | application-security | The application assessment source is still required before executable PSB-CODE controls can provide revision-bound evidence. |
-| SCIR-010 | 4; 5 | CI/CD human and control-plane identity to privileged configuration change | gap | PSB-CICD-007-RNR-006; PSB-CICD-007-RNR-008 |  | ci-platform | No cross-provider adapter currently reconciles human administrator sessions and control-plane changes across SCM, CI, cloud federation, registry, and signing services. |
+| SCIR-010 | 4; 5 | CI/CD human and control-plane identity to privileged configuration change | implemented | PSB-CICD-008-CPC-001; PSB-CICD-008-CPC-002; PSB-CICD-008-CPC-003; PSB-CICD-008-CPC-004; PSB-CICD-008-CPC-005; PSB-CICD-008-CPC-006; PSB-CICD-008-CPC-007 |  |  |  |
 | SCIR-011 | 5.1.4; 5.2 | Running artifact age and vulnerability state to rebuild decision | implemented | PSB-CONTAINER-002-REG-006; PSB-GOV-001-INC-001; PSB-GOV-001-INC-007; PSB-GOV-005-DAR-002; PSB-GOV-005-DAR-003; PSB-GOV-005-DAR-004; PSB-GOV-005-DAR-005; PSB-GOV-005-DAR-006 |  |  |  |
 | SCIR-012 | 1.2 | Product-specific secure design and enterprise vulnerability management | out-of-scope |  |  | product-security | This boundary is intentionally excluded from the SP 800-204D integration profile rather than recorded as a CI/CD implementation gap. |

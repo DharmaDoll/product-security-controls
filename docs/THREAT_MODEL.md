@@ -224,6 +224,14 @@ threats are covered.
 ### CI/CD and release threats
 
 - excessive workflow permissions;
+- a phished, stolen, shared, or stale human administrator session changing
+  branch rules, protected environments, runner registration, workload-identity
+  trust, registry protection, or signing policy outside the reviewed pipeline;
+- a privileged change request, approval, execution, and provider audit event
+  referring to different targets, policy versions, sessions, or resulting
+  configuration digests while the change is reported as authorized;
+- an emergency control-plane bypass remaining active without bounded expiry,
+  independent post-change review, or complete cross-service audit collection;
 - untrusted PR execution;
 - credential exfiltration;
 - OIDC trust misconfiguration;
@@ -251,6 +259,36 @@ threats are covered.
 - mutable container tags.
 - exact artifact digestとactive deploymentの関係が欠落し、稼働中の影響serviceが
   SBOM incident scopeから漏れること;
+
+`PSB-CICD-008` owns the provider-neutral evidence chain for human privileged
+control-plane changes across SCM, CI, cloud identity, artifact registry, and
+signing services. It binds one named phishing-resistant administrator session,
+exact target and before-after configuration digests, independent approval,
+execution, provider audit, and bounded emergency review. Its offline fixtures
+do not prove live provider configuration, membership, authenticator custody,
+audit-backend independence, or provider control-plane integrity.
+The executable GitHub fragment covers environment protection and runner-group
+configuration through bounded audit collection and current-state joins. The
+AWS fragment covers direct IAM workload-trust updates through CloudTrail,
+stable `RoleId`, `iam:GetRole`, external human-session evidence, and a reviewed
+change register. The ECR fragment covers direct repository access-policy
+changes through CloudTrail, current policy, and repository-generation identity.
+The KMS fragment covers direct signing-key default-policy changes through
+CloudTrail, stable Key ID／ARN, signing-purpose metadata, and current policy,
+while rejecting the lockout-safety bypass in the ordinary path. The GitHub SCM
+fragment covers repository- and organization-scoped branch／tag and repository-scoped
+push ruleset updates using stable source and ruleset identities plus exact history
+states. Push evidence additionally binds a private／internal root and its completely
+paginated fork-network identity; organization-wide push remains outside scope. The organization
+classification from audit source type and org identity is an explicit inference
+that needs tenant-event validation. A separate legacy branch slice binds only
+the force-push enforcement audit event to stable repository／branch identity,
+reviewed before state, and a current REST snapshot; it does not cover the other
+legacy branch settings or provider-side before history. Each fragment remains
+partial; none proves live cross-service completeness, and remaining legacy SCM,
+organization-wide push scope, or ruleset lifecycle operations,
+remaining CI／registry／signing operations, plus Azure／GCP adapters remain
+outside the implemented boundary.
 
 The
 [CI/CD threat-matrix reconciliation](CICD_THREAT_MATRIX_RECONCILIATION.md)

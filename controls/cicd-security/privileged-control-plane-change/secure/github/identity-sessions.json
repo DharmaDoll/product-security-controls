@@ -1,0 +1,33 @@
+{
+  "schema": "psb-github-admin-session-export/v1",
+  "collected_at": "2026-08-12T04:07:00Z",
+  "complete": true,
+  "sessions": [
+    {
+      "github_actor_id": 17017,
+      "github_actor": "release-admin-17",
+      "request_id": "github-request-551",
+      "principal_id": "principal:release-admin-17",
+      "role": "ci-admin",
+      "organization_member": true,
+      "identity_assurance": "phishing-resistant",
+      "session_id": "session:github:6319",
+      "session_issued_at": "2026-08-12T03:08:00Z",
+      "session_expires_at": "2026-08-12T03:38:00Z",
+      "reauthenticated_at": "2026-08-12T03:09:00Z"
+    },
+    {
+      "github_actor_id": 17017,
+      "github_actor": "release-admin-17",
+      "request_id": "github-request-552",
+      "principal_id": "principal:release-admin-17",
+      "role": "ci-admin",
+      "organization_member": true,
+      "identity_assurance": "phishing-resistant",
+      "session_id": "session:github:6319",
+      "session_issued_at": "2026-08-12T03:08:00Z",
+      "session_expires_at": "2026-08-12T03:38:00Z",
+      "reauthenticated_at": "2026-08-12T03:09:00Z"
+    }
+  ]
+}

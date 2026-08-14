@@ -1,0 +1,26 @@
+{
+  "schema": "psb-github-fork-network-snapshot/v1",
+  "organization": "example-org",
+  "collected_at": "2026-08-12T03:36:00Z",
+  "complete": true,
+  "collection": {
+    "api_version": "2026-03-10",
+    "root_endpoint": "https://api.github.com/repos/example-org/product-api",
+    "forks_endpoint": "https://api.github.com/repos/example-org/product-api/forks?per_page=100&sort=oldest",
+    "fork_pages": 1,
+    "forks_complete": true,
+    "root_request_id": "github-network-request-631",
+    "fork_request_ids": ["github-network-request-632"]
+  },
+  "root": {
+    "id": 19001,
+    "node_id": "R_kgDOProductApi",
+    "full_name": "example-org/product-api",
+    "visibility": "private",
+    "network_count": 2
+  },
+  "forks": [
+    {"id": 19101, "node_id": "R_kgDOProductApiFork1", "full_name": "example-org/product-api-integration", "root_id": 19001, "root_node_id": "R_kgDOProductApi"},
+    {"id": 19201, "node_id": "R_kgDOProductApiFork2", "full_name": "partner-org/product-api-review", "root_id": 19001, "root_node_id": "R_kgDOProductApi"}
+  ]
+}

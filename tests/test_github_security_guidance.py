@@ -43,6 +43,17 @@ EXPECTED_COLLECTION_PAGES = {
         "GHAS-REF-SECRETS",
         "GHAS-REF-OIDC",
     },
+    "GH-ADMINISTRATION-SECURITY": {
+        "GH-ADMIN-ACTIONS-REPOSITORY",
+        "GH-ADMIN-ACTIONS-ORGANIZATION",
+        "GH-ADMIN-CODEOWNERS",
+        "GH-ADMIN-RULESETS",
+        "GH-ADMIN-RULESET-RULES",
+        "GH-ADMIN-SAML-IAM",
+        "GH-ADMIN-SCIM-ORGANIZATIONS",
+        "GH-ADMIN-AUDIT-EVENTS",
+        "GH-ADMIN-CREDENTIAL-TYPES",
+    },
 }
 
 
@@ -92,6 +103,23 @@ class GitHubSecurityGuidanceRegistryTest(unittest.TestCase):
     def test_mapping_ids_use_stable_format(self) -> None:
         for page in self.registry["entries"]:
             self.assertIsNotNone(re.fullmatch(r"[A-Z0-9-]+", page["id"]))
+
+    def test_administration_pages_bind_pinned_source_bytes(self) -> None:
+        administration_ids = EXPECTED_COLLECTION_PAGES[
+            "GH-ADMINISTRATION-SECURITY"
+        ]
+        pages = {
+            page["id"]: page
+            for page in self.registry["entries"]
+            if page["id"] in administration_ids
+        }
+        self.assertEqual(set(pages), administration_ids)
+        source_paths = []
+        for page in pages.values():
+            self.assertRegex(page["source_path"], r"^content/.+\.md$")
+            self.assertRegex(page["source_sha256"], r"^[0-9a-f]{64}$")
+            source_paths.append(page["source_path"])
+        self.assertEqual(len(source_paths), len(set(source_paths)))
 
     def test_control_mappings_reference_registered_pages_and_version(self) -> None:
         registered_ids = {page["id"] for page in self.registry["entries"]}

@@ -1,0 +1,139 @@
+{
+  "schema": "psb-cicd-control-plane-change-evidence/v1",
+  "collected_at": "2026-08-12T04:08:00Z",
+  "window_start": "2026-08-12T03:00:00Z",
+  "window_end": "2026-08-12T04:05:00Z",
+  "collector": {
+    "available": true,
+    "complete": true,
+    "identity": "control-plane-audit-collector@sha256:ca55e3ac0db9a277966e02f4876737cc0af52e59b2d35f095c512e40aeccf03b",
+    "covered_services": [
+      "scm",
+      "ci",
+      "cloud-identity",
+      "artifact-registry",
+      "signing-service"
+    ]
+  },
+  "changes": [
+    {
+      "change_id": "chg-20260812-001",
+      "service": "scm",
+      "change_type": "branch-protection",
+      "target": {
+        "type": "repository-branch-rule",
+        "id": "product-api:refs/heads/main"
+      },
+      "actor": {
+        "id": "principal:release-admin-17",
+        "kind": "human",
+        "role": "repository-admin",
+        "organization_member": true,
+        "identity_assurance": "phishing-resistant",
+        "session_id": "session:scm:6319",
+        "session_issued_at": "2026-08-12T03:08:00Z",
+        "session_expires_at": "2026-08-12T03:38:00Z",
+        "reauthenticated_at": "2026-08-12T03:09:00Z"
+      },
+      "request": {
+        "id": "request:change-871",
+        "requested_at": "2026-08-12T03:10:00Z",
+        "policy_version": "sha256:7d3a56a21d9049bb248663752c53a09428f51104f7528245ef8b394ddd9cd261",
+        "before_digest": "sha256:32c0175276f339af5a63236d575a461de4f356131c38d9889252922c83785901",
+        "after_digest": "sha256:c3bac4a0415dd0fe70023ce9cb4049a0909bf81d6464c2c28595042518fe5cab",
+        "reason": "require an additional release status check",
+        "ticket": "CHG-871"
+      },
+      "approvals": [
+        {
+          "actor_id": "principal:security-reviewer-09",
+          "role": "security",
+          "request_id": "request:change-871",
+          "after_digest": "sha256:c3bac4a0415dd0fe70023ce9cb4049a0909bf81d6464c2c28595042518fe5cab",
+          "approved_at": "2026-08-12T03:14:00Z"
+        }
+      ],
+      "execution": {
+        "status": "applied",
+        "executed_at": "2026-08-12T03:16:00Z",
+        "actor_id": "principal:release-admin-17",
+        "session_id": "session:scm:6319",
+        "request_id": "request:change-871",
+        "before_digest": "sha256:32c0175276f339af5a63236d575a461de4f356131c38d9889252922c83785901",
+        "after_digest": "sha256:c3bac4a0415dd0fe70023ce9cb4049a0909bf81d6464c2c28595042518fe5cab"
+      },
+      "audit": {
+        "provider_event_id": "audit:scm:99031",
+        "recorded_at": "2026-08-12T03:16:02Z",
+        "actor_id": "principal:release-admin-17",
+        "session_id": "session:scm:6319",
+        "request_id": "request:change-871",
+        "target_id": "product-api:refs/heads/main",
+        "after_digest": "sha256:c3bac4a0415dd0fe70023ce9cb4049a0909bf81d6464c2c28595042518fe5cab"
+      },
+      "emergency": {
+        "used": false
+      }
+    },
+    {
+      "change_id": "chg-20260812-002",
+      "service": "cloud-identity",
+      "change_type": "federated-trust-policy",
+      "target": {
+        "type": "workload-identity-trust",
+        "id": "release-prod:github-actions"
+      },
+      "actor": {
+        "id": "principal:cloud-admin-04",
+        "kind": "human",
+        "role": "cloud-admin",
+        "organization_member": true,
+        "identity_assurance": "phishing-resistant",
+        "session_id": "session:cloud:1142",
+        "session_issued_at": "2026-08-12T03:40:00Z",
+        "session_expires_at": "2026-08-12T04:10:00Z",
+        "reauthenticated_at": "2026-08-12T03:41:00Z"
+      },
+      "request": {
+        "id": "request:incident-229",
+        "requested_at": "2026-08-12T03:42:00Z",
+        "policy_version": "sha256:7d3a56a21d9049bb248663752c53a09428f51104f7528245ef8b394ddd9cd261",
+        "before_digest": "sha256:9a43c1a35ce94ffd39e46842bd3987e22d3e8a0c09877df5d1f18ef43894884b",
+        "after_digest": "sha256:71627d08ebfeef34d582504794e7d50c4f2281b1bab842518f14a80bc71160b5",
+        "reason": "remove compromised reusable workflow subject",
+        "ticket": "INC-229"
+      },
+      "approvals": [],
+      "execution": {
+        "status": "applied",
+        "executed_at": "2026-08-12T03:44:00Z",
+        "actor_id": "principal:cloud-admin-04",
+        "session_id": "session:cloud:1142",
+        "request_id": "request:incident-229",
+        "before_digest": "sha256:9a43c1a35ce94ffd39e46842bd3987e22d3e8a0c09877df5d1f18ef43894884b",
+        "after_digest": "sha256:71627d08ebfeef34d582504794e7d50c4f2281b1bab842518f14a80bc71160b5"
+      },
+      "audit": {
+        "provider_event_id": "audit:cloud:77314",
+        "recorded_at": "2026-08-12T03:44:01Z",
+        "actor_id": "principal:cloud-admin-04",
+        "session_id": "session:cloud:1142",
+        "request_id": "request:incident-229",
+        "target_id": "release-prod:github-actions",
+        "after_digest": "sha256:71627d08ebfeef34d582504794e7d50c4f2281b1bab842518f14a80bc71160b5"
+      },
+      "emergency": {
+        "used": true,
+        "reason": "active credential exposure containment",
+        "expires_at": "2026-08-12T04:44:00Z",
+        "post_review": {
+          "reviewer_id": "principal:security-reviewer-12",
+          "reviewed_at": "2026-08-12T04:00:00Z",
+          "request_id": "request:incident-229",
+          "after_digest": "sha256:71627d08ebfeef34d582504794e7d50c4f2281b1bab842518f14a80bc71160b5",
+          "decision": "accepted"
+        }
+      }
+    }
+  ]
+}

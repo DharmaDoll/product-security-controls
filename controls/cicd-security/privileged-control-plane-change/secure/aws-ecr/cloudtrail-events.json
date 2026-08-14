@@ -1,0 +1,88 @@
+{
+  "schema": "psb-aws-ecr-cloudtrail-export/v1",
+  "account_id": "111122223333",
+  "region": "us-east-1",
+  "collected_at": "2026-08-12T04:08:00Z",
+  "complete": true,
+  "collection": {
+    "source": "organization-trail-management-events",
+    "event_source": "ecr.amazonaws.com",
+    "event_name": "SetRepositoryPolicy",
+    "account_id": "111122223333",
+    "region": "us-east-1",
+    "window_start": "2026-08-12T03:00:00Z",
+    "window_end": "2026-08-12T03:52:00Z",
+    "pages": 1,
+    "selected_events": 1,
+    "complete": true,
+    "pagination_complete": true,
+    "collector_identity": "aws-cloudtrail-exporter@sha256:25b847be904b7353faf2f27c7bfd1100c57191140498d878145f664ca3c78e5c"
+  },
+  "events": [
+    {
+      "eventVersion": "1.11",
+      "eventID": "3ed0ce32-3fcb-48e8-8131-3faf7078f094",
+      "requestID": "64dc21ca-d760-4dbc-90a8-d68b40a5f384",
+      "eventTime": "2026-08-12T03:49:00Z",
+      "eventSource": "ecr.amazonaws.com",
+      "eventName": "SetRepositoryPolicy",
+      "awsRegion": "us-east-1",
+      "recipientAccountId": "111122223333",
+      "managementEvent": true,
+      "readOnly": false,
+      "eventCategory": "Management",
+      "userIdentity": {
+        "type": "AssumedRole",
+        "principalId": "AROAREGISTRYADMIN01:bob@example.invalid",
+        "arn": "arn:aws:sts::111122223333:assumed-role/RegistryControlPlaneAdmin/bob@example.invalid",
+        "accountId": "111122223333",
+        "accessKeyId": "REDACTED-SYNTHETIC-NOT-A-CREDENTIAL",
+        "sessionContext": {
+          "sessionIssuer": {
+            "type": "Role",
+            "principalId": "AROAREGISTRYADMIN01",
+            "arn": "arn:aws:iam::111122223333:role/RegistryControlPlaneAdmin",
+            "accountId": "111122223333",
+            "userName": "RegistryControlPlaneAdmin"
+          },
+          "attributes": {
+            "creationDate": "2026-08-12T03:45:00Z",
+            "mfaAuthenticated": "true"
+          },
+          "sourceIdentity": "user-05"
+        }
+      },
+      "requestParameters": {
+        "registryId": "111122223333",
+        "repositoryName": "product-api",
+        "force": false,
+        "policyText": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "ReleasePublisher",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "arn:aws:iam::111122223333:role/GitHubActionsReleaseProd"
+              },
+              "Action": [
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:PutImage"
+              ]
+            }
+          ]
+        }
+      },
+      "resources": [
+        {
+          "ARN": "arn:aws:ecr:us-east-1:111122223333:repository/product-api",
+          "accountId": "111122223333",
+          "type": "AWS::ECR::Repository"
+        }
+      ],
+      "sourceIPAddress": "192.0.2.45",
+      "userAgent": "synthetic-client-detail"
+    }
+  ]
+}
