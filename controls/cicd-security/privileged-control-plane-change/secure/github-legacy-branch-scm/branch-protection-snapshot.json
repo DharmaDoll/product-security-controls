@@ -1,5 +1,5 @@
 {
-  "schema": "psb-github-branch-protection-snapshot/v1",
+  "schema": "psb-github-branch-protection-snapshot/v4",
   "organization": "example-org",
   "collected_at": "2026-08-12T03:31:00Z",
   "complete": true,
@@ -16,5 +16,10 @@
     "full_name": "example-org/product-api"
   },
   "branch": {"name": "main"},
-  "protection": {"allow_force_pushes": false}
+  "protection": {
+    "allow_force_pushes": false,
+    "allow_deletions": false,
+    "enforce_admins": true,
+    "require_code_owner_reviews": true
+  }
 }

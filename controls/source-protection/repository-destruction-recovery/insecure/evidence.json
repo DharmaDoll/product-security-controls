@@ -1,0 +1,115 @@
+{
+  "schema": "psb-repository-destruction-recovery-evidence/v1",
+  "policy_id": "repository-recovery-policy@sha256:e352b6dc93443a8cf431c5dbbfa192e7e5f70b3d7c561208155a3635c8f72213",
+  "collector": {
+    "status": "COMPLETE",
+    "collector_id": "repository-recovery-collector@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "collected_at": "2026-08-18T13:55:00Z",
+    "repository_ids": ["1001", "1002"],
+    "pagination_complete": true
+  },
+  "repositories": [
+    {
+      "repository_id": "1001",
+      "repository": "example-org/payment-api",
+      "security_domain": "source-organization-100",
+      "criticality": "critical",
+      "backup": {
+        "snapshot_id": "repository-snapshot@sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "captured_at": "2026-08-16T10:00:00Z",
+        "security_domain": "source-organization-100",
+        "object_lock": "none",
+        "retained_until": "2026-08-19T10:00:00Z",
+        "source_admin_delete_denied": false,
+        "content_digest": "sha256:2111111111111111111111111111111111111111111111111111111111111111",
+        "refs_digest": "sha256:3111111111111111111111111111111111111111111111111111111111111111",
+        "settings_digest": "sha256:4111111111111111111111111111111111111111111111111111111111111111"
+      }
+    },
+    {
+      "repository_id": "1002",
+      "repository": "example-org/release-manifests",
+      "security_domain": "source-organization-100",
+      "criticality": "high",
+      "backup": {
+        "snapshot_id": "repository-snapshot@sha256:1222222222222222222222222222222222222222222222222222222222222222",
+        "captured_at": "2026-08-16T10:05:00Z",
+        "security_domain": "source-organization-100",
+        "object_lock": "governance",
+        "retained_until": "2026-08-20T10:05:00Z",
+        "source_admin_delete_denied": false,
+        "content_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "refs_digest": "sha256:3222222222222222222222222222222222222222222222222222222222222222",
+        "settings_digest": "sha256:4222222222222222222222222222222222222222222222222222222222222222"
+      }
+    }
+  ],
+  "deletion_request": {
+    "request_id": "delete-request-2026-0818-001",
+    "requested_at": "2026-08-18T11:50:00Z",
+    "actor_id": "user:administrator-42",
+    "session_id": "session:compromised-2026-0818",
+    "target_repository_ids": ["1001", "1002"],
+    "approval_status": "SELF_APPROVED",
+    "approver_id": "user:administrator-42",
+    "reauthenticated_at": "2026-08-18T09:00:00Z",
+    "decision": "ALLOWED",
+    "decision_reason": "administrator-request"
+  },
+  "audit": {
+    "status": "COMPLETE",
+    "window_start": "2026-08-18T11:45:00Z",
+    "window_end": "2026-08-18T12:00:00Z",
+    "pagination_complete": true,
+    "events": [
+      {
+        "event_id": "audit-event-7001",
+        "request_id": "delete-request-2026-0818-001",
+        "actor_id": "user:administrator-42",
+        "session_id": "session:compromised-2026-0818",
+        "target_repository_ids": ["1001"],
+        "decision": "ALLOWED",
+        "occurred_at": "2026-08-18T11:50:01Z"
+      }
+    ],
+    "alert": {
+      "alert_id": "repository-destruction-alert-8001",
+      "event_id": "audit-event-7001",
+      "delivered_at": "2026-08-18T12:20:00Z",
+      "receiver_security_domain": "source-organization-100",
+      "status": "FAILED"
+    }
+  },
+  "containment": {
+    "incident_id": "repository-incident-2026-0818-001",
+    "actor_id": "user:administrator-42",
+    "session_id": "session:other",
+    "contained_at": "2026-08-18T12:30:00Z",
+    "actor_session_revoked": false,
+    "tokens_revoked": false,
+    "owner": "repository-owner",
+    "recovery_authorized_at": "2026-08-18T12:05:00Z"
+  },
+  "recovery_drill": {
+    "drill_id": "repository-recovery-drill-2026-0818",
+    "status": "PARTIAL",
+    "mode": "production-overwrite",
+    "target_security_domain": "source-organization-100",
+    "started_at": "2026-08-18T08:00:00Z",
+    "completed_at": "2026-08-18T13:50:00Z",
+    "repository_ids": ["1001"],
+    "restores": [
+      {
+        "source_repository_id": "1001",
+        "restored_repository_id": "1001",
+        "snapshot_id": "repository-snapshot@sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "content_digest": "sha256:9111111111111111111111111111111111111111111111111111111111111111",
+        "refs_digest": "sha256:3111111111111111111111111111111111111111111111111111111111111111",
+        "settings_digest": "sha256:4111111111111111111111111111111111111111111111111111111111111111",
+        "refs_complete": false,
+        "settings_applied": false,
+        "verification_status": "FAILED"
+      }
+    ]
+  }
+}

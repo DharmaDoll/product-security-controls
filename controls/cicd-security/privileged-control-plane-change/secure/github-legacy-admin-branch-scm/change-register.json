@@ -1,0 +1,33 @@
+{
+  "schema": "psb-github-privileged-change-register/v1",
+  "collected_at": "2026-08-12T04:06:00Z",
+  "complete": true,
+  "changes": [
+    {
+      "change_id": "chg-github-legacy-admin-20260812-001",
+      "provider_event_id": "audit-doc-559",
+      "github_request_id": "github-request-559",
+      "repository_id": 19001,
+      "repository_node_id": "R_kgDOProductApi",
+      "branch": "main",
+      "before_enforce_admins": false,
+      "request_id": "request:change-881",
+      "requested_at": "2026-08-12T03:25:00Z",
+      "policy_version": "sha256:7d3a56a21d9049bb248663752c53a09428f51104f7528245ef8b394ddd9cd261",
+      "before_digest": "sha256:d1031ed1f5b37dbd105a497ad00e263e50739adb930c4679ec010899000a85b2",
+      "after_digest": "sha256:83a2f6dbea6bf9686e15a51b0da5f839399b8ecbf32c2f1d2a2231abae196d2b",
+      "reason": "apply protected branch requirements to repository administrators",
+      "ticket": "CHG-881",
+      "approvals": [
+        {
+          "actor_id": "principal:security-reviewer-09",
+          "role": "security",
+          "request_id": "request:change-881",
+          "after_digest": "sha256:83a2f6dbea6bf9686e15a51b0da5f839399b8ecbf32c2f1d2a2231abae196d2b",
+          "approved_at": "2026-08-12T03:29:00Z"
+        }
+      ],
+      "emergency": {"used": false}
+    }
+  ]
+}

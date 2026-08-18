@@ -1,0 +1,34 @@
+POLICY id=repository-recovery-policy@sha256:e352b6dc93443a8cf431c5dbbfa192e7e5f70b3d7c561208155a3635c8f72213
+FAIL RDR-001 repository 1002 is not classified critical
+FAIL RDR-002 bulk repository deletion request was not denied
+FAIL RDR-002 allowed deletion lacks independent approval
+FAIL RDR-002 allowed deletion reauthentication is stale or from the future
+FAIL RDR-003 repository 1001 backup exceeds the RPO
+FAIL RDR-003 repository 1001 backup shares the source security domain
+FAIL RDR-003 repository 1001 backup lacks compliance object lock
+FAIL RDR-003 repository 1001 source administrator can delete its backup
+FAIL RDR-003 repository 1001 backup retention is too short
+FAIL RDR-003 repository 1002 backup exceeds the RPO
+FAIL RDR-003 repository 1002 backup shares the source security domain
+FAIL RDR-003 repository 1002 backup lacks compliance object lock
+FAIL RDR-003 repository 1002 source administrator can delete its backup
+FAIL RDR-003 repository 1002 backup retention is too short
+FAIL RDR-004 audit event target scope does not match deletion request
+FAIL RDR-004 deletion alert was not delivered for the exact audit event
+FAIL RDR-004 deletion alert delivery exceeded the policy deadline
+FAIL RDR-004 deletion alert receiver is not independent from the source domain
+FAIL RDR-005 containment does not identify the destructive actor session
+FAIL RDR-005 destructive actor session and tokens are not revoked
+FAIL RDR-005 containment lacks the independent incident-response owner
+FAIL RDR-005 containment and recovery authorization order is unsafe
+FAIL RDR-006 restore drill is not a complete isolated destructive simulation
+FAIL RDR-006 restore drill target is not isolated from the source domain
+FAIL RDR-006 restore drill started before recovery authorization
+FAIL RDR-006 restore drill exceeds the recovery time objective
+FAIL RDR-006 restore drill does not cover every required repository
+FAIL RDR-006 restore receipts do not exactly cover every required repository
+FAIL RDR-006 repository 1001 drill overwrites the source target
+FAIL RDR-006 repository 1001 restored content_digest does not match backup
+FAIL RDR-006 repository 1001 restore verification is incomplete
+PASS RDR-007 evidence evaluation is strict metadata only and fail closed
+REJECTED 31 finding(s); repository recovery assurance denied

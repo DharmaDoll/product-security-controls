@@ -369,6 +369,21 @@ PSB-CICD-008,PSB-CICD-008-CPC-006,security,automated,incident change record
 PSB-CICD-008,PSB-CICD-008-CPC-006,security,automated,post-change review receipt
 PSB-CICD-008,PSB-CICD-008-CPC-007,ci-platform,automated,collector identity and coverage record
 PSB-CICD-008,PSB-CICD-008-CPC-007,ci-platform,automated,sanitized negative-test output
+PSB-CICD-009,PSB-CICD-009-CAC-001,ci-platform,automated,synthetic detached signature
+PSB-CICD-009,PSB-CICD-009-CAC-001,ci-platform,automated,public-key and policy digests
+PSB-CICD-009,PSB-CICD-009-CAC-002,ci-platform,automated,metadata-only key derivation result
+PSB-CICD-009,PSB-CICD-009-CAC-003,ci-platform,automated,sanitized transition decision
+PSB-CICD-009,PSB-CICD-009-CAC-004,ci-platform,automated,content SHA-256
+PSB-CICD-009,PSB-CICD-009-CAC-004,ci-platform,automated,path allowlist decision
+PSB-CICD-009,PSB-CICD-009-CAC-005,ci-platform,automated,metadata-only lifetime decision
+PSB-CICD-009,PSB-CICD-009-CAC-006,ci-platform,automated,sanitized exact-lookup decision
+PSB-CICD-009,PSB-CICD-009-CAC-007,ci-platform,automated,sanitized negative-test output
+PSB-CODE-005,PSB-CODE-005-UNI-001,developer,automated,sanitized verifier output
+PSB-CODE-005,PSB-CODE-005-UNI-002,developer,automated,sanitized verifier output
+PSB-CODE-005,PSB-CODE-005-UNI-003,developer,automated,sanitized verifier output
+PSB-CODE-005,PSB-CODE-005-UNI-004,developer,automated,sanitized verifier output
+PSB-CODE-005,PSB-CODE-005-UNI-005,security,automated,negative-test output
+PSB-CODE-005,PSB-CODE-005-UNI-006,security,automated,sanitized negative-test output
 PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-001,developer,automated,admitted image reference
 PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-001,developer,automated,OCI manifest digest verifier output
 PSB-CONTAINER-001,PSB-CONTAINER-001-CNT-002,release-manager,automated,PSB-REL-001 verifier output
@@ -819,3 +834,16 @@ PSB-SOURCE-004,PSB-SOURCE-004-SCL-016,security,hybrid,secure/github-mcp-pat-fall
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-016,security,hybrid,PSB-AI-004 capability verifier output
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-017,security,hybrid,secure/github-mcp-auth-policy.json
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-017,security,hybrid,live adoption assessment when available
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-001,repository-admin,hybrid,sanitized repository IDs and classifications
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-001,repository-admin,hybrid,collector identity pagination and capture time
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-002,repository-admin,hybrid,sanitized deletion request and decision
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-002,repository-admin,hybrid,approval and authentication metadata
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-003,shared,hybrid,metadata-only backup manifest
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-003,shared,hybrid,object-lock and retention decision
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-004,security,hybrid,sanitized audit correlation result
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-004,security,hybrid,external alert delivery receipt
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-005,incident-response,hybrid,content-free revocation receipt
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-005,incident-response,hybrid,incident-response authorization timeline
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-006,repository-admin,automated,metadata-only restore receipts
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-006,repository-admin,automated,RPO and RTO measurements
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-007,security,automated,sanitized negative-test output

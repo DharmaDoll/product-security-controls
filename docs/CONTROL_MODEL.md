@@ -180,6 +180,15 @@ resolvable current checks; planned and gap rows require an owner and remaining
 work; out-of-scope rows require an owned boundary rationale. A missing,
 malformed, or stale reference is a generation error, never an empty clean view.
 
+Threat-taxonomy coverage profiles must reconcile every identifier in their
+pinned registry, not only identifiers that already have mappings. SITF uses
+`implemented`, `planned`, `gap`, and `out-of-scope`: `implemented` requires an
+exact current check that directly addresses the primary technique behavior;
+partial controls stay `gap` with supporting references, an owner, and remaining
+work. Synthetic attack flows must reference reconciled identifiers and cross at
+least three framework components. Neither a row nor a flow is a compliance,
+organization-adoption, or complete-mitigation claim.
+
 Organization capability profiles may reference exact repository checks as
 supporting evidence, but must not turn fixture success into an organization
 result. The FIRST PSIRT profile records integrity-bound source snapshots,

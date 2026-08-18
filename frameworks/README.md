@@ -22,6 +22,8 @@ Framework registries currently include:
 - `owasp-asvs/` — OWASP ASVS 5.0.0 application verification requirements.
 - `slsa/` — SLSA source and build integrity requirements referenced by
   controls.
+- `sitf/` — pinned Supply-chain Attack Technique Framework technique inventory
+  used for explicit coverage reconciliation and synthetic attack flows.
 
 Each registry has a `registry.json` containing:
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Collect one GitHub legacy branch-protection force-push setting read-only."""
+"""Collect exact GitHub legacy branch-protection settings read-only."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 
-SCHEMA = "psb-github-branch-protection-snapshot/v1"
+SCHEMA = "psb-github-branch-protection-snapshot/v4"
 API_VERSION = "2026-03-10"
 API_HOST = "api.github.com"
 MAX_RESPONSE_BYTES = 4 * 1024 * 1024
@@ -164,11 +164,32 @@ def collect(
     ):
         raise CollectorError("GitHub repository stable identity is mismatched")
     force_pushes = raw_protection.get("allow_force_pushes")
+    deletions = raw_protection.get("allow_deletions")
+    enforce_admins = raw_protection.get("enforce_admins")
+    pull_request_reviews = raw_protection.get("required_pull_request_reviews")
     if not isinstance(force_pushes, dict) or not isinstance(
         force_pushes.get("enabled"), bool
     ):
         raise CollectorError(
             "GitHub branch protection lacks an exact force-push setting"
+        )
+    if not isinstance(deletions, dict) or not isinstance(
+        deletions.get("enabled"), bool
+    ):
+        raise CollectorError(
+            "GitHub branch protection lacks an exact deletion setting"
+        )
+    if not isinstance(enforce_admins, dict) or not isinstance(
+        enforce_admins.get("enabled"), bool
+    ):
+        raise CollectorError(
+            "GitHub branch protection lacks an exact admin-enforcement setting"
+        )
+    if not isinstance(pull_request_reviews, dict) or not isinstance(
+        pull_request_reviews.get("require_code_owner_reviews"), bool
+    ):
+        raise CollectorError(
+            "GitHub branch protection lacks an exact code-owner-review setting"
         )
 
     return {
@@ -191,6 +212,11 @@ def collect(
         "branch": {"name": branch},
         "protection": {
             "allow_force_pushes": force_pushes["enabled"],
+            "allow_deletions": deletions["enabled"],
+            "enforce_admins": enforce_admins["enabled"],
+            "require_code_owner_reviews": pull_request_reviews[
+                "require_code_owner_reviews"
+            ],
         },
     }
 

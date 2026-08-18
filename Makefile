@@ -1,4 +1,4 @@
-.PHONY: bootstrap lint verify verify-control assess-control import-application-checklist collect-github-control-plane-audit collect-github-runner-group-state collect-github-ruleset-state collect-github-organization-ruleset-state collect-github-fork-network-state collect-github-branch-protection-state normalize-github-control-plane-evidence normalize-github-ruleset-control-plane-evidence normalize-github-branch-protection-evidence normalize-aws-control-plane-evidence normalize-aws-ecr-control-plane-evidence normalize-aws-kms-control-plane-evidence collect-github-action-advisories verify-github-action-advisories collect-github-actions-build-platform collect-github-releases-evidence collect-slsa-consumer-evidence collect-slsa-security-review-evidence build-slsa-build-l2-evidence assess-slsa-build-l2 assess-slsa-build-l2-bundles test generate generate-index generate-mappings generate-checklists validate-controls clean
+.PHONY: bootstrap lint verify verify-control verify-sitf-coverage assess-control import-application-checklist collect-github-control-plane-audit collect-github-runner-group-state collect-github-ruleset-state collect-github-organization-ruleset-state collect-github-fork-network-state collect-github-branch-protection-state normalize-github-control-plane-evidence normalize-github-ruleset-control-plane-evidence normalize-github-branch-protection-evidence normalize-aws-control-plane-evidence normalize-aws-ecr-control-plane-evidence normalize-aws-kms-control-plane-evidence collect-github-action-advisories verify-github-action-advisories collect-github-actions-build-platform collect-github-releases-evidence collect-slsa-consumer-evidence collect-slsa-security-review-evidence build-slsa-build-l2-evidence assess-slsa-build-l2 assess-slsa-build-l2-bundles test generate generate-index generate-mappings generate-checklists validate-controls clean
 
 bootstrap:
 	@echo "No external bootstrap required."
@@ -7,6 +7,7 @@ lint: validate-controls
 	@python3 scripts/generate-index.py --check
 	@python3 scripts/generate-mappings.py --check-only
 	@python3 scripts/generate-checklists.py --check
+	@python3 scripts/sitf_coverage.py --check-only
 
 verify: test
 
@@ -17,6 +18,9 @@ test:
 verify-control:
 	@test -n "$(CONTROL)" || (echo "CONTROL is required" >&2; exit 2)
 	@python3 scripts/run-controls.py --control "$(CONTROL)"
+
+verify-sitf-coverage:
+	@python3 scripts/sitf_coverage.py
 
 assess-control:
 	@test -n "$(CONTROL)" || (echo "CONTROL is required" >&2; exit 2)

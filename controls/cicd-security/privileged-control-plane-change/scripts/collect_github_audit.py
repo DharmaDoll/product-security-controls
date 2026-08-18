@@ -28,6 +28,9 @@ TARGET_ACTIONS = {
     "environment.update_protection_rule",
     "org.runner_group_updated",
     "protected_branch.update_allow_force_pushes_enforcement_level",
+    "protected_branch.update_allow_deletions_enforcement_level",
+    "protected_branch.update_admin_enforced",
+    "protected_branch.update_require_code_owner_review",
     "repository_ruleset.update",
 }
 SAFE_EVENT_FIELDS = {
@@ -38,6 +41,8 @@ SAFE_EVENT_FIELDS = {
     "actor_id",
     "actor_is_bot",
     "allow_force_pushes_enforcement_level",
+    "allow_deletions_enforcement_level",
+    "admin_enforced",
     "environment_name",
     "name",
     "new_value",
@@ -49,6 +54,7 @@ SAFE_EVENT_FIELDS = {
     "repo",
     "repository_id",
     "request_id",
+    "require_code_owner_review",
     "ruleset_bypass_actors_added",
     "ruleset_bypass_actors_deleted",
     "ruleset_bypass_actors_updated",
@@ -280,9 +286,34 @@ def sanitize_event(raw: Any, organization: str) -> dict[str, Any] | None:
             or "repository_id" in sanitized
         ):
             raise CollectorError("GitHub organization ruleset event lacks stable organization identity")
-    if action == "protected_branch.update_allow_force_pushes_enforcement_level":
+    if action in {
+        "protected_branch.update_allow_force_pushes_enforcement_level",
+        "protected_branch.update_allow_deletions_enforcement_level",
+        "protected_branch.update_admin_enforced",
+        "protected_branch.update_require_code_owner_review",
+    }:
         repository_id = sanitized.get("repository_id")
-        enforcement = sanitized.get("allow_force_pushes_enforcement_level")
+        if action in {
+            "protected_branch.update_allow_force_pushes_enforcement_level",
+            "protected_branch.update_allow_deletions_enforcement_level",
+        }:
+            field = (
+                "allow_force_pushes_enforcement_level"
+                if action == "protected_branch.update_allow_force_pushes_enforcement_level"
+                else "allow_deletions_enforcement_level"
+            )
+            enforcement = sanitized.get(field)
+            valid_enforcement = (
+                isinstance(enforcement, int)
+                and not isinstance(enforcement, bool)
+                and enforcement in {0, 1, 2}
+            )
+        elif action == "protected_branch.update_admin_enforced":
+            enforcement = sanitized.get("admin_enforced")
+            valid_enforcement = isinstance(enforcement, bool)
+        else:
+            enforcement = sanitized.get("require_code_owner_review")
+            valid_enforcement = isinstance(enforcement, bool)
         if (
             not isinstance(repository_id, int)
             or isinstance(repository_id, bool)
@@ -292,9 +323,7 @@ def sanitize_event(raw: Any, organization: str) -> dict[str, Any] | None:
             or not isinstance(sanitized.get("name"), str)
             or not sanitized["name"]
             or sanitized.get("operation_type") != "modify"
-            or not isinstance(enforcement, int)
-            or isinstance(enforcement, bool)
-            or enforcement not in {0, 1, 2}
+            or not valid_enforcement
         ):
             raise CollectorError(
                 "GitHub protected-branch event lacks exact repository branch or enforcement identity"

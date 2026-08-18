@@ -1,0 +1,63 @@
+{
+  "schema": "psb-sitf-attack-flows/v1",
+  "profile_id": "sitf-attack-flows",
+  "source_profile_id": "sitf-technique-coverage",
+  "mapping_version": "1.0.0@d1d1536",
+  "title": "Synthetic SITF cross-component attack flows",
+  "claim_boundary": "These are repository-owned synthetic review scenarios composed from pinned SITF technique identifiers. They are not upstream Wiz Research flows, observed incidents, or proof of complete attack-path mitigation.",
+  "flows": [
+    {
+      "id": "SITF-FLOW-001",
+      "title": "Developer endpoint to poisoned production image",
+      "scenario": "An attacker compromises a developer endpoint, steals source authority, changes protected source, executes in CI, and attempts to promote a malicious image.",
+      "steps": [
+        {"technique_id": "T-E001", "objective": "Execute attacker-controlled code on the developer endpoint."},
+        {"technique_id": "T-E003", "objective": "Harvest locally available credentials and tokens."},
+        {"technique_id": "T-V001", "objective": "Use stolen credentials to access the source platform."},
+        {"technique_id": "T-V010", "objective": "Modify protected source or workflow content."},
+        {"technique_id": "T-C002", "objective": "Run malicious code in the workflow context."},
+        {"technique_id": "T-C005", "objective": "Attempt to obtain additional workflow secrets."},
+        {"technique_id": "T-R005", "objective": "Publish an attacker-controlled container image."},
+        {"technique_id": "T-P004", "objective": "Move the poisoned image into production."}
+      ]
+    },
+    {
+      "id": "SITF-FLOW-002",
+      "title": "Cross-fork poisoned pipeline to production network",
+      "scenario": "An attacker abuses fork object identity and pipeline promotion, poisons shared state, persists on a runner, and pivots toward production.",
+      "steps": [
+        {"technique_id": "T-V012", "objective": "Confuse trusted and fork-controlled object identity."},
+        {"technique_id": "T-C003", "objective": "Trigger privileged behavior from an untrusted pull request."},
+        {"technique_id": "T-C007", "objective": "Poison reusable action or build cache state."},
+        {"technique_id": "T-C013", "objective": "Persist on a self-hosted runner across jobs."},
+        {"technique_id": "T-P003", "objective": "Use runner network reachability to approach production."}
+      ]
+    },
+    {
+      "id": "SITF-FLOW-003",
+      "title": "Malicious package to release and deployment credentials",
+      "scenario": "An attacker introduces a deceptive package that executes during build, steals registry authority, and tries to replace a trusted production image.",
+      "steps": [
+        {"technique_id": "T-R010", "objective": "Present a typosquatted package name."},
+        {"technique_id": "T-R011", "objective": "Exploit namespace or resolver confusion."},
+        {"technique_id": "T-R012", "objective": "Execute code through a package lifecycle script."},
+        {"technique_id": "T-C010", "objective": "Run the malicious package on a CI runner."},
+        {"technique_id": "T-C011", "objective": "Steal registry publication credentials."},
+        {"technique_id": "T-R005", "objective": "Publish a malicious image under trusted naming."},
+        {"technique_id": "T-P004", "objective": "Attempt to admit the malicious image to production."}
+      ]
+    },
+    {
+      "id": "SITF-FLOW-004",
+      "title": "Workflow prompt injection to malicious deployment",
+      "scenario": "Untrusted pull-request content manipulates an AI-enabled workflow into changing source, opening a pull request, and initiating a deployment.",
+      "steps": [
+        {"technique_id": "T-C021", "objective": "Inject instructions through untrusted workflow input."},
+        {"technique_id": "T-C008", "objective": "Cause the workflow to modify repository content."},
+        {"technique_id": "T-V010", "objective": "Persist malicious code in protected source."},
+        {"technique_id": "T-C012", "objective": "Create or promote a pull request from the compromised workflow."},
+        {"technique_id": "T-P002", "objective": "Attempt deployment through the compromised pipeline."}
+      ]
+    }
+  ]
+}

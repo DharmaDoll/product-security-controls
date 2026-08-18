@@ -1,0 +1,126 @@
+{
+  "schema": "psb-repository-destruction-recovery-evidence/v1",
+  "policy_id": "repository-recovery-policy@sha256:e352b6dc93443a8cf431c5dbbfa192e7e5f70b3d7c561208155a3635c8f72213",
+  "collector": {
+    "status": "COMPLETE",
+    "collector_id": "repository-recovery-collector@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "collected_at": "2026-08-18T13:55:00Z",
+    "repository_ids": ["1001", "1002"],
+    "pagination_complete": true
+  },
+  "repositories": [
+    {
+      "repository_id": "1001",
+      "repository": "example-org/payment-api",
+      "security_domain": "source-organization-100",
+      "criticality": "critical",
+      "backup": {
+        "snapshot_id": "repository-snapshot@sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "captured_at": "2026-08-18T10:00:00Z",
+        "security_domain": "backup-organization-900",
+        "object_lock": "compliance",
+        "retained_until": "2026-09-18T10:00:00Z",
+        "source_admin_delete_denied": true,
+        "content_digest": "sha256:2111111111111111111111111111111111111111111111111111111111111111",
+        "refs_digest": "sha256:3111111111111111111111111111111111111111111111111111111111111111",
+        "settings_digest": "sha256:4111111111111111111111111111111111111111111111111111111111111111"
+      }
+    },
+    {
+      "repository_id": "1002",
+      "repository": "example-org/release-manifests",
+      "security_domain": "source-organization-100",
+      "criticality": "critical",
+      "backup": {
+        "snapshot_id": "repository-snapshot@sha256:1222222222222222222222222222222222222222222222222222222222222222",
+        "captured_at": "2026-08-18T10:05:00Z",
+        "security_domain": "backup-organization-900",
+        "object_lock": "compliance",
+        "retained_until": "2026-09-18T10:05:00Z",
+        "source_admin_delete_denied": true,
+        "content_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "refs_digest": "sha256:3222222222222222222222222222222222222222222222222222222222222222",
+        "settings_digest": "sha256:4222222222222222222222222222222222222222222222222222222222222222"
+      }
+    }
+  ],
+  "deletion_request": {
+    "request_id": "delete-request-2026-0818-001",
+    "requested_at": "2026-08-18T11:50:00Z",
+    "actor_id": "user:administrator-42",
+    "session_id": "session:compromised-2026-0818",
+    "target_repository_ids": ["1001", "1002"],
+    "approval_status": "ABSENT",
+    "approver_id": null,
+    "reauthenticated_at": null,
+    "decision": "DENIED",
+    "decision_reason": "bulk-target-limit"
+  },
+  "audit": {
+    "status": "COMPLETE",
+    "window_start": "2026-08-18T11:45:00Z",
+    "window_end": "2026-08-18T12:00:00Z",
+    "pagination_complete": true,
+    "events": [
+      {
+        "event_id": "audit-event-7001",
+        "request_id": "delete-request-2026-0818-001",
+        "actor_id": "user:administrator-42",
+        "session_id": "session:compromised-2026-0818",
+        "target_repository_ids": ["1001", "1002"],
+        "decision": "DENIED",
+        "occurred_at": "2026-08-18T11:50:01Z"
+      }
+    ],
+    "alert": {
+      "alert_id": "repository-destruction-alert-8001",
+      "event_id": "audit-event-7001",
+      "delivered_at": "2026-08-18T11:52:00Z",
+      "receiver_security_domain": "security-operations-700",
+      "status": "DELIVERED"
+    }
+  },
+  "containment": {
+    "incident_id": "repository-incident-2026-0818-001",
+    "actor_id": "user:administrator-42",
+    "session_id": "session:compromised-2026-0818",
+    "contained_at": "2026-08-18T11:58:00Z",
+    "actor_session_revoked": true,
+    "tokens_revoked": true,
+    "owner": "incident-response",
+    "recovery_authorized_at": "2026-08-18T12:05:00Z"
+  },
+  "recovery_drill": {
+    "drill_id": "repository-recovery-drill-2026-0818",
+    "status": "COMPLETE",
+    "mode": "isolated-destructive-simulation",
+    "target_security_domain": "recovery-sandbox-600",
+    "started_at": "2026-08-18T12:05:00Z",
+    "completed_at": "2026-08-18T13:00:00Z",
+    "repository_ids": ["1001", "1002"],
+    "restores": [
+      {
+        "source_repository_id": "1001",
+        "restored_repository_id": "restore-1001-drill",
+        "snapshot_id": "repository-snapshot@sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "content_digest": "sha256:2111111111111111111111111111111111111111111111111111111111111111",
+        "refs_digest": "sha256:3111111111111111111111111111111111111111111111111111111111111111",
+        "settings_digest": "sha256:4111111111111111111111111111111111111111111111111111111111111111",
+        "refs_complete": true,
+        "settings_applied": true,
+        "verification_status": "PASSED"
+      },
+      {
+        "source_repository_id": "1002",
+        "restored_repository_id": "restore-1002-drill",
+        "snapshot_id": "repository-snapshot@sha256:1222222222222222222222222222222222222222222222222222222222222222",
+        "content_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "refs_digest": "sha256:3222222222222222222222222222222222222222222222222222222222222222",
+        "settings_digest": "sha256:4222222222222222222222222222222222222222222222222222222222222222",
+        "refs_complete": true,
+        "settings_applied": true,
+        "verification_status": "PASSED"
+      }
+    ]
+  }
+}

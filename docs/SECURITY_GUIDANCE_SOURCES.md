@@ -1253,6 +1253,33 @@ Disposition and limitations:
 - pinned source review does not authorize the public App, its hosting
   environment, or future source changes.
 
+<a id="ref-cicd-019"></a>
+
+### REF-CICD-019 — SITF日本語technique library
+
+- Status: `reviewed`
+- Type: non-normative Japanese lecture companion
+- Publisher: `kyohmizu` / Security Camp 2026 B6 materials
+- Live URL:
+  [SITF Technique Library 日本語解説](https://github.com/kyohmizu/seccamp2026-B6/blob/main/chapter2/sitf-technique-library.md)
+- Pinned reference:
+  [`sitf-technique-library.md` at `a84ef65bbf7cc83c8c0757ece3c6315abfd2f274`](https://github.com/kyohmizu/seccamp2026-B6/blob/a84ef65bbf7cc83c8c0757ece3c6315abfd2f274/chapter2/sitf-technique-library.md)
+- Source commit date: `2026-08-13`
+- License or redistribution terms: no repository license was identified during
+  review; link and paraphrase only
+- Repository review date: `2026-08-17`
+- Related profile: [`SITF coverage and attack-flow profile`](SITF_COVERAGE.md)
+
+Adopted contribution and limitations:
+
+- use only as a Japanese reading aid for the five-component and 81-technique
+  inventory;
+- do not copy its translations or treat it as a canonical identifier,
+  description, mitigation, or mapping source;
+- resolve identifiers and source integrity only from the pinned Wiz Research
+  registry; the companion cannot change a coverage disposition;
+- neither source creates a compliance claim or authorizes a new dependency.
+
 <a id="ref-build-001"></a>
 
 ### REF-BUILD-001 — cicd-sensor

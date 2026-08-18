@@ -1,0 +1,39 @@
+{
+  "schema": "psb-repository-destruction-recovery-policy/v1",
+  "policy_id": "repository-recovery-policy@sha256:e352b6dc93443a8cf431c5dbbfa192e7e5f70b3d7c561208155a3635c8f72213",
+  "required_repository_ids": ["1001", "1002"],
+  "max_bulk_delete_targets": 1,
+  "deletion_controls": {
+    "default_deny": true,
+    "independent_approval": true,
+    "phishing_resistant_reauthentication": true,
+    "approval_max_age_seconds": 900
+  },
+  "backup": {
+    "max_rpo_seconds": 86400,
+    "minimum_retention_days": 30,
+    "cross_security_domain": true,
+    "object_lock": "compliance",
+    "source_admin_delete_denied": true
+  },
+  "detection": {
+    "complete_audit_required": true,
+    "max_alert_delay_seconds": 300,
+    "external_delivery_required": true
+  },
+  "containment": {
+    "actor_session_revocation_required": true,
+    "token_revocation_required": true,
+    "before_recovery_required": true
+  },
+  "recovery": {
+    "max_rto_seconds": 14400,
+    "max_drill_age_seconds": 2592000,
+    "isolated_target_required": true,
+    "complete_refs_required": true,
+    "settings_restore_required": true
+  },
+  "max_evidence_age_seconds": 900,
+  "max_document_bytes": 1048576,
+  "evidence_mode": "metadata-only"
+}

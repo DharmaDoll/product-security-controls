@@ -1,0 +1,555 @@
+{
+  "schema": "psb-sitf-coverage/v1",
+  "profile_id": "sitf-technique-coverage",
+  "registry_name": "sitf",
+  "mapping_version": "1.0.0@d1d1536",
+  "title": "SITF technique coverage reconciliation",
+  "claim_boundary": "This repository profile records direct or partial reference-control coverage against a pinned threat taxonomy. It is not a compliance claim, organization adoption result, or proof that an attack technique is completely mitigated.",
+  "component_boundaries": {
+    "endpoint": {
+      "owner": "endpoint-security",
+      "limitation": "Repository fixtures do not prove live endpoint fleet enrollment, telemetry health, phishing resistance, network enforcement, or incident recovery."
+    },
+    "vcs": {
+      "owner": "source-platform-security",
+      "limitation": "Repository fixtures do not prove live source-provider policy, read-event completeness, service patching, backups, or organization-wide enforcement."
+    },
+    "cicd": {
+      "owner": "cicd-platform-security",
+      "limitation": "Repository fixtures do not prove hosted-provider isolation, live credential policy, service availability, cache integrity, or fleet-wide workflow adoption."
+    },
+    "registry": {
+      "owner": "artifact-registry-security",
+      "limitation": "Consumer-side verification does not prevent all malicious publication, prove live registry patching, or establish backup and disaster-recovery readiness."
+    },
+    "production": {
+      "owner": "cloud-platform-security",
+      "limitation": "Local policies and fixtures do not prove live cloud authorization, production inventory completeness, data-plane DLP, sensor health, or disaster recovery."
+    }
+  },
+  "techniques": [
+    {
+      "technique_id": "T-E001",
+      "disposition": "implemented",
+      "check_refs": ["PSB-SOURCE-001-END-011", "PSB-SOURCE-001-END-012", "PSB-DEPS-002-INS-001"],
+      "rationale": "Application approval, endpoint detection, and default-deny dependency script execution directly reduce unreviewed code execution on a developer endpoint."
+    },
+    {
+      "technique_id": "T-E002",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-001-END-012", "PSB-SOURCE-004-SCL-007"],
+      "remaining_work": "Verify mail and browser phishing controls, endpoint-originated token binding, alert delivery, and incident response with live evidence.",
+      "rationale": "EDR and phishing-resistant source authentication are supporting layers, but the repository does not directly verify endpoint phishing prevention and detection."
+    },
+    {
+      "technique_id": "T-E003",
+      "disposition": "implemented",
+      "check_refs": ["PSB-SOURCE-001-END-005", "PSB-SOURCE-001-DEH-002", "PSB-SOURCE-004-SCL-006"],
+      "rationale": "Secret-free workspaces and approved protected credential stores directly constrain local credential harvesting."
+    },
+    {
+      "technique_id": "T-E004",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-001-END-009", "PSB-SOURCE-001-DEH-010"],
+      "remaining_work": "Add endpoint data classification, bulk-access detection, destination-aware DLP, and tested containment for local source and customer data.",
+      "rationale": "Read-only shared workspaces and sensitive-file detection reduce exposure but do not prevent an already-compromised endpoint from harvesting local data."
+    },
+    {
+      "technique_id": "T-E005",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-001-END-012"],
+      "remaining_work": "Verify endpoint CPU, GPU, process, and energy anomaly detection plus automated containment without relying only on generic EDR enrollment.",
+      "rationale": "EDR enrollment is relevant but no exact cryptomining detection or endpoint resource-abuse assertion exists."
+    },
+    {
+      "technique_id": "T-E006",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-001-END-006", "PSB-CICD-007-RNR-006"],
+      "remaining_work": "Deny and detect runner registration from developer endpoints and correlate registration authority to an approved ephemeral runner inventory.",
+      "rationale": "Socket exposure and runner registration authority are bounded separately, but no check proves that a workstation cannot be enrolled as a runner."
+    },
+    {
+      "technique_id": "T-E007",
+      "disposition": "implemented",
+      "check_refs": ["PSB-SOURCE-004-SCL-003", "PSB-SOURCE-004-SCL-005", "PSB-SOURCE-004-SCL-007", "PSB-SOURCE-004-SCL-010"],
+      "rationale": "Resource-restricted, short-lived, phishing-resistant, and revocable source credentials directly constrain abuse of endpoint-held VCS access."
+    },
+    {
+      "technique_id": "T-E008",
+      "disposition": "gap",
+      "check_refs": ["PSB-CICD-008-CPC-001", "PSB-CICD-008-CPC-002"],
+      "remaining_work": "Inventory and govern developer-held CI/CD sessions and API credentials, including phishing resistance, scope, lifetime, revocation, and endpoint binding.",
+      "rationale": "Privileged control-plane actor and session checks cover reviewed changes, not all local CI/CD credentials available after endpoint compromise."
+    },
+    {
+      "technique_id": "T-E009",
+      "disposition": "implemented",
+      "check_refs": ["PSB-AI-004-AAR-003", "PSB-AI-004-AAR-004", "PSB-AI-004-AAR-012", "PSB-AI-004-AAR-013"],
+      "rationale": "Credential isolation, default-deny networking, exact extension identity, and bounded tool effects directly constrain abuse of local AI development tools."
+    },
+    {
+      "technique_id": "T-E010",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-001-END-010"],
+      "remaining_work": "Add immutable endpoint configuration backups, destructive-action detection, rebuild objectives, and tested fleet recovery evidence.",
+      "rationale": "Encrypted backups are supporting evidence, but their recoverability and resistance to attacker-triggered endpoint destruction are not verified."
+    },
+    {
+      "technique_id": "T-E011",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CODE-005-UNI-001", "PSB-CODE-005-UNI-002", "PSB-CODE-005-UNI-003", "PSB-CODE-005-UNI-004", "PSB-CODE-005-UNI-005", "PSB-CODE-005-UNI-006"],
+      "rationale": "The Python source verifier directly rejects directional and invisible formatting controls plus non-ASCII and normalization-unstable identifiers, while malformed or incomplete analysis fails closed."
+    },
+    {
+      "technique_id": "T-E012",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-001-DEH-008", "PSB-SOURCE-001-END-012"],
+      "remaining_work": "Detect local proxy listeners, tunneled egress, destination changes, and long-lived relay traffic, then verify containment and evidence retention.",
+      "rationale": "Endpoint allowlisting and EDR are supporting controls but do not provide an exact SOCKS proxy detection assertion."
+    },
+    {
+      "technique_id": "T-E013",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-001-END-007", "PSB-SOURCE-001-END-012"],
+      "remaining_work": "Detect hidden desktop services, injected UI processes, unauthorized screen capture, and remote-control channels with tested response.",
+      "rationale": "Disabled debug services and EDR reduce exposure but do not specifically verify HVNC prevention or detection."
+    },
+    {
+      "technique_id": "T-E014",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-001-DEH-008", "PSB-SOURCE-001-END-012"],
+      "remaining_work": "Classify and detect unauthorized WebRTC signaling, STUN/TURN access, and peer channels while preserving approved collaboration traffic.",
+      "rationale": "Approved destinations and EDR provide partial support but no WebRTC C2-specific evidence."
+    },
+    {
+      "technique_id": "T-E015",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-001-END-011", "PSB-AI-002-AID-001", "PSB-AI-002-AID-006"],
+      "remaining_work": "Pin IDE and browser extension update identities, verify publisher signatures and update provenance, and revoke compromised versions fleet-wide.",
+      "rationale": "Approved applications and immutable AI extensions are relevant, but the general extension auto-update channel is not verified."
+    },
+    {
+      "technique_id": "T-E016",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-001-DEH-008", "PSB-SOURCE-001-END-012"],
+      "remaining_work": "Detect unauthorized blockchain clients, RPC endpoints, domain resolution, and embedded payload retrieval used as a control channel.",
+      "rationale": "Allowlisted egress and EDR are supporting layers without blockchain-based C2-specific assertions."
+    },
+    {
+      "technique_id": "T-E017",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-001-DEH-008", "PSB-SOURCE-001-END-012"],
+      "remaining_work": "Add identity- and process-aware egress policy plus behavioral detection for approved SaaS services used by unauthorized binaries as C2.",
+      "rationale": "A destination allowlist alone cannot distinguish legitimate use from C2 over an approved service."
+    },
+    {
+      "technique_id": "T-E018",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-001-DEH-008", "PSB-SOURCE-001-END-012"],
+      "remaining_work": "Detect DHT protocol use, unexpected UDP peer traffic, and embedded command retrieval while accounting for sanctioned peer-to-peer tools.",
+      "rationale": "Generic egress and EDR coverage does not directly verify BitTorrent DHT C2 detection."
+    },
+    {
+      "technique_id": "T-E019",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-004-SCL-013", "PSB-SOURCE-004-SCL-017"],
+      "remaining_work": "Inventory OAuth grants, constrain tenant and organization audience, detect cross-organization token use, and automate grant revocation.",
+      "rationale": "Approved OAuth and credential ownership are covered for GitHub MCP, but cross-organizational OAuth abuse is not generally enforced."
+    },
+    {
+      "technique_id": "T-V001",
+      "disposition": "implemented",
+      "check_refs": ["PSB-SOURCE-004-SCL-003", "PSB-SOURCE-004-SCL-007", "PSB-SOURCE-004-SCL-008", "PSB-SOURCE-004-SCL-010"],
+      "rationale": "Resource-restricted tokens, phishing-resistant login, hardware-protected SSH keys, and automated revocation directly constrain credential abuse for VCS access."
+    },
+    {
+      "technique_id": "T-V002",
+      "disposition": "implemented",
+      "check_refs": ["PSB-SOURCE-001-END-013", "PSB-SOURCE-002-GHK-005"],
+      "rationale": "Enforced signed commits and repository-owned Git configuration directly make unsigned or wrongly attributed imposter commits rejectable."
+    },
+    {
+      "technique_id": "T-V003",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-001-DEH-004", "PSB-SOURCE-003-PRE-004", "PSB-SOURCE-004-SCL-003"],
+      "remaining_work": "Verify repository read authorization, bulk-clone and archive-download detection, egress controls, and attributable response for sensitive repositories.",
+      "rationale": "Secret scanning reduces stored secret exposure and credentials are scoped, but an authorized read session can still exfiltrate repository content."
+    },
+    {
+      "technique_id": "T-V004",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-003-PRE-010", "PSB-SOURCE-003-PRE-013"],
+      "remaining_work": "Define ownership and monitoring for work-related personal repositories, forks, archives, and tokens without assuming enterprise controls cover personal accounts.",
+      "rationale": "Fork remnants and organization searches are reviewed, but personal repository read and export activity remains outside the current evidence boundary."
+    },
+    {
+      "technique_id": "T-V005",
+      "disposition": "gap",
+      "check_refs": ["PSB-DETECT-001-DVS-001", "PSB-DETECT-001-DVS-003"],
+      "remaining_work": "Verify VCS server and client version inventory, vulnerability intelligence, patch deadlines, compensating isolation, and patch-failure evidence.",
+      "rationale": "The scanner interface is integrity verified, but no control applies it to VCS platform vulnerability management."
+    },
+    {
+      "technique_id": "T-V006",
+      "disposition": "implemented",
+      "check_refs": ["PSB-SOURCE-003-PRE-001", "PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-005"],
+      "rationale": "Public visibility requires explicit approval, and the privileged-change evidence binds the exact before and after repository state to the approved request."
+    },
+    {
+      "technique_id": "T-V007",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-004-SCL-003", "PSB-SOURCE-004-SCL-011"],
+      "remaining_work": "Add complete repository read audit, archive and clone volume thresholds, network context, alert delivery, and response for sensitive repositories.",
+      "rationale": "Credential scope and lifecycle audit reduce access, but they do not detect use of valid read authority to clone sensitive repositories."
+    },
+    {
+      "technique_id": "T-V008",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-003-PRE-001", "PSB-SOURCE-003-PRE-006"],
+      "remaining_work": "Detect compromised organization accounts creating or repurposing repositories for payload hosting, including releases, Pages, and workflow artifacts.",
+      "rationale": "Public exposure review covers owned content but does not directly identify malicious repository hosting after account compromise."
+    },
+    {
+      "technique_id": "T-V009",
+      "disposition": "implemented",
+      "check_refs": ["PSB-SOURCE-005-RDR-001", "PSB-SOURCE-005-RDR-002", "PSB-SOURCE-005-RDR-003", "PSB-SOURCE-005-RDR-004", "PSB-SOURCE-005-RDR-005", "PSB-SOURCE-005-RDR-006"],
+      "rationale": "Complete stable-ID scope bulk-deletion denial attacker-separated immutable backups external alerts authority containment and exact full-scope restore drills directly address repository mass deletion; live provider adoption remains outside the repository result."
+    },
+    {
+      "technique_id": "T-V010",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-005-PRB-001", "PSB-CICD-005-PRB-005", "PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-004"],
+      "rationale": "Untrusted changes remain unprivileged and protected source changes bind an exact target and before-after state to independent approval."
+    },
+    {
+      "technique_id": "T-V011",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-005", "PSB-REL-001-REL-004"],
+      "rationale": "Protected reference changes are bound to reviewed control-plane evidence and release consumers reject silent trust-signal downgrades."
+    },
+    {
+      "technique_id": "T-V012",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-005-PRB-003", "PSB-CICD-005-PRB-004", "PSB-CICD-005-PRB-005", "PSB-CICD-008-CPC-007"],
+      "rationale": "Exact pull-request revision binding, blocked cross-run elevation, separate trusted execution, and complete fork-network evidence directly address cross-fork object abuse."
+    },
+    {
+      "technique_id": "T-C001",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-008-CPC-001", "PSB-CICD-008-CPC-002", "PSB-CICD-008-CPC-005"],
+      "rationale": "Privileged CI/CD changes require an attributable current human, a short-lived reauthenticated session, and matching provider audit evidence."
+    },
+    {
+      "technique_id": "T-C002",
+      "disposition": "implemented",
+      "check_refs": ["PSB-BUILD-001-BLD-001", "PSB-BUILD-001-BLD-003", "PSB-BUILD-001-BLD-004"],
+      "rationale": "Workflow code executes without credentials or write permission in an ephemeral restricted sandbox with default-deny egress."
+    },
+    {
+      "technique_id": "T-C003",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-005-PRB-001", "PSB-CICD-005-PRB-002", "PSB-CICD-005-PRB-004", "PSB-CICD-005-PRB-005"],
+      "rationale": "Untrusted pull requests run unprivileged on a reviewed hosted runner and cannot elevate through cross-run paths into a privileged workflow."
+    },
+    {
+      "technique_id": "T-C004",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-002-INJ-001", "PSB-CICD-002-INJ-002", "PSB-CICD-002-INJ-004"],
+      "rationale": "Direct expression interpolation into runner scripts is rejected, untrusted values cross through environment variables, and parser failure is not clean."
+    },
+    {
+      "technique_id": "T-C005",
+      "disposition": "implemented",
+      "check_refs": ["PSB-BUILD-001-BLD-001", "PSB-BUILD-001-BLD-003", "PSB-CICD-004-PERM-002"],
+      "rationale": "Untrusted workflow execution is credential-free and egress-denied while each job token is restricted to its reviewed purpose."
+    },
+    {
+      "technique_id": "T-C006",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-003-PRE-006", "PSB-CICD-004-PERM-002"],
+      "remaining_work": "Scan workflow definitions, logs, artifacts, and public search results for secret-reference enumeration patterns without exposing secret values.",
+      "rationale": "Public Actions output review and job-token minimization are supporting controls but do not directly detect GitHub Search-based secret enumeration."
+    },
+    {
+      "technique_id": "T-C007",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-009-CAC-001", "PSB-CICD-009-CAC-002", "PSB-CICD-009-CAC-003", "PSB-CICD-009-CAC-004", "PSB-CICD-009-CAC-005", "PSB-CICD-009-CAC-006"],
+      "rationale": "Signed producer provenance and exact repository workflow trust platform revision dependency content path lifetime and lookup identities directly reject cross-boundary cache promotion and broad restore fallback; provider adoption remains outside the repository result."
+    },
+    {
+      "technique_id": "T-C008",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-004-PERM-004", "PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-004", "PSB-CICD-008-CPC-005"],
+      "rationale": "Write-capable jobs are restricted and protected workflow or repository policy changes bind exact state to independent approval and provider execution."
+    },
+    {
+      "technique_id": "T-C009",
+      "disposition": "gap",
+      "check_refs": ["PSB-BUILD-002-HCB-001", "PSB-BUILD-002-HCB-002"],
+      "remaining_work": "Add CI/CD service version and advisory inventory, patch or provider-remediation objectives, compensating isolation, and vulnerability-exploitation detection.",
+      "rationale": "An approved hosted platform reduces platform risk but is not evidence that CI/CD service vulnerabilities are identified and remediated."
+    },
+    {
+      "technique_id": "T-C010",
+      "disposition": "implemented",
+      "check_refs": ["PSB-DEPS-002-INS-001", "PSB-DEPS-002-INS-003", "PSB-BUILD-001-BLD-004"],
+      "rationale": "Package install execution is denied or exact-artifact-only and any remaining untrusted execution occurs in an ephemeral restricted sandbox."
+    },
+    {
+      "technique_id": "T-C011",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CONTAINER-002-REG-003", "PSB-CICD-006-OIDC-006", "PSB-BUILD-001-BLD-001"],
+      "rationale": "Registry automation uses short-lived workload identity, stored cloud credentials are absent, and untrusted builds have no credentials to steal."
+    },
+    {
+      "technique_id": "T-C012",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-005-PRB-004", "PSB-CICD-005-PRB-005", "PSB-CICD-004-PERM-004"],
+      "rationale": "A malicious workflow cannot use automatic elevation paths, and write-capable work starts only as a restricted separate trusted run."
+    },
+    {
+      "technique_id": "T-C013",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-007-RNR-002", "PSB-CICD-007-RNR-004", "PSB-CICD-007-RNR-007"],
+      "rationale": "Each self-hosted runner accepts one job, starts without prior state, and is deregistered and destroyed after use."
+    },
+    {
+      "technique_id": "T-C014",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-007-RNR-002", "PSB-CICD-007-RNR-007", "PSB-CONTAINER-001-CNT-007"],
+      "rationale": "Single-job destruction bounds persistence and workload CPU, memory, and process consumption are explicitly limited."
+    },
+    {
+      "technique_id": "T-C015",
+      "disposition": "gap",
+      "check_refs": ["PSB-CICD-002-INJ-001", "PSB-CICD-004-PERM-002", "PSB-BUILD-001-BLD-001"],
+      "remaining_work": "Reject bulk secret-context expansion such as toJson(secrets), verify log masking and artifact redaction, and test credentialed trusted-job cases.",
+      "rationale": "Expression safety and credential-free untrusted jobs help, but trusted workflows can still intentionally enumerate all available secrets."
+    },
+    {
+      "technique_id": "T-C016",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-007-RNR-005", "PSB-BUILD-001-BLD-003"],
+      "rationale": "The runner cannot reach host, management, internal, or metadata identities and build egress is default deny."
+    },
+    {
+      "technique_id": "T-C017",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-007-RNR-005", "PSB-CONTAINER-001-CNT-005", "PSB-CONTAINER-001-CNT-008"],
+      "rationale": "Runner access to management identities is denied and the container cannot reach host namespaces, runtime sockets, or unapproved network destinations."
+    },
+    {
+      "technique_id": "T-C018",
+      "disposition": "implemented",
+      "check_refs": ["PSB-BUILD-001-BLD-003", "PSB-CICD-007-RNR-005", "PSB-CICD-007-RNR-008"],
+      "rationale": "Default-deny egress and runner network isolation constrain exfiltration while correlated security logs survive runner teardown."
+    },
+    {
+      "technique_id": "T-C019",
+      "disposition": "gap",
+      "check_refs": ["PSB-CICD-008-CPC-004", "PSB-CICD-008-CPC-005", "PSB-CICD-008-CPC-007"],
+      "remaining_work": "Protect CI/CD organizations, runners, variables, logs, and workflow history with destructive-action guardrails, immutable backups, and tested recovery objectives.",
+      "rationale": "Privileged changes are approved and collected, but CI/CD platform destruction prevention and recovery are not verified."
+    },
+    {
+      "technique_id": "T-C020",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-003-SAS-001", "PSB-CICD-003-SAS-002", "PSB-CICD-003-SAS-004", "PSB-CICD-004-PERM-001", "PSB-CICD-004-PERM-002"],
+      "rationale": "A pinned unprivileged workflow scanner and explicit least-privilege permissions directly detect and constrain exploitable workflow misconfiguration."
+    },
+    {
+      "technique_id": "T-C021",
+      "disposition": "implemented",
+      "check_refs": ["PSB-AI-003-AII-002", "PSB-AI-003-AII-005", "PSB-AI-003-AII-007", "PSB-AI-003-AII-009"],
+      "rationale": "Untrusted workflow content cannot change instruction authority, open exfiltration paths, escape tool policy, or suppress complete fail-closed evidence."
+    },
+    {
+      "technique_id": "T-R001",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CONTAINER-002-REG-002", "PSB-CONTAINER-002-REG-003", "PSB-CONTAINER-002-REG-005"],
+      "rationale": "Registry authorization is repository- and action-scoped, automation identity is short-lived, and sensitive activity is attributable."
+    },
+    {
+      "technique_id": "T-R002",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CONTAINER-002-REG-001", "PSB-CONTAINER-002-REG-002", "PSB-CONTAINER-002-REG-007"],
+      "rationale": "Trusted transport, default-deny repository and action authorization, and fail-closed evidence directly reject anonymous or misconfigured access."
+    },
+    {
+      "technique_id": "T-R003",
+      "disposition": "gap",
+      "check_refs": ["PSB-CONTAINER-002-REG-007", "PSB-DETECT-001-DVS-001"],
+      "remaining_work": "Inventory registry services and versions, track applicable vulnerabilities, verify patch deadlines or managed-service remediation, and detect exploitation attempts.",
+      "rationale": "Registry evidence and scanner identity fail closed, but registry platform vulnerability management is not implemented."
+    },
+    {
+      "technique_id": "T-R004",
+      "disposition": "gap",
+      "check_refs": ["PSB-DEPS-001-COOL-004", "PSB-DEPS-004-DCR-003", "PSB-DEPS-004-DCR-006"],
+      "remaining_work": "Add publisher-side package release authorization, signer and namespace ownership, provenance, rollback, and malicious-publication response evidence.",
+      "rationale": "Consumer acquisition and review checks reduce adoption of a malicious package but do not prevent an attacker from publishing it."
+    },
+    {
+      "technique_id": "T-R005",
+      "disposition": "implemented",
+      "check_refs": ["PSB-REL-005-ASG-001", "PSB-CONTAINER-002-REG-004", "PSB-CONTAINER-001-CNT-001", "PSB-CONTAINER-001-CNT-002"],
+      "rationale": "An exact image is signed, protected release references cannot be replaced, and admission binds provenance to the immutable OCI digest."
+    },
+    {
+      "technique_id": "T-R006",
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-001-END-011", "PSB-AI-002-AID-001", "PSB-AI-002-AID-002"],
+      "remaining_work": "Verify extension publisher identity, signing, marketplace ownership, release authorization, revocation, and endpoint allowlisting for IDE and browser ecosystems.",
+      "rationale": "Approved applications and immutable reviewed AI extensions are partial controls, not a general malicious-extension publication defense."
+    },
+    {
+      "technique_id": "T-R007",
+      "disposition": "gap",
+      "check_refs": ["PSB-CONTAINER-002-REG-002", "PSB-CONTAINER-002-REG-005"],
+      "remaining_work": "Add private artifact read inventory, bulk-download and unusual-client detection, egress correlation, alert delivery, and response evidence.",
+      "rationale": "Scoped authorization and audit attribution constrain reads but do not detect an authorized session harvesting large private artifact sets."
+    },
+    {
+      "technique_id": "T-R008",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CONTAINER-001-CNT-001", "PSB-CONTAINER-001-CNT-002", "PSB-REL-001-REL-001", "PSB-REL-001-REL-002"],
+      "rationale": "Hosted malicious images cannot enter the trusted path unless their exact digest has authentic matching provenance and signature evidence."
+    },
+    {
+      "technique_id": "T-R009",
+      "disposition": "gap",
+      "check_refs": ["PSB-CONTAINER-002-REG-004", "PSB-CONTAINER-002-REG-005"],
+      "remaining_work": "Protect registry control planes, metadata, blobs, and keys with deletion guardrails, immutable replication, alerting, and tested disaster recovery.",
+      "rationale": "Protected release references and audit records help, but complete registry infrastructure destruction and recovery remain unverified."
+    },
+    {
+      "technique_id": "T-R010",
+      "disposition": "implemented",
+      "check_refs": ["PSB-DEPS-001-COOL-001", "PSB-DEPS-001-COOL-004", "PSB-DEPS-004-DCR-003"],
+      "rationale": "Approved registry origin, exact package identity, focused review, and release cooldown directly reduce typosquatting adoption."
+    },
+    {
+      "technique_id": "T-R011",
+      "disposition": "implemented",
+      "check_refs": ["PSB-DEPS-003-LOCK-002", "PSB-DEPS-003-LOCK-003", "PSB-DEPS-001-COOL-007"],
+      "rationale": "The dependency origin is bound to a mandatory managed proxy and the exact acquired artifact must match the frozen lockfile digest."
+    },
+    {
+      "technique_id": "T-R012",
+      "disposition": "implemented",
+      "check_refs": ["PSB-DEPS-002-INS-001", "PSB-DEPS-002-INS-002", "PSB-DEPS-002-INS-003", "PSB-DEPS-002-INS-004"],
+      "rationale": "Lifecycle scripts and source builds are denied by default and any exception is narrow, reviewed, and fail closed."
+    },
+    {
+      "technique_id": "T-R013",
+      "disposition": "implemented",
+      "check_refs": ["PSB-DEPS-004-DCR-003", "PSB-DEPS-003-LOCK-003", "PSB-REL-001-REL-001"],
+      "rationale": "Exact versions are resolved to immutable sources and artifact digests, so a display version cannot substitute different bytes."
+    },
+    {
+      "technique_id": "T-P001",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-006-OIDC-002", "PSB-CICD-006-OIDC-003", "PSB-CICD-006-OIDC-006", "PSB-CICD-006-OIDC-007"],
+      "rationale": "Production authority is issued only from exact workflow claims as a short-lived least-privilege credential, with stored cloud credentials absent."
+    },
+    {
+      "technique_id": "T-P002",
+      "disposition": "implemented",
+      "check_refs": ["PSB-BUILD-001-BLD-002", "PSB-CICD-004-PERM-004", "PSB-CICD-006-OIDC-005", "PSB-CONTAINER-001-CNT-002"],
+      "rationale": "Build and deploy authority are separated, privileged deployment is protected, and admission binds authentic provenance to the exact artifact."
+    },
+    {
+      "technique_id": "T-P003",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CICD-007-RNR-005", "PSB-BUILD-001-BLD-003"],
+      "rationale": "Self-hosted runners cannot reach internal, management, host, or metadata identities and untrusted build egress is default deny."
+    },
+    {
+      "technique_id": "T-P004",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CONTAINER-001-CNT-001", "PSB-CONTAINER-001-CNT-002", "PSB-CONTAINER-001-CNT-009"],
+      "rationale": "Production admission accepts only the exact trusted OCI digest with matching authentic provenance and fails closed on create or update."
+    },
+    {
+      "technique_id": "T-P005",
+      "disposition": "implemented",
+      "check_refs": ["PSB-IAC-001-IAC-001", "PSB-IAC-001-IAC-004", "PSB-IAC-001-IAC-008", "PSB-IAC-001-IAC-009"],
+      "rationale": "Approved immutable modules, resolved-plan policy, provider-side bypass enforcement, and continuous drift checks directly constrain IaC manipulation."
+    },
+    {
+      "technique_id": "T-P006",
+      "disposition": "gap",
+      "check_refs": ["PSB-CONTAINER-001-CNT-008", "PSB-CONTAINER-004-RTD-006"],
+      "remaining_work": "Disable unnecessary token automount, use bound short-lived service-account tokens, constrain RBAC and audience, and detect token file access and reuse.",
+      "rationale": "Network isolation and sensitive-boundary detection help, but service-account token issuance, mounting, and theft are not directly verified."
+    },
+    {
+      "technique_id": "T-P007",
+      "disposition": "gap",
+      "check_refs": ["PSB-CONTAINER-001-CNT-008", "PSB-CONTAINER-004-RTD-007"],
+      "remaining_work": "Enforce workload-specific metadata denial or authenticated metadata access for IPv4 and IPv6 endpoints and verify live bypass-resistant telemetry.",
+      "rationale": "Default-deny egress and denied-destination detection are relevant, but production metadata service access is not explicitly tested."
+    },
+    {
+      "technique_id": "T-P008",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CONTAINER-001-CNT-003", "PSB-CONTAINER-001-CNT-004", "PSB-CONTAINER-001-CNT-005", "PSB-CONTAINER-001-CNT-006", "PSB-CONTAINER-004-RTD-005"],
+      "rationale": "Non-root execution, dropped capabilities, host isolation, seccomp, read-only filesystems, and runtime escalation detection directly constrain pod escape."
+    },
+    {
+      "technique_id": "T-P009",
+      "disposition": "gap",
+      "check_refs": ["PSB-IAC-001-IAC-003", "PSB-CONTAINER-001-CNT-008"],
+      "remaining_work": "Model and verify cloud-service identity edges, resource policies, cross-account trust, token exchange, and anomalous service-to-service access.",
+      "rationale": "Private administration and workload network policy constrain paths but do not cover cloud control-plane lateral movement across services."
+    },
+    {
+      "technique_id": "T-P010",
+      "disposition": "implemented",
+      "check_refs": ["PSB-CONTAINER-001-CNT-008", "PSB-CONTAINER-004-RTD-007", "PSB-CONTAINER-004-RTD-010"],
+      "rationale": "Default-deny workload networking is enforced and denied listeners or destinations produce alerts delivered to an owned receiver."
+    },
+    {
+      "technique_id": "T-P011",
+      "disposition": "gap",
+      "check_refs": ["PSB-CONTAINER-004-RTD-006", "PSB-CICD-006-OIDC-007"],
+      "remaining_work": "Inventory production secrets, minimize workload access, use short-lived workload identity, detect read and export behavior, and test revocation.",
+      "rationale": "Runtime sensitive-boundary detection and least-privilege deployment identity are partial controls, not production secret theft prevention."
+    },
+    {
+      "technique_id": "T-P012",
+      "disposition": "gap",
+      "check_refs": ["PSB-IAC-001-IAC-009", "PSB-CONTAINER-004-RTD-002"],
+      "remaining_work": "Detect enumeration of cloud, Kubernetes, service-discovery, identity, and network resources and correlate it to exact workload identity.",
+      "rationale": "Drift and workload identity exist, but reconnaissance actions are not currently modeled or asserted."
+    },
+    {
+      "technique_id": "T-P013",
+      "disposition": "gap",
+      "check_refs": ["PSB-CONTAINER-001-CNT-008", "PSB-CONTAINER-004-RTD-007", "PSB-CONTAINER-004-RTD-010"],
+      "remaining_work": "Add production data classification, destination- and volume-aware egress policy, DLP, alerting, and tested containment across non-container services.",
+      "rationale": "Container egress denial and alerts reduce one route but do not establish production-wide data exfiltration prevention."
+    },
+    {
+      "technique_id": "T-P014",
+      "disposition": "gap",
+      "check_refs": ["PSB-IAC-001-IAC-010", "PSB-CONTAINER-004-RTD-011"],
+      "remaining_work": "Protect destructive production APIs with independent authorization, blast-radius limits, immutable backups, dependency-aware restore, and tested recovery objectives.",
+      "rationale": "Automatic remediation and destructive runtime response are bounded, but attacker-driven infrastructure destruction and recovery are not covered."
+    },
+    {
+      "technique_id": "T-P015",
+      "disposition": "gap",
+      "check_refs": ["PSB-IAC-001-IAC-008", "PSB-IAC-001-IAC-009"],
+      "remaining_work": "Detect and deny unauthorized service creation, identity attachment, scheduled execution, and persistence resources across direct console and API paths.",
+      "rationale": "Provider bypass enforcement and drift checks support detection, but malicious service provisioning has no complete resource-specific policy."
+    },
+    {
+      "technique_id": "T-P016",
+      "disposition": "gap",
+      "check_refs": ["PSB-CONTAINER-004-RTD-001", "PSB-CONTAINER-004-RTD-009", "PSB-DETECT-001-DVS-001"],
+      "remaining_work": "Bind sensor and agent binaries, rules, update channels, and rollout authority to signed provenance; detect downgrade, suppression, and fleet divergence.",
+      "rationale": "Sensor policy identity and health are checked, but the sensor or agent software supply chain and update authorization are not end-to-end verified."
+    }
+  ]
+}

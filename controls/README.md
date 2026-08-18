@@ -5,7 +5,7 @@
 このページは、実装済みcontrolを目的別に探すための入口です。
 `control.yaml`を正本として`make generate-index`で生成されます。
 
-現在、**48 controls / 443 atomic checks**を収録しています。
+現在、**51 controls / 463 atomic checks**を収録しています。
 
 ## 使い方
 
@@ -22,10 +22,10 @@
 | Domain | 主な対象 | Controls | Checks |
 |---|---|---:|---:|
 | [Secure Design](#domain-secure-design) | 脅威モデリング、trust boundary、abuse caseなど、実装前の設計判断。 | 0 | 0 |
-| [Secure Coding](#domain-secure-coding) | 認証・認可、入力処理、secret、暗号など、application実装の安全性。 | 0 | 0 |
-| [Source Protection](#domain-source-protection) | 開発端末、Git、repository、source access credential、公開露出の保護。 | 4 | 73 |
+| [Secure Coding](#domain-secure-coding) | 認証・認可、入力処理、secret、暗号など、application実装の安全性。 | 1 | 6 |
+| [Source Protection](#domain-source-protection) | 開発端末、Git、repository、source access credential、公開露出の保護。 | 5 | 80 |
 | [Dependency Security](#domain-dependency-security) | registry、cooldown、install script、lockfile、artifact integrityの保護。 | 5 | 38 |
-| [CI/CD Security](#domain-cicd-security) | workflow dependency、command injection、権限、未信頼PR境界の保護。 | 8 | 51 |
+| [CI/CD Security](#domain-cicd-security) | workflow dependency、command injection、権限、未信頼PR境界の保護。 | 9 | 58 |
 | [Build Security](#domain-build-security) | build隔離、hosted build、credential境界、provenance生成の保護。 | 3 | 16 |
 | [Container / Cloud / IaC Security](#domain-container-cloud-iac-security) | IaC Golden Path、container admission、runtime、cloud control planeの保護。 | 5 | 49 |
 | [Release Integrity](#domain-release-integrity) | 署名、provenance、SBOM、supplier artifact、配布時の完全性。 | 5 | 35 |
@@ -47,7 +47,9 @@
 
 認証・認可、入力処理、secret、暗号など、application実装の安全性。
 
-実装済みcontrolはまだありません。候補は[実装計画](../docs/PLANNED_CONTROLS.md)を参照してください。
+| Control | 達成する状態 | マッピング先 | Security functions | Checks | Maturity / Evidence |
+|---|---|---|---|---:|---|
+| [PSB-CODE-005](secure-coding/unicode-source-deception/README.md) | Python sourceの危険なUnicode format control、非ASCII identifier、NFKC normalization差異をreview前に検出し、曖昧なsource表示をfail closedで拒否する。 | [sitf](../generated/mappings/sitf.md) | `prevent`, `detect`, `verify` | 6 | `prototype` / `E3` |
 
 <a id="domain-source-protection"></a>
 
@@ -61,6 +63,7 @@
 | [PSB-SOURCE-002](source-protection/git-hooks-baseline/README.md) | コミット前とプッシュ前に、追加される内容と到達可能なGit履歴を検査し、情報漏洩につながる変更を検出する。 | [CISA Product Security Bad Practices](../generated/mappings/cisa-product-security-bad-practices.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify` | 14 | `prototype` / `E3` |
 | [PSB-SOURCE-003](source-protection/public-repository-exposure/README.md) | 対象を限定したGitHub検索、到達可能な全Git履歴のスキャン、公開範囲の証跡を組み合わせ、情報露出を検出して是正する。 | [CISA Product Security Bad Practices](../generated/mappings/cisa-product-security-bad-practices.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `detect`, `verify`, `respond`, `govern` | 13 | `reference` / `E3` |
 | [PSB-SOURCE-004](source-protection/source-access-credential-lifecycle/README.md) | OAuthトークン、PAT、SSH鍵、ソース管理基盤とGitHub MCPの認証情報について、権限、存続期間、保管、process delivery、悪用可能性を制限する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify`, `respond`, `govern` | 17 | `prototype` / `E3` |
+| [PSB-SOURCE-005](source-protection/repository-destruction-recovery/README.md) | Critical repositoryの完全inventory、bulk deletion拒否、攻撃者と分離したimmutable backup、外部alert、authority containment、全件restore drillを一つの証跡へ結合する。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [sitf](../generated/mappings/sitf.md) | `prevent`, `detect`, `respond`, `verify` | 7 | `prototype` / `E3` |
 
 <a id="domain-dependency-security"></a>
 
@@ -92,6 +95,7 @@ workflow dependency、command injection、権限、未信頼PR境界の保護。
 | [PSB-CICD-006](cicd-security/audience-bound-oidc-federation/README.md) | 署名済みGitHub ActionsワークロードIDを不変かつ厳密なOIDCクレームと照合し、保存済みクラウド鍵を使わず、対象リソースに限定した短期認証情報だけを発行する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `verify` | 8 | `prototype` / `E3` |
 | [PSB-CICD-007](cicd-security/runner-hardening/README.md) | 未信頼jobをreview済みhosted runnerへ限定し、self-hosted runnerをimmutable imageから起動するJIT one-job instanceとして隔離・破棄する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify` | 9 | `prototype` / `E3` |
 | [PSB-CICD-008](cicd-security/privileged-control-plane-change/README.md) | SCM、CI、cloud federation、registry、signing serviceの特権設定変更を、named administrator、phishing-resistant session、exact policy差分、独立承認、実行、provider audit eventへ結合する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify`, `govern` | 7 | `prototype` / `E3` |
+| [PSB-CICD-009](cicd-security/cache-provenance-isolation/README.md) | CI cacheのkeyと内容をrepository、workflow、trust class、platform、producer revision、dependency digest、期限、署名済みrecordへ結合し、異なる境界からのrestoreとprefix fallbackを拒否する。 | [sitf](../generated/mappings/sitf.md) | `prevent`, `verify` | 7 | `prototype` / `E3` |
 
 <a id="domain-build-security"></a>
 

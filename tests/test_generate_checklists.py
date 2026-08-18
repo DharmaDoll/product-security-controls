@@ -67,6 +67,8 @@ class GenerateChecklistsTest(unittest.TestCase):
                 self.assertIn('name="Catalog Governance"', workbook_xml)
                 self.assertIn('name="SSC Integration"', workbook_xml)
                 self.assertIn('name="PSIRT Capability"', workbook_xml)
+                self.assertIn('name="SITF Coverage"', workbook_xml)
+                self.assertIn('name="SITF Attack Flows"', workbook_xml)
                 for name in archive.namelist():
                     if name.endswith((".xml", ".rels")):
                         ET.fromstring(archive.read(name))
@@ -230,6 +232,26 @@ class GenerateChecklistsTest(unittest.TestCase):
             self.assertEqual(
                 {row["Cumulative Minimum Level"] for row in rows}, {"1", "2", "3"}
             )
+
+    def test_sitf_profile_keeps_all_techniques_and_explicit_gaps(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary)
+            generate_checklists.generate_checklists(self.controls, output)
+            csv_path = output / "profiles" / "sitf" / "technique-coverage.csv"
+            with csv_path.open(encoding="utf-8-sig", newline="") as handle:
+                rows = list(csv.DictReader(handle))
+            self.assertEqual(len(rows), 81)
+            self.assertEqual(len({row["Technique ID"] for row in rows}), 81)
+            self.assertEqual({row["Disposition"] for row in rows}, {"implemented", "gap"})
+            self.assertTrue(
+                all(row["Remaining Work or Boundary"] for row in rows if row["Disposition"] == "gap")
+            )
+            flow_path = output / "profiles" / "sitf" / "attack-flows.csv"
+            with flow_path.open(encoding="utf-8-sig", newline="") as handle:
+                flow_rows = list(csv.DictReader(handle))
+            self.assertEqual({row["Flow ID"] for row in flow_rows}, {
+                "SITF-FLOW-001", "SITF-FLOW-002", "SITF-FLOW-003", "SITF-FLOW-004"
+            })
 
 
 if __name__ == "__main__":

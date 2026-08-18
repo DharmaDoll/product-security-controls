@@ -1,0 +1,6 @@
+{
+  "schema": "psb-unicode-source-fixture/v1",
+  "output_name": "example.py",
+  "content": "# bidi override \u202e\n# bidi isolate \u2066\nvisible = \"safe\u200bvalue\"\ntagged = \"safe\udb40\udc01value\"\np\u0430yload = 1\n\uff56alue = 2\n",
+  "materialized_sha256": "7892ba96230297a5775dd48fcb2827bd61b58d40ba99f0b9dc13dc502252f5be"
+}

@@ -1,0 +1,210 @@
+id: PSB-SOURCE-005
+title: Repository mass deletionを防止しimmutable backupから復旧可能性を検証する
+domain: source-protection
+summary: Critical repositoryの完全inventory、bulk deletion拒否、攻撃者と分離したimmutable backup、外部alert、authority containment、全件restore drillを一つの証跡へ結合する。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - respond
+  - verify
+threats:
+  - id: SOURCE-MASS-REPOSITORY-DELETION
+    description: A compromised source-platform administrator or faulty automation deletes multiple critical repositories and their references settings or history.
+  - id: SOURCE-BACKUP-CO-DESTRUCTION
+    description: The same compromised authority can delete mutable same-domain backups or recovery starts from stale incomplete state.
+  - id: SOURCE-RECOVERY-FALSE-ASSURANCE
+    description: Missing inventory partial audit failed alert stale drill or digest mismatch is interpreted as recoverability.
+implementations:
+  insecure:
+    - insecure/evidence.json
+  secure:
+    - secure/policy.json
+    - secure/evidence.json
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-SOURCE-005
+  expected:
+    - every required critical repository is represented once by a stable provider ID and complete collector scope
+    - a request targeting more than one repository is denied while any permitted single deletion requires independent approval and recent phishing-resistant reauthentication
+    - each repository has a current compliance-locked backup in a separate security domain that source administrators cannot delete
+    - the exact destructive request produces one complete audit event and a bounded externally delivered alert
+    - the destructive actor session and tokens are revoked before independently authorized recovery begins
+    - a current isolated drill restores every repository within RPO and RTO with exact content refs and protected-settings digests
+    - stale partial unavailable malformed symbolic or credential-bearing evidence returns ERROR rather than PASS
+checks:
+  - id: RDR-001
+    title: Critical repository inventory is complete and stable-ID bound
+    required_state: exact required repository IDs occur once in a fresh completely paginated collector result and each is classified critical
+    responsible_role: repository-admin
+    applies_to:
+      - source-repository-inventory
+      - critical-repository-scope
+    context:
+      threat_actor: compromised administrator or inventory collector omitting a repository outside the visible first page
+      attack_or_failure_scenario: deletion safeguards and recovery drills cover known repositories while one critical repository is absent duplicated renamed or represented only by mutable name
+      why_required: prevention and recovery coverage can be measured only against one complete stable-ID scope; backup quality for listed repositories cannot compensate for an omitted target
+    verification:
+      type: hybrid
+      method: compare the fresh complete provider inventory to the policy stable-ID set with make verify-control CONTROL=PSB-SOURCE-005
+      expected: exact unique complete critical repository scope passes and missing duplicate partial or stale inventory fails closed
+      evidence:
+        - sanitized repository IDs and classifications
+        - collector identity pagination and capture time
+    mapping_status: reviewed
+  - id: RDR-002
+    title: Bulk repository deletion is denied and single deletion is independently authorized
+    required_state: default deny maximum one target and recent phishing-resistant reauthentication plus non-requester approval for every allowed deletion
+    responsible_role: repository-admin
+    applies_to:
+      - repository-deletion-api
+      - source-platform-administrator-session
+    context:
+      threat_actor: attacker using a stolen organization-owner session or faulty bulk administration automation
+      attack_or_failure_scenario: one request deletes many repositories or the same administrator requests approves and executes a destructive action without recent identity proof
+      why_required: per-request blast-radius and independent authorization stop one credential or automation fault before recovery becomes the only remaining safeguard
+    verification:
+      type: hybrid
+      method: evaluate policy and normalized deletion decision evidence including target count actor approver and reauthentication time
+      expected: bulk self-approved stale-reauthenticated or default-allow deletion is rejected
+      evidence:
+        - sanitized deletion request and decision
+        - approval and authentication metadata
+    mapping_status: reviewed
+  - id: RDR-003
+    title: Repository backups are current immutable and attacker separated
+    required_state: every required repository has a 24-hour-RPO compliance-locked 30-day backup in another security domain that source administrators cannot delete
+    responsible_role: shared
+    applies_to:
+      - repository-backup
+      - backup-security-domain
+      - backup-retention
+    context:
+      threat_actor: compromised source-platform administrator attempting to destroy repositories and their recovery copies with the same authority
+      attack_or_failure_scenario: backup is stale mutable short-retained or stored under the same administration boundary and disappears with the source organization
+      why_required: deletion prevention may be bypassed by provider or account compromise; independently retained exact state is the last recoverable copy
+    verification:
+      type: hybrid
+      method: compare snapshot time domain object-lock retention delete policy and content refs settings digests for every inventory entry
+      expected: same-domain mutable deletable stale or short-retained backups are rejected
+      evidence:
+        - metadata-only backup manifest
+        - object-lock and retention decision
+    mapping_status: reviewed
+  - id: RDR-004
+    title: Destructive requests are completely audited and externally alerted
+    required_state: one complete audit event binds request actor session targets and decision and reaches an external receiver within five minutes
+    responsible_role: security
+    applies_to:
+      - source-platform-audit-log
+      - repository-destruction-alert
+    context:
+      threat_actor: compromised administrator deleting quietly or provider collector and alert-delivery failure hiding a denied or successful attempt
+      attack_or_failure_scenario: a destructive request is absent from a partial audit window names different targets or never reaches responders before follow-on actions
+      why_required: guardrails can fail; complete independently delivered telemetry makes containment and recovery start from the exact observed request
+    verification:
+      type: hybrid
+      method: join exact request and audit identities then measure external alert delivery delay
+      expected: missing duplicate mismatched late failed or same-domain alert evidence is rejected
+      evidence:
+        - sanitized audit correlation result
+        - external alert delivery receipt
+    mapping_status: reviewed
+  - id: RDR-005
+    title: Destructive actor authority is contained before recovery
+    required_state: exact actor session and derived tokens are revoked by incident response before a later recovery authorization
+    responsible_role: incident-response
+    applies_to:
+      - source-platform-session
+      - source-access-token
+      - repository-recovery-authorization
+    context:
+      threat_actor: attacker retaining the compromised administrator session while responders recreate repositories and protected settings
+      attack_or_failure_scenario: restored repositories are deleted or modified again because recovery begins before the destructive actor and tokens lose authority
+      why_required: an accurate restore does not remain recovered if the original destructive access path is still active
+    verification:
+      type: hybrid
+      method: bind containment actor and session to the deletion request and compare revocation containment and authorization order
+      expected: identity mismatch active session active token wrong owner or early recovery is rejected
+      evidence:
+        - content-free revocation receipt
+        - incident-response authorization timeline
+    mapping_status: reviewed
+  - id: RDR-006
+    title: Restore drill proves complete exact state within RPO and RTO
+    required_state: a drill no older than 30 days restores all required repositories to an isolated target within four hours and matches snapshot content refs and settings digests
+    responsible_role: repository-admin
+    applies_to:
+      - repository-restore-drill
+      - git-object-and-ref-state
+      - repository-protection-settings
+    context:
+      threat_actor: latent backup corruption incomplete mirror missing protected settings or operator procedure that has never restored the full critical scope
+      attack_or_failure_scenario: backups exist but cannot recreate every repository branch tag object and security setting inside the business recovery objective
+      why_required: storage receipts prove retention only; destructive isolated restoration with digest comparison proves the recovery path and operational timing
+    verification:
+      type: automated
+      method: compare drill age mode coverage duration snapshot IDs and exact content refs settings digests
+      expected: partial stale slow in-place mismatched or unverified restore receipts are rejected
+      evidence:
+        - metadata-only restore receipts
+        - RPO and RTO measurements
+    mapping_status: reviewed
+  - id: RDR-007
+    title: Recovery evidence is policy-bound metadata-only and fails closed
+    required_state: canonical content-derived policy identity strict bounded JSON and distinct evaluation errors prevent missing unsafe or sensitive evidence from producing assurance
+    responsible_role: security
+    applies_to:
+      - repository-recovery-verifier
+      - recovery-assurance-evidence
+    context:
+      threat_actor: malformed evidence symlink stale collector parser failure or incident export containing credentials or source content
+      attack_or_failure_scenario: unevaluable evidence is recorded as recoverable or response output creates a new leak of repository data and authority
+      why_required: explicit ERROR semantics preserve the blocking decision when assurance is unavailable while metadata-only output limits secondary exposure
+    verification:
+      type: automated
+      method: run malformed stale partial unavailable symbolic policy-tamper and sensitive-field negative tests
+      expected: evaluation failures return exit 2 never PASS and sensitive values are not echoed
+      evidence:
+        - sanitized negative-test output
+    mapping_status: unmapped
+mappings:
+  - framework: sitf
+    version: "1.0.0@d1d1536"
+    id: T-V009
+    relationship: mitigates
+    confidence: high
+    rationale: Stable complete repository scope bulk-deletion denial attacker-separated immutable backups external alerts authority containment and exact full-scope restore drills directly address mass repository deletion while live provider adoption remains external.
+    reviewer: product-security
+    review_date: "2026-08-18"
+    applies_to:
+      - RDR-001
+      - RDR-002
+      - RDR-003
+      - RDR-004
+      - RDR-005
+      - RDR-006
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1485
+    relationship: mitigates
+    confidence: medium
+    rationale: Destructive-action limits immutable backup separation alerting containment and verified restore reduce the impact and duration of data destruction without claiming complete enterprise recovery coverage.
+    reviewer: product-security
+    review_date: "2026-08-18"
+    applies_to:
+      - RDR-002
+      - RDR-003
+      - RDR-004
+      - RDR-005
+      - RDR-006
+limitations:
+  - The runnable slice evaluates provider-neutral offline evidence and does not configure GitHub GitLab Bitbucket another VCS backup storage identity provider or alert receiver.
+  - Stable repository IDs names settings and audit event shapes require a reviewed provider adapter and complete organization scope including archived disabled transferred and forked repositories.
+  - Compliance object-lock metadata is not proof of storage-provider enforcement key custody legal retention or resistance to provider control-plane compromise.
+  - Digest equality does not prove semantic correctness of every provider feature issue pull request discussion release artifact LFS object wiki hook key environment or external integration.
+  - The drill uses an isolated synthetic target and performs no real deletion; production exercises require approved safety boundaries cost controls and evidence retention.
+  - RPO RTO retention and drill-age values are reference baselines and may need stricter product-specific requirements without weakening the fail-closed contract.
+status: prototype
+owner: product-security
+evidence_level: E3

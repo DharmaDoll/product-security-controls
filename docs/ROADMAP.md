@@ -106,7 +106,7 @@ version and query,
 complete cursor pagination, field allow-listing, atomic output, and fail-closed
 rate-limit／network／loop handling. Environment protection, runner-group current
 state, repository／organization branch-ruleset history, and legacy branch
-force-push enforcement adapters are implemented; broader Actions policy, other
+force-push, deletion, administrator-enforcement, and CODEOWNER-review adapters are implemented; broader Actions policy, other
 legacy branch settings, and ruleset lifecycle events still need separate state
 joins. Remaining provider adapters are adoption work.
 
@@ -462,8 +462,8 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
     organization branch／tag ruleset updates now bind stable source／ruleset IDs
     and exact before／after history versions. Repository-scoped push updates
     additionally bind a private／internal root and complete fork-network digest;
-    a legacy branch force-push update now binds the audit action to stable
-    repository／branch identity and current protection state. Other legacy
+    legacy branch force-push, deletion, administrator-enforcement, and CODEOWNER-review updates now bind the
+    audit action to stable repository／branch identity and current protection state. Other legacy
     branch settings, create／delete／organization-wide push rulesets,
     CI／registry, Azure, GCP, and non-policy
     signing operations remain external.
@@ -472,62 +472,67 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
 
 1. `PSB-CODE-004` — injection prevention using parameterization and
    context-specific output handling.
-2. `PSB-SOURCE-003` — public repository exposure review, repository-scoped
+2. `PSB-CODE-005` — Unicode source deception prevention — implemented at E3
+   for Python with an integrity-bound escaped fixture, explicit bidi／invisible／
+   tag policy, ASCII and NFKC-stable identifier checks, sanitized evidence, and
+   fail-closed UTF-8／syntax／policy handling. Other language tokenizers and live
+   repository enforcement remain follow-on work.
+3. `PSB-SOURCE-003` — public repository exposure review, repository-scoped
    GitHub dorking scenarios, current/history secret detection, non-code surface
    evidence, and credential-first remediation — implemented ahead of the
    remaining P2 backlog.
-3. `PSB-DEPS-004` — implemented at E3 with exact base-to-head graph delta,
+4. `PSB-DEPS-004` — implemented at E3 with exact base-to-head graph delta,
    direct/transitive edge context, source, vulnerability, license, provenance,
    non-author approval, expiring exception, and fail-closed advisory evidence.
-4. `PSB-CICD-006` — short-lived, audience-bound OIDC federation without stored
+5. `PSB-CICD-006` — short-lived, audience-bound OIDC federation without stored
    cloud credentials — implemented at E3 with signed JWT, immutable repository
    identity, exact audience/context/reusable-workflow claims, replay rejection,
    stored-secret inventory, and bounded exchange receipt fixtures.
-5. `PSB-REL-003` — SBOM generation, artifact binding, publication,
+6. `PSB-REL-003` — SBOM generation, artifact binding, publication,
    completeness checks, consumer-side mismatch handling, and fail-closed
    Dependency-Track processing — implemented with nine atomic checks,
    positive and negative fixtures, distinct source/build/deployment
    observations, runtime error states, and Golden Path plus `PSB-GOV-001`
    composition.
-6. `PSB-REL-004` — signed supplier SBOM product/artifact identity, signer
+7. `PSB-REL-004` — signed supplier SBOM product/artifact identity, signer
    lifecycle, revocation freshness, schema validation, and quarantine —
    implemented with eight atomic checks, positive and negative signed
    fixtures, least-privilege project binding, and distinct quarantine versus
    verification-error states.
-7. `PSB-REL-005` — exact release-artifact signing generation — implemented at
+8. `PSB-REL-005` — exact release-artifact signing generation — implemented at
    E3 with immutable artifact／release／source identity, short-lived scoped
    authorization, active non-exportable sign-only signer policy, signed
    cross-object binding, immutable publication／transparency receipt, and
    fail-closed release gating. Live KMS／HSM／keyless adapters remain external
    evidence; this is not a SLSA Build level mapping.
-8. `PSB-CONTAINER-001` — immutable image digests, non-root execution, minimal
+9. `PSB-CONTAINER-001` — immutable image digests, non-root execution, minimal
    capabilities, admission-policy verification, and a follow-on composition
    that applies existing `PSB-REL-001` SLSA provenance verification to the
    exact admitted OCI manifest digest — implemented with API-native Kubernetes
    fixtures, nine atomic admission checks, default-deny network policy,
    platform PID and fail-closed evidence, and actual `PSB-REL-001` verifier
    composition.
-9. `PSB-CONTAINER-002` — registry transport, repository-scoped authorization,
+10. `PSB-CONTAINER-002` — registry transport, repository-scoped authorization,
    short-lived identity, immutable release protection, audit, and image
    lifecycle enforcement — implemented with seven atomic checks, positive and
    negative provider-neutral fixtures, operation-to-audit correlation,
    protected-tag history, and distinct evidence `ERROR` states.
-10. `PSB-CONTAINER-003` — minimal patched container hosts, protected daemon and
+11. `PSB-CONTAINER-003` — minimal patched container hosts, protected daemon and
    runtime sockets, user and kernel isolation, management restriction, and
    host audit policy — implemented with nine atomic checks, protected-path
    integrity, hardware-backed node trust, time-bound isolation exceptions, and
    distinct `PASS`, `FAIL`, `NOT_CHECKED`, and `ERROR` outcomes.
-11. `PSB-CONTAINER-004` — implemented at E3 with workload-bound Falco and
+12. `PSB-CONTAINER-004` — implemented at E3 with workload-bound Falco and
    Sysdig event adapters, six behavior categories, sensor/drop/sequence health,
    alert delivery failure handling, sanitized evidence, and
    authorization-bound response handoff. Live privileged sensor deployment
    remains provider-specific follow-on work extending `PSB-CONTAINER-003`.
-12. `PSB-GOV-002` — implemented at E3 with exact cataloged control/check and
+13. `PSB-GOV-002` — implemented at E3 with exact cataloged control/check and
     target scope, distinct owner/risk-reviewer/approver roles, bounded expiry,
     compensating controls, approval and remediation tickets, complete
     SHA-256-bound register evidence, sanitized output, and distinct active,
     expiring, expired, invalid, and `ERROR` outcomes.
-13. `PSB-GOV-003` — exact product-vulnerability triage that combines validated
+14. `PSB-GOV-003` — exact product-vulnerability triage that combines validated
     CVSS v4 vectors, fresh complete CISA KEV evidence, product/artifact/
     deployment applicability, accountable PSIRT ownership, and policy-bound
     remediation priority without treating source failure as low risk —
@@ -681,6 +686,21 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
     FLATT organization-monitoring presentation non-normative, Allstar
     unadopted, and Checkov's GitHub configuration policies rejected until a
     unique executable gap is demonstrated.
+18. Adopt the pinned SITF `1.0.0` technique library as a threat-taxonomy
+    coverage profile, not a compliance framework. Reconcile every one of the
+    81 endpoint／VCS／CI/CD／registry／production techniques to exact checks or an
+    owned gap, generate four synthetic cross-component attack flows, and fail
+    closed on incomplete inventory or stale references. `PSB-CODE-005` now
+    closes the Python-source Unicode stealth slice with exact bidi, invisible,
+    identifier, normalization, and fail-closed checks. `PSB-CICD-009` now
+    closes action cache poisoning through signed provenance, exact trust and
+    producer identities, byte／path／lifetime binding, and fail-closed restore.
+    `PSB-SOURCE-005` now closes the VCS mass-deletion slice through stable-ID
+    inventory, bulk-delete denial, attacker-separated immutable backup,
+    external alert, authority containment, and exact full-scope restore drills.
+    Prioritize remaining endpoint／CI／registry／production destructive recovery,
+    exfiltration, malicious service provisioning, and sensor／agent poisoning
+    gaps in later vertical slices.
 
 Within a priority, implement one reviewable vertical slice at a time. Every new
 control must meet the repository definition of done, including insecure and
@@ -712,6 +732,13 @@ Add the following only with a concrete implementation and automated evidence:
   from one reviewed policy source. This remains a reconciliation view rather
   than a duplicate framework registry; exact SSDF mappings continue to use the
   existing `nist-ssdf` registry;
+- Wiz Research SITF `1.0.0` at immutable commit
+  `d1d1536da5cbc7107fb90ab3f5a4b1f62b21ea59` as a threat-taxonomy coverage
+  profile — implemented with an integrity-recorded 81-technique registry,
+  complete reconciliation, synthetic attack flows, generated views, and
+  fail-closed tests. The upstream license metadata inconsistency is recorded,
+  the Japanese lecture companion remains non-normative, and no compliance or
+  complete-mitigation claim is inferred;
 - FIRST PSIRT Services Framework 1.1 and the PSIRT Maturity Document as sources
   for an organization-owned capability profile after `PSB-GOV-003` — the
   integrity-recorded source, 31-service inventory, 18-row cumulative profile,

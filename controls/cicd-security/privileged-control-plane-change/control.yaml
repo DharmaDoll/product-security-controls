@@ -47,6 +47,18 @@ implementations:
     - secure/github-legacy-branch-scm/identity-sessions.json
     - secure/github-legacy-branch-scm/change-register.json
     - secure/github-legacy-branch-scm/branch-protection-snapshot.json
+    - secure/github-legacy-admin-branch-scm/audit-events.json
+    - secure/github-legacy-admin-branch-scm/identity-sessions.json
+    - secure/github-legacy-admin-branch-scm/change-register.json
+    - secure/github-legacy-admin-branch-scm/branch-protection-snapshot.json
+    - secure/github-legacy-codeowner-branch-scm/audit-events.json
+    - secure/github-legacy-codeowner-branch-scm/identity-sessions.json
+    - secure/github-legacy-codeowner-branch-scm/change-register.json
+    - secure/github-legacy-codeowner-branch-scm/branch-protection-snapshot.json
+    - secure/github-legacy-deletion-branch-scm/audit-events.json
+    - secure/github-legacy-deletion-branch-scm/identity-sessions.json
+    - secure/github-legacy-deletion-branch-scm/change-register.json
+    - secure/github-legacy-deletion-branch-scm/branch-protection-snapshot.json
     - secure/aws/cloudtrail-events.json
     - secure/aws/identity-sessions.json
     - secure/aws/change-register.json
@@ -73,7 +85,7 @@ verification:
     - the GitHub live collector proves a bounded query and complete pagination before atomically publishing a field-allow-listed audit export
     - the runner-group collector reads one stable group ID and completely paginates selected repository access before publishing a canonical current-state snapshot
     - the GitHub SCM adapter joins branch tag or repository-scoped push repository_ruleset.update to stable source ruleset and exact before-after history while push additionally requires one complete root-bound fork-network digest
-    - the GitHub legacy branch adapter joins an exact force-push enforcement update to stable repository and branch identity external human session reviewed before state and a current protection snapshot
+    - the GitHub legacy branch adapter joins exact force-push deletion administrator-enforcement and CODEOWNER-review updates to stable repository and branch identity external human session reviewed before state and a current protection snapshot
     - the AWS adapter joins a successful CloudTrail UpdateAssumeRolePolicy event to an IAM GetRole snapshot external human session and reviewed change through stable account role event and request identities
     - the ECR adapter joins a successful CloudTrail SetRepositoryPolicy event to DescribeRepositories and GetRepositoryPolicy current state external human session and reviewed change while detecting same-name repository recreation
     - the KMS adapter joins a successful CloudTrail PutKeyPolicy event to DescribeKey and GetKeyPolicy current state external human session and reviewed change through one signing key ID and ARN while rejecting lockout-safety bypass
@@ -340,16 +352,16 @@ limitations:
   - The fixtures are provider-neutral normalized evidence and do not prove live GitHub GitLab cloud registry or signing-service configuration.
   - The verifier does not call provider APIs mutate settings validate hardware authenticator custody or establish organization membership.
   - The GitHub normalizer consumes reviewed exports and does not itself call the live REST API; GitHub audit fields cannot prove phishing-resistant authentication or independent approval without the organization identity/session and change-register joins.
-  - The live GitHub collector selects environment.update_protection_rule org.runner_group_updated repository_ruleset.update and protected_branch.update_allow_force_pushes_enforcement_level; runner ruleset and legacy branch events become evidence only after their required current-state or history joins are complete.
+  - The live GitHub collector selects environment.update_protection_rule org.runner_group_updated repository_ruleset.update protected_branch.update_allow_force_pushes_enforcement_level protected_branch.update_allow_deletions_enforcement_level protected_branch.update_admin_enforced and protected_branch.update_require_code_owner_review; runner ruleset and legacy branch events become evidence only after their required current-state or history joins are complete.
   - GitHub runner-group current state independently confirms the applied after digest but not the historical before state; the before digest remains a reviewed change-register assertion and needs an independently retained pre-change snapshot for stronger historical assurance.
   - Runner-group update and snapshot collection are not transactionally atomic; the normalizer rejects later updates found before the snapshot, but provider event omission or concurrent changes outside the complete audit window remain residual risk.
-  - The GitHub SCM adapters cover repository- and organization-scoped branch and tag ruleset updates repository-scoped push updates and the legacy branch force-push enforcement update; other legacy branch fields ruleset create delete organization-wide push repository transfer rename and archive require separately reviewed adapters.
+  - The GitHub SCM adapters cover repository- and organization-scoped branch and tag ruleset updates repository-scoped push updates and legacy branch force-push deletion administrator-enforcement and CODEOWNER-review updates; other legacy branch fields ruleset create delete organization-wide push repository transfer rename and archive require separately reviewed adapters.
   - Repository push rulesets bind a private or internal non-fork root stable identity network_count completely paginated fork identities and reviewed network digest; the REST reads are not transactional and fork visibility or concurrent network changes remain residual risk.
   - Organization-wide push rulesets require complete expansion of every repository selector and every resulting root fork network; this adapter rejects that scope rather than extrapolating one repository snapshot.
   - Organization ruleset audit classification is an implementation inference from the documented repository_ruleset.update event ruleset_source_type Organization stable org_id and absent repository fields; validate the sanitized event shape in the adopting tenant and fail closed on divergence.
   - Reading repository or organization ruleset bypass actors and exact history requires the corresponding Administration write permission even though the collector only performs GET requests; isolate that credential from mutation paths and monitor all use because GitHub does not expose a narrower read-only history permission and organization scope has a larger blast radius.
   - Ruleset state is structurally canonicalized and may fail closed for semantically harmless list ordering changes; current and history APIs are not transactionally atomic despite later-version rejection.
-  - The legacy branch adapter covers only protected_branch.update_allow_force_pushes_enforcement_level and its versioned contract accepts numeric levels zero disabled and one or two enabled; tenant event shape must be validated before adoption and any other value fails closed.
+  - The legacy branch adapter covers protected_branch.update_allow_force_pushes_enforcement_level protected_branch.update_allow_deletions_enforcement_level protected_branch.update_admin_enforced and protected_branch.update_require_code_owner_review; the versioned contract accepts force-push and deletion numeric levels zero disabled and one or two enabled plus strict boolean admin_enforced and require_code_owner_review fields. The numeric enum meaning is not documented in the public audit-event catalog, so tenant event shape must be validated before adoption and any other value fails closed.
   - GitHub exposes current legacy branch protection but no version history through this REST path, so the before state remains a reviewed register assertion; a separately retained pre-change snapshot is required for stronger historical assurance.
   - The AWS adapter is limited to root-path IAM roles changed through UpdateAssumeRolePolicy; roles with another path, CloudFormation or Terraform replacement, CreateRole, service-linked roles, SAML trust, permission policies, Azure, and GCP need separately reviewed adapters.
   - IAM GetRole confirms the applied trust policy and stable RoleId but does not return its historical predecessor; the before digest remains a reviewed register assertion unless an independent pre-change snapshot is retained.

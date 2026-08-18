@@ -31,6 +31,8 @@ PROTECTION = {
     "url": "https://api.github.com/repos/example-org/product-api/branches/main/protection",
     "allow_force_pushes": {"enabled": False},
     "allow_deletions": {"enabled": False},
+    "enforce_admins": {"enabled": True},
+    "required_pull_request_reviews": {"require_code_owner_reviews": True},
     "required_status_checks": {"strict": True, "contexts": ["test"]},
 }
 
@@ -59,12 +61,20 @@ class GithubBranchProtectionCollectorTest(unittest.TestCase):
             fetcher or self.valid_fetcher(),
         )
 
-    def test_collects_exact_force_push_setting_and_stable_repository(self) -> None:
+    def test_collects_exact_legacy_settings_and_stable_repository(self) -> None:
         output = self.collect()
         self.assertTrue(output["complete"])
         self.assertEqual(output["repository"]["id"], 19001)
         self.assertEqual(output["branch"], {"name": "main"})
-        self.assertEqual(output["protection"], {"allow_force_pushes": False})
+        self.assertEqual(
+            output["protection"],
+            {
+                "allow_force_pushes": False,
+                "allow_deletions": False,
+                "enforce_admins": True,
+                "require_code_owner_reviews": True,
+            },
+        )
         self.assertNotIn("required_status_checks", str(output))
 
     def test_branch_slash_is_path_encoded(self) -> None:
@@ -93,6 +103,35 @@ class GithubBranchProtectionCollectorTest(unittest.TestCase):
 
         with self.assertRaisesRegex(collector.CollectorError, "force-push setting"):
             self.collect(missing)
+
+        def missing_deletions(url: str, token: str, timeout: int):
+            value, request_id = base(url, token, timeout)
+            if url.endswith("/protection"):
+                value.pop("allow_deletions")
+            return value, request_id
+
+        with self.assertRaisesRegex(collector.CollectorError, "deletion setting"):
+            self.collect(missing_deletions)
+
+        def missing_admin(url: str, token: str, timeout: int):
+            value, request_id = base(url, token, timeout)
+            if url.endswith("/protection"):
+                value.pop("enforce_admins")
+            return value, request_id
+
+        with self.assertRaisesRegex(collector.CollectorError, "admin-enforcement setting"):
+            self.collect(missing_admin)
+
+        def missing_code_owner_review(url: str, token: str, timeout: int):
+            value, request_id = base(url, token, timeout)
+            if url.endswith("/protection"):
+                value["required_pull_request_reviews"].pop(
+                    "require_code_owner_reviews"
+                )
+            return value, request_id
+
+        with self.assertRaisesRegex(collector.CollectorError, "code-owner-review setting"):
+            self.collect(missing_code_owner_review)
 
         def substituted(url: str, token: str, timeout: int):
             value, request_id = base(url, token, timeout)

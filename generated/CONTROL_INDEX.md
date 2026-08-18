@@ -26,6 +26,8 @@ Generated control catalog. Do not edit manually.
 | [PSB-CICD-006](../controls/cicd-security/audience-bound-oidc-federation/README.md) | cicd-security | Enforce audience-bound cloud OIDC federation | 8 | prototype | E3 |
 | [PSB-CICD-007](../controls/cicd-security/runner-hardening/README.md) | cicd-security | CI runnerをjobごとに隔離し使用後に破棄する | 9 | prototype | E3 |
 | [PSB-CICD-008](../controls/cicd-security/privileged-control-plane-change/README.md) | cicd-security | CI/CDの特権control-plane変更を本人・承認・監査証跡へ結合する | 7 | prototype | E3 |
+| [PSB-CICD-009](../controls/cicd-security/cache-provenance-isolation/README.md) | cicd-security | CI cache restoreを署名済みproducer provenanceとexact trust境界へ結合する | 7 | prototype | E3 |
+| [PSB-CODE-005](../controls/secure-coding/unicode-source-deception/README.md) | secure-coding | Detect deceptive Unicode controls and identifiers in source code | 6 | prototype | E3 |
 | [PSB-CONTAINER-001](../controls/container-cloud-iac-security/container-admission-baseline/README.md) | container-cloud-iac-security | Enforce a fail-closed container workload admission baseline | 9 | adopted | E3 |
 | [PSB-CONTAINER-002](../controls/container-cloud-iac-security/container-registry-security/README.md) | container-cloud-iac-security | Enforce authenticated immutable and auditable container registries | 7 | prototype | E3 |
 | [PSB-CONTAINER-003](../controls/container-cloud-iac-security/container-host-daemon-hardening/README.md) | container-cloud-iac-security | Harden container hosts daemons and node administration | 9 | prototype | E3 |
@@ -52,3 +54,4 @@ Generated control catalog. Do not edit manually.
 | [PSB-SOURCE-002](../controls/source-protection/git-hooks-baseline/README.md) | source-protection | リポジトリ所有の開発者向けGit hooksセキュリティベースライン | 14 | prototype | E3 |
 | [PSB-SOURCE-003](../controls/source-protection/public-repository-exposure/README.md) | source-protection | 公開リポジトリ露出とGitHub dorking検証 | 13 | reference | E3 |
 | [PSB-SOURCE-004](../controls/source-protection/source-access-credential-lifecycle/README.md) | source-protection | Govern source access credential lifecycle | 17 | prototype | E3 |
+| [PSB-SOURCE-005](../controls/source-protection/repository-destruction-recovery/README.md) | source-protection | Repository mass deletionを防止しimmutable backupから復旧可能性を検証する | 7 | prototype | E3 |

@@ -1,0 +1,164 @@
+id: PSB-CODE-005
+title: Detect deceptive Unicode controls and identifiers in source code
+domain: secure-coding
+summary: Python sourceの危険なUnicode format control、非ASCII identifier、NFKC normalization差異をreview前に検出し、曖昧なsource表示をfail closedで拒否する。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - verify
+threats:
+  - id: UNICODE-BIDI-SOURCE-DECEPTION
+    description: A malicious contributor inserts directional controls so reviewers and compilers perceive a different token or execution order.
+  - id: UNICODE-INVISIBLE-SOURCE-DECEPTION
+    description: A contributor or compromised generator inserts zero-width or tag characters that hide a meaningful source difference.
+  - id: UNICODE-CONFUSABLE-IDENTIFIER
+    description: A visually confusable or normalization-unstable identifier impersonates a trusted variable function or module name.
+  - id: UNICODE-VERIFIER-FAILURE
+    description: Invalid encoding malformed syntax unsupported source or policy failure is interpreted as clean analysis.
+implementations:
+  insecure:
+    - insecure/unicode-source.json
+  secure:
+    - secure/unicode-policy.json
+    - secure/example.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-CODE-005
+  expected:
+    - ordinary Unicode string data with ASCII Python identifiers is accepted
+    - bidirectional override and isolate controls are rejected at every source position
+    - zero-width soft-hyphen formatting and Unicode tag characters are rejected
+    - non-ASCII and NFKC-unstable Python identifiers are rejected without printing source content
+    - policy fixture encoding syntax overwrite scope and empty-input failures return ERROR rather than a clean result
+checks:
+  - id: UNI-001
+    title: Bidirectional source controls are rejected everywhere
+    required_state: no directional embedding override isolate or mark controls in Python source
+    responsible_role: developer
+    applies_to:
+      - python-source
+      - code-review
+    context:
+      threat_actor: malicious contributor or compromised source generator inserting directional controls
+      attack_or_failure_scenario: rendered token order differs from parser order so review approves behavior the reviewer did not see
+      why_required: scanning every source position removes the formatting primitive used to create bidirectional source deception
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CODE-005
+      expected: the materialized right-to-left override fixture is rejected with its code point and location
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: UNI-002
+    title: Invisible format and tag characters are rejected
+    required_state: no forbidden zero-width soft-hyphen joiner BOM or Unicode tag characters in Python source
+    responsible_role: developer
+    applies_to:
+      - python-source
+      - code-review
+    context:
+      threat_actor: contributor or compromised editor inserting invisible characters into reviewed source
+      attack_or_failure_scenario: an invisible byte-sequence changes a string token identifier or comparison while the patch appears unchanged
+      why_required: an explicit format-character deny policy makes invisible changes observable before they enter reviewed history
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CODE-005
+      expected: zero-width and tag-control fixtures are rejected at exact locations
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: UNI-003
+    title: Python identifiers use the reviewed ASCII profile
+    required_state: every Python identifier is ASCII while Unicode remains allowed in ordinary string and comment data
+    responsible_role: developer
+    applies_to:
+      - python-source
+      - identifier-policy
+    context:
+      threat_actor: malicious contributor choosing a Cyrillic Greek or compatibility character that resembles an ASCII identifier
+      attack_or_failure_scenario: a visually similar identifier resolves to a different symbol and diverts validation authorization or data flow
+      why_required: an ASCII identifier boundary provides a deterministic reviewable defense without claiming an incomplete confusable-character list
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CODE-005
+      expected: a mixed-script identifier is rejected while Japanese string data remains accepted
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: UNI-004
+    title: Identifier spelling is NFKC stable
+    required_state: Python identifier tokens equal their NFKC normalized form
+    responsible_role: developer
+    applies_to:
+      - python-source
+      - identifier-policy
+    context:
+      threat_actor: contributor using fullwidth mathematical or compatibility characters that normalize to another identifier
+      attack_or_failure_scenario: source spelling and runtime symbol identity diverge after language normalization and mislead review or search
+      why_required: testing the pre-normalized token catches compatibility spellings before the Python parser silently canonicalizes them
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CODE-005
+      expected: a fullwidth identifier produces an explicit normalization finding
+      evidence:
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: UNI-005
+    title: Encoding syntax policy and input failures are not clean
+    required_state: invalid UTF-8 malformed Python unsupported policy missing source symbolic-link ambiguity overwrite and fixture-integrity failure return ERROR
+    responsible_role: security
+    applies_to:
+      - unicode-source-verifier
+    context:
+      threat_actor: malformed source compromised fixture or operator misconfiguration preventing complete inspection
+      attack_or_failure_scenario: analysis failure is reported as zero Unicode findings and the source proceeds to review or build
+      why_required: a distinct error state preserves the meaning of an accepted result and prevents parser ambiguity from bypassing the gate
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CODE-005
+      expected: all tested execution and input failures exit 2 and never print ACCEPTED
+      evidence:
+        - negative-test output
+    mapping_status: unmapped
+  - id: UNI-006
+    title: Findings expose only location category and code points
+    required_state: evidence contains policy digest path location code points and finding category without source lines or token values
+    responsible_role: security
+    applies_to:
+      - unicode-source-verifier
+      - security-evidence
+    context:
+      threat_actor: sensitive source or identifier content leaking through scanner logs and retained CI artifacts
+      attack_or_failure_scenario: detection output becomes a second disclosure channel for proprietary source data or embedded values
+      why_required: metadata-only findings provide actionable review evidence without copying attacker-controlled or sensitive source text
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-CODE-005
+      expected: output contains only sanitized metadata and never the insecure fixture source content
+      evidence:
+        - sanitized negative-test output
+    mapping_status: unmapped
+mappings:
+  - framework: sitf
+    version: "1.0.0@d1d1536"
+    id: T-E011
+    relationship: mitigates
+    confidence: high
+    rationale: The control rejects bidirectional and invisible formatting primitives plus confusable and normalization-unstable Python identifiers before review or execution; it directly addresses the primary Unicode stealth source-injection behavior while remaining language scoped.
+    reviewer: product-security
+    review_date: "2026-08-17"
+    applies_to:
+      - UNI-001
+      - UNI-002
+      - UNI-003
+      - UNI-004
+limitations:
+  - The first runnable slice supports Python source only; JavaScript TypeScript Go Rust JVM and native-language tokenizers require separate reviewed adapters.
+  - ASCII-only identifiers may be unsuitable for projects that intentionally use non-Latin identifiers and then require a language-specific UTS 39 profile and exception design.
+  - Unicode is allowed in strings and comments except for explicitly forbidden formatting controls; semantic abuse in translated text domain names or user data is outside this source control.
+  - The control detects source deception but does not establish reviewer intent dependency trust compiler integrity or runtime safety.
+  - Local fixture success does not prove repository hook CI branch-rule or IDE enforcement in an organization.
+status: prototype
+owner: product-security
+evidence_level: E3

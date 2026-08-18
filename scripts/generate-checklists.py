@@ -28,6 +28,11 @@ from psirt_capability_profile import (
     build_rows as build_psirt_rows,
     load_profile as load_psirt_profile,
 )
+from sitf_coverage import (
+    build_attack_flow_rows as build_sitf_attack_flow_rows,
+    build_coverage_rows as build_sitf_coverage_rows,
+    load_profiles as load_sitf_profiles,
+)
 
 
 GUIDELINE_HEADERS = [
@@ -178,6 +183,34 @@ PSIRT_CAPABILITY_HEADERS = [
     "Notes",
     "Limitations",
     "Source Snapshot Identity",
+    "Claim Boundary",
+]
+SITF_COVERAGE_HEADERS = [
+    "Technique ID",
+    "Technique",
+    "Component",
+    "Stage",
+    "Disposition",
+    "Exact or Supporting Checks",
+    "Planned Controls",
+    "Gap or Boundary Owner",
+    "Remaining Work or Boundary",
+    "Rationale",
+    "Component Limitation",
+    "Source Version",
+    "Official Source",
+    "Claim Boundary",
+]
+SITF_ATTACK_FLOW_HEADERS = [
+    "Flow ID",
+    "Flow",
+    "Scenario",
+    "Sequence",
+    "Technique ID",
+    "Technique",
+    "Component",
+    "Objective",
+    "Coverage Disposition",
     "Claim Boundary",
 ]
 FIXED_ZIP_TIME = (2026, 7, 27, 0, 0, 0)
@@ -773,6 +806,92 @@ def write_psirt_capability_markdown(
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def write_sitf_coverage_markdown(
+    path: Path, rows: list[dict[str, str]], registry: dict[str, Any]
+) -> None:
+    dispositions = Counter(row["Disposition"] for row in rows)
+    components = Counter(row["Component"] for row in rows)
+    lines = [
+        "# SITF technique coverage reconciliation",
+        "",
+        "Generated from the complete pinned 81-technique registry and reviewed "
+        "repository reconciliation. Do not edit manually.",
+        "",
+        f"Source version: `{registry['mapping_version']}`; artifact SHA-256: "
+        f"`{registry['source']['sha256']}`.",
+        "",
+        "`implemented` means exact repository checks directly address the "
+        "technique's primary behavior. It does not prove full mitigation, live "
+        "organization adoption, or compliance. Partial coverage remains `gap` "
+        "with supporting checks and owned remaining work.",
+        "",
+        "## Inventory",
+        "",
+        "| Component | Techniques | Implemented | Gap |",
+        "|---|---:|---:|---:|",
+    ]
+    for component in ("endpoint", "vcs", "cicd", "registry", "production"):
+        matching = [row for row in rows if row["Component"] == component]
+        lines.append(
+            f"| {component} | {components[component]} | "
+            f"{sum(row['Disposition'] == 'implemented' for row in matching)} | "
+            f"{sum(row['Disposition'] == 'gap' for row in matching)} |"
+        )
+    lines.extend(
+        [
+            f"| **total** | **{len(rows)}** | **{dispositions['implemented']}** | **{dispositions['gap']}** |",
+            "",
+            "## Technique rows",
+            "",
+            "| ID | Technique | Component | Stage | Disposition | Exact or supporting checks | Owner | Remaining work or boundary |",
+            "|---|---|---|---|---|---|---|---|",
+        ]
+    )
+    for row in rows:
+        values = (
+            row["Technique ID"],
+            row["Technique"],
+            row["Component"],
+            row["Stage"],
+            row["Disposition"],
+            row["Exact or Supporting Checks"],
+            row["Gap or Boundary Owner"],
+            row["Remaining Work or Boundary"],
+        )
+        lines.append("| " + " | ".join(_markdown_cell(value) for value in values) + " |")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_sitf_attack_flows_markdown(
+    path: Path, rows: list[dict[str, str]]
+) -> None:
+    lines = [
+        "# Synthetic SITF attack flows",
+        "",
+        "Generated from repository-owned review scenarios. These are not "
+        "upstream Wiz Research flows or observed incidents. Do not edit manually.",
+        "",
+        "A flow exposes how an unclosed technique can connect otherwise strong "
+        "controls across endpoint, VCS, CI/CD, registry, and production boundaries.",
+        "",
+        "| Flow | Step | Technique | Component | Coverage | Objective |",
+        "|---|---:|---|---|---|---|",
+    ]
+    for row in rows:
+        values = (
+            f"{row['Flow ID']}: {row['Flow']}",
+            row["Sequence"],
+            f"{row['Technique ID']}: {row['Technique']}",
+            row["Component"],
+            row["Coverage Disposition"],
+            row["Objective"],
+        )
+        lines.append("| " + " | ".join(_markdown_cell(value) for value in values) + " |")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def _column_name(index: int) -> str:
     result = ""
     while index:
@@ -951,6 +1070,16 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
         controls,
     )
     psirt_rows = build_psirt_rows(psirt_profile)
+    sitf_coverage, sitf_flows = load_sitf_profiles(
+        REPOSITORY_ROOT / "policies" / "integration" / "sitf-coverage.json",
+        REPOSITORY_ROOT / "policies" / "integration" / "sitf-attack-flows.json",
+        registries["sitf"],
+        controls,
+    )
+    sitf_coverage_rows = build_sitf_coverage_rows(sitf_coverage, registries["sitf"])
+    sitf_flow_rows = build_sitf_attack_flow_rows(
+        sitf_flows, sitf_coverage, registries["sitf"]
+    )
     output.mkdir(parents=True, exist_ok=True)
 
     write_csv(output / "product-security-checklist.csv", ASSESSMENT_HEADERS, checklist_rows)
@@ -1006,6 +1135,25 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
         output / "profiles" / "first-psirt-capability" / "assessment.md",
         psirt_rows,
     )
+    write_csv(
+        output / "profiles" / "sitf" / "technique-coverage.csv",
+        SITF_COVERAGE_HEADERS,
+        sitf_coverage_rows,
+    )
+    write_sitf_coverage_markdown(
+        output / "profiles" / "sitf" / "technique-coverage.md",
+        sitf_coverage_rows,
+        registries["sitf"],
+    )
+    write_csv(
+        output / "profiles" / "sitf" / "attack-flows.csv",
+        SITF_ATTACK_FLOW_HEADERS,
+        sitf_flow_rows,
+    )
+    write_sitf_attack_flows_markdown(
+        output / "profiles" / "sitf" / "attack-flows.md",
+        sitf_flow_rows,
+    )
 
     domains: dict[str, list[dict[str, str]]] = defaultdict(list)
     for row in checklist_rows:
@@ -1023,6 +1171,8 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
         supply_chain_rows, SUPPLY_CHAIN_RECONCILIATION_HEADERS
     )
     psirt_table = _dict_rows(psirt_rows, PSIRT_CAPABILITY_HEADERS)
+    sitf_coverage_table = _dict_rows(sitf_coverage_rows, SITF_COVERAGE_HEADERS)
+    sitf_flow_table = _dict_rows(sitf_flow_rows, SITF_ATTACK_FLOW_HEADERS)
     domain_sheets = [
         (domain[:31], GUIDELINE_HEADERS, _dict_rows(rows, GUIDELINE_HEADERS))
         for domain, rows in sorted(domains.items())
@@ -1054,6 +1204,8 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
             supply_chain_table,
         ),
         ("PSIRT Capability", PSIRT_CAPABILITY_HEADERS, psirt_table),
+        ("SITF Coverage", SITF_COVERAGE_HEADERS, sitf_coverage_table),
+        ("SITF Attack Flows", SITF_ATTACK_FLOW_HEADERS, sitf_flow_table),
         *domain_sheets,
     ]
     assessment_sheets = [
@@ -1083,6 +1235,8 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
             supply_chain_table,
         ),
         ("PSIRT Assessment", PSIRT_CAPABILITY_HEADERS, psirt_table),
+        ("SITF Coverage", SITF_COVERAGE_HEADERS, sitf_coverage_table),
+        ("SITF Attack Flows", SITF_ATTACK_FLOW_HEADERS, sitf_flow_table),
         ("Exceptions", EXCEPTION_HEADERS, []),
     ]
     write_xlsx(output / "product-security-guideline.xlsx", guideline_sheets)
@@ -1132,7 +1286,12 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
         "cumulative Basic, Intermediate, and Advanced organization assessment "
         "from integrity-recorded FIRST sources. Repository checks are supporting "
         "evidence only; public assessment and freshness values remain "
-        "`NOT_CHECKED`.\n"
+        "`NOT_CHECKED`.\n\n"
+        "`profiles/sitf/technique-coverage.csv` and `.md` reconcile every "
+        "technique in the immutable SITF source to exact current checks or an "
+        "owned gap. `profiles/sitf/attack-flows.csv` and `.md` compose synthetic "
+        "cross-component review paths. Neither output is a compliance or live "
+        "organization-adoption claim.\n"
     )
     (output / "README.md").write_text(readme, encoding="utf-8")
 

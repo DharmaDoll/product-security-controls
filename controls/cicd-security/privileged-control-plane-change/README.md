@@ -128,7 +128,9 @@ make collect-github-control-plane-audit \
 
 Tokenは環境からmemory内だけで利用し、command lineや出力へ書きません。collectorは
 `environment.update_protection_rule`、`org.runner_group_updated`、`repository_ruleset.update`、
-`protected_branch.update_allow_force_pushes_enforcement_level`を選択します。最初のeventはexact
+`protected_branch.update_allow_force_pushes_enforcement_level`、
+`protected_branch.update_allow_deletions_enforcement_level`、
+`protected_branch.update_admin_enforced`、`protected_branch.update_require_code_owner_review`を選択します。最初のeventはexact
 `old_value`／`new_value`を持ちます。後者は完全な設定差分を持たないため、次のcurrent-state
 collectorなしでは`CPC-003／005` evidenceへ昇格しません。ruleset eventはその次のhistory
 collectorでexact before／after versionへ結合します。
@@ -251,13 +253,14 @@ repository modeよりblast radiusが大きいものとして別管理します�
 organization-wide pushはrepository selectorが示す全rootと各fork networkの完全列挙が必要なので、単一
 repositoryのnetwork evidenceを流用せず`ERROR`にします。
 
-### GitHub legacy branch-protection force-push adapter
+### GitHub legacy branch-protection force-push, deletion, administrator-enforcement, and CODEOWNER-review adapter
 
 [`scripts/collect_github_branch_protection.py`](scripts/collect_github_branch_protection.py)は、
 stable repository ID／node IDと、wildcardを含まないexact branchのlegacy branch-protection
 current stateをread-only REST APIから取得します。このsliceは
-`allow_force_pushes.enabled`だけをcanonical stateへ残し、他のbranch-protection fieldを検証したとは
-主張しません。
+`allow_force_pushes.enabled`、`allow_deletions.enabled`、`enforce_admins.enabled`、
+`required_pull_request_reviews.require_code_owner_reviews`だけをsnapshotへ残し、各変更では対応する
+一つのsettingだけをcanonical digestへ含めます。他のbranch-protection fieldを検証したとは主張しません。
 
 ```bash
 make collect-github-branch-protection-state \
@@ -268,10 +271,15 @@ make collect-github-branch-protection-state \
 ```
 
 [`scripts/normalize_github_branch_protection.py`](scripts/normalize_github_branch_protection.py)は、
-`protected_branch.update_allow_force_pushes_enforcement_level`のunique audit event、外部human
-session、review済みchange register、上記current-state snapshotを`scm` fragmentへ結合します。
-adapter contractはaudit enforcement levelの`0`をdisabled、`1／2`をenabledとして扱い、それ以外や
-booleanへの型置換を拒否します。導入時はsanitized tenant eventでこのprovider表現を確認してください。
+`protected_branch.update_allow_force_pushes_enforcement_level`または
+`protected_branch.update_allow_deletions_enforcement_level`、
+`protected_branch.update_admin_enforced`、
+`protected_branch.update_require_code_owner_review`のunique audit event、外部human session、review済みchange
+register、上記current-state snapshotを`scm` fragmentへ結合します。adapter contractはforce-pushと
+deletion enforcement levelの`0`をdisabled、`1／2`をenabledとして扱い、`admin_enforced`と
+`require_code_owner_review`にはstrict booleanを要求します。数値とbooleanの型置換を拒否し、
+導入時はsanitized tenant eventでprovider表現を確認します。公開audit-event catalogはlevel fieldの
+enum値を定義していないため、確認できないtenantはこのadapterでPASSにしません。
 
 ```bash
 make normalize-github-branch-protection-evidence \
@@ -283,9 +291,9 @@ make normalize-github-branch-protection-evidence \
 ```
 
 snapshotはeventから5分以内かつsnapshot後まで完全なaudit windowに含まれなければなりません。
-同じrepository／branchへ後続force-push変更があればcurrent stateとの対応が曖昧なので`ERROR`です。
+同じrepository／branch／settingへ後続変更があればcurrent stateとの対応が曖昧なので`ERROR`です。
 GitHub RESTはlegacy branch-protection historyを返さないため、`before_digest`はreview済みregisterの
-before booleanから再計算します。高保証環境では変更直前snapshotを独立保存してください。
+setting固有のbefore booleanから再計算します。高保証環境では変更直前snapshotを独立保存してください。
 
 ### AWS IAM trust-policy normalization adapter
 
@@ -400,8 +408,8 @@ snapshot遅延、後続update、partial collection、provider errorをfail close
 GitHub SCM adapterはrepository／organization／ruleset／history actor差し替え、organization eventへの
 repository field混入、digest改ざん、partial audit、stale snapshot、後続version、current/history不一致、
 credential field残留をfail closedで検証します。
-legacy branch adapterはrepository／branch／session差し替え、current force-push stateとaudit levelの
-不一致、review済みdigest改ざん、5分超過、後続update、不完全またはcredential-bearing inputを
+legacy branch adapterはrepository／branch／session差し替え、current force-push／deletion／admin-enforcement／CODEOWNER-review
+stateとaudit fieldの不一致、review済みdigest改ざん、5分超過、後続update、不完全またはcredential-bearing inputを
 fail closedで検証します。
 
 ## Expected output
@@ -428,7 +436,9 @@ credential fieldは`ERROR PSB-CICD-008 ...`になり、credential valueは出力
 - Ruleset snapshotも5分以内に取得し、snapshot後までaudit windowを再収集します。historyの全pageを
   取得し、最新versionが変わった場合は新しいbefore／after pairで証跡を作り直します。
 - Legacy branch-protection snapshotも5分以内に取得し、snapshot後までaudit windowを再収集します。
-  `allow_force_pushes`以外のlegacy setting変更は本sliceのPASSへ含めず、別adapterとして追加します。
+  `allow_force_pushes`、`allow_deletions`、`enforce_admins`、`require_code_owner_reviews`以外のlegacy setting変更は
+  本sliceのPASSへ含めず、別adapterとして追加します。required pull-request review設定自体が欠落する
+  branchはCODEOWNER review無効と推測せず、snapshot収集をfail closedにします。
 - AWS IAM snapshotも変更eventから5分以内に取り、snapshot後までのCloudTrail windowを確定します。
   CloudTrail Event Historyだけに依存せず、organization trailの完全性、retention、独立保存を監視します。
 - ECR snapshotも同じ5分境界で収集し、repository delete／createとpolicy updateを含むorganization
@@ -452,7 +462,7 @@ credential fieldは`ERROR PSB-CICD-008 ...`になり、credential valueは出力
 - Runner-group current-state snapshotは適用後digestを確認しますが、変更前のprovider状態を
   復元しません。高保証環境ではwriteの直前にも同じcollectorでsnapshotを保存します。
 - GitHub SCM sliceはrepository／organization-scoped branch／tag、repository-scoped push ruleset
-  update、およびlegacy branchのforce-push enforcement updateを扱います。ruleset create／delete、
+  update、およびlegacy branchのforce-push／deletion／administrator enforcement／CODEOWNER review updateを扱います。ruleset create／delete、
   その他のlegacy branch setting、organization-wide push、repository lifecycleは対象外です。
 - Push rulesetはfork networkへ継承され、root repositoryのbypass権限がnetwork全体へ影響します。fork一覧と
   `network_count`はtransactional snapshotではなく、collection中のfork作成／削除やAPIの可視性欠損は残余
@@ -463,7 +473,7 @@ credential fieldは`ERROR PSB-CICD-008 ...`になり、credential valueは出力
 - Organization ruleset audit分類は公式eventの`ruleset_source_type=Organization`等からの推論です。
   providerがtenantで異なるfieldを返す場合、本adapterは未検証であり、sanitized実eventを基に更新が必要です。
 - Legacy branch REST snapshotはcurrent stateだけで、provider-side before historyを証明しません。
-  audit enforcement levelの数値表現もtenantで検証し、不一致や未知の値を成功扱いにしないでください。
+  force-pushの数値levelとadmin-enforcementのboolean表現をtenantで検証し、不一致や未知の値を成功扱いにしないでください。
 - AWS sliceはroot-path roleの直接`UpdateAssumeRolePolicy`に限定します。IaCによるreplacement、
   `CreateRole`、SAML、Azure／GCP、role permission policyはこのadapterの対象外です。
 - IAM policyはstructural JSONとしてdigest化します。意味が同じでもstatementやarray順が変われば

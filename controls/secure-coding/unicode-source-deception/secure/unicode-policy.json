@@ -1,0 +1,42 @@
+{
+  "schema": "psb-unicode-source-policy/v1",
+  "language": "python",
+  "encoding": "utf-8",
+  "file_extensions": [".py"],
+  "identifier_profile": "ascii",
+  "identifier_normalization": "NFKC",
+  "forbidden_code_points": [
+    {"value": "U+00AD", "reason": "soft-hyphen"},
+    {"value": "U+034F", "reason": "combining-grapheme-joiner"},
+    {"value": "U+061C", "reason": "arabic-letter-mark"},
+    {"value": "U+180E", "reason": "mongolian-vowel-separator"},
+    {"value": "U+200B", "reason": "zero-width-space"},
+    {"value": "U+200C", "reason": "zero-width-non-joiner"},
+    {"value": "U+200D", "reason": "zero-width-joiner"},
+    {"value": "U+200E", "reason": "left-to-right-mark"},
+    {"value": "U+200F", "reason": "right-to-left-mark"},
+    {"value": "U+202A", "reason": "left-to-right-embedding"},
+    {"value": "U+202B", "reason": "right-to-left-embedding"},
+    {"value": "U+202C", "reason": "pop-directional-formatting"},
+    {"value": "U+202D", "reason": "left-to-right-override"},
+    {"value": "U+202E", "reason": "right-to-left-override"},
+    {"value": "U+2060", "reason": "word-joiner"},
+    {"value": "U+2066", "reason": "left-to-right-isolate"},
+    {"value": "U+2067", "reason": "right-to-left-isolate"},
+    {"value": "U+2068", "reason": "first-strong-isolate"},
+    {"value": "U+2069", "reason": "pop-directional-isolate"},
+    {"value": "U+206A", "reason": "inhibit-symmetric-swapping"},
+    {"value": "U+206B", "reason": "activate-symmetric-swapping"},
+    {"value": "U+206C", "reason": "inhibit-arabic-form-shaping"},
+    {"value": "U+206D", "reason": "activate-arabic-form-shaping"},
+    {"value": "U+206E", "reason": "national-digit-shapes"},
+    {"value": "U+206F", "reason": "nominal-digit-shapes"},
+    {"value": "U+FFF9", "reason": "interlinear-annotation-anchor"},
+    {"value": "U+FFFA", "reason": "interlinear-annotation-separator"},
+    {"value": "U+FFFB", "reason": "interlinear-annotation-terminator"},
+    {"value": "U+FEFF", "reason": "zero-width-no-break-space-or-bom"}
+  ],
+  "forbidden_ranges": [
+    {"start": "U+E0001", "end": "U+E007F", "reason": "unicode-tag-characters"}
+  ]
+}

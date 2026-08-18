@@ -62,6 +62,11 @@ EXPECTED_BASELINES = {
         "count": 9,
         "known_id": "build-l1#producer-appropriate-build-platform",
     },
+    "sitf": {
+        "version": "1.0.0@d1d1536",
+        "count": 81,
+        "known_id": "T-C021",
+    },
 }
 
 

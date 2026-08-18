@@ -115,6 +115,54 @@ BRANCH_PROTECTION_EVENT = {
     "allow_force_pushes_enforcement_level": 0,
     "hashed_token": "must-not-survive",
 }
+BRANCH_DELETION_EVENT = {
+    "_document_id": "audit-doc-563",
+    "action": "protected_branch.update_allow_deletions_enforcement_level",
+    "actor": "repository-admin-21",
+    "actor_id": 17021,
+    "actor_is_bot": False,
+    "org": ORG,
+    "repo": "example-org/product-api",
+    "repository_id": 19001,
+    "request_id": "github-request-563",
+    "operation_type": "modify",
+    "@timestamp": "2026-08-12T03:38:00Z",
+    "name": "main",
+    "allow_deletions_enforcement_level": 1,
+    "hashed_token": "must-not-survive",
+}
+ADMIN_ENFORCEMENT_EVENT = {
+    "_document_id": "audit-doc-556",
+    "action": "protected_branch.update_admin_enforced",
+    "actor": "repository-admin-21",
+    "actor_id": 17021,
+    "actor_is_bot": False,
+    "org": ORG,
+    "repo": "example-org/product-api",
+    "repository_id": 19001,
+    "request_id": "github-request-556",
+    "operation_type": "modify",
+    "@timestamp": "2026-08-12T03:31:00Z",
+    "name": "main",
+    "admin_enforced": True,
+    "hashed_token": "must-not-survive",
+}
+CODE_OWNER_REVIEW_EVENT = {
+    "_document_id": "audit-doc-557",
+    "action": "protected_branch.update_require_code_owner_review",
+    "actor": "repository-admin-21",
+    "actor_id": 17021,
+    "actor_is_bot": False,
+    "org": ORG,
+    "repo": "example-org/product-api",
+    "repository_id": 19001,
+    "request_id": "github-request-557",
+    "operation_type": "modify",
+    "@timestamp": "2026-08-12T03:34:00Z",
+    "name": "main",
+    "require_code_owner_review": True,
+    "hashed_token": "must-not-survive",
+}
 
 
 class GithubAuditCollectorTest(unittest.TestCase):
@@ -255,6 +303,64 @@ class GithubAuditCollectorTest(unittest.TestCase):
 
         malformed = copy.deepcopy(BRANCH_PROTECTION_EVENT)
         malformed["allow_force_pushes_enforcement_level"] = True
+
+        def malformed_fetcher(url: str, token: str, timeout: int):
+            return ([malformed], None)
+
+        with self.assertRaisesRegex(collector.CollectorError, "enforcement identity"):
+            self.collect_with(malformed_fetcher)
+
+    def test_branch_deletion_event_requires_a_bounded_numeric_level(self) -> None:
+        def fetcher(url: str, token: str, timeout: int):
+            return ([copy.deepcopy(BRANCH_DELETION_EVENT)], None)
+
+        output = self.collect_with(fetcher)
+        selected = output["events"][0]
+        self.assertEqual(selected["allow_deletions_enforcement_level"], 1)
+        self.assertNotIn("hashed_token", str(output))
+
+        for invalid in (True, -1, 3, "enabled"):
+            with self.subTest(invalid=invalid):
+                malformed = copy.deepcopy(BRANCH_DELETION_EVENT)
+                malformed["allow_deletions_enforcement_level"] = invalid
+
+                def malformed_fetcher(url: str, token: str, timeout: int):
+                    return ([malformed], None)
+
+                with self.assertRaisesRegex(
+                    collector.CollectorError, "enforcement identity"
+                ):
+                    self.collect_with(malformed_fetcher)
+
+    def test_admin_enforcement_event_requires_an_exact_boolean(self) -> None:
+        def fetcher(url: str, token: str, timeout: int):
+            return ([copy.deepcopy(ADMIN_ENFORCEMENT_EVENT)], None)
+
+        output = self.collect_with(fetcher)
+        selected = output["events"][0]
+        self.assertIs(selected["admin_enforced"], True)
+        self.assertNotIn("hashed_token", str(output))
+
+        malformed = copy.deepcopy(ADMIN_ENFORCEMENT_EVENT)
+        malformed["admin_enforced"] = 1
+
+        def malformed_fetcher(url: str, token: str, timeout: int):
+            return ([malformed], None)
+
+        with self.assertRaisesRegex(collector.CollectorError, "enforcement identity"):
+            self.collect_with(malformed_fetcher)
+
+    def test_code_owner_review_event_requires_an_exact_boolean(self) -> None:
+        def fetcher(url: str, token: str, timeout: int):
+            return ([copy.deepcopy(CODE_OWNER_REVIEW_EVENT)], None)
+
+        output = self.collect_with(fetcher)
+        selected = output["events"][0]
+        self.assertIs(selected["require_code_owner_review"], True)
+        self.assertNotIn("hashed_token", str(output))
+
+        malformed = copy.deepcopy(CODE_OWNER_REVIEW_EVENT)
+        malformed["require_code_owner_review"] = 1
 
         def malformed_fetcher(url: str, token: str, timeout: int):
             return ([malformed], None)

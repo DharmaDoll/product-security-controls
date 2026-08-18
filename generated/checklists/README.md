@@ -19,3 +19,5 @@ Copy `product-security-assessment-template.xlsx` outside this generated director
 `profiles/supply-chain-integration/reconciliation.csv` and `.md` connect exact control checks across developer, SCM, dependency, build, release, repository, and deployment boundaries using NIST SP 800-204D as section-level guidance. `SCIR-*` identifiers are repository rows, and every planned, gap, or out-of-scope boundary remains explicit.
 
 `profiles/first-psirt-capability/assessment.csv` and `.md` provide a cumulative Basic, Intermediate, and Advanced organization assessment from integrity-recorded FIRST sources. Repository checks are supporting evidence only; public assessment and freshness values remain `NOT_CHECKED`.
+
+`profiles/sitf/technique-coverage.csv` and `.md` reconcile every technique in the immutable SITF source to exact current checks or an owned gap. `profiles/sitf/attack-flows.csv` and `.md` compose synthetic cross-component review paths. Neither output is a compliance or live organization-adoption claim.

@@ -58,6 +58,13 @@ CSV, Markdown, and XLSX view resolves exact control/check references and keeps
 developer, SCM, dependency, build, release, registry, and deployment identity
 handoffs. Missing or invalid profile input fails generation.
 
+The SITF threat-taxonomy registry is paired with a complete 81-technique
+reconciliation and repository-owned synthetic attack flows. Its generated CSV,
+Markdown, and XLSX views keep direct implementation separate from partial
+support and owned gaps across endpoint, VCS, CI/CD, registry, and production.
+Unknown or missing techniques, stale check references, or single-component
+flows fail generation. These views are not compliance or live-adoption claims.
+
 The FIRST PSIRT organization-assessment profile is likewise separate from the
 control catalog. It pins observed source identities, preserves the Services
 Framework service inventory, and generates cumulative Basic, Intermediate, and

@@ -1,0 +1,6 @@
+{
+  "schema": "psb-unicode-source-fixture/v1",
+  "output_name": "example.py",
+  "content": "safe_value = 1\n",
+  "materialized_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+}

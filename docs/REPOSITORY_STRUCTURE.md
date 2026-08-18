@@ -35,6 +35,7 @@
 │   ├── owasp-top10/
 │   ├── owasp-asvs/
 │   ├── slsa/
+│   ├── sitf/
 │   └── nist-ssdf/
 ├── inputs/
 │   └── application-vulnerability-assessment/ # optional reviewed source manifest
@@ -111,6 +112,13 @@ Generated checklist CSV, Markdown, and XLSX files are derived from atomic
 for the generated NIST SP 800-204D section-level integration view. It references
 exact existing checks and preserves planned, gap, and out-of-scope rows; it is
 not a second framework registry and its `SCIR-*` IDs are repository identifiers.
+
+`frameworks/sitf/registry.json` pins the complete upstream technique inventory.
+`policies/integration/sitf-coverage.json` reconciles all 81 identifiers to exact
+or supporting checks and explicit gaps; `sitf-attack-flows.json` composes
+cross-component review paths. Their generated views live under
+`generated/checklists/profiles/sitf/` and fail closed on missing techniques or
+stale references.
 
 `policies/organization-assessments/first-psirt-capability.json` preserves the
 integrity-recorded FIRST source identities, service catalog, cumulative

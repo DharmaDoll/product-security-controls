@@ -549,6 +549,43 @@ fixtures for alternate encodings, second-order input, and direct sink calls.
 - no global sanitizer is claimed to cover every context;
 - exact ASVS requirements are mapped only after source-row reconciliation.
 
+### PSB-CODE-005 — Unicode source deception
+
+Status: `implemented` — E3 Python-source bidi, invisible-character,
+identifier-profile, and normalization slice
+Domain: `secure-coding`
+
+#### Goal
+
+Reject source changes whose Unicode code-point sequence can render or resolve
+differently from what a reviewer expects, without banning legitimate Unicode
+string and comment data.
+
+#### Implemented runnable slice
+
+The standard-library verifier reads UTF-8 Python source, rejects reviewed
+directional, zero-width, annotation, and Unicode tag controls at every source
+position, and inspects original Python identifier tokens before parser
+normalization. Identifiers must be ASCII and NFKC stable. The escaped insecure
+fixture is materialized only in a temporary directory after SHA-256
+verification and is never imported or executed. Findings contain path,
+location, code points, category, and policy digest without source content.
+
+Implemented by
+[`controls/secure-coding/unicode-source-deception/`](../controls/secure-coding/unicode-source-deception/).
+
+#### Acceptance result
+
+- bidi override and isolate, zero-width space, Unicode tag, mixed Cyrillic, and
+  fullwidth identifier fixtures are rejected;
+- Japanese string data with ASCII identifiers is accepted;
+- malformed policy, tampered fixture, invalid UTF-8, invalid Python, and empty
+  source input return `ERROR`, not a clean result;
+- `SITF T-E011` now resolves to exact `PSB-CODE-005-UNI-001..006` checks;
+- JavaScript／TypeScript／Go／Rust／JVM／native-language adapters, live CI rule
+  adoption, compiler trust, and natural-language confusables remain outside the
+  initial slice.
+
 ### PSB-DEPS-004 — Dependency change review
 
 Status: `implemented` — E3 provider-neutral graph-delta review slice
@@ -2244,6 +2281,37 @@ CI/CD control-plane administrator identity is now implemented through
 `PSB-CICD-008`, and running-artifact rebuild closure through `PSB-GOV-005`.
 No row claims live adoption or NIST compliance.
 
+### SITF technique coverage and attack flows
+
+Status: `implemented` — complete pinned taxonomy reconciliation and generated
+cross-component flow views
+
+Goal: expose whether a technique at the endpoint, VCS, CI/CD, registry, or
+production boundary has a direct executable control, only partial support, or
+an owned gap, and show how remaining transitions compose into attack paths.
+
+Implementation result: [`frameworks/sitf/registry.json`](../frameworks/sitf/registry.json)
+pins SITF `techniques.json` at commit
+`d1d1536da5cbc7107fb90ab3f5a4b1f62b21ea59` and SHA-256
+`3f45ca1033e09deab0b66e432969c0b489b35965a4bf2f3299f5a3b24943887e`.
+[`policies/integration/sitf-coverage.json`](../policies/integration/sitf-coverage.json)
+contains exactly one disposition for all 81 techniques, with exact or
+supporting check references and owned remaining work. The current result is 44
+`implemented` and 37 `gap`; this is not a score or complete-mitigation claim.
+[`policies/integration/sitf-attack-flows.json`](../policies/integration/sitf-attack-flows.json)
+defines four synthetic flows that each cross at least three components. CSV,
+Markdown, and XLSX views are generated under
+[`generated/checklists/profiles/sitf/`](../generated/checklists/profiles/sitf/).
+Missing source rows, unknown check references, incomplete flows, and malformed
+inputs fail closed.
+
+Priority follow-up: implement reviewable vertical slices for endpoint／CI／
+registry／production destructive-action recovery, source／CI／artifact／production
+exfiltration, trusted-job secret enumeration, extension update integrity,
+production identity and metadata protection, malicious service provisioning,
+and sensor or agent software-update poisoning. Do not reserve a control ID
+until overlap and acceptance criteria are resolved.
+
 ### CIS software supply-chain provider profiles
 
 Goal: reconcile authorized CIS GitHub and GitLab Benchmark recommendations
@@ -2428,11 +2496,72 @@ Organization Administration write permission has a larger
 blast radius even for this GET-only collector and requires separate short-lived
 credential and egress isolation. Organization-wide push remains follow-on work
 because its repository selector must expand to every root and every fork network;
-one repository snapshot cannot prove that effective scope. The first legacy
-branch slice now covers only force-push enforcement updates through stable
+one repository snapshot cannot prove that effective scope. The legacy branch
+slices now cover force-push, deletion, administrator-enforcement, and CODEOWNER-review updates through stable
 repository／branch identity, current-state collection, reviewed before state,
 and exact audit/session joins. Other legacy branch settings and ruleset
 create／delete remain follow-on work.
+
+### PSB-CICD-009 — Signed cache provenance and trust isolation
+
+Status: `implemented` — E3 provider-neutral exact restore slice
+
+Goal: prevent attacker-controlled, cross-workflow, stale, or substituted cache
+state from crossing into a privileged CI job through shared namespaces or broad
+restore fallback.
+
+Implemented in
+[`controls/cicd-security/cache-provenance-isolation/`](../controls/cicd-security/cache-provenance-isolation/):
+
+- an Ed25519-signed canonical producer record binds a reviewed policy, stable
+  repository ID, full-SHA workflow identity, trust class, platform, producer
+  revision, dependency-lock digest, content digest, path, and 24-hour lifetime;
+- cache keys are independently derived from the same producer identity and
+  only trusted-to-trusted or untrusted-to-untrusted restore is allowed;
+- the consumer pins exact key, record, policy, and content identities and may
+  not use restore-prefix fallback;
+- record and content tampering, cross-boundary substitution, path changes,
+  revision mismatch, and expiry are findings;
+- invalid policy, malformed or symbolic evidence, and missing OpenSSL are
+  evaluation errors, while output stays metadata-only;
+- `SITF T-C007` resolves to exact `CAC-001..006` checks without claiming live
+  provider enforcement or complete mitigation.
+
+Production archive manifests, signing-key custody, provider adapters, and
+protection from a trusted producer compromised before signing remain adoption
+and residual-risk work.
+
+### PSB-SOURCE-005 — Repository destruction prevention and recovery assurance
+
+Status: `implemented` — E3 provider-neutral critical-repository recovery slice
+
+Goal: limit a compromised source administrator or faulty bulk operation before
+it can delete multiple critical repositories, and prove that the complete
+repository scope can be restored from attacker-separated immutable state.
+
+Implemented in
+[`controls/source-protection/repository-destruction-recovery/`](../controls/source-protection/repository-destruction-recovery/):
+
+- a fresh completely paginated inventory binds every required critical
+  repository to one stable provider ID;
+- bulk deletion is denied and any permitted single deletion requires recent
+  phishing-resistant reauthentication plus independent approval;
+- content, refs, and protected-settings digests are retained within a 24-hour
+  RPO under 30-day compliance object lock in another security domain that
+  source administrators cannot delete;
+- exact deletion request, actor, session, targets, and decision join one
+  complete audit event and five-minute external alert receipt;
+- the destructive actor session and tokens are revoked before independently
+  authorized recovery starts;
+- a current isolated drill restores every required repository within a
+  four-hour RTO and compares exact snapshot, content, refs, and settings state;
+- stale, partial, unavailable, malformed, symbolic, policy-tampered, or
+  sensitive evidence is `ERROR`, distinct from an unsafe-state finding;
+- `SITF T-V009` resolves to exact `RDR-001..006` checks without claiming live
+  provider adoption, complete backup contents, or enterprise disaster recovery.
+
+Provider-specific inventory, backup, audit, identity-revocation, and restore
+adapters plus product-specific RPO／RTO remain adoption work.
 
 ### Verified external downloads
 

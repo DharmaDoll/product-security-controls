@@ -1,0 +1,20 @@
+{
+  "schema": "psb-ci-cache-policy/v1",
+  "key_derivation_version": "psb-ci-cache-key/v1",
+  "trusted_signer": {
+    "key_id": "ci-cache-producer-test-2026-01",
+    "algorithm": "Ed25519",
+    "public_key_path": "trust/cache-producer-public.pem",
+    "public_key_sha256": "41dc235e186c9ab7fdac442c36bd492a595e6c49e8cb3b42d5b5d892fa3bedf5"
+  },
+  "allowed_trust_transitions": [
+    {"producer": "trusted", "consumer": "trusted"},
+    {"producer": "untrusted", "consumer": "untrusted"}
+  ],
+  "allowed_cache_paths": [".cache/pip/downloads"],
+  "max_ttl_seconds": 86400,
+  "require_exact_revision": true,
+  "allow_restore_prefixes": false,
+  "evidence_mode": "metadata-only",
+  "max_document_bytes": 1048576
+}

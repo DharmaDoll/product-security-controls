@@ -1,0 +1,9 @@
+POLICY id=repository-recovery-policy@sha256:e352b6dc93443a8cf431c5dbbfa192e7e5f70b3d7c561208155a3635c8f72213
+PASS RDR-001 critical repository inventory and collector scope are exact and complete
+PASS RDR-002 bulk deletion is default denied and independently authorized
+PASS RDR-003 current repository backups are immutable and attacker separated
+PASS RDR-004 destructive activity has complete audit and bounded external alert delivery
+PASS RDR-005 destructive actor authority is contained before recovery
+PASS RDR-006 isolated restore drill meets coverage RPO RTO and exact-state requirements
+PASS RDR-007 evidence evaluation is strict metadata only and fail closed
+ACCEPTED repositories=2 bulk-deletion-denied restore-drill=complete

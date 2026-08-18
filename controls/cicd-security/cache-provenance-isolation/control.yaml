@@ -1,0 +1,193 @@
+id: PSB-CICD-009
+title: CI cache restoreを署名済みproducer provenanceとexact trust境界へ結合する
+domain: cicd-security
+summary: CI cacheのkeyと内容をrepository、workflow、trust class、platform、producer revision、dependency digest、期限、署名済みrecordへ結合し、異なる境界からのrestoreとprefix fallbackを拒否する。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - verify
+threats:
+  - id: CICD-CACHE-POISONING
+    description: Untrusted or compromised producer stores executable or dependency state that a later privileged job restores and executes.
+  - id: CICD-CACHE-IDENTITY-CONFUSION
+    description: Broad keys or restore prefixes select cache state from another repository workflow revision platform or dependency graph.
+  - id: CICD-CACHE-EVIDENCE-FAILURE
+    description: Missing signature invalid policy stale record or verifier failure is interpreted as a cache miss or clean restore.
+implementations:
+  insecure:
+    - insecure/restore-request.json
+  secure:
+    - secure/policy.json
+    - secure/cache-record.json
+    - secure/cache-record.sig
+    - secure/cache-content.json
+    - secure/restore-request.json
+    - secure/trust/cache-producer-public.pem
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-CICD-009
+  expected:
+    - the signed synthetic cache record is accepted only for the exact repository workflow trust class platform revision dependency digest path content and reviewed policy
+    - untrusted-to-trusted promotion cross-repository or cross-workflow reuse broad restore prefixes path substitution and digest mismatch are denied
+    - record tampering content tampering and expiry are security findings
+    - malformed incomplete symbolic or cryptographically unevaluable evidence returns ERROR rather than a clean cache miss
+    - verifier output contains metadata only and does not echo cached content
+checks:
+  - id: CAC-001
+    title: Cache producer record is signed by the reviewed key and policy
+    required_state: canonical producer record has a valid Ed25519 signature from the exact digest-pinned public key and names the reviewed policy digest
+    responsible_role: ci-platform
+    applies_to:
+      - ci-cache-producer-record
+      - cache-signing-key
+      - cache-policy
+    context:
+      threat_actor: attacker who can write cache storage or a compromised producer attempting to forge trusted provenance
+      attack_or_failure_scenario: an unsigned substituted or differently governed cache record is presented as output from an approved trusted build
+      why_required: key names and cache IDs are mutable metadata; cryptographic binding is needed before downstream identity and content assertions can be trusted
+    verification:
+      type: automated
+      method: verify canonical record bytes with the policy-pinned Ed25519 public key and compare signer and policy digests
+      expected: authentic fixture passes while record or signature substitution is rejected and unavailable OpenSSL is an error
+      evidence:
+        - synthetic detached signature
+        - public-key and policy digests
+    mapping_status: reviewed
+  - id: CAC-002
+    title: Cache key binds the exact producer identity and dependency graph
+    required_state: independently derived key includes stable repository ID workflow full-SHA identity trust class platform producer revision and dependency-lock digest
+    responsible_role: ci-platform
+    applies_to:
+      - ci-cache-key
+      - repository-workflow-identity
+      - dependency-lockfile
+    context:
+      threat_actor: fork contributor compromised workflow or operator choosing a convenient shared cache namespace
+      attack_or_failure_scenario: a consumer restores state produced for another repository workflow platform revision or dependency set
+      why_required: a content digest detects later modification but does not authorize which producer context may supply state to this consumer
+    verification:
+      type: automated
+      method: independently derive and compare the complete cache key and producer-consumer identity fields
+      expected: omitted changed or cross-boundary key components are findings
+      evidence:
+        - metadata-only key derivation result
+    mapping_status: reviewed
+  - id: CAC-003
+    title: Cache restore stays inside an explicit trust-class transition
+    required_state: only trusted-to-trusted and untrusted-to-untrusted restore transitions are allowed
+    responsible_role: ci-platform
+    applies_to:
+      - cache-producer-trust-class
+      - cache-consumer-trust-class
+      - privileged-ci-job
+    context:
+      threat_actor: untrusted pull-request author or compromised low-privilege job able to populate a shared cache
+      attack_or_failure_scenario: attacker-controlled cache state is restored by a secret-bearing release or deployment job and gains code execution in the privileged context
+      why_required: namespace separation blocks cache storage from becoming an indirect promotion channel across the repository execution boundary
+    verification:
+      type: automated
+      method: compare producer and consumer classes against the exact same-class transition allowlist
+      expected: untrusted-to-trusted and trusted-to-untrusted transitions are denied
+      evidence:
+        - sanitized transition decision
+    mapping_status: reviewed
+  - id: CAC-004
+    title: Restored bytes and paths match the signed producer record
+    required_state: independently hashed cache content and exact requested paths equal the signed record and reviewed path allowlist
+    responsible_role: ci-platform
+    applies_to:
+      - restored-cache-content
+      - cache-extraction-path
+    context:
+      threat_actor: cache-storage attacker compromised producer or path-confusion bug replacing tools scripts or startup files
+      attack_or_failure_scenario: the selected record is authentic but restored bytes changed afterward or extract into an executable path outside the reviewed dependency-download cache
+      why_required: provenance without byte and destination binding does not prevent post-production tampering or unsafe placement of otherwise authentic data
+    verification:
+      type: automated
+      method: hash content independently and compare content digest requested paths record paths and policy allowlist
+      expected: content or path substitution is rejected without printing cache contents
+      evidence:
+        - content SHA-256
+        - path allowlist decision
+    mapping_status: reviewed
+  - id: CAC-005
+    title: Cache record is current and revision exact
+    required_state: consumer revision equals producer revision and evaluation occurs inside a positive lifetime no longer than 24 hours
+    responsible_role: ci-platform
+    applies_to:
+      - cache-record-lifetime
+      - source-revision
+    context:
+      threat_actor: attacker replaying an old signed cache or build automation restoring obsolete mutable state
+      attack_or_failure_scenario: a once-valid cache survives a dependency or source correction and reintroduces stale vulnerable or attacker-influenced output
+      why_required: valid signatures do not expire by themselves; explicit revision and time bounds limit replay of authentic historical state
+    verification:
+      type: automated
+      method: compare created expiry evaluation and exact producer-consumer revision values
+      expected: expired future overlong and revision-mismatched records are findings
+      evidence:
+        - metadata-only lifetime decision
+    mapping_status: reviewed
+  - id: CAC-006
+    title: Consumer requests exact cache record content policy and key identities
+    required_state: restore request fixes exact record policy content and cache-key digests and supplies no prefix fallback
+    responsible_role: ci-platform
+    applies_to:
+      - ci-cache-restore-request
+      - cache-lookup-policy
+    context:
+      threat_actor: workflow author compromised action or cache client falling back to a broader earlier cache after an exact miss
+      attack_or_failure_scenario: a prefix match silently selects a different record or content than the consumer reviewed and expected
+      why_required: exact producer metadata is insufficient when lookup semantics may substitute another candidate before verification
+    verification:
+      type: automated
+      method: compare all expected digests and key values and require an empty restore-prefix list
+      expected: prefix and identity fallback are rejected
+      evidence:
+        - sanitized exact-lookup decision
+    mapping_status: reviewed
+  - id: CAC-007
+    title: Cache provenance evaluation is complete metadata-only and fail closed
+    required_state: strict complete schemas bounded regular files validated policy and available cryptographic verifier produce only metadata decisions with distinct error status
+    responsible_role: ci-platform
+    applies_to:
+      - cache-provenance-verifier
+      - cache-restore-quality-gate
+      - security-evidence-output
+    context:
+      threat_actor: malformed evidence symlink oversized input missing tool or pipeline logic treating evaluation failure as an ordinary cache miss
+      attack_or_failure_scenario: a cache restore proceeds because the verifier could not parse authenticate or safely read its evidence, or cached data leaks into logs
+      why_required: an explicit error state prevents loss of assurance from becoming implicit authorization and metadata-only output avoids creating a new exfiltration channel
+    verification:
+      type: automated
+      method: exercise malformed incomplete symlink invalid-policy and missing-OpenSSL cases and scan output for cache payload text
+      expected: failures return exit 2 never exit 0 and output does not contain cached artifact names
+      evidence:
+        - sanitized negative-test output
+    mapping_status: unmapped
+mappings:
+  - framework: sitf
+    version: "1.0.0@d1d1536"
+    id: T-C007
+    relationship: mitigates
+    confidence: high
+    rationale: Exact producer and consumer trust namespaces signed provenance content and path digests revision and lifetime binding and prohibition of restore-prefix fallback directly address action cache poisoning while live provider storage enforcement remains external.
+    reviewer: product-security
+    review_date: "2026-08-17"
+    applies_to:
+      - CAC-001
+      - CAC-002
+      - CAC-003
+      - CAC-004
+      - CAC-005
+      - CAC-006
+limitations:
+  - The runnable slice verifies provider-neutral offline evidence and does not configure or attest GitHub Actions another CI provider or cache service enforcement.
+  - The committed Ed25519 public key signature and cache payload are synthetic test material; production private keys require isolated signing service custody rotation revocation and audit.
+  - A trusted producer compromised before hashing and signing can create authentic malicious cache content; hermetic build isolation dependency verification and producer review remain necessary.
+  - The verifier authenticates one content blob rather than a directory archive manifest; production adapters must hash every entry type mode link target and extraction path before use.
+  - Same-class untrusted caches remain attacker-controlled and must not be treated as executable or promoted into privileged jobs.
+  - Exact revision keys intentionally reduce cache hit rate and increase storage and build cost; relaxing that property requires a separately reviewed immutable input-equivalence proof.
+status: prototype
+owner: product-security
+evidence_level: E3

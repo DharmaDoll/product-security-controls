@@ -1,0 +1,15 @@
+{
+  "schema": "psb-ci-cache-restore-request/v1",
+  "repository_id": "100200300",
+  "workflow_ref": "DharmaDoll/product-security-controls/.github/workflows/build.yml@0123456789abcdef0123456789abcdef01234567",
+  "consumer_revision": "1111111111111111111111111111111111111111",
+  "trust_class": "trusted",
+  "platform": "linux-x86-64",
+  "dependency_lock_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+  "paths": [".cache/pip/downloads"],
+  "restore_prefixes": [],
+  "expected_cache_key": "psb-ci-cache-key/v1/repo-100200300/workflow-7ae87d9fc2b29c4e6e1e88078b68633d15ef56f9b4ae3193bc54144697a48236/trust-trusted/platform-linux-x86-64/revision-1111111111111111111111111111111111111111/lock-2222222222222222222222222222222222222222222222222222222222222222",
+  "expected_content_sha256": "005464d531977de88184f7c8f00d35774711275a87cce5cfb18c6749111752db",
+  "expected_record_sha256": "bb3f633968506ce34c69f95a18bb459b51a9bdde4093feb603a238c24a3c0249",
+  "expected_policy_sha256": "60f5aa1c1dd136cc2b7f58a56de7d557b39de46dccb556ad5378d409292c4f09"
+}

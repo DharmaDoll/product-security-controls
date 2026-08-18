@@ -1,0 +1,9 @@
+POLICY sha256=51960c0024516370f46db056ae53ef360181d6096f65e3857aa48a67127f00bc
+FAIL example.py:1:17 code-points=U+202E forbidden-right-to-left-override
+FAIL example.py:2:16 code-points=U+2066 forbidden-left-to-right-isolate
+FAIL example.py:3:16 code-points=U+200B forbidden-zero-width-space
+FAIL example.py:4:15 code-points=U+E0001 forbidden-unicode-tag-characters
+FAIL example.py:5:1 code-points=U+0430 non-ascii-identifier
+FAIL example.py:6:1 code-points=U+FF56 identifier-not-NFKC-stable
+FAIL example.py:6:1 code-points=U+FF56 non-ascii-identifier
+REJECTED 7 finding(s) in 1 Python file(s)

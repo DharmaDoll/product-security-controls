@@ -1,0 +1,16 @@
+POLICY sha256=60f5aa1c1dd136cc2b7f58a56de7d557b39de46dccb556ad5378d409292c4f09
+PASS CAC-001 producer record signature signer and policy binding are authentic
+FAIL CAC-002 consumer repository_id does not match producer record
+FAIL CAC-002 consumer workflow_ref does not match producer record
+FAIL CAC-002 consumer platform does not match producer record
+FAIL CAC-002 consumer dependency_lock_sha256 does not match producer record
+FAIL CAC-003 producer to consumer trust transition is denied
+FAIL CAC-004 consumer content digest does not match producer record
+FAIL CAC-004 consumer cache paths do not match producer record
+FAIL CAC-005 consumer revision does not match producer revision
+FAIL CAC-006 restore prefix fallback is prohibited
+FAIL CAC-006 consumer cache key does not match producer record
+FAIL CAC-006 consumer record digest does not match signed record
+FAIL CAC-006 consumer policy digest does not match reviewed policy
+PASS CAC-007 policy is complete and evidence output is metadata only
+REJECTED 12 finding(s); cache restore denied

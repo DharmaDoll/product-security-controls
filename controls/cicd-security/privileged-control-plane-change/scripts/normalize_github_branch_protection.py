@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Join one reviewed GitHub legacy branch force-push protection update."""
+"""Join one reviewed GitHub legacy branch-protection setting update."""
 
 from __future__ import annotations
 
@@ -19,9 +19,34 @@ from typing import Any
 AUDIT_SCHEMA = "psb-github-audit-export/v1"
 SESSION_SCHEMA = "psb-github-admin-session-export/v1"
 REGISTER_SCHEMA = "psb-github-privileged-change-register/v1"
-SNAPSHOT_SCHEMA = "psb-github-branch-protection-snapshot/v1"
+SNAPSHOT_SCHEMA = "psb-github-branch-protection-snapshot/v4"
 OUTPUT_SCHEMA = "psb-cicd-control-plane-change-evidence/v1"
-ACTION = "protected_branch.update_allow_force_pushes_enforcement_level"
+SETTING_CONTRACTS = {
+    "protected_branch.update_allow_force_pushes_enforcement_level": {
+        "event_field": "allow_force_pushes_enforcement_level",
+        "snapshot_field": "allow_force_pushes",
+        "register_before_field": "before_allow_force_pushes",
+        "value_type": "level",
+    },
+    "protected_branch.update_allow_deletions_enforcement_level": {
+        "event_field": "allow_deletions_enforcement_level",
+        "snapshot_field": "allow_deletions",
+        "register_before_field": "before_allow_deletions",
+        "value_type": "level",
+    },
+    "protected_branch.update_admin_enforced": {
+        "event_field": "admin_enforced",
+        "snapshot_field": "enforce_admins",
+        "register_before_field": "before_enforce_admins",
+        "value_type": "boolean",
+    },
+    "protected_branch.update_require_code_owner_review": {
+        "event_field": "require_code_owner_review",
+        "snapshot_field": "require_code_owner_reviews",
+        "register_before_field": "before_require_code_owner_reviews",
+        "value_type": "boolean",
+    },
+}
 API_VERSION = "2026-03-10"
 SNAPSHOT_MAX_DELAY = timedelta(minutes=5)
 DIGEST_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
@@ -118,14 +143,15 @@ def canonical_state(
     repository_node_id: str,
     repository_name: str,
     branch: str,
-    allow_force_pushes: bool,
+    setting: str,
+    enabled: bool,
 ) -> dict[str, Any]:
     return {
         "repository_id": repository_id,
         "repository_node_id": repository_node_id,
         "repository": repository_name,
         "branch": branch,
-        "allow_force_pushes": allow_force_pushes,
+        setting: enabled,
     }
 
 
@@ -205,8 +231,17 @@ def normalize(
     if (
         not repository_name.lower().startswith(organization.lower() + "/")
         or "*" in branch
-        or protection.keys() != {"allow_force_pushes"}
+        or protection.keys()
+        != {
+            "allow_force_pushes",
+            "allow_deletions",
+            "enforce_admins",
+            "require_code_owner_reviews",
+        }
         or not isinstance(protection.get("allow_force_pushes"), bool)
+        or not isinstance(protection.get("allow_deletions"), bool)
+        or not isinstance(protection.get("enforce_admins"), bool)
+        or not isinstance(protection.get("require_code_owner_reviews"), bool)
     ):
         raise NormalizationError("GitHub branch-protection target or state is unsupported")
     owner, repository_slug = repository_name.split("/", 1)
@@ -246,7 +281,7 @@ def normalize(
     matching = [
         event
         for event in audit_events
-        if event.get("action") == ACTION
+        if event.get("action") in SETTING_CONTRACTS
         and event.get("_document_id") == event_id
         and event.get("request_id") == github_request_id
     ]
@@ -255,9 +290,24 @@ def normalize(
             "GitHub branch-protection change lacks one exact audit event"
         )
     event = matching[0]
+    action = text(event.get("action"), "audit action")
+    contract = SETTING_CONTRACTS[action]
+    event_field = contract["event_field"]
+    snapshot_field = contract["snapshot_field"]
+    register_before_field = contract["register_before_field"]
     actor_id = positive_integer(event.get("actor_id"), "audit actor ID")
     event_time = instant(event.get("@timestamp"), "audit timestamp")
-    enforcement = event.get("allow_force_pushes_enforcement_level")
+    enforcement = event.get(event_field)
+    if contract["value_type"] == "level":
+        valid_enforcement = (
+            isinstance(enforcement, int)
+            and not isinstance(enforcement, bool)
+            and enforcement in {0, 1, 2}
+        )
+        after_enabled = enforcement != 0 if valid_enforcement else None
+    else:
+        valid_enforcement = isinstance(enforcement, bool)
+        after_enabled = enforcement if valid_enforcement else None
     if (
         event.get("org") != organization
         or str(event.get("repo", "")).lower() != repository_name.lower()
@@ -265,18 +315,16 @@ def normalize(
         or event.get("name") != branch
         or event.get("operation_type") != "modify"
         or event.get("actor_is_bot") is not False
-        or not isinstance(enforcement, int)
-        or isinstance(enforcement, bool)
-        or enforcement not in {0, 1, 2}
+        or not valid_enforcement
         or not window_start <= event_time <= window_end
         or not event_time <= snapshot_time <= event_time + SNAPSHOT_MAX_DELAY
-        or protection["allow_force_pushes"] is not (enforcement != 0)
+        or protection[snapshot_field] is not after_enabled
     ):
         raise NormalizationError(
             "GitHub branch-protection event target state or snapshot time is mismatched"
         )
     for other in audit_events:
-        if other is event or other.get("action") != ACTION:
+        if other is event or other.get("action") != action:
             continue
         other_time = instant(other.get("@timestamp"), "later audit timestamp")
         if (
@@ -314,18 +362,19 @@ def normalize(
         change.get("repository_id") != repository_id
         or change.get("repository_node_id") != repository_node_id
         or change.get("branch") != branch
-        or not isinstance(change.get("before_allow_force_pushes"), bool)
+        or not isinstance(change.get(register_before_field), bool)
     ):
         raise NormalizationError(
             "GitHub branch-protection register does not match the stable target"
         )
-    before_enabled = change["before_allow_force_pushes"]
-    after_enabled = protection["allow_force_pushes"]
+    before_enabled = change[register_before_field]
+    after_enabled = protection[snapshot_field]
     before_state = canonical_state(
         repository_id,
         repository_node_id,
         repository_name,
         branch,
+        snapshot_field,
         before_enabled,
     )
     after_state = canonical_state(
@@ -333,6 +382,7 @@ def normalize(
         repository_node_id,
         repository_name,
         branch,
+        snapshot_field,
         after_enabled,
     )
     before_digest = digest(before_state)
@@ -422,7 +472,7 @@ def normalize(
         "collector": {
             "available": True,
             "complete": True,
-            "identity": "github-branch-protection-normalizer@sha256:1e6e7488f0c32ac2304af8419cd1ae26b92e68e94250ca519897d3cd0c1acd4f",
+            "identity": "github-branch-protection-normalizer@sha256:cb2bbe662437ee9ec3edd2a6bdc4f6455f0fba6808b42deff6247040e4429f8a",
             "covered_services": ["scm"],
         },
         "changes": [normalized_change],

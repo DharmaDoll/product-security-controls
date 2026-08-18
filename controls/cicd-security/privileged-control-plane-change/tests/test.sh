@@ -56,6 +56,27 @@ github_legacy_branch_scm=(
   --branch-protection-snapshot "$control/secure/github-legacy-branch-scm/branch-protection-snapshot.json"
 )
 
+github_legacy_admin_branch_scm=(
+  --audit-events "$control/secure/github-legacy-admin-branch-scm/audit-events.json"
+  --identity-sessions "$control/secure/github-legacy-admin-branch-scm/identity-sessions.json"
+  --change-register "$control/secure/github-legacy-admin-branch-scm/change-register.json"
+  --branch-protection-snapshot "$control/secure/github-legacy-admin-branch-scm/branch-protection-snapshot.json"
+)
+
+github_legacy_codeowner_branch_scm=(
+  --audit-events "$control/secure/github-legacy-codeowner-branch-scm/audit-events.json"
+  --identity-sessions "$control/secure/github-legacy-codeowner-branch-scm/identity-sessions.json"
+  --change-register "$control/secure/github-legacy-codeowner-branch-scm/change-register.json"
+  --branch-protection-snapshot "$control/secure/github-legacy-codeowner-branch-scm/branch-protection-snapshot.json"
+)
+
+github_legacy_deletion_branch_scm=(
+  --audit-events "$control/secure/github-legacy-deletion-branch-scm/audit-events.json"
+  --identity-sessions "$control/secure/github-legacy-deletion-branch-scm/identity-sessions.json"
+  --change-register "$control/secure/github-legacy-deletion-branch-scm/change-register.json"
+  --branch-protection-snapshot "$control/secure/github-legacy-deletion-branch-scm/branch-protection-snapshot.json"
+)
+
 aws=(
   --cloudtrail-events "$control/secure/aws/cloudtrail-events.json"
   --identity-sessions "$control/secure/aws/identity-sessions.json"
@@ -573,6 +594,75 @@ test "$github_legacy_branch_scm_partial_status" -eq 1
 rg -F "FAIL CPC-007 collector does not cover every required service" \
   "$temporary_directory/github-legacy-branch-scm-partial.txt" >/dev/null
 
+python3 "$control/scripts/normalize_github_branch_protection.py" "${github_legacy_admin_branch_scm[@]}" \
+  --output "$temporary_directory/github-legacy-admin-branch-scm-evidence.json" \
+  >"$temporary_directory/github-legacy-admin-branch-scm-normalize.txt"
+rg -F "NORMALIZED 1 GitHub legacy branch-protection change event" \
+  "$temporary_directory/github-legacy-admin-branch-scm-normalize.txt" >/dev/null
+if rg 'enforce_admins|hashed_token|user_agent|token_scopes|github-request-559' \
+  "$temporary_directory/github-legacy-admin-branch-scm-evidence.json" >/dev/null; then
+  echo "GitHub legacy admin-enforcement evidence retained provider state or sensitive fields" >&2
+  exit 1
+fi
+
+set +e
+python3 "$verify" \
+  --policy "$control/secure/policy.json" \
+  --change-evidence "$temporary_directory/github-legacy-admin-branch-scm-evidence.json" \
+  --evaluation-time "$evaluation_time" \
+  >"$temporary_directory/github-legacy-admin-branch-scm-partial.txt"
+github_legacy_admin_branch_scm_partial_status=$?
+set -e
+test "$github_legacy_admin_branch_scm_partial_status" -eq 1
+rg -F "FAIL CPC-007 collector does not cover every required service" \
+  "$temporary_directory/github-legacy-admin-branch-scm-partial.txt" >/dev/null
+
+python3 "$control/scripts/normalize_github_branch_protection.py" "${github_legacy_codeowner_branch_scm[@]}" \
+  --output "$temporary_directory/github-legacy-codeowner-branch-scm-evidence.json" \
+  >"$temporary_directory/github-legacy-codeowner-branch-scm-normalize.txt"
+rg -F "NORMALIZED 1 GitHub legacy branch-protection change event" \
+  "$temporary_directory/github-legacy-codeowner-branch-scm-normalize.txt" >/dev/null
+if rg 'require_code_owner_reviews|hashed_token|user_agent|token_scopes|github-request-561' \
+  "$temporary_directory/github-legacy-codeowner-branch-scm-evidence.json" >/dev/null; then
+  echo "GitHub legacy CODEOWNER-review evidence retained provider state or sensitive fields" >&2
+  exit 1
+fi
+
+set +e
+python3 "$verify" \
+  --policy "$control/secure/policy.json" \
+  --change-evidence "$temporary_directory/github-legacy-codeowner-branch-scm-evidence.json" \
+  --evaluation-time "$evaluation_time" \
+  >"$temporary_directory/github-legacy-codeowner-branch-scm-partial.txt"
+github_legacy_codeowner_branch_scm_partial_status=$?
+set -e
+test "$github_legacy_codeowner_branch_scm_partial_status" -eq 1
+rg -F "FAIL CPC-007 collector does not cover every required service" \
+  "$temporary_directory/github-legacy-codeowner-branch-scm-partial.txt" >/dev/null
+
+python3 "$control/scripts/normalize_github_branch_protection.py" "${github_legacy_deletion_branch_scm[@]}" \
+  --output "$temporary_directory/github-legacy-deletion-branch-scm-evidence.json" \
+  >"$temporary_directory/github-legacy-deletion-branch-scm-normalize.txt"
+rg -F "NORMALIZED 1 GitHub legacy branch-protection change event" \
+  "$temporary_directory/github-legacy-deletion-branch-scm-normalize.txt" >/dev/null
+if rg 'allow_deletions|hashed_token|user_agent|token_scopes|github-request-563' \
+  "$temporary_directory/github-legacy-deletion-branch-scm-evidence.json" >/dev/null; then
+  echo "GitHub legacy branch-deletion evidence retained provider state or sensitive fields" >&2
+  exit 1
+fi
+
+set +e
+python3 "$verify" \
+  --policy "$control/secure/policy.json" \
+  --change-evidence "$temporary_directory/github-legacy-deletion-branch-scm-evidence.json" \
+  --evaluation-time "$evaluation_time" \
+  >"$temporary_directory/github-legacy-deletion-branch-scm-partial.txt"
+github_legacy_deletion_branch_scm_partial_status=$?
+set -e
+test "$github_legacy_deletion_branch_scm_partial_status" -eq 1
+rg -F "FAIL CPC-007 collector does not cover every required service" \
+  "$temporary_directory/github-legacy-deletion-branch-scm-partial.txt" >/dev/null
+
 python3 - \
   "$control/secure/change-evidence.json" \
   "$temporary_directory/github-evidence.json" \
@@ -584,6 +674,9 @@ python3 - \
   "$temporary_directory/github-tag-scm-evidence.json" \
   "$temporary_directory/github-push-scm-evidence.json" \
   "$temporary_directory/github-legacy-branch-scm-evidence.json" \
+  "$temporary_directory/github-legacy-admin-branch-scm-evidence.json" \
+  "$temporary_directory/github-legacy-codeowner-branch-scm-evidence.json" \
+  "$temporary_directory/github-legacy-deletion-branch-scm-evidence.json" \
   "$temporary_directory/all-provider-composed.json" <<'PY'
 import json
 import sys
@@ -597,6 +690,9 @@ org_scm = json.load(open(sys.argv[7], encoding="utf-8"))
 tag_scm = json.load(open(sys.argv[8], encoding="utf-8"))
 push_scm = json.load(open(sys.argv[9], encoding="utf-8"))
 legacy_branch_scm = json.load(open(sys.argv[10], encoding="utf-8"))
+legacy_admin_branch_scm = json.load(open(sys.argv[11], encoding="utf-8"))
+legacy_codeowner_branch_scm = json.load(open(sys.argv[12], encoding="utf-8"))
+legacy_deletion_branch_scm = json.load(open(sys.argv[13], encoding="utf-8"))
 complete["changes"][0] = scm["changes"][0]
 complete["changes"].append(github["changes"][1])
 complete["changes"][1] = aws["changes"][0]
@@ -606,7 +702,10 @@ complete["changes"].append(org_scm["changes"][0])
 complete["changes"].append(tag_scm["changes"][0])
 complete["changes"].append(push_scm["changes"][0])
 complete["changes"].append(legacy_branch_scm["changes"][0])
-json.dump(complete, open(sys.argv[11], "w", encoding="utf-8"), indent=2)
+complete["changes"].append(legacy_admin_branch_scm["changes"][0])
+complete["changes"].append(legacy_codeowner_branch_scm["changes"][0])
+complete["changes"].append(legacy_deletion_branch_scm["changes"][0])
+json.dump(complete, open(sys.argv[14], "w", encoding="utf-8"), indent=2)
 PY
 python3 "$verify" \
   --policy "$control/secure/policy.json" \
@@ -625,7 +724,7 @@ echo "PASS GitHub repository ruleset audit and exact before-after history bind s
 echo "PASS GitHub organization ruleset audit and exact history bind stable organization and ruleset IDs"
 echo "PASS GitHub tag ruleset update is distinct from branch protection and binds exact history"
 echo "PASS GitHub push ruleset binds exact root and complete fork-network identity"
-echo "PASS GitHub legacy branch force-push update binds exact repository branch and current state"
+echo "PASS GitHub legacy branch force-push deletion administrator-enforcement and CODEOWNER-review updates bind exact repository branch and current state"
 echo "PASS AWS CloudTrail current IAM role and reviewed trust digest are joined by stable role ID"
 echo "PASS AWS CloudTrail current ECR policy and reviewed digest bind one repository generation"
 echo "PASS AWS CloudTrail current KMS signing-key policy and reviewed digest bind one key ARN"
@@ -636,4 +735,4 @@ echo "PASS bypassed partial failed substituted tampered and ambiguous KMS eviden
 echo "PASS partial substituted stale tampered and later-version GitHub SCM evidence cannot become a clean result"
 echo "PASS partial substituted contaminated and later-version GitHub organization SCM evidence cannot become a clean result"
 echo "PASS missing partial stale substituted and organization-wide push scope fail closed"
-echo "PASS missing partial stale substituted and later legacy branch state fails closed"
+echo "PASS missing partial stale substituted and later legacy branch force-push deletion administrator-enforcement or CODEOWNER-review state fails closed"

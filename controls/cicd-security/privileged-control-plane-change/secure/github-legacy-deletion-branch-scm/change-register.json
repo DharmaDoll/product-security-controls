@@ -1,0 +1,33 @@
+{
+  "schema": "psb-github-privileged-change-register/v1",
+  "collected_at": "2026-08-12T04:08:00Z",
+  "complete": true,
+  "changes": [
+    {
+      "change_id": "chg-github-legacy-deletion-20260812-001",
+      "provider_event_id": "audit-doc-563",
+      "github_request_id": "github-request-563",
+      "repository_id": 19001,
+      "repository_node_id": "R_kgDOProductApi",
+      "branch": "main",
+      "before_allow_deletions": false,
+      "request_id": "request:change-883",
+      "requested_at": "2026-08-12T03:30:00Z",
+      "policy_version": "sha256:7d3a56a21d9049bb248663752c53a09428f51104f7528245ef8b394ddd9cd261",
+      "before_digest": "sha256:08ad602e82296f41c81c6c8b00b8dc3c3553055520cdb6f41e7bffa4987fc81c",
+      "after_digest": "sha256:2df853d6179169b889cf899cd0f138342a164f8bda8dae4660bf4a55c01e9a2b",
+      "reason": "temporarily permit deletion of the protected branch under review",
+      "ticket": "CHG-883",
+      "approvals": [
+        {
+          "actor_id": "principal:security-reviewer-09",
+          "role": "security",
+          "request_id": "request:change-883",
+          "after_digest": "sha256:2df853d6179169b889cf899cd0f138342a164f8bda8dae4660bf4a55c01e9a2b",
+          "approved_at": "2026-08-12T03:34:00Z"
+        }
+      ],
+      "emergency": {"used": false}
+    }
+  ]
+}

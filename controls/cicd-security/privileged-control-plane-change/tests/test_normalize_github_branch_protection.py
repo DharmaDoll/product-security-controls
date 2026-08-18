@@ -11,6 +11,9 @@ from pathlib import Path
 CONTROL = Path(__file__).resolve().parents[1]
 SCRIPT = CONTROL / "scripts" / "normalize_github_branch_protection.py"
 FIXTURES = CONTROL / "secure" / "github-legacy-branch-scm"
+ADMIN_FIXTURES = CONTROL / "secure" / "github-legacy-admin-branch-scm"
+CODE_OWNER_FIXTURES = CONTROL / "secure" / "github-legacy-codeowner-branch-scm"
+DELETION_FIXTURES = CONTROL / "secure" / "github-legacy-deletion-branch-scm"
 SPEC = importlib.util.spec_from_file_location("normalize_github_branch_protection", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
 normalizer = importlib.util.module_from_spec(SPEC)
@@ -21,6 +24,18 @@ def fixture(name: str):
     return json.loads((FIXTURES / name).read_text(encoding="utf-8"))
 
 
+def admin_fixture(name: str):
+    return json.loads((ADMIN_FIXTURES / name).read_text(encoding="utf-8"))
+
+
+def code_owner_fixture(name: str):
+    return json.loads((CODE_OWNER_FIXTURES / name).read_text(encoding="utf-8"))
+
+
+def deletion_fixture(name: str):
+    return json.loads((DELETION_FIXTURES / name).read_text(encoding="utf-8"))
+
+
 class GithubBranchProtectionNormalizerTest(unittest.TestCase):
     def sources(self):
         return (
@@ -28,6 +43,30 @@ class GithubBranchProtectionNormalizerTest(unittest.TestCase):
             fixture("identity-sessions.json"),
             fixture("change-register.json"),
             fixture("branch-protection-snapshot.json"),
+        )
+
+    def admin_sources(self):
+        return (
+            admin_fixture("audit-events.json"),
+            admin_fixture("identity-sessions.json"),
+            admin_fixture("change-register.json"),
+            admin_fixture("branch-protection-snapshot.json"),
+        )
+
+    def code_owner_sources(self):
+        return (
+            code_owner_fixture("audit-events.json"),
+            code_owner_fixture("identity-sessions.json"),
+            code_owner_fixture("change-register.json"),
+            code_owner_fixture("branch-protection-snapshot.json"),
+        )
+
+    def deletion_sources(self):
+        return (
+            deletion_fixture("audit-events.json"),
+            deletion_fixture("identity-sessions.json"),
+            deletion_fixture("change-register.json"),
+            deletion_fixture("branch-protection-snapshot.json"),
         )
 
     def test_normalizes_exact_reviewed_force_push_change(self) -> None:
@@ -64,6 +103,96 @@ class GithubBranchProtectionNormalizerTest(unittest.TestCase):
                     output["changes"][0]["request"]["after_digest"],
                     change["after_digest"],
                 )
+
+    def test_normalizes_exact_reviewed_admin_enforcement_change(self) -> None:
+        output = normalizer.normalize(*self.admin_sources())
+        change = output["changes"][0]
+        self.assertEqual(change["service"], "scm")
+        self.assertEqual(
+            change["request"]["after_digest"],
+            "sha256:83a2f6dbea6bf9686e15a51b0da5f839399b8ecbf32c2f1d2a2231abae196d2b",
+        )
+        serialized = json.dumps(output)
+        self.assertNotIn("enforce_admins", serialized)
+        self.assertNotIn("github-request-559", serialized)
+
+    def test_admin_enforcement_substitution_or_later_update_fails_closed(self) -> None:
+        audit, sessions, register, snapshot = self.admin_sources()
+        snapshot["protection"]["enforce_admins"] = False
+        with self.assertRaisesRegex(normalizer.NormalizationError, "event target state"):
+            normalizer.normalize(audit, sessions, register, snapshot)
+
+        audit, sessions, register, snapshot = self.admin_sources()
+        later = copy.deepcopy(audit["events"][0])
+        later["_document_id"] = "audit-doc-560"
+        later["request_id"] = "github-request-560"
+        later["@timestamp"] = "2026-08-12T03:32:30Z"
+        later["admin_enforced"] = False
+        audit["events"].append(later)
+        audit["collection"]["raw_events"] = 2
+        audit["collection"]["selected_events"] = 2
+        with self.assertRaisesRegex(normalizer.NormalizationError, "later update"):
+            normalizer.normalize(audit, sessions, register, snapshot)
+
+    def test_normalizes_exact_reviewed_code_owner_review_change(self) -> None:
+        output = normalizer.normalize(*self.code_owner_sources())
+        change = output["changes"][0]
+        self.assertEqual(change["service"], "scm")
+        self.assertEqual(
+            change["request"]["after_digest"],
+            "sha256:b397c3ec49913ace0cedab62a80fafb38eae777671ae835ce0f74e12f1a12ac4",
+        )
+        serialized = json.dumps(output)
+        self.assertNotIn("require_code_owner_reviews", serialized)
+        self.assertNotIn("github-request-561", serialized)
+
+    def test_code_owner_review_substitution_or_later_update_fails_closed(self) -> None:
+        audit, sessions, register, snapshot = self.code_owner_sources()
+        snapshot["protection"]["require_code_owner_reviews"] = False
+        with self.assertRaisesRegex(normalizer.NormalizationError, "event target state"):
+            normalizer.normalize(audit, sessions, register, snapshot)
+
+        audit, sessions, register, snapshot = self.code_owner_sources()
+        later = copy.deepcopy(audit["events"][0])
+        later["_document_id"] = "audit-doc-562"
+        later["request_id"] = "github-request-562"
+        later["@timestamp"] = "2026-08-12T03:35:30Z"
+        later["require_code_owner_review"] = False
+        audit["events"].append(later)
+        audit["collection"]["raw_events"] = 2
+        audit["collection"]["selected_events"] = 2
+        with self.assertRaisesRegex(normalizer.NormalizationError, "later update"):
+            normalizer.normalize(audit, sessions, register, snapshot)
+
+    def test_normalizes_exact_reviewed_branch_deletion_change(self) -> None:
+        output = normalizer.normalize(*self.deletion_sources())
+        change = output["changes"][0]
+        self.assertEqual(change["service"], "scm")
+        self.assertEqual(
+            change["request"]["after_digest"],
+            "sha256:2df853d6179169b889cf899cd0f138342a164f8bda8dae4660bf4a55c01e9a2b",
+        )
+        serialized = json.dumps(output)
+        self.assertNotIn("allow_deletions", serialized)
+        self.assertNotIn("github-request-563", serialized)
+
+    def test_branch_deletion_substitution_or_later_update_fails_closed(self) -> None:
+        audit, sessions, register, snapshot = self.deletion_sources()
+        snapshot["protection"]["allow_deletions"] = False
+        with self.assertRaisesRegex(normalizer.NormalizationError, "event target state"):
+            normalizer.normalize(audit, sessions, register, snapshot)
+
+        audit, sessions, register, snapshot = self.deletion_sources()
+        later = copy.deepcopy(audit["events"][0])
+        later["_document_id"] = "audit-doc-564"
+        later["request_id"] = "github-request-564"
+        later["@timestamp"] = "2026-08-12T03:38:30Z"
+        later["allow_deletions_enforcement_level"] = 0
+        audit["events"].append(later)
+        audit["collection"]["raw_events"] = 2
+        audit["collection"]["selected_events"] = 2
+        with self.assertRaisesRegex(normalizer.NormalizationError, "later update"):
+            normalizer.normalize(audit, sessions, register, snapshot)
 
     def test_repository_branch_and_current_state_substitution_fail_closed(self) -> None:
         audit, sessions, register, snapshot = self.sources()

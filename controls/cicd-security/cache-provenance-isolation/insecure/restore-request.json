@@ -1,0 +1,15 @@
+{
+  "schema": "psb-ci-cache-restore-request/v1",
+  "repository_id": "999999999",
+  "workflow_ref": "attacker/fork/.github/workflows/build.yml@ffffffffffffffffffffffffffffffffffffffff",
+  "consumer_revision": "ffffffffffffffffffffffffffffffffffffffff",
+  "trust_class": "untrusted",
+  "platform": "windows-x86-64",
+  "dependency_lock_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "paths": [".cache/toolchain/bin"],
+  "restore_prefixes": ["psb-ci-cache-key/v1/"],
+  "expected_cache_key": "psb-ci-cache-key/v1/",
+  "expected_content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "expected_record_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "expected_policy_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+}

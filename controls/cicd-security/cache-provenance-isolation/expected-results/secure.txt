@@ -1,0 +1,9 @@
+POLICY sha256=60f5aa1c1dd136cc2b7f58a56de7d557b39de46dccb556ad5378d409292c4f09
+PASS CAC-001 producer record signature signer and policy binding are authentic
+PASS CAC-002 cache key binds exact repository workflow trust platform and dependency identity
+PASS CAC-003 producer to consumer trust transition is explicitly allowed
+PASS CAC-004 cache content digest and restored paths match the reviewed request
+PASS CAC-005 cache record is current and bound to the exact source revision
+PASS CAC-006 restore uses exact record content and key identities without prefix fallback
+PASS CAC-007 policy is complete and evidence output is metadata only
+ACCEPTED cache_id=cache-run-9001-attempt-1 exact trusted restore
