@@ -20,7 +20,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009d3f1e5b2c74e2e27d2e5 # v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
       - name: Run zizmor as a blocking check
@@ -45,7 +45,7 @@ jobs:
       security-events: write # upload the SARIF result
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009d3f1e5b2c74e2e27d2e5 # v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
       - name: Run zizmor and upload SARIF
