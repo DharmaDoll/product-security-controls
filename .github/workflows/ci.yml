@@ -24,6 +24,11 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+      - name: Install pinned test utility
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y ripgrep=14.1.0-1ubuntu1
+          rg --version
       - name: Lint controls
         run: make lint
       - name: Test controls
