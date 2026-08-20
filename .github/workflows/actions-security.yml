@@ -31,7 +31,6 @@ jobs:
           online-audits: false
           persona: auditor
           version: "1.28.0"
-          token: ""
           advanced-security: false
           fail-on-no-inputs: true
 
@@ -56,6 +55,5 @@ jobs:
           online-audits: false
           persona: auditor
           version: "1.28.0"
-          token: ""
           advanced-security: true
           fail-on-no-inputs: true
