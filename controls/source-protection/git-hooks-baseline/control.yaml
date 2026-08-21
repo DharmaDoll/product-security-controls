@@ -28,6 +28,8 @@ implementations:
     - secure/.githooks/pre-push
     - secure/.githooks/pre-push-pre-commit
     - secure/.githooks/scan-sensitive.py
+    - scripts/check-adoption.py
+    - docs/adoption-guide.md
 verification:
   commands:
     - make verify-control CONTROL=PSB-SOURCE-002
@@ -40,6 +42,8 @@ verification:
     - stagedされた機密ファイル、commit message、push履歴内のsecretが値を表示せず拒否される
     - pre-commit framework sampleが3 stageをrepository-owned scannerへ接続しfloating external hookを拒否する
     - Gitleaksがreview済みfull commit SHAへ固定され、staged stateをredacted outputで独立検査する
+    - 導入ガイドがPython、pre-commit、Gitleaks、hook activation、canary、CI補完、切り戻しを説明する
+    - 導入状態checkerがnative方式の正常状態と未導入状態を区別する
     - scanner実行エラーがcleanな結果と区別される
 checks:
   - id: GHK-001
@@ -269,7 +273,7 @@ checks:
     mapping_status: reviewed
   - id: GHK-014
     title: Gitleaks provides an independent staged secret scan
-    required_state: Gitleaks v8.30.1 source pinned to a reviewed full commit SHA with redacted fail-closed execution
+    required_state: Gitleaks v8.30.0 source pinned to a reviewed full commit SHA with redacted fail-closed execution
     responsible_role: developer
     applies_to:
       - source-repository

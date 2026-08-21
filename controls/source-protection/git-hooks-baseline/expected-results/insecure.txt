@@ -16,7 +16,7 @@ FAIL pre-commit external repo https://github.com/gitleaks/gitleaks must use a fu
 FAIL pre-commit hook psb-sensitive-staged is missing
 FAIL pre-commit hook psb-sensitive-commit-message is missing
 FAIL pre-commit hook psb-sensitive-push-history is missing
-FAIL Gitleaks must be pinned to the reviewed v8.30.1 full commit SHA
+FAIL Gitleaks must be pinned to the reviewed v8.30.0 full commit SHA
 FAIL Gitleaks pre-commit output must redact secret values
 FAIL Gitleaks must scan the staged Git state
 FAIL Gitleaks pre-commit hook must always run

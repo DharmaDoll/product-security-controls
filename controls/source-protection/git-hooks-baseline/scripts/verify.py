@@ -27,7 +27,7 @@ REQUIRED_HOOKS = {
 }
 FULL_COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
 GITLEAKS_REPOSITORY = "https://github.com/gitleaks/gitleaks"
-GITLEAKS_COMMIT = "83d9cd684c87d95d656c1458ef04895a7f1cbd8e"
+GITLEAKS_COMMIT = "6eaad039603a4de39fddd1cf5f727391efe9974e"
 PRE_COMMIT_HOOKS = {
     "psb-sensitive-staged": {
         "entry": "sh .githooks/pre-commit",
@@ -138,7 +138,7 @@ def inspect_pre_commit_config(profile: Path) -> list[str]:
     else:
         if gitleaks_repository.get("rev") != GITLEAKS_COMMIT:
             findings.append(
-                "Gitleaks must be pinned to the reviewed v8.30.1 full commit SHA"
+                "Gitleaks must be pinned to the reviewed v8.30.0 full commit SHA"
             )
         gitleaks_hooks = gitleaks_repository.get("hooks")
         gitleaks_hook = None

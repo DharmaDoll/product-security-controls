@@ -276,6 +276,42 @@ test "$scanner_error_status" -eq 2 || {
   exit 1
 }
 
+python3 "$control/scripts/check-adoption.py" \
+  --repository "$repository" --mode native \
+  >"$temporary_directory/adoption-ready.txt"
+grep -Fx "READY PSB-SOURCE-002 native activation verified" \
+  "$temporary_directory/adoption-ready.txt" >/dev/null
+
+git -C "$repository" config --local core.hooksPath .git/hooks
+set +e
+python3 "$control/scripts/check-adoption.py" \
+  --repository "$repository" --mode native \
+  >"$temporary_directory/adoption-not-ready.txt"
+adoption_not_ready_status=$?
+set -e
+test "$adoption_not_ready_status" -eq 2 || {
+  echo "expected incomplete native adoption exit 2, got $adoption_not_ready_status" >&2
+  exit 1
+}
+grep -F "ERROR local core.hooksPath must be .githooks" \
+  "$temporary_directory/adoption-not-ready.txt" >/dev/null
+
+adoption_guide="$control/docs/adoption-guide.md"
+for required_heading in \
+  "## 推奨: pre-commit framework方式" \
+  "## native hooks方式" \
+  "## standalone Gitleaks binaryを導入する場合" \
+  "## GitHub側とCIで必ず補完する" \
+  "## よくある失敗" \
+  "## 無効化・切り戻し" \
+  "## 導入完了条件"; do
+  grep -Fx "$required_heading" "$adoption_guide" >/dev/null
+done
+grep -F "6eaad039603a4de39fddd1cf5f727391efe9974e" \
+  "$adoption_guide" >/dev/null
+grep -F "79a3ab579b53f71efd634f3aaf7e04a0fa0cf206b7ed434638d1547a2470a66e" \
+  "$adoption_guide" >/dev/null
+
 echo "PASS secure Git configuration and hook bundle accepted"
 echo "PASS insecure Git configuration rejected"
 echo "PASS malformed pre-commit framework config fails closed"
@@ -287,3 +323,5 @@ echo "PASS all configured forbidden file types blocked"
 echo "PASS AWS Google JWT bearer GitHub private-key Slack and generic patterns blocked"
 echo "PASS files over 5 MiB blocked"
 echo "PASS scanner execution error distinguished from clean result"
+echo "PASS native adoption readiness and missing activation distinguished"
+echo "PASS adoption guide covers setup activation verification and rollback"

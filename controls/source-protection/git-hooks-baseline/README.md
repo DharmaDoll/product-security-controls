@@ -74,6 +74,31 @@ git config --local core.hooksPath .githooks
 
 安全でない設定は隔離されたテストfixtureであり、実際のGit設定には適用されません。
 
+## 導入手順（最初にここを読む）
+
+実際のrepositoryへ導入する手順は
+[`docs/adoption-guide.md`](docs/adoption-guide.md)にまとめています。次の内容を、
+前提確認から切り戻しまで順番に実行できます。
+
+1. native hooks方式とpre-commit framework方式の選択
+2. Linux、macOS、WindowsでのPython 3.10以上とvirtual environmentの準備
+3. pre-commit 4.2.0の固定導入
+4. `.githooks/`と`.pre-commit-config.yaml`の安全なcopyとreview
+5. Gitleaks v8.30.0のfull commit SHA pin、release checksum検証、synthetic canary
+6. commit署名identityとrepository-local Git設定
+7. 導入状態checker、通常commit、negative test、pre-pushの確認
+8. CI、GitHub Push Protection、既存repositoryの移行、troubleshooting、切り戻し
+
+導入後はblueprintから次を実行すると、対象cloneの基本状態を検査できます。
+
+```bash
+python3 controls/source-protection/git-hooks-baseline/scripts/check-adoption.py \
+  --repository /absolute/path/to/target --mode framework
+```
+
+`READY`はhook配置とactivationの確認結果です。Gitleaks canary、CI、server-side
+enforcement、credential incident対応の確認を省略できるという意味ではありません。
+
 ## 検証方法
 
 リポジトリのルートで次を実行します。
@@ -153,11 +178,15 @@ detection engineとして推奨します。既存scannerは機密ファイル種
 message、導入履歴を決定的かつofflineに検査し、Gitleaksはより広いsecret ruleと
 entropy-based detectionを追加します。一方を他方の代替にはしません。
 
-Gitleaks hookは公式release `v8.30.1`に対応する次のfull commit SHAへ固定しています。
+Gitleaks hookは公式release `v8.30.0`に対応する次のfull commit SHAへ固定しています。
 
 ```text
-83d9cd684c87d95d656c1458ef04895a7f1cbd8e
+6eaad039603a4de39fddd1cf5f727391efe9974e
 ```
+
+`v8.30.1`は採用していません。上流の公式issueでsecret detection回帰とWindows x64
+artifact checksum不一致が報告されたためです。将来の更新でもversion番号だけでなく、
+release artifact digest、synthetic canaryの拒否、clean fixtureの通過を独立して確認します。
 
 設定は公式`gitleaks` hookを`pre-commit` stageで実行し、`--redact`、
 `pass_filenames: false`、`always_run: true`を明示します。tag、branch、短縮SHAへ
@@ -323,7 +352,9 @@ commit署名はidentity keyを認証しますが、commit内容の安全性を�
 - [GitHub email addresses reference](https://docs.github.com/en/account-and-profile/reference/email-addresses-reference)
 - [pre-commit configuration and supported Git hook stages](https://pre-commit.com/)
 - [Gitleaks official repository and pre-commit integration](https://github.com/gitleaks/gitleaks)
-- [Gitleaks v8.30.1 release](https://github.com/gitleaks/gitleaks/releases/tag/v8.30.1)
+- [Gitleaks v8.30.0 release](https://github.com/gitleaks/gitleaks/releases/tag/v8.30.0)
+- [Gitleaks v8.30.1 detection regression report](https://github.com/gitleaks/gitleaks/issues/2170)
+- [Gitleaks v8.30.1 Windows checksum report](https://github.com/gitleaks/gitleaks/issues/2164)
 - [detect-secrets baseline, audit, and pre-commit integration](https://github.com/Yelp/detect-secrets)
 - [GitHub Secret Scanning Push Protection](https://docs.github.com/en/code-security/concepts/secret-security/push-protection)
 - [GitHub delegated bypass requests](https://docs.github.com/en/code-security/concepts/secret-security/bypass-requests)
