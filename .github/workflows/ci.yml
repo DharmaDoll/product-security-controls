@@ -27,7 +27,7 @@ jobs:
       - name: Install pinned test utility
         run: |
           sudo apt-get update
-          sudo apt-get install --no-install-recommends -y ripgrep=14.1.0-1ubuntu1
+          sudo apt-get install --no-install-recommends -y ripgrep=14.1.0-1
           rg --version
       - name: Lint controls
         run: make lint
