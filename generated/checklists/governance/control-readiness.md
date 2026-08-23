@@ -9,8 +9,8 @@ Generated from repository control metadata. Do not edit manually.
 | Metric | Value | Meaning |
 |---|---:|---|
 | Catalog controls | 51 | Repository control packages; not organization adoption. |
-| Atomic checks | 463 | Assessable catalog rows generated from control metadata. |
-| Reviewed mapping checks | 404 | Checks with at least one reviewed framework relationship. |
+| Atomic checks | 462 | Assessable catalog rows generated from control metadata. |
+| Reviewed mapping checks | 403 | Checks with at least one reviewed framework relationship. |
 | Provisional mapping checks | 0 | Checks whose framework relationship still needs review. |
 | Unmapped checks | 59 | Explicit framework mapping debt; not silently inherited. |
 | Assessment adapters | 1 | Controls with a repository read-only assessment interface. |
@@ -69,7 +69,7 @@ Generated from repository control metadata. Do not edit manually.
 | PSB-REL-004 | release-integrity | prototype | E3 | 8 | 6 | 0 | 2 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-REL-005 | release-integrity | prototype | E3 | 8 | 7 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-SOURCE-001 | source-protection | prototype | E3 | 29 | 27 | 0 | 2 | available | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
-| PSB-SOURCE-002 | source-protection | prototype | E3 | 14 | 13 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
+| PSB-SOURCE-002 | source-protection | prototype | E3 | 13 | 12 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-SOURCE-003 | source-protection | reference | E3 | 13 | 10 | 0 | 3 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-SOURCE-004 | source-protection | prototype | E3 | 17 | 17 | 0 | 0 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-SOURCE-005 | source-protection | prototype | E3 | 7 | 6 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |

@@ -19,16 +19,14 @@ threats:
 implementations:
   insecure:
     - insecure/recommended.gitconfig
-    - insecure/pre-commit-framework/.pre-commit-config.yaml
   secure:
     - secure/recommended.gitconfig
-    - secure/pre-commit-framework/.pre-commit-config.yaml
     - secure/.githooks/pre-commit
     - secure/.githooks/commit-msg
     - secure/.githooks/pre-push
-    - secure/.githooks/pre-push-pre-commit
+    - secure/.githooks/run-gitleaks.sh
     - secure/.githooks/scan-sensitive.py
-    - scripts/check-adoption.py
+    - secure/.githooks/test-detection.sh
     - docs/adoption-guide.md
 verification:
   commands:
@@ -40,10 +38,9 @@ verification:
     - AWS、Google、JWT、Bearer、GitHub、private key、Slack、generic credential patternが値を表示せず拒否される
     - 5 MiBの方針値を超えるファイルが拒否される
     - stagedされた機密ファイル、commit message、push履歴内のsecretが値を表示せず拒否される
-    - pre-commit framework sampleが3 stageをrepository-owned scannerへ接続しfloating external hookを拒否する
-    - Gitleaksがreview済みfull commit SHAへ固定され、staged stateをredacted outputで独立検査する
-    - 導入ガイドがPython、pre-commit、Gitleaks、hook activation、canary、CI補完、切り戻しを説明する
-    - 導入状態checkerがnative方式の正常状態と未導入状態を区別する
+    - Gitleaks containerがreview済みdigestへ固定され、read-onlyかつnetworkなしでstaged stateをredacted検査する
+    - 導入ガイドがcopy、Docker image取得、local hook activation、self-test、CI補完、切り戻しを短い手順で説明する
+    - 同梱self-testがPython scannerとGitleaksのsafe、finding、redactionを導入先で確認できる
     - scanner実行エラーがcleanな結果と区別される
 checks:
   - id: GHK-001
@@ -252,44 +249,25 @@ checks:
       evidence:
         - negative-test output
     mapping_status: unmapped
-  - id: GHK-013
-    title: Pre-commit framework configuration uses repository-owned security hooks
-    required_state: reviewed local hooks for pre-commit commit-msg and pre-push with no mutable external revisions
-    responsible_role: developer
-    applies_to:
-      - source-repository
-      - developer-endpoint
-    context:
-      threat_actor: configuration drift mutable external hook or incomplete pre-commit installation
-      attack_or_failure_scenario: framework adoption omits commit-message or push-history checks or downloads changing hook code
-      why_required: reviewed three-stage repository-owned configuration preserves native control coverage under the alternate framework
-    verification:
-      type: automated
-      method: make verify-control CONTROL=PSB-SOURCE-002
-      expected: the framework sample invokes every required stage and rejects floating external hook revisions
-      evidence:
-        - sanitized verifier output
-        - reviewed .pre-commit-config.yaml
-    mapping_status: reviewed
   - id: GHK-014
     title: Gitleaks provides an independent staged secret scan
-    required_state: Gitleaks v8.30.0 source pinned to a reviewed full commit SHA with redacted fail-closed execution
+    required_state: Gitleaks v8.30.0 container pinned by digest with read-only networkless redacted fail-closed execution
     responsible_role: developer
     applies_to:
       - source-repository
       - developer-endpoint
     context:
-      threat_actor: credential exposure outside the repository-owned scanner rule set or compromised mutable scanner source
-      attack_or_failure_scenario: a secret pattern is missed by one engine or scanner output and installation drift weaken detection
-      why_required: an independently pinned redacted Gitleaks scan adds rule diversity while retaining controlled execution
+      threat_actor: credential exposure outside the repository-owned scanner rule set or substituted mutable scanner image
+      attack_or_failure_scenario: one engine misses a secret or a drifting scanner image changes detection while output exposes the matched value
+      why_required: a digest-pinned read-only Gitleaks scan adds rule diversity without a hook framework and keeps findings redacted
     verification:
       type: hybrid
-      method: verify the pinned pre-commit configuration then run Gitleaks on sanitized positive and negative fixtures in the adopted environment
+      method: verify the digest-pinned Docker wrapper then run the bundled safe and inert-finding self-test in the adopted environment
       expected: clean staged content passes while synthetic secrets and tool execution failures block the commit without exposing matched values
       evidence:
-        - reviewed .pre-commit-config.yaml
+        - reviewed run-gitleaks.sh
         - sanitized Gitleaks output
-        - pinned tool installation evidence
+        - digest-pinned image evidence
     mapping_status: reviewed
 mappings:
   - framework: mitre-attack
@@ -306,7 +284,6 @@ mappings:
       - GHK-009
       - GHK-010
       - GHK-011
-      - GHK-013
       - GHK-014
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
@@ -328,7 +305,6 @@ mappings:
       - GHK-009
       - GHK-010
       - GHK-011
-      - GHK-013
       - GHK-014
   - framework: openssf-osps-baseline
     version: "2026.02.19"
@@ -344,7 +320,6 @@ mappings:
       - GHK-009
       - GHK-010
       - GHK-011
-      - GHK-013
       - GHK-014
   - framework: cisa-product-security-bad-practices
     version: "2 (January 2025)"
@@ -361,8 +336,9 @@ mappings:
       - GHK-011
 limitations:
   - Local hooksは回避、変更、省略できるため、独立したserver-sideおよびCI enforcementが必要である。
-  - pre-commit frameworkのSKIPと--no-verifyも回避手段になるため、local executionだけをenforcementとして扱ってはいけない。
-  - Gitleaks source buildには初回取得時のnetworkとGo toolchainが必要であり、取得・build・実行失敗をcleanな結果として扱ってはいけない。
+  - --no-verifyで回避できるため、local executionだけをenforcementとして扱ってはいけない。
+  - Docker daemon accessは強いlocal権限を持つため、組織が管理する既存Docker環境でのみ利用する。
+  - Digest固定imageの初回pullにはnetworkが必要であり、取得・起動・実行失敗をcleanな結果として扱ってはいけない。
   - Pattern matchingはすべての機密値を検出できず、非機密fixtureを拒否する可能性もある。
   - 5 MiBのfile size上限はrepository方針であり、標準が定めるsecurity boundaryではない。
   - Reference scannerは顧客データ、社外秘source、内部architecture、すべての個人情報を分類しない。

@@ -51,7 +51,7 @@ Generated control catalog. Do not edit manually.
 | [PSB-REL-004](../controls/release-integrity/supplier-sbom-trust/README.md) | release-integrity | supplier SBOMを検証してからportfolioへ受け入れる | 8 | prototype | E3 |
 | [PSB-REL-005](../controls/release-integrity/artifact-signing-generation/README.md) | release-integrity | exact release artifactへ保護されたidentityで署名する | 8 | prototype | E3 |
 | [PSB-SOURCE-001](../controls/source-protection/developer-endpoint-hardening/README.md) | source-protection | Harden developer endpoints and local trust boundaries | 29 | prototype | E3 |
-| [PSB-SOURCE-002](../controls/source-protection/git-hooks-baseline/README.md) | source-protection | リポジトリ所有の開発者向けGit hooksセキュリティベースライン | 14 | prototype | E3 |
+| [PSB-SOURCE-002](../controls/source-protection/git-hooks-baseline/README.md) | source-protection | リポジトリ所有の開発者向けGit hooksセキュリティベースライン | 13 | prototype | E3 |
 | [PSB-SOURCE-003](../controls/source-protection/public-repository-exposure/README.md) | source-protection | 公開リポジトリ露出とGitHub dorking検証 | 13 | reference | E3 |
 | [PSB-SOURCE-004](../controls/source-protection/source-access-credential-lifecycle/README.md) | source-protection | Govern source access credential lifecycle | 17 | prototype | E3 |
 | [PSB-SOURCE-005](../controls/source-protection/repository-destruction-recovery/README.md) | source-protection | Repository mass deletionを防止しimmutable backupから復旧可能性を検証する | 7 | prototype | E3 |

@@ -1,7 +1,7 @@
 ﻿Metric,Value,Meaning
 Catalog controls,51,Repository control packages; not organization adoption.
-Atomic checks,463,Assessable catalog rows generated from control metadata.
-Reviewed mapping checks,404,Checks with at least one reviewed framework relationship.
+Atomic checks,462,Assessable catalog rows generated from control metadata.
+Reviewed mapping checks,403,Checks with at least one reviewed framework relationship.
 Provisional mapping checks,0,Checks whose framework relationship still needs review.
 Unmapped checks,59,Explicit framework mapping debt; not silently inherited.
 Assessment adapters,1,Controls with a repository read-only assessment interface.

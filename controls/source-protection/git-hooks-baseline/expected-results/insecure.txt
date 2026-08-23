@@ -8,17 +8,7 @@ FAIL safe.directory: wildcard trust is prohibited
 FAIL hook commit-msg: missing
 FAIL hook pre-commit: missing
 FAIL hook pre-push: missing
-FAIL hook pre-push-pre-commit: missing
+FAIL hook run-gitleaks.sh: missing
 FAIL hook scan-sensitive.py: missing
-FAIL pre-commit minimum version must be 4.2.0
-FAIL pre-commit default install types must include pre-commit, commit-msg, and pre-push
-FAIL pre-commit external repo https://github.com/gitleaks/gitleaks must use a full commit SHA
-FAIL pre-commit hook psb-sensitive-staged is missing
-FAIL pre-commit hook psb-sensitive-commit-message is missing
-FAIL pre-commit hook psb-sensitive-push-history is missing
-FAIL Gitleaks must be pinned to the reviewed v8.30.0 full commit SHA
-FAIL Gitleaks pre-commit output must redact secret values
-FAIL Gitleaks must scan the staged Git state
-FAIL Gitleaks pre-commit hook must always run
-FAIL Gitleaks hook stage must be pre-commit
-REJECTED 23 baseline finding(s)
+FAIL hook test-detection.sh: missing
+REJECTED 13 baseline finding(s)

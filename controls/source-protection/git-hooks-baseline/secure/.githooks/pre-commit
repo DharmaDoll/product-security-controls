@@ -2,4 +2,5 @@
 set -eu
 
 repository_root="$(git rev-parse --show-toplevel)" || exit 2
-exec python3 "$repository_root/.githooks/scan-sensitive.py" --staged
+python3 "$repository_root/.githooks/scan-sensitive.py" --staged
+exec sh "$repository_root/.githooks/run-gitleaks.sh"

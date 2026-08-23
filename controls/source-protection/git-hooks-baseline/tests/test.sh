@@ -20,20 +20,6 @@ test "$insecure_status" -eq 1 || {
 }
 diff -u "$control/expected-results/insecure.txt" "$temporary_directory/insecure.txt"
 
-cp -R "$control/secure" "$temporary_directory/malformed-profile"
-printf '%s\n' '{"repos":' \
-  >"$temporary_directory/malformed-profile/pre-commit-framework/.pre-commit-config.yaml"
-set +e
-python3 "$control/scripts/verify.py" "$temporary_directory/malformed-profile" \
-  >"$temporary_directory/malformed-profile.txt" 2>&1
-malformed_profile_status=$?
-set -e
-test "$malformed_profile_status" -eq 2 || {
-  echo "expected malformed pre-commit config exit 2, got $malformed_profile_status" >&2
-  exit 1
-}
-grep -q '^ERROR cannot parse ' "$temporary_directory/malformed-profile.txt"
-
 repository="$temporary_directory/repository"
 mkdir "$repository"
 git -C "$repository" init -q
@@ -41,6 +27,17 @@ git -C "$repository" config --local user.name "Synthetic Test User"
 git -C "$repository" config --local user.email "synthetic@example.invalid"
 git -C "$repository" config --local core.hooksPath .githooks
 cp -R "$control/secure/.githooks" "$repository/.githooks"
+
+fake_bin="$temporary_directory/fake-bin"
+mkdir "$fake_bin"
+printf '%s\n' \
+  '#!/usr/bin/env sh' \
+  'printf "%s\n" "$*" >>"$FAKE_DOCKER_LOG"' \
+  'exit "${FAKE_DOCKER_STATUS:-0}"' \
+  >"$fake_bin/docker"
+chmod +x "$fake_bin/docker"
+export FAKE_DOCKER_LOG="$temporary_directory/docker-arguments.txt"
+export PATH="$fake_bin:$PATH"
 
 printf '%s\n' "safe content" >"$repository/safe.txt"
 git -C "$repository" add safe.txt
@@ -129,42 +126,6 @@ if grep -F "$synthetic_token" "$temporary_directory/pre-push.txt" >/dev/null; th
   echo "pre-push output exposed the matched value" >&2
   exit 1
 fi
-
-set +e
-(
-  cd "$repository"
-  PRE_COMMIT_REMOTE_NAME=origin \
-    PRE_COMMIT_LOCAL_BRANCH=refs/heads/main \
-    PRE_COMMIT_TO_REF="$head_commit" \
-    PRE_COMMIT_REMOTE_BRANCH=refs/heads/main \
-    PRE_COMMIT_FROM_REF="$baseline_commit" \
-    .githooks/pre-push-pre-commit
-) >"$temporary_directory/pre-commit-framework-pre-push.txt" 2>&1
-framework_pre_push_status=$?
-set -e
-test "$framework_pre_push_status" -eq 1 || {
-  echo "expected framework pre-push exit 1, got $framework_pre_push_status" >&2
-  exit 1
-}
-grep -F "BLOCK github-token" \
-  "$temporary_directory/pre-commit-framework-pre-push.txt" >/dev/null
-if grep -F "$synthetic_token" \
-  "$temporary_directory/pre-commit-framework-pre-push.txt" >/dev/null; then
-  echo "framework pre-push output exposed the matched value" >&2
-  exit 1
-fi
-
-set +e
-(
-  cd "$repository"
-  .githooks/pre-push-pre-commit
-) >"$temporary_directory/pre-commit-framework-context-error.txt" 2>&1
-framework_context_status=$?
-set -e
-test "$framework_context_status" -eq 2 || {
-  echo "expected missing framework context exit 2, got $framework_context_status" >&2
-  exit 1
-}
 
 forbidden_files=(
   sample.exe sample.dll sample.so sample.dylib sample.bin sample.msi
@@ -276,52 +237,60 @@ test "$scanner_error_status" -eq 2 || {
   exit 1
 }
 
-python3 "$control/scripts/check-adoption.py" \
-  --repository "$repository" --mode native \
-  >"$temporary_directory/adoption-ready.txt"
-grep -Fx "READY PSB-SOURCE-002 native activation verified" \
-  "$temporary_directory/adoption-ready.txt" >/dev/null
-
-git -C "$repository" config --local core.hooksPath .git/hooks
 set +e
-python3 "$control/scripts/check-adoption.py" \
-  --repository "$repository" --mode native \
-  >"$temporary_directory/adoption-not-ready.txt"
-adoption_not_ready_status=$?
+(
+  cd "$repository"
+  FAKE_DOCKER_STATUS=2 sh .githooks/run-gitleaks.sh
+) >"$temporary_directory/gitleaks-error.txt" 2>&1
+gitleaks_error_status=$?
 set -e
-test "$adoption_not_ready_status" -eq 2 || {
-  echo "expected incomplete native adoption exit 2, got $adoption_not_ready_status" >&2
+test "$gitleaks_error_status" -eq 2 || {
+  echo "expected Gitleaks runtime error exit 2, got $gitleaks_error_status" >&2
   exit 1
 }
-grep -F "ERROR local core.hooksPath must be .githooks" \
-  "$temporary_directory/adoption-not-ready.txt" >/dev/null
+
+set +e
+(
+  cd "$repository"
+  PATH="$temporary_directory/no-docker" /bin/sh .githooks/run-gitleaks.sh
+) >"$temporary_directory/docker-missing.txt" 2>&1
+docker_missing_status=$?
+set -e
+test "$docker_missing_status" -eq 2 || {
+  echo "expected missing Docker exit 2, got $docker_missing_status" >&2
+  exit 1
+}
+grep -F "ERROR Docker is required" "$temporary_directory/docker-missing.txt" >/dev/null
+
+grep -F -- "--pull never" "$FAKE_DOCKER_LOG" >/dev/null
+grep -F -- "--network none" "$FAKE_DOCKER_LOG" >/dev/null
+grep -F -- "readonly" "$FAKE_DOCKER_LOG" >/dev/null
+grep -F -- "--redact" "$FAKE_DOCKER_LOG" >/dev/null
+grep -F -- "sha256:691af3c7c5a48b16f187ce3446d5f194838f91238f27270ed36eef6359a574d9" \
+  "$FAKE_DOCKER_LOG" >/dev/null
 
 adoption_guide="$control/docs/adoption-guide.md"
 for required_heading in \
-  "## 推奨: pre-commit framework方式" \
-  "## native hooks方式" \
-  "## standalone Gitleaks binaryを導入する場合" \
-  "## GitHub側とCIで必ず補完する" \
-  "## よくある失敗" \
-  "## 無効化・切り戻し" \
-  "## 導入完了条件"; do
+  '## 1. `.githooks`をcopyする' \
+  '## 2. Gitleaks imageを一度だけ取得する' \
+  '## 4. 検出self-testを実行する' \
+  '## CIとGitHubでも検査する' \
+  '## よくある失敗' \
+  '## 切り戻し'; do
   grep -Fx "$required_heading" "$adoption_guide" >/dev/null
 done
-grep -F "6eaad039603a4de39fddd1cf5f727391efe9974e" \
+grep -F "sha256:691af3c7c5a48b16f187ce3446d5f194838f91238f27270ed36eef6359a574d9" \
   "$adoption_guide" >/dev/null
-grep -F "79a3ab579b53f71efd634f3aaf7e04a0fa0cf206b7ed434638d1547a2470a66e" \
-  "$adoption_guide" >/dev/null
+grep -F ".githooks/test-detection.sh" "$adoption_guide" >/dev/null
 
 echo "PASS secure Git configuration and hook bundle accepted"
 echo "PASS insecure Git configuration rejected"
-echo "PASS malformed pre-commit framework config fails closed"
 echo "PASS sensitive filename and synthetic token blocked"
 echo "PASS sensitive commit message blocked without value disclosure"
 echo "PASS pre-push found a deleted secret in introduced history"
-echo "PASS pre-commit framework sample preserves introduced-history scanning"
 echo "PASS all configured forbidden file types blocked"
 echo "PASS AWS Google JWT bearer GitHub private-key Slack and generic patterns blocked"
 echo "PASS files over 5 MiB blocked"
 echo "PASS scanner execution error distinguished from clean result"
-echo "PASS native adoption readiness and missing activation distinguished"
-echo "PASS adoption guide covers setup activation verification and rollback"
+echo "PASS Gitleaks Docker wrapper is pinned isolated redacted and fail closed"
+echo "PASS short adoption guide covers copy activation self-test CI and rollback"
