@@ -35,6 +35,7 @@ ALLOWED_ENV_ENDINGS = (".example", ".sample", ".template")
 SECRET_RULES = {
     "private-key": rb"-----BEGIN(?: [A-Z0-9]+)? PRIVATE KEY-----",
     "github-token": rb"\bgh[pousr]_[A-Za-z0-9]{36,}\b",
+    "github-fine-grained-pat": rb"\bgithub_pat_[A-Za-z0-9_]{82}\b",
     "aws-access-key": rb"\b(?:AKIA|ASIA)[A-Z0-9]{16}\b",
     "aws-secret-access-key": (
         rb"(?im)^\s*(?:aws_)?secret_access_key\s*[:=]\s*['\"]?"
@@ -50,8 +51,15 @@ SECRET_RULES = {
         rb"https://hooks\.slack\.com/services/[A-Za-z0-9]{8,}/"
         rb"[A-Za-z0-9]{8,}/[A-Za-z0-9]{16,}"
     ),
+    "npmrc-auth-token": (
+        rb"(?im)^\s*//[^\s=]+/:_(?:authToken|auth|password)\s*=\s*"
+        rb"['\"]?[A-Za-z0-9+/=_-]{20,}"
+    ),
+    "pypi-api-token": rb"\bpypi-[A-Za-z0-9_-]{85,}\b",
     "credential-assignment": (
-        rb"(?im)^\s*(?:api[_-]?key|client[_-]?secret|password|token)"
+        rb"(?im)^\s*(?:api[_-]?key|client[_-]?secret|password|token|"
+        rb"access[_-]?token|refresh[_-]?token|auth[_-]?token|"
+        rb"private[_-]?token|webhook[_-]?secret|signing[_-]?secret)"
         rb"\s*[:=]\s*['\"]?[A-Za-z0-9/+_.-]{12,}"
     ),
 }

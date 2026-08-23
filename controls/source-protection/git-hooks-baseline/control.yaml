@@ -27,6 +27,10 @@ implementations:
     - secure/.githooks/run-gitleaks.sh
     - secure/.githooks/scan-sensitive.py
     - secure/.githooks/test-detection.sh
+    - scripts/install.sh
+    - tests/test_install.sh
+    - tests/fixtures/scan-sensitive-cases.json
+    - tests/test_scan_sensitive.py
     - docs/adoption-guide.md
 verification:
   commands:
@@ -35,12 +39,14 @@ verification:
     - 安全なlocal Git設定と必須のrepository-owned hooksが受け入れられる
     - 共有hooks、平文credential保存、wildcard safe.directory、未署名履歴、広いpush defaultが拒否される
     - 禁止対象の実行形式、archive、database、生成物、key store、metadata、環境設定ファイルが拒否される
-    - AWS、Google、JWT、Bearer、GitHub、private key、Slack、generic credential patternが値を表示せず拒否される
+    - AWS、Google、JWT、Bearer、GitHub classic tokenとfine-grained PAT、npmrc credential、PyPI API token、private key、Slack、generic credential patternが値を表示せず拒否される
     - 5 MiBの方針値を超えるファイルが拒否される
     - stagedされた機密ファイル、commit message、push履歴内のsecretが値を表示せず拒否される
     - Gitleaks containerがreview済みdigestへ固定され、read-onlyかつnetworkなしでstaged stateをredacted検査する
     - 導入ガイドがcopy、Docker image取得、local hook activation、self-test、CI補完、切り戻しを短い手順で説明する
     - 同梱self-testがPython scannerとGitleaksのsafe、finding、redactionを導入先で確認できる
+    - 一括installerが既存hookと競合設定を保護し、失敗時に今回の変更だけを切り戻す
+    - 人がreviewできる一つのsynthetic fixture inventoryから、全blocked file名、全suffix、全secret rule、境界値、redaction、全scanner modeを検証する
     - scanner実行エラーがcleanな結果と区別される
 checks:
   - id: GHK-001

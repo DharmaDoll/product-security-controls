@@ -143,8 +143,8 @@ to open the parent README. `applies_to` identifies the target. Do not satisfy
 this requirement by copying one generic paragraph into every row.
 
 Every control README MUST use `## このcontrolを一枚で理解する` as its first
-H2 section. The section MUST contain a six-row Markdown table with these exact
-row labels:
+H2 section. The section MUST contain these six exact labels, either as a
+six-row Markdown table or as six `###` labeled prose blocks:
 
 1. `セキュリティ上の問題`
 2. `誰から、または何から守るか`
@@ -153,7 +153,7 @@ row labels:
 5. `成功状態`
 6. `対象外・残余リスク`
 
-Each row must be control-specific and substantive. It must not contain a
+Each item must be control-specific and substantive. It must not contain a
 placeholder such as `TBD`, and it must not merely copy the same generic control
 summary into every row. Detailed implementation, verification, integration,
 operational, and mapping sections follow this one-page summary.

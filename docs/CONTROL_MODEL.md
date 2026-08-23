@@ -148,7 +148,9 @@ The first H2 in every control README is exactly:
 ## このcontrolを一枚で理解する
 ```
 
-It contains one Markdown table with these exact, non-empty rows:
+It contains these exact, non-empty items. A compact Markdown table or six
+`###` labeled prose blocks may be used; choose the format that makes the
+control easiest to scan.
 
 | Row | Required content |
 |---|---|
@@ -159,10 +161,10 @@ It contains one Markdown table with these exact, non-empty rows:
 | `成功状態` | Observable accepted state and relevant fail-closed behavior |
 | `対象外・残余リスク` | Explicit boundary that this control does not prove or mitigate |
 
-The table is a concise overview, not a replacement for insecure and secure
+The overview is concise and is not a replacement for insecure and secure
 examples, integration, verification and expected output, operational notes,
 limitations, references, or atomic check metadata. `make validate-controls`
-rejects a missing, duplicated, misplaced, empty, or placeholder row.
+rejects a missing, duplicated, misplaced, empty, or placeholder item.
 
 Framework-specific adoption profiles are derived from pinned framework registry
 metadata and the row-level `applies_to` links. A cumulative level profile, such

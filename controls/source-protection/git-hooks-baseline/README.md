@@ -2,14 +2,35 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Developerがsecret、機密file、credential-bearing metadataをcommit・pushすると、最新treeから削除してもGit historyやremote copyへ残り続ける。 |
-| 誰から、または何から守るか | Developerの不注意、侵害されたlocal tool、生成file、hook bypass、scanner・Git・Docker実行障害から守る。 |
-| 何が対象か | Repository-owned `pre-commit`・`commit-msg`・`pre-push` hook、staged file、commit message、導入される全履歴、forbidden file、secret pattern、file size。 |
-| 何をするか | `.githooks`をrepositoryへcopyし、小さなPython scannerとdigest固定Gitleaks containerでcommit前とpush前に検査する。 |
-| 成功状態 | Secret・機密file・oversized fileがremote到達前に拒否され、matched valueは表示されず、scanner failureはcleanと区別される。 |
-| 対象外・残余リスク | Local hookは変更・回避・省略でき、既に公開済みcopyを消せないため、server-side・CI scan、credential revoke、公開面reviewを別途必要とする。 |
+### セキュリティ上の問題
+
+Developerがsecret、機密file、credentialを含むmetadataをcommit・pushすると、最新treeから
+削除してもGit historyやremote copyへ残り続けます。
+
+### 誰から、または何から守るか
+
+Developerの不注意、侵害されたlocal tool、意図しない生成file、hook bypass、scanner・
+Git・Dockerの実行障害から守ります。
+
+### 何が対象か
+
+Repository-owned `pre-commit`・`commit-msg`・`pre-push` hookと、staged file、commit
+message、pushで導入される履歴を対象にします。
+
+### 何をするか
+
+`.githooks`をrepositoryへcopyし、小さなPython scannerとdigest固定Gitleaks containerで
+commit前とpush前に検査します。
+
+### 成功状態
+
+Secret・機密file・oversized fileがremote到達前に拒否され、matched valueは表示されず、
+scanner failureはcleanな結果と区別されます。
+
+### 対象外・残余リスク
+
+Local hookは変更・回避・省略できます。既に公開されたcopyも回収できないため、CI scan、
+server-side protection、credential revoke、公開面reviewを別途必要とします。
 
 ## セキュリティ上の問題
 
@@ -22,19 +43,19 @@ commit message、remote URL、author metadataも情報公開面です。最新wo
 
 ## 最短導入
 
-詳細は[`docs/adoption-guide.md`](docs/adoption-guide.md)にあります。基本操作は次の
-4操作です。
+詳細は[`docs/adoption-guide.md`](docs/adoption-guide.md)にあります。review済みの
+`secure/.githooks`とinstallerから、次の1 commandで導入できます。
 
 ```bash
-cp -R /path/to/product-security-controls/controls/source-protection/git-hooks-baseline/secure/.githooks .githooks
-git config --local core.hooksPath .githooks
-docker pull ghcr.io/gitleaks/gitleaks:v8.30.0@sha256:691af3c7c5a48b16f187ce3446d5f194838f91238f27270ed36eef6359a574d9
-.githooks/test-detection.sh
+/path/to/product-security-controls/controls/source-protection/git-hooks-baseline/scripts/install.sh \
+  --target /absolute/path/to/target-repository
 ```
 
 必要なのはGit、Python 3.10以上、組織で承認されたDockerです。Python scannerは
 標準libraryだけで動きます。hookの有効化はrepository-localであり、global設定や
-他repositoryを変更しません。
+他repositoryを変更しません。既存hookや競合するlocal設定は上書きせず、self-test失敗時は
+installerが今回追加したhookと設定だけを切り戻します。署名設定はkey準備後に
+`--enable-signing`を明示した場合だけ追加します。
 
 ## 実装ファイル
 
@@ -52,6 +73,12 @@ docker pull ghcr.io/gitleaks/gitleaks:v8.30.0@sha256:691af3c7c5a48b16f187ce3446d
   - safe contentとruntime生成canaryの導入先self-test
 - `secure/recommended.gitconfig`
   - repository-local Git設定のreference
+- `scripts/install.sh`
+  - 前提確認、copy、local activation、pinned image pull、self-testを一括実行する
+- `tests/test_install.sh`
+  - 競合拒否、成功、tool failure時のrollback、署名の明示有効化を検証する
+- `tests/fixtures/scan-sensitive-cases.json`
+  - rule名、case名、具体的なsynthetic値、near miss、file inventoryを一箇所にまとめる
 - `insecure/recommended.gitconfig`
   - shared hook、plaintext credential、wildcard trustなどの拒否fixture
 
@@ -69,7 +96,15 @@ Python scannerはGit indexのstaged fileだけを読み、次を拒否します�
 - key store／credential file: `.pem`、`.key`、`.p12`、`.pfx`、`.jks`、`.env`、`.netrc`
 - local metadata: `.DS_Store`、`Thumbs.db`
 - 5 MiBを超えるfileとbinary file
-- representative AWS、Google、GitHub、JWT、Bearer、Slack、private key、generic credential pattern
+- representative AWS、Google、GitHub token（classicとfine-grained PAT）、JWT、Bearer、
+  Slack、npmrc credential、PyPI API token、private key、generic credential pattern
+
+Generic credential assignmentは`api_key`、`client_secret`、`password`、`token`に加え、
+`access_token`、`refresh_token`、`auth_token`、`private_token`、`webhook_secret`、
+`signing_secret`のunderscore・hyphen・連結表記を対象にします。npmrcはregistryへscopeされた
+`_authToken`、`_auth`、`_password`のliteral値を対象にし、`${NPM_TOKEN}`のような環境変数
+placeholderは拒否しません。これらは形式に基づくbaseline heuristicであり、値がproviderで
+有効かどうかを確認するものではありません。
 
 `.env.example`、`.env.sample`、`.env.template`はfile名では拒否しませんが、内容は
 検査します。
@@ -140,6 +175,14 @@ reference control全体のpositive／negative testは次で実行します。
 ```bash
 make verify-control CONTROL=PSB-SOURCE-002
 ```
+
+`tests/test_scan_sensitive.py`は、scannerが宣言する全blocked file名、全suffix、全secret
+ruleに対応するpositive fixtureを固定し、境界値、near miss、redaction、`--file`、
+`--staged`、`--pre-push`、実行errorを検証します。ruleを追加・削除したのにtest inventoryを
+更新しない場合も失敗します。具体値は`tests/fixtures/scan-sensitive-cases.json`から読み、
+失敗時のsubtestには`ghp`や`AKIA`などのcase名を表示します。finding値はsyntheticかつ
+未発行です。JSON source自体がsecret findingにならないよう、検出成立に必要な1文字だけを
+Unicode escapeで保存し、load時に完全な具体値へdecodeします。
 
 ## 推奨Git設定
 

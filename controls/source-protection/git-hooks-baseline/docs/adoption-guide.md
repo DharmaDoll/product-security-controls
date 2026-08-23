@@ -24,6 +24,47 @@ docker version
 設定は不要です。Python自体がない場合だけ、組織が管理するOS packageまたは開発環境
 imageでPython 3.10以上を用意してください。
 
+## 一括install
+
+実行前に、このcontrolの`secure/.githooks`と`scripts/install.sh`を通常のcode reviewで
+確認してください。review済みのblueprintから、次の1 commandで導入できます。
+
+```bash
+/absolute/path/to/product-security-controls/controls/source-protection/git-hooks-baseline/scripts/install.sh \
+  --target /absolute/path/to/target-repository
+```
+
+installerは前提条件を確認し、digest固定Gitleaks imageを明示的にpullした後、次を一連の
+処理として実行します。
+
+1. review済み`.githooks`を導入先へcopyする
+2. `core.hooksPath`、`push.default`、`user.useConfigOnly`をrepository-localに設定する
+3. safe inputと無効なcanaryによるself-testを実行する
+
+既存`.githooks`または異なるlocal設定がある場合は、Docker pullやrepository変更より前に
+終了します。self-testまでの処理が失敗した場合は、copyした`.githooks`とinstallerが今回
+追加したlocal設定だけを自動で切り戻します。既存設定、global設定、他repositoryは変更
+しません。
+
+期待する最終行は次です。
+
+```text
+READY PSB-SOURCE-002 installed in /absolute/path/to/target-repository
+```
+
+commit／tag署名は、組織の署名方式とkeyを準備済みの場合だけ明示的に追加します。
+
+```bash
+/absolute/path/to/product-security-controls/controls/source-protection/git-hooks-baseline/scripts/install.sh \
+  --target /absolute/path/to/target-repository \
+  --enable-signing
+```
+
+key未設定の状態で`--enable-signing`を指定すると、その後のcommitが失敗します。installerは
+private keyの作成、copy、またはglobal Git設定の変更を行いません。
+
+以下は、一括installerが実行する内容を個別に確認・実行したい場合の手動手順です。
+
 ## 1. `.githooks`をcopyする
 
 blueprintと導入先の絶対pathを設定します。
@@ -155,6 +196,14 @@ READY PSB-SOURCE-002 detection self-test passed
   - 手順2のdigest固定`docker pull`を実行します。
 - commit署名エラー
   - 組織のsigning key設定を確認します。署名を黙って無効化して通しません。
+- `already exists; review and merge it manually`
+  - 既存`.githooks`を上書きできないため、導入先のownerが差分をreviewして手動mergeします。
+- `local ... already has a different value`
+  - 既存のrepository-local Git設定を上書きできません。設定のownerが意図を確認し、採用する
+    値をreviewしてください。
+- `ROLLBACK removed installer-created hooks and local settings`
+  - install途中で失敗し、今回作成したhookと設定を自動で切り戻した状態です。直前の
+    `ERROR`を解消してから再実行します。
 - 正常なfileが拒否される
   - `.githooks/scan-sensitive.py`のfile名、pattern、5 MiB上限をreview済みpull requestで
     調整します。広い除外やscanner skipは追加しません。
@@ -177,6 +226,17 @@ local hookの成功だけをrepository全体の安全性や既存履歴のclean�
 
 ```bash
 git -C "$TARGET_ROOT" config --local --unset core.hooksPath
+```
+
+installerが追加した`push.default`、`user.useConfigOnly`、または明示指定した署名設定も
+不要になる場合に限り、現在値とrepository方針をreviewして個別に解除します。installer
+実行前から存在した設定は解除しません。
+
+```bash
+git -C "$TARGET_ROOT" config --local --unset push.default
+git -C "$TARGET_ROOT" config --local --unset user.useConfigOnly
+git -C "$TARGET_ROOT" config --local --unset commit.gpgSign
+git -C "$TARGET_ROOT" config --local --unset tag.gpgSign
 ```
 
 tracked `.githooks`を削除する場合は通常のpull requestでreviewします。global Git設定、

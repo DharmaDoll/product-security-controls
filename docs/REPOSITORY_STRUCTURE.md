@@ -130,7 +130,7 @@ The domain-grouped [`controls/README.md`](../controls/README.md) and flat
 them with `make generate-index`; `make lint` rejects stale catalog views.
 
 Each control package's `README.md` begins with the validated
-`このcontrolを一枚で理解する` table defined in
+`このcontrolを一枚で理解する` overview defined in
 [`CONTROL_MODEL.md`](CONTROL_MODEL.md#one-page-readme-contract). This
 human-readable overview and the machine-readable `control.yaml` serve different
 views of the same boundary; neither replaces the other.

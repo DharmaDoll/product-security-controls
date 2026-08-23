@@ -130,6 +130,19 @@ class ControlMetadataValidationTest(unittest.TestCase):
         )
         self.assertEqual(validate_readme_overview(readme, "test"), [])
 
+    def test_readme_overview_contract_accepts_labeled_prose(self) -> None:
+        items = "\n\n".join(
+            f"### {row}\n\nReviewed content for {row}."
+            for row in README_OVERVIEW_ROWS
+        )
+        readme = (
+            f"# PSB-TEST-001\n\n"
+            f"{README_OVERVIEW_HEADING}\n\n"
+            f"{items}\n\n"
+            "## Details\n"
+        )
+        self.assertEqual(validate_readme_overview(readme, "test"), [])
+
     def test_readme_overview_must_be_first_h2(self) -> None:
         rows = "\n".join(f"| {row} | reviewed content |" for row in README_OVERVIEW_ROWS)
         readme = (

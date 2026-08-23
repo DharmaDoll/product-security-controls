@@ -1,0 +1,341 @@
+{
+  "_comment": "Synthetic, non-issued pattern fixtures. JSON Unicode escapes decode into the concrete tested values while keeping this source file from becoming a scanner finding.",
+  "blocked_names": [
+    ".ds_store",
+    ".netrc",
+    "credentials.json",
+    "id_dsa",
+    "id_ecdsa",
+    "id_ed25519",
+    "id_rsa",
+    "thumbs.db"
+  ],
+  "blocked_suffixes": [
+    ".7z",
+    ".bin",
+    ".class",
+    ".db",
+    ".dll",
+    ".dylib",
+    ".exe",
+    ".gz",
+    ".jar",
+    ".jks",
+    ".key",
+    ".keystore",
+    ".mdb",
+    ".msi",
+    ".p12",
+    ".pem",
+    ".pfx",
+    ".pyc",
+    ".pyo",
+    ".rar",
+    ".so",
+    ".sqlite",
+    ".sqlite3",
+    ".tar",
+    ".war",
+    ".zip"
+  ],
+  "positive_cases": {
+    "private-key": [
+      {
+        "name": "generic-private-key",
+        "value": "-----BEGIN\u0020PRIVATE KEY-----"
+      },
+      {
+        "name": "rsa-private-key",
+        "value": "-----BEGIN RSA\u0020PRIVATE KEY-----"
+      }
+    ],
+    "github-token": [
+      {
+        "name": "ghp",
+        "value": "gh\u0070_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      {
+        "name": "gho",
+        "value": "gh\u006f_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      {
+        "name": "ghu",
+        "value": "gh\u0075_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      {
+        "name": "ghs",
+        "value": "gh\u0073_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      {
+        "name": "ghr",
+        "value": "gh\u0072_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }
+    ],
+    "github-fine-grained-pat": [
+      {
+        "name": "github-pat-exact-length",
+        "value": "github_\u0070at_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }
+    ],
+    "aws-access-key": [
+      {
+        "name": "AKIA",
+        "value": "AK\u0049AAAAAAAAAAAAAAAAA"
+      },
+      {
+        "name": "ASIA",
+        "value": "AS\u0049AAAAAAAAAAAAAAAAA"
+      }
+    ],
+    "aws-secret-access-key": [
+      {
+        "name": "lowercase-colon",
+        "value": "secret_access_key\u003a AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      {
+        "name": "uppercase-equals-quoted",
+        "value": "AWS_SECRET_ACCESS_KEY \u003d \"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\""
+      }
+    ],
+    "google-api-key": [
+      {
+        "name": "AIza",
+        "value": "AI\u007aaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }
+    ],
+    "jwt": [
+      {
+        "name": "three-segments",
+        "value": "ey\u004aAAAAA.BBBBB.CCCCC"
+      }
+    ],
+    "bearer-token": [
+      {
+        "name": "uppercase",
+        "value": "Bearer\u0020bbbbbbbbbbbbbbbb"
+      },
+      {
+        "name": "lowercase",
+        "value": "bearer\u0020cccccccccccccccc"
+      }
+    ],
+    "slack-webhook": [
+      {
+        "name": "three-path-segments",
+        "value": "https://hooks.slack.com\u002fservices/AAAAAAAA/BBBBBBBB/CCCCCCCCCCCCCCCC"
+      }
+    ],
+    "npmrc-auth-token": [
+      {
+        "name": "registry-auth-token",
+        "value": "//registry.npmjs.org/:_authToken\u003d0123456789abcdef0123"
+      },
+      {
+        "name": "registry-legacy-auth",
+        "value": "//registry.npmjs.org/:_auth\u003dQUFBQUFBQUFBQUFBQUFB"
+      },
+      {
+        "name": "scoped-registry-password",
+        "value": "//packages.example.invalid/team/:_password\u003dQkJCQkJCQkJCQkJCQkJC"
+      }
+    ],
+    "pypi-api-token": [
+      {
+        "name": "pypi-minimum-length",
+        "value": "pypi\u002dPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"
+      }
+    ],
+    "credential-assignment": [
+      {
+        "name": "api_key-equals",
+        "value": "api_key\u003dgggggggggggg"
+      },
+      {
+        "name": "api_key-colon",
+        "value": "api_key\u003a gggggggggggg"
+      },
+      {
+        "name": "api-key-equals",
+        "value": "api-key\u003dgggggggggggg"
+      },
+      {
+        "name": "api-key-colon",
+        "value": "api-key\u003a gggggggggggg"
+      },
+      {
+        "name": "apikey-equals",
+        "value": "apikey\u003dgggggggggggg"
+      },
+      {
+        "name": "apikey-colon",
+        "value": "apikey\u003a gggggggggggg"
+      },
+      {
+        "name": "client_secret-equals",
+        "value": "client_secret\u003dgggggggggggg"
+      },
+      {
+        "name": "client_secret-colon",
+        "value": "client_secret\u003a gggggggggggg"
+      },
+      {
+        "name": "client-secret-equals",
+        "value": "client-secret\u003dgggggggggggg"
+      },
+      {
+        "name": "client-secret-colon",
+        "value": "client-secret\u003a gggggggggggg"
+      },
+      {
+        "name": "clientsecret-equals",
+        "value": "clientsecret\u003dgggggggggggg"
+      },
+      {
+        "name": "clientsecret-colon",
+        "value": "clientsecret\u003a gggggggggggg"
+      },
+      {
+        "name": "password-equals",
+        "value": "password\u003dgggggggggggg"
+      },
+      {
+        "name": "password-colon",
+        "value": "password\u003a gggggggggggg"
+      },
+      {
+        "name": "uppercase-token-equals",
+        "value": "TOKEN\u003dgggggggggggg"
+      },
+      {
+        "name": "uppercase-token-colon",
+        "value": "TOKEN\u003a gggggggggggg"
+      },
+      {
+        "name": "access_token-equals",
+        "value": "access_token\u003dgggggggggggg"
+      },
+      {
+        "name": "access-token-colon",
+        "value": "access-token\u003a gggggggggggg"
+      },
+      {
+        "name": "refresh_token-equals",
+        "value": "refresh_token\u003dgggggggggggg"
+      },
+      {
+        "name": "refresh-token-colon",
+        "value": "refresh-token\u003a gggggggggggg"
+      },
+      {
+        "name": "auth_token-equals",
+        "value": "auth_token\u003dgggggggggggg"
+      },
+      {
+        "name": "auth-token-colon",
+        "value": "auth-token\u003a gggggggggggg"
+      },
+      {
+        "name": "private_token-equals",
+        "value": "private_token\u003dgggggggggggg"
+      },
+      {
+        "name": "private-token-colon",
+        "value": "private-token\u003a gggggggggggg"
+      },
+      {
+        "name": "webhook_secret-equals",
+        "value": "webhook_secret\u003dgggggggggggg"
+      },
+      {
+        "name": "webhook-secret-colon",
+        "value": "webhook-secret\u003a gggggggggggg"
+      },
+      {
+        "name": "signing_secret-equals",
+        "value": "signing_secret\u003dgggggggggggg"
+      },
+      {
+        "name": "signing-secret-colon",
+        "value": "signing-secret\u003a gggggggggggg"
+      }
+    ]
+  },
+  "near_miss_cases": [
+    {
+      "name": "public-key-is-not-private",
+      "value": "-----BEGIN PUBLIC KEY-----"
+    },
+    {
+      "name": "github-token-one-character-short",
+      "value": "ghp_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    },
+    {
+      "name": "github-fine-grained-pat-one-character-short",
+      "value": "github_pat_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    },
+    {
+      "name": "aws-access-key-one-character-short",
+      "value": "AKIAAAAAAAAAAAAAAAA"
+    },
+    {
+      "name": "aws-secret-key-one-character-short",
+      "value": "aws_secret_access_key=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    },
+    {
+      "name": "google-api-key-one-character-short",
+      "value": "AIzaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    },
+    {
+      "name": "jwt-first-segment-one-character-short",
+      "value": "eyJAAAA.BBBBB.CCCCC"
+    },
+    {
+      "name": "bearer-token-one-character-short",
+      "value": "Authorization: Bearer bbbbbbbbbbbbbbb"
+    },
+    {
+      "name": "slack-webhook-final-segment-one-character-short",
+      "value": "https://hooks.slack.com/services/AAAAAAAA/BBBBBBBB/CCCCCCCCCCCCCCC"
+    },
+    {
+      "name": "npmrc-auth-token-one-character-short",
+      "value": "//registry.npmjs.org/:_authToken=0123456789abcdef012"
+    },
+    {
+      "name": "npmrc-environment-placeholder",
+      "value": "//registry.npmjs.org/:_authToken=${NPM_TOKEN}"
+    },
+    {
+      "name": "pypi-api-token-one-character-short",
+      "value": "pypi-PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"
+    },
+    {
+      "name": "credential-assignment-one-character-short",
+      "value": "password=ggggggggggg"
+    },
+    {
+      "name": "access-token-assignment-one-character-short",
+      "value": "access_token=ggggggggggg"
+    },
+    {
+      "name": "refresh-token-assignment-one-character-short",
+      "value": "refresh_token=ggggggggggg"
+    },
+    {
+      "name": "auth-token-assignment-one-character-short",
+      "value": "auth_token=ggggggggggg"
+    },
+    {
+      "name": "private-token-assignment-one-character-short",
+      "value": "private_token=ggggggggggg"
+    },
+    {
+      "name": "webhook-secret-assignment-one-character-short",
+      "value": "webhook_secret=ggggggggggg"
+    },
+    {
+      "name": "signing-secret-assignment-one-character-short",
+      "value": "signing_secret=ggggggggggg"
+    }
+  ]
+}

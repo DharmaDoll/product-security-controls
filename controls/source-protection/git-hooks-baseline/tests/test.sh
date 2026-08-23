@@ -5,6 +5,9 @@ control="controls/source-protection/git-hooks-baseline"
 temporary_directory="$(mktemp -d)"
 trap 'rm -rf "$temporary_directory"' EXIT
 
+python3 "$control/tests/test_scan_sensitive.py" --quiet
+bash "$control/tests/test_install.sh"
+
 python3 "$control/scripts/verify.py" "$control/secure" \
   >"$temporary_directory/secure.txt"
 diff -u "$control/expected-results/secure.txt" "$temporary_directory/secure.txt"
@@ -173,6 +176,12 @@ jwt_value="${jwt_header_prefix}00000.000000.000000"
 bearer_value="$(printf 'b%.0s' {1..20})"
 slack_prefix="https://hooks.slack.com"
 slack_value="${slack_prefix}/services/AAAAAAAA/BBBBBBBB/CCCCCCCCCCCCCCCC"
+github_fine_grained_prefix="github_pat_"
+github_fine_grained_value="${github_fine_grained_prefix}$(printf 'A%.0s' {1..82})"
+npmrc_auth_value="0123456789abcdef0123"
+npmrc_auth_line="//registry.npmjs.org/:_authToken=$npmrc_auth_value"
+pypi_prefix="pypi-"
+pypi_value="${pypi_prefix}$(printf 'P%.0s' {1..85})"
 private_key_begin="-----BEGIN"
 private_key_marker="${private_key_begin} PRIVATE KEY-----"
 generic_value="$(printf 'g%.0s' {1..20})"
@@ -183,6 +192,9 @@ printf '%s\n' \
   "$jwt_value" \
   "Authorization: Bearer $bearer_value" \
   "$slack_value" \
+  "$github_fine_grained_value" \
+  "$npmrc_auth_line" \
+  "$pypi_value" \
   "$private_key_marker" \
   "token=$generic_value" \
   >"$temporary_directory/secret-patterns.txt"
@@ -198,12 +210,14 @@ test "$secret_pattern_status" -eq 1 || {
 }
 for rule in \
   aws-access-key aws-secret-access-key google-api-key jwt bearer-token \
-  slack-webhook private-key credential-assignment; do
+  slack-webhook github-fine-grained-pat npmrc-auth-token pypi-api-token \
+  private-key credential-assignment; do
   grep -F "BLOCK $rule " "$temporary_directory/secret-pattern-output.txt" >/dev/null
 done
 for value in \
   "$aws_access_key" "$aws_secret_key" "$google_key" "$jwt_value" \
-  "$bearer_value" "$slack_value" "$private_key_marker" "$generic_value"; do
+  "$bearer_value" "$slack_value" "$github_fine_grained_value" \
+  "$npmrc_auth_value" "$pypi_value" "$private_key_marker" "$generic_value"; do
   if grep -F -- "$value" "$temporary_directory/secret-pattern-output.txt" >/dev/null; then
     echo "secret-pattern output exposed a matched value" >&2
     exit 1
@@ -271,6 +285,7 @@ grep -F -- "sha256:691af3c7c5a48b16f187ce3446d5f194838f91238f27270ed36eef6359a57
 
 adoption_guide="$control/docs/adoption-guide.md"
 for required_heading in \
+  '## 一括install' \
   '## 1. `.githooks`をcopyする' \
   '## 2. Gitleaks imageを一度だけ取得する' \
   '## 4. 検出self-testを実行する' \
@@ -282,14 +297,18 @@ done
 grep -F "sha256:691af3c7c5a48b16f187ce3446d5f194838f91238f27270ed36eef6359a574d9" \
   "$adoption_guide" >/dev/null
 grep -F ".githooks/test-detection.sh" "$adoption_guide" >/dev/null
+grep -F "scripts/install.sh" "$adoption_guide" >/dev/null
+grep -F -- "--enable-signing" "$adoption_guide" >/dev/null
 
 echo "PASS secure Git configuration and hook bundle accepted"
+echo "PASS dedicated scanner suite covers every filename suffix secret rule and mode"
+echo "PASS one-command installer is repository-local conflict-safe and transactional"
 echo "PASS insecure Git configuration rejected"
 echo "PASS sensitive filename and synthetic token blocked"
 echo "PASS sensitive commit message blocked without value disclosure"
 echo "PASS pre-push found a deleted secret in introduced history"
 echo "PASS all configured forbidden file types blocked"
-echo "PASS AWS Google JWT bearer GitHub private-key Slack and generic patterns blocked"
+echo "PASS AWS Google JWT bearer GitHub npmrc PyPI private-key Slack and generic patterns blocked"
 echo "PASS files over 5 MiB blocked"
 echo "PASS scanner execution error distinguished from clean result"
 echo "PASS Gitleaks Docker wrapper is pinned isolated redacted and fail closed"

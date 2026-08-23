@@ -206,19 +206,26 @@ def validate_readme_overview(readme: str, label: str) -> list[str]:
     section_end = next_heading.start() if next_heading else len(readme)
     section = readme[overview.end() : section_end]
     for row in README_OVERVIEW_ROWS:
-        matches = re.findall(
+        table_matches = re.findall(
             rf"^\|\s*{re.escape(row)}\s*\|\s*(.*?)\s*\|\s*$",
             section,
             flags=re.MULTILINE,
         )
+        prose_matches = re.findall(
+            rf"^###\s+{re.escape(row)}\s*$\n+(.*?)"
+            rf"(?=^###\s+|\Z)",
+            section,
+            flags=re.MULTILINE | re.DOTALL,
+        )
+        matches = table_matches + prose_matches
         if len(matches) != 1:
             errors.append(
-                f"{label}: README overview must contain exactly one {row!r} row"
+                f"{label}: README overview must contain exactly one {row!r} item"
             )
             continue
         if matches[0].strip().lower() in _EMPTY_OVERVIEW_VALUES:
             errors.append(
-                f"{label}: README overview row {row!r} must be substantive"
+                f"{label}: README overview item {row!r} must be substantive"
             )
     return errors
 
