@@ -25,12 +25,13 @@ verification:
   commands:
     - make verify-control CONTROL=PSB-SOURCE-001
   expected:
-    - secure endpoint policy passes all 29 required checks, including all ten imported operational requirements
+    - secure endpoint policy represents all 29 required check states, including the ten imported operational requirements and repository extensions
     - insecure endpoint policy is rejected with a non-zero result and 29 failed checks
-    - complete verifier output matches the sanitized expected evidence
-    - policy validation failure is distinct from a clean result
+    - complete verifier output matches the sanitized expected evidence for the sample policy
+    - implementation guide contains one actionable implementation entry for every check
+    - policy and document validation failure is distinct from a clean result
     - read-only Linux assessment emits all 29 check states without host identifiers or matched secret values
-    - FAIL NOT_CHECKED and assessment execution ERROR use distinct exit states
+    - FAIL NOT_CHECKED and assessment execution ERROR use distinct exit states, without claiming organization adoption
 assessment:
   command: assessment/assess.py
   platforms:
@@ -651,6 +652,8 @@ mappings:
     applies_to:
       - DEH-011
 limitations:
+  - The primary deliverable is an implementation guide: each check offers practical methods and evidence examples, not a promise that every check can be automated locally.
+  - The implementation guide is a navigation aid for deeper design and operational work; it does not replace the owning control, product-specific review, or organization policy.
   - This control validates a declared policy; it does not prove that an unmanaged endpoint actually enforces every setting.
   - MDM, EDR, IdP, SWG or CASB, CI scanning, disk encryption, patch compliance, and remote-wipe evidence require organization-specific integrations.
   - Pre-commit hooks and file-pattern rules are bypassable signals and require repository-side enforcement and content-aware review.

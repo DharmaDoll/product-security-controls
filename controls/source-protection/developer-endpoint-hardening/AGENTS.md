@@ -52,6 +52,32 @@ EDR, identity, network, backup, or developer-platform product.
 - Keep environment-specific thresholds and vendor wiring in a clearly marked
   adopter-tuning section after the working minimal path.
 
+## Guideline-first controls
+
+- Do not force every control into a tool, script, policy parser, or automated
+  check. Some controls are inherently about governance, human decisions,
+  operational cadence, ownership, exception handling, or architectural review;
+  for those controls, a concise guideline or operational document may be the
+  most honest and useful deliverable.
+- Choose the smallest evidence-producing form that can establish the claimed
+  outcome. Use executable checks when they provide meaningful repeatability or
+  fail-closed behavior, and use guidance, checklists, templates, decision
+  records, or review procedures when human judgment or organization-owned
+  systems are the actual authority.
+- Never add a low-value script or tautological test merely to make a
+  documentation-led control look technical. State the required owner, cadence,
+  inputs, decision criteria, evidence, escalation path, and residual risk in
+  the document instead.
+- A documentation-led control still needs a clear adoption path, concrete
+  examples or templates where useful, reviewable acceptance criteria, and
+  human-readable verification. Validate structure, links, identifiers, and
+  required sections with available repository checks, but do not claim that
+  documentation alone proves an organization has adopted the control.
+- If a control combines a guideline with a small technical helper, keep the
+  helper subordinate to the guideline. The helper may collect evidence or
+  provide a safe self-test, but it must not replace the owner decision or turn
+  unsupported external evidence into `PASS`.
+
 ## Assessment and evidence
 
 - Assess the current execution environment without changing it. When running

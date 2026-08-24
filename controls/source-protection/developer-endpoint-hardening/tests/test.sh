@@ -5,10 +5,13 @@ control_dir="$(cd "$(dirname "$0")/.." && pwd)"
 verify="$control_dir/scripts/verify.sh"
 assess="$control_dir/assessment/assess.py"
 validate_assessment="$control_dir/tests/validate-assessment.py"
+validate_guide="$control_dir/tests/validate-implementation-guide.py"
 secure_output="$(mktemp "${TMPDIR:-/tmp}/psb-source-001-secure.XXXXXX")"
 insecure_output="$(mktemp "${TMPDIR:-/tmp}/psb-source-001-insecure.XXXXXX")"
 assessment_tmp="$(mktemp -d "${TMPDIR:-/tmp}/psb-source-001-assessment.XXXXXX")"
 trap 'rm -f "$secure_output" "$insecure_output"; rm -rf -- "$assessment_tmp"' EXIT
+
+python3 "$validate_guide"
 
 "${BASH:-bash}" "$verify" secure >"$secure_output"
 diff -u "$control_dir/expected-results/secure.txt" "$secure_output"

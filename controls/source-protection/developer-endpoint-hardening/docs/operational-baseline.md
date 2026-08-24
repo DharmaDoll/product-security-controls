@@ -4,10 +4,11 @@
 
 This document traces the ten rows in the control-local source file
 `docs/developer-endpoint-operational-baseline.csv` to executable policy
-assertions in this control. The input labels every row as phase 2 and references
-only source `1`. Because no title, author, version, or URL is provided, the
-source is treated as a user-supplied baseline rather than an independently
-verified authority.
+assertions in this control. `DEH-011` is an additional repository-owned
+dependency-routing extension and is kept separate from the ten imported rows.
+The input labels every imported row as phase 2 and references only source `1`.
+Because no title, author, version, or URL is provided, the source is treated as
+a user-supplied baseline rather than an independently verified authority.
 
 Product names below are examples from the input. Adoption depends on security
 outcomes and evidence, not on a specific vendor or tool.
@@ -26,11 +27,11 @@ outcomes and evidence, not on a specific vendor or tool.
 | DEH-008 | Boundary control and identity | Control network and site access | `developer_egress_control=allowlist` | prevent | Managed egress, SWG/CASB, DNS/proxy policy, or equivalent controls for unauthorized storage and repositories |
 | DEH-009 | Boundary control and identity | Centralize authentication and require phishing-resistant MFA | `phishing_resistant_mfa=required` | prevent | IdP/SSO lifecycle control with FIDO2/passkey or equivalent phishing-resistant authentication |
 | DEH-010 | PII protection | Detect sensitive data files before commit | `sensitive_data_file_guard=required` | detect, prevent | Size, format, extension, and content-aware checks for staged data files |
-| DEH-011 | Supply-chain routing | Enforce a managed dependency registry proxy | `dependency_registry_proxy=mdm-enforced-no-direct-fallback` | prevent, detect | MDM／CI-distributed npm, pip, Go, and Composer profiles plus public-registry egress denial; `PSB-DEPS-001` verifies the sample |
+| DEH-011 | Supply-chain routing (repository extension) | Enforce a managed dependency registry proxy | `dependency_registry_proxy=mdm-enforced-no-direct-fallback` | prevent, detect | MDM／CI-distributed npm, pip, Go, and Composer profiles plus public-registry egress denial; `PSB-DEPS-001` verifies the sample |
 
-All requirements are assigned the input phase label "Phase 2: common
-guardrails." Prioritization must still be risk-based when an organization
-adopts the baseline.
+The ten imported requirements are assigned the input phase label "Phase 2:
+common guardrails." The repository extension is not assigned a source phase.
+Prioritization must still be risk-based when an organization adopts the baseline.
 
 ## Extended engineering guardrails
 

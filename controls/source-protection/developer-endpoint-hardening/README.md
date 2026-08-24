@@ -1,258 +1,266 @@
-# PSB-SOURCE-001: Developer endpoint hardening
+# PSB-SOURCE-001: 開発者端末のセキュリティ強化
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Developer endpointはsource、GitHub token、cloud credential、SSH key、build toolを保持するため、単一端末の侵害や不注意が組織全体の侵害へつながる。 |
-| 誰から、または何から守るか | Malware、phishing、端末盗難、悪意あるdependency・tool、credential theft、未patch OS、developerの誤設定や手動bypassから守る。 |
-| 何が対象か | Developer deviceとOS、disk、MDM・EDR、identity・MFA、SSH・commit署名、secret storage、IDE・Git workflow、sandbox、network・registry設定。 |
-| 何をするか | Patch・encryption・EDR、phishing-resistant MFA、hardware-backed key、short-lived secret、pre-commit・IDE scan、managed isolationを個人注意でなくguardrailとして強制する。 |
-| 成功状態 | 28 checksのpolicyとread-only assessmentが必要状態を示し、static credential・unmanaged endpoint・broad local trust・検査不能状態が適合扱いにならない。 |
-| 対象外・残余リスク | Declared policyとfixtureは実端末のenforcementを完全には証明せず、zero-day、承認済みsoftware、identity providerやMDM control plane侵害は残る。 |
+### セキュリティ上の問題
 
-## Security problem
+開発者端末には、ソースコード、GitHubトークン、クラウド認証情報、SSH鍵、
+ビルドツールが集まっているため、単一端末の侵害や不注意が組織全体の侵害へ
+つながる。
 
-Developer endpoints hold source code, SSH keys, access tokens, package
-caches, local build artifacts, and the execution context for development
-tools. Theft, malware, excessive local privilege, or unsafe editor/AI tooling
-can turn one endpoint into a path to source or product systems.
+### 誰から、または何から守るか
 
-開発者はGitHub token、cloud credential、SSH keyなど強い権限を日常的に
-利用するため、外部攻撃者、malware、悪意あるdependencyにとって価値の高い
-標的です。一人の不注意や一台の侵害を組織全体のsource、build、cloud環境へ
+外部攻撃者、マルウェア、フィッシング、端末の盗難、悪意のある依存パッケージやツール、
+認証情報の窃取、未更新のOS、開発者の誤設定や手動バイパスから守る。
+
+### 何が対象か
+
+開発者端末とOS、ディスク、MDM・EDR、ID・MFA、SSH鍵・コミット署名、
+シークレット保管、IDE・Gitワークフロー、サンドボックス、ネットワーク、
+レジストリ設定を対象とする。
+
+### 何をするか
+
+パッチ適用、ディスク暗号化、EDR、フィッシング耐性のあるMFA、
+ハードウェア保護鍵、短期シークレット、コミット前・IDEスキャン、
+管理された隔離実行環境を、個人の注意だけに頼らずガードレールとして適用する。
+
+### 成功状態
+
+29個のチェックを持つポリシーと読み取り専用のアセスメントが必要な状態を示し、
+固定の認証情報、管理外端末、広すぎるローカル信頼、検査不能な状態を適合として
+扱わない。
+
+### 対象外・残余リスク
+
+宣言的なポリシーとfixtureは実端末での強制適用を完全には証明しない。ゼロデイ、
+承認済みソフトウェア、IDプロバイダーやMDMの管理プレーン侵害のリスクは残る。
+
+## このcontrolの位置付け
+
+このcontrolは、開発者端末を実際に管理する製品ではなく、29個のcheckを実現するための
+実装パターンと議論の入口を示すガイドである。各checkには、最小構成、組織管理での方法、
+確認できる証跡、検証の限界をまとめている。
+
+詳細は[`docs/check-implementation-guide.md`](docs/check-implementation-guide.md)を参照する。
+技術的な実装が意味を持つ項目にはサンプルやテストを用意し、MDM・IdP・EDR・ネットワーク・
+物理管理のように組織側の判断が必要な項目は、導入手段と証跡の例を示す。fixtureやローカル
+アセスメントの成功は、組織全体の導入済み・適合済みを意味しない。
+
+## セキュリティ上の問題
+
+開発者はGitHubトークン、クラウド認証情報、SSH鍵など強い権限を日常的に
+利用するため、外部攻撃者、マルウェア、悪意のある依存パッケージにとって価値の高い
+標的となる。一人の不注意や一台の侵害を組織全体のソース、ビルド、クラウド環境へ
 波及させないため、このcontrolは「注意してください」という教育だけに依存せず、
-設定の強制、自動block、隔離、検知、証跡を組み合わせた
-**engineering guardrail**として端末hardeningを実装します。
+設定の強制、自動ブロック、隔離、検知、証跡を組み合わせた
+**エンジニアリング上のガードレール**として端末のセキュリティ強化を実装する。
 
-This control defines a portable policy baseline. It incorporates the ten
-requirements from the supplied Japanese developer endpoint hardening and
-operational-control table, with traceability in
-`docs/operational-baseline.md`. The included verifier checks policy fixtures
-and never changes the host. An organization may connect the same assertions
-to MDM, EDR, operating-system compliance APIs, identity and network controls,
-CI/CD policy, or developer environment provisioning.
+このcontrolは、環境をまたいで利用できるポリシー基準を定義する。提供された開発者端末の
+ハードニングおよび運用管理の表にある10項目を取り込み、さらに必要な端末・レジストリ要件を追加し、各項目との対応関係を
+`docs/operational-baseline.md`に記録している。同梱の検証ツールはポリシーfixtureだけを
+検査し、ホストを変更しない。組織では、同じ判定をMDM、EDR、OSコンプライアンスAPI、
+ID・ネットワーク制御、CI/CDポリシー、開発環境のプロビジョニングに接続できる。
 
 拡張時に提供された日本語ガイドラインの原文は
 [`docs/user-supplied-endpoint-hardening-guideline-ja.md`](docs/user-supplied-endpoint-hardening-guideline-ja.md)
-で確認できます。原文、実装上の解釈、原子的なchecklistを分離し、背景を残しつつ
-`control.yaml`を機械可読な正本として維持しています。
+で確認できる。原文、実装上の解釈、原子的なチェック項目を分離し、背景を残しつつ
+`control.yaml`を機械可読な正本として維持している。
 
-## Threat and trust boundary
+## 脅威と信頼境界
 
-The endpoint is a trust boundary between the developer and source/build
-systems. Relevant failures include plaintext credential storage, unrestricted
-AI-tool network access, exposed container sockets, writable shared workspaces,
-disabled encryption or screen locking, unmanaged local debug services,
-long-lived credentials, unisolated package installation, data exfiltration,
-and bypass of local secret or sensitive-data checks.
+開発者端末は、開発者とソース・ビルドシステムの間にある信頼境界である。主な失敗
+パターンは、認証情報の平文保存、AIツールへの無制限なネットワークアクセス、
+コンテナソケットの露出、共有ワークスペースへの書き込み、暗号化や画面ロックの無効化、
+管理されていないローカルデバッグサービス、長寿命の認証情報、隔離されていない
+パッケージインストール、データ持ち出し、ローカルのシークレット・機密データ検査の
+バイパスである。
 
-## Examples
+## ポリシー例と実装ガイド
 
-- `insecure/endpoint-policy.conf` is a deliberately rejected fixture.
-- `secure/endpoint-policy.conf` is a declarative secure baseline.
-- `docs/operational-baseline.md` maps each imported requirement to a policy
-  assertion and its organizational enforcement boundary.
+- `insecure/endpoint-policy.conf`は、29個のポリシー項目が欠落した場合の拒否例である。
+- `secure/endpoint-policy.conf`は、29個の要求状態を一つの宣言例に並べたfixtureである。
+- `docs/operational-baseline.md`は、取り込んだ各要件をポリシー判定と組織側の強制境界に対応付ける。
+- `docs/check-implementation-guide.md`は、各checkを実現するための方法と検証限界を説明する。
 
-Neither file changes an operating system. They are fixtures for verification
-and adaptation to an organization's endpoint-management system.
+どちらのファイルもOSを変更しない。検証用と、組織の端末管理システムへ適用する際の
+調整用に提供している。
 
-## Verification
+## サンプルと文書の検証
 
-From the repository root:
+リポジトリのルートから実行する。
 
 ```bash
 make verify-control CONTROL=PSB-SOURCE-001
 ```
 
-Or run the control-local test directly:
+control固有のテストを直接実行することもできる。
 
 ```bash
 bash controls/source-protection/developer-endpoint-hardening/tests/test.sh
 ```
 
-The secure fixture must pass. The insecure fixture must fail validation. A
-non-zero validator result means the policy was rejected or verification could
-not establish compliance; it must never be treated as a clean result.
-The tests compare complete verifier output with the sanitized expected
-evidence, so omission of an imported requirement changes the test result.
+安全なfixtureは、29個の要求状態がサンプルに記載されていることを示す。安全でないfixtureは、
+項目が欠落したポリシーを拒否する。これは実端末の強制適用を確認するものではない。
+検証ツールのゼロ以外の終了コードは、ポリシーが拒否されたか、適合を確認できなかった
+ことを示す。決して「問題なし」と解釈してはならない。テストは検証ツールの完全な出力と
+サニタイズ済みの期待証跡を比較するため、取り込んだ要件を一つでも省略すると結果が変わる。
+さらに、テストは実装ガイドに29個すべてのcheckの説明が一度ずつ存在することを確認する。
 
-## Read-only endpoint assessment
+## 補助的な読み取り専用の端末アセスメント
 
-The fixture verifier above proves the example policy behavior. To inspect the
-current Linux endpoint and repository without changing either, run:
+上記のfixture検証は、例示したポリシーと文書の対応を確認するものである。現在のLinux端末と
+リポジトリの状態を変更せずに確認するには、次を実行する。
 
 ```bash
 make assess-control CONTROL=PSB-SOURCE-001
 ```
 
-The assessment writes sanitized artifacts to:
+アセスメントは、サニタイズ済みの成果物を次の場所に出力する。
 
 - `generated/assessments/PSB-SOURCE-001.json`
 - `generated/assessments/PSB-SOURCE-001.csv`
 
-These host-specific files are ignored by Git. Results use:
+端末固有の成果物はGitの対象外である。このアセスメントは導入判断を補助するものであり、
+組織側のcontrol planeを置き換えない。結果の意味は次のとおり。
 
-- `PASS` when the supported read-only check establishes the required state;
-- `FAIL` when the supported check establishes an insecure state;
-- `NOT_CHECKED` when organization evidence or an unsupported integration is
-  required;
-- `ERROR` when the assessment operation cannot establish a result;
-- `N/A` only for an independently reviewed exception.
+- `PASS`: 対応している読み取り専用チェックが必要な状態を確認できた。
+- `FAIL`: 対応しているチェックが安全でない状態を確認した。
+- `NOT_CHECKED`: 組織側の証跡または未対応の連携が必要で、判定できない。
+- `ERROR`: アセスメント処理が結果を確定できなかった。
+- `N/A`: 独立したレビューで承認済みの例外に限って使用する。
 
-The underlying runner uses exit codes `0` for complete PASS, `1` for a finding,
-`2` for an assessment error, and `3` for incomplete external evidence. GNU
-Make reports any failed recipe as its own non-zero status, so automation that
-needs the exact code should invoke:
+内部のrunnerは、完全なPASSに`0`、検出事項に`1`、アセスメントエラーに`2`、
+外部証跡が不完全な場合に`3`を終了コードとして返す。GNU Makeはレシピの失敗を
+独自のゼロ以外の終了コードとして報告するため、正確なコードが必要な自動化では次を直接呼び出す。
 
 ```bash
 python3 scripts/run-assessments.py --control PSB-SOURCE-001
 ```
 
-The initial Linux adapter checks normalized signals for credential storage,
-repository-owned hooks, disk encryption, GNOME screen lock, automatic updates,
-routine administrator access, common container sockets, known debug listeners,
-and container workspace mount mode.
+初期のLinuxアダプターは、credentialの保管場所、リポジトリ管理下のhook、ディスク暗号化、
+GNOMEの画面ロック、自動更新、日常的な管理者権限、一般的なコンテナソケット、既知の
+デバッグ待受、コンテナのワークスペース・マウントモードから正規化したシグナルを検査する。
 
-The output deliberately excludes usernames, home paths, IP addresses, raw
-listener details, credential-helper paths, and matched secret values. Local
-signals do not replace MDM, IdP, repository, network, or backup evidence.
-When run inside a container, cloud workspace, or agent sandbox, results describe
-that execution environment and may not observe the underlying physical host.
+出力には、ユーザー名、ホームディレクトリのパス、IPアドレス、生の待受情報、
+credential-helperのパス、検出したシークレット値を意図的に含めない。ローカルの
+シグナルは、MDM、IdP、リポジトリ、ネットワーク、バックアップの証跡に置き換わるものではない。
+コンテナ、クラウドワークスペース、エージェントサンドボックス内で実行した場合、結果は
+その実行環境を表し、物理ホストの状態を観測できない場合がある。
 
-## Adoption guidance
+## 導入ガイド
 
-Map each assertion to the organization's endpoint control plane. The baseline
-is grouped below by security outcome; the atomic spreadsheet rows remain
-canonical in `control.yaml`.
+各判定項目を、組織の端末管理プレーンに対応付ける。以下では、基準をセキュリティ上の
+成果ごとにまとめている。原子的な表の行は`control.yaml`を正本とする。
+29項目ごとの具体的な実装手法、代替案、証跡、検証限界は
+[`docs/check-implementation-guide.md`](docs/check-implementation-guide.md)にまとめている。
+以下は全体像を先に掴むための導入順序であり、個別項目の設計を置き換えない。
 
-### 1. Endpoint and OS baseline
+### 1. 端末とOSの基準
 
-- keep the OS, browser, editor, package managers, and developer tools on
-  supported stable versions through centrally enforced patch management;
-- remove unnecessary applications and enforce an approved software inventory
-  so extensions and background services do not accumulate by developer choice;
-- enroll every in-scope endpoint in healthy EDR or XDR prevention, telemetry,
-  and response coverage;
-- enforce full-disk encryption, automatic reauthentication, remote loss
-  response, and risk-appropriate physical storage and transport controls;
-- use MDM or an equivalent control plane to deploy the baseline, detect drift,
-  and restrict access from unmanaged or noncompliant endpoints.
+- OS、ブラウザ、エディタ、パッケージマネージャー、開発ツールを、中央で強制する
+  パッチ管理によって、サポート対象の安定版に保つ。
+- 不要なアプリケーションを削除し、承認済みソフトウェアの一覧を強制することで、
+  拡張機能やバックグラウンドサービスが開発者任せに増えないようにする。
+- 対象となるすべての端末を、正常なEDRまたはXDRの防止・テレメトリ・対応範囲に登録する。
+- フルディスク暗号化、自動再認証、紛失時のリモート対応、リスクに応じた保管・持ち運びの
+  物理対策を強制する。
+- MDMなどの管理プレーンから基準を配布し、設定のドリフトを検知し、管理外または非準拠の
+  端末からのアクセスを制限する。
 
-### 2. Identity and strong authentication
+### 2. IDと強固な認証
 
-- require centralized identity lifecycle and phishing-resistant MFA using
-  FIDO2 security keys, passkeys, or an equivalent phishing-resistant method
-  rather than SMS as the primary strong factor;
-- protect SSH and authentication keys with non-exportable hardware and explicit
-  user verification, including `-sk` SSH key types where supported;
-- enable commit signing in managed Git configuration and enforce verified
-  signatures at the protected repository boundary;
-- treat signatures as identity evidence, not proof that the code is secure or
-  that the authenticated signing session was uncompromised.
+- FIDO2セキュリティキー、パスキーなど、フィッシング耐性のある方法による中央管理の
+  IDライフサイクルとMFAを必須にする。SMSを主要な強要素にしない。
+- SSH鍵と認証鍵を、エクスポートできないハードウェアと明示的なユーザー確認で保護する。
+  対応している場合は`-sk`形式のSSH鍵も使用する。
+- 管理対象のGit設定でコミット署名を有効にし、保護されたリポジトリ側で検証済み署名を必須にする。
+- 署名はIDの証跡であって、コードの安全性や署名セッションが侵害されていないことの証明ではない。
 
-OAuth tokens, PATs, SSH keys, and source-platform credential lifecycle are
-covered in detail by `PSB-SOURCE-004`; this control covers their endpoint
-storage and use.
+OAuth token、PAT、SSH key、ソースプラットフォームの認証情報ライフサイクルは
+`PSB-SOURCE-004`で詳しく扱う。このcontrolでは、端末上での保管と利用を扱う。
 
-### 3. Engineered secret management
+### 3. 仕組みとしてのシークレット管理
 
-- prohibit PATs, cloud access keys, and other reusable credentials in
-  `.bashrc`, `.zshrc`, `.env`, project files, shell history, or remote URLs;
-- use an OS keychain or approved secret manager and inject values only for the
-  process and time that requires them;
-- prefer short-lived federated or session credentials over static secrets;
-- rotate or revoke an exposed credential before history rewriting or cache
-  cleanup.
+- PAT、クラウドアクセスキーなどの再利用可能な認証情報を、`.bashrc`、`.zshrc`、`.env`、
+  プロジェクトファイル、シェル履歴、リモートURLに置かない。
+- OSのキーチェーンまたは承認済みシークレットマネージャーを使い、必要なプロセスに
+  必要な時間だけ値を注入する。
+- 固定シークレットより、短期のフェデレーション認証情報またはセッション認証情報を優先する。
+- 認証情報が漏えいしたら、履歴の書き換えやキャッシュ削除より先にローテーションまたは失効を行う。
 
-Cloud workload federation in CI/CD is a separate boundary implemented offline as
-`PSB-CICD-006`; endpoint use of cloud credentials still follows this baseline.
+CI/CDのクラウドワークロード・フェデレーションは`PSB-CICD-006`が扱う別の境界である。
+ただし、端末上でクラウド認証情報を使う場合はこの基準に従う。
 
-### 4. Shift-left workflow controls
+### 4. シフトレフトのワークフロー制御
 
-- block representative fake secrets and sensitive data before commit with a
-  reviewed hook implementation such as the repository's `PSB-SOURCE-002`
-  example;
-- use independent repository-side secret scanning and required checks because
-  local hooks can be bypassed;
-- provide approved SAST and SCA feedback in supported IDEs for rapid developer
-  feedback while retaining mandatory server-side verification;
-- do not install hooks or editor extensions silently; distribute and enforce
-  them through the reviewed developer environment or repository onboarding
-  process.
+- `PSB-SOURCE-002`の例のようなレビュー済みhookで、代表的な偽シークレットや機密データを
+  コミット前にブロックする。
+- ローカルhookはバイパスできるため、独立したリポジトリ側のシークレットスキャンと必須チェックを使う。
+- 対応するIDEで承認済みのSAST・SCAフィードバックを提供し、開発者の早期確認を支援する。
+  ただし、サーバー側の必須検証は維持する。
+- hookやエディタ拡張を黙ってインストールせず、レビュー済みの開発環境またはリポジトリの
+  オンボーディング手順で配布・強制する。
 
-Trivy, detect-secrets, Gitleaks, and similar developer-local products are
-possible implementations, not the control itself. Organization-operated
-full-history and incident-response scanning is owned by `PSB-SOURCE-003`, not
-the developer endpoint baseline. A scanner execution failure is an error and
-never a clean result.
+Trivy、detect-secrets、Gitleaksなどの開発者向け製品は実装例であり、このcontrolそのものではない。
+組織が運用する全履歴スキャンとインシデント対応スキャンは`PSB-SOURCE-003`の責務であり、
+開発者端末の基準には含めない。スキャナーの実行失敗はエラーであり、決して問題なしとは扱わない。
 
-### 5. Isolation and managed execution
+### 5. 隔離と管理された実行
 
-- route package installation, external code builds, and AI-generated code
-  execution to disposable restricted containers, VMs, Cloud Workstations,
-  Codespaces, or an equivalent managed environment when the operation is
-  classified as high risk;
-- default host and workspace mounts to read-only and do not expose a host
-  container-runtime socket;
-- constrain and observe filesystem, process, privilege, socket, and network
-  behavior using eBPF telemetry or an equivalent runtime control;
-- prevent routine sandbox workloads from reading persistent developer
-  credentials or communicating with arbitrary destinations.
+- 高リスクと分類したパッケージインストール、外部コードのビルド、AI生成コードの実行は、
+  使い捨ての制限付きコンテナ、VM、Cloud Workstations、Codespacesなどの管理環境へ送る。
+- ホストとワークスペースのマウントは読み取り専用を既定とし、ホストのコンテナランタイムソケットを公開しない。
+- eBPFテレメトリなどの実行時制御で、ファイルシステム、プロセス、権限、ソケット、ネットワークの
+  挙動を制限・監視する。
+- 通常のサンドボックス処理が、永続的な開発者認証情報を読み取ったり、任意の宛先へ通信したりできないようにする。
 
-The exact choice between a local sandbox and a cloud development environment
-depends on source sensitivity, latency, offline requirements, platform support,
-and data residency. The required outcome is a centrally reviewable isolation
-boundary with disposable state and sanitized evidence.
+ローカルサンドボックスとクラウド開発環境のどちらを選ぶかは、ソースの機密性、遅延、オフライン要件、
+プラットフォーム対応、データ所在地によって決まる。必要なのは、組織がレビューできる隔離境界、
+使い捨ての状態、サニタイズ済みの証跡である。
 
-Additional examples:
+追加の実装例は次のとおり。
 
-- full-disk encryption and automatic screen lock;
-- supported OS and developer-tool versions with enforced updates;
-- no routine local administrator use;
-- short-lived credentials and OS keychain or approved secret-manager use;
-- hardware-backed SSH keys or phishing-resistant authenticators;
-- no secrets in workspaces, shell history, or dotfiles;
-- pre-commit and repository-side secret scanning;
-- no broad Docker socket or filesystem mounts;
-- isolated package installation and controlled dependency-update timing;
-- dependency resolveとupdateに`PSB-DEPS-001`のrepository-owned cooldown
-  policyを適用し、通常installではcommitted lockfileを使用する;
-- `PSB-DEPS-001`のproxy-only client profileをMDM／CI templateで配布し、
-  npm、pip、Go、Composerのdirect registry fallbackとpublic-registry egressを拒否する;
-- dependency install時は`PSB-DEPS-002`でlifecycle scriptとsource buildを
-  default denyにし、必要な実行だけをreview済みの時限例外に限定する;
-- 通常installでは`PSB-DEPS-003`のfrozen graph、registry、artifact integrityを
-  検証し、開発端末での暗黙のlockfile再生成を許可しない;
-- phishing-resistant MFA and centrally managed identity lifecycle;
-- managed developer egress and cloud-storage access;
-- sensitive-data file guards before commit;
-- allowlisted network access for AI tools and external developer services;
-- encrypted backups and controlled local debug services.
+- フルディスク暗号化と自動画面ロック。
+- サポート対象のOS・開発ツールと、強制された自動更新。
+- 日常的なローカル管理者権限の不使用。
+- 短期認証情報とOSキーチェーンまたは承認済みシークレットマネージャー。
+- ハードウェア保護SSH鍵またはフィッシング耐性のある認証器。
+- ワークスペース、シェル履歴、dotfileへのシークレット保存禁止。
+- コミット前およびリポジトリ側のシークレットスキャン。
+- Dockerソケットやファイルシステムの広いマウントを禁止。
+- 隔離されたパッケージインストールと、管理された依存更新のタイミング。
+- 依存関係の解決と更新には`PSB-DEPS-001`のリポジトリ管理cooldownを適用し、通常の
+  インストールではコミット済みlockfileを使う。
+- `PSB-DEPS-001`のproxy-only client profileをMDMまたはCI templateで配布し、npm、pip、
+  Go、Composerのdirect registry fallbackとpublic registryへのegressを拒否する。
+- 依存パッケージのインストールでは`PSB-DEPS-002`によりlifecycle scriptとsource buildを既定で拒否し、
+  必要な実行だけをレビュー済みの期限付き例外に限定する。
+- 通常のインストールでは`PSB-DEPS-003`のfrozen graph、registry、artifact integrityを検証し、
+  開発端末で暗黙にlockfileを再生成させない。
+- フィッシング耐性のあるMFAと、中央管理されたIDライフサイクル。
+- 管理された開発者向けegressとクラウドストレージアクセス。
+- コミット前の機密データファイルガード。
+- AIツールと外部開発サービスへのallowlist型ネットワークアクセス。
+- 暗号化バックアップと、管理されたローカルデバッグサービス。
 
-Product names from the input table are implementation examples, not required
-dependencies. Local hooks are bypassable and must be backed by repository-side
-checks. File extension and size rules are only signals for sensitive data and
-must not be treated as proof that a file is safe.
+入力表に登場する製品名は実装例であり、必須依存ではない。ローカルhookはバイパスできるため、
+リポジトリ側のチェックで補完する。ファイル拡張子やサイズのルールは機密データの兆候にすぎず、
+ファイルが安全であることの証明として扱ってはならない。
 
-## Limitations and operational cost
+## 制約と運用コスト
 
-The fixture verifier cannot prove actual host state, MDM enrollment, EDR
-coverage, patch freshness, remote-wipe capability, or resistance to a
-privileged local attacker. Organization-specific integrations are required.
-It also cannot prove IdP account deprovisioning, SWG/CASB enforcement, CI
-scanning, package sandbox containment, or dependency release age.
-The baseline may reduce developer convenience through update enforcement,
-credential-manager use, application restrictions, phishing-resistant
-authentication, signing, network restrictions, managed workspaces, telemetry,
-and read-only-by-default mounts. MDM, EDR/XDR, managed development environments,
-and runtime monitoring also add licensing, platform-engineering, privacy,
-retention, and incident-response costs. Exceptions should follow the
-repository's narrow, owned, and time-bound exception policy.
+fixture検証だけでは、実際のホスト状態、MDM登録、EDRの適用範囲、パッチの新しさ、リモートワイプ機能、
+特権を持つローカル攻撃者への耐性を証明できない。組織固有の連携が必要である。また、IdPアカウントの
+無効化、SWG・CASBの強制、CIスキャン、パッケージサンドボックスの封じ込め、依存リリースの経過時間も証明できない。
 
-The supplied table identifies its source only as `1`; without bibliographic
-details, its provenance and authority cannot be independently verified.
+更新の強制、credentialマネージャーの利用、アプリケーション制限、フィッシング耐性のある認証、署名、
+ネットワーク制限、管理ワークスペース、テレメトリ、読み取り専用を既定とするマウントにより、開発者の
+利便性は低下し得る。MDM、EDR/XDR、管理された開発環境、実行時監視には、ライセンス、プラットフォーム
+エンジニアリング、プライバシー、データ保持、インシデント対応のコストも発生する。例外は、リポジトリの
+狭く、所有者が明確で、期限を持つ例外ポリシーに従う。
 
-Framework relationships and their confidence are recorded in `control.yaml`.
-They are not formal compliance claims. The expanded requirement set needs
-framework-mapping review before additional relationships are claimed.
+提供された表の出典は`1`としか記載されていない。書誌情報がないため、その来歴と権威性を独立に検証できない。
+
+フレームワークとの関係と信頼度は`control.yaml`に記録している。これは正式なコンプライアンスの主張ではない。
+拡張した要件群については、追加の関係を主張する前にフレームワークマッピングのレビューが必要である。

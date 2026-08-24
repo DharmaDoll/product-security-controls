@@ -30,7 +30,7 @@ check_value() {
 }
 
 # Both fixtures are evaluated against the same expectations. Requirements
-# DEH-001 through DEH-010 are traced in docs/operational-baseline.md.
+# DEH-001 through DEH-011 are traced in docs/operational-baseline.md.
 check_value disk_encryption required
 check_value screen_lock required
 check_value automatic_updates required
