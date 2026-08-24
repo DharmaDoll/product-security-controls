@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Sourceへdirectional control、zero-width character、confusable identifierを混入すると、reviewerが見る表示とparserが解釈するsymbolや順序がずれ、悪意ある処理を正当な変更に見せられる。 |
-| 誰から、または何から守るか | 悪意あるcontributor、侵害されたcode generator・editor、不可視文字を含むcopy-and-paste、encoding・parser・policy障害をcleanと扱う運用から守る。 |
-| 何が対象か | UTF-8 Python source、全source位置のUnicode format control、identifier token、NFKC normalization、scanner policyとsanitized evidence。 |
-| 何をするか | 危険なbidi・zero-width・tag characterを全位置で拒否し、Python identifierをASCIIかつNFKC-stableに限定し、decode・parse・policy障害をERRORにする。 |
-| 成功状態 | 通常の日本語string dataを含むsecure fixtureは受理され、bidi・invisible・mixed-script・fullwidth identifier fixtureは位置とcode pointだけを示して拒否される。 |
-| 対象外・残余リスク | 初期sliceはPythonのみを対象とし、Unicode domain name、自然言語confusable、dependency・compiler compromise、live repository enforcementやreviewer intentは証明しない。 |
+### セキュリティ上の問題
+
+Sourceへdirectional control、zero-width character、confusable identifierを混入すると、reviewerが見る表示とparserが解釈するsymbolや順序がずれ、悪意ある処理を正当な変更に見せられる。
+
+### 誰から、または何から守るか
+
+悪意あるcontributor、侵害されたcode generator・editor、不可視文字を含むcopy-and-paste、encoding・parser・policy障害をcleanと扱う運用から守る。
+
+### 何が対象か
+
+UTF-8 Python source、全source位置のUnicode format control、identifier token、NFKC normalization、scanner policyとsanitized evidence。
+
+### 何をするか
+
+危険なbidi・zero-width・tag characterを全位置で拒否し、Python identifierをASCIIかつNFKC-stableに限定し、decode・parse・policy障害をERRORにする。
+
+### 成功状態
+
+通常の日本語string dataを含むsecure fixtureは受理され、bidi・invisible・mixed-script・fullwidth identifier fixtureは位置とcode pointだけを示して拒否される。
+
+### 対象外・残余リスク
+
+初期sliceはPythonのみを対象とし、Unicode domain name、自然言語confusable、dependency・compiler compromise、live repository enforcementやreviewer intentは証明しない。
 
 ## Security problem
 

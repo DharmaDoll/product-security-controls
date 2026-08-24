@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | 漏洩したcredentialを置換しただけでは、旧credential、派生session、忘れられたconsumer、侵害時間帯の不正操作が残り、source改変、package公開、artifact差し替え、deploymentが継続し得る。 |
-| 誰から、または何から守るか | Secret-harvesting bot、phisher、infostealer、malicious dependency・Action、侵害されたmaintainer・build job、insider、不完全なprovider responseやrotation automationから守る。 |
-| 何が対象か | Source access、CI secret、package publishing、container registry、cloud deployment、SSH、artifact signingのcredential identifier、consumer、resource、派生authority、release・artifact・deployment影響。 |
-| 何をするか | Secretを含まない関係inventoryから全consumerを特定し、credential種別ごとに旧authorityを封じ込め、必要なら狭いreplacementへ移行し、旧authority拒否と影響レビューを独立確認してからcloseする。 |
-| 成功状態 | Evidence保全、承認、旧authority無効化、派生authority失効、consumer移行、旧authority拒否、影響レビューが順序どおり完了し、不完全・stale・adapter失敗は`CLOSED`やclean結果にならない。 |
-| 対象外・残余リスク | E3 fixtureはprovider-neutralなdry-runであり、live credentialを失効・発行せず、全provider sessionや未観測consumer、侵害中に行われた操作を完全に発見したことを証明しない。 |
+### セキュリティ上の問題
+
+漏洩したcredentialを置換しただけでは、旧credential、派生session、忘れられたconsumer、侵害時間帯の不正操作が残り、source改変、package公開、artifact差し替え、deploymentが継続し得る。
+
+### 誰から、または何から守るか
+
+Secret-harvesting bot、phisher、infostealer、malicious dependency・Action、侵害されたmaintainer・build job、insider、不完全なprovider responseやrotation automationから守る。
+
+### 何が対象か
+
+Source access、CI secret、package publishing、container registry、cloud deployment、SSH、artifact signingのcredential identifier、consumer、resource、派生authority、release・artifact・deployment影響。
+
+### 何をするか
+
+Secretを含まない関係inventoryから全consumerを特定し、credential種別ごとに旧authorityを封じ込め、必要なら狭いreplacementへ移行し、旧authority拒否と影響レビューを独立確認してからcloseする。
+
+### 成功状態
+
+Evidence保全、承認、旧authority無効化、派生authority失効、consumer移行、旧authority拒否、影響レビューが順序どおり完了し、不完全・stale・adapter失敗は`CLOSED`やclean結果にならない。
+
+### 対象外・残余リスク
+
+E3 fixtureはprovider-neutralなdry-runであり、live credentialを失効・発行せず、全provider sessionや未観測consumer、侵害中に行われた操作を完全に発見したことを証明しない。
 
 ## セキュリティ上の問題
 

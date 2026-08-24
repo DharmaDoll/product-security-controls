@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | workflowを安全にしても、SCM、CI、cloud federation、registry、signing serviceの管理者がprovider画面やAPIからbranch protection、environment、runner登録、OIDC trust、release保護、signing policyを直接変更できれば、review済みpipelineの外側で供給網のtrust boundaryを弱められる。 |
-| 誰から、または何から守るか | phished／stolen管理者sessionを使う外部攻撃者、単独で不正変更するinsider、共有owner account、誤ったautomation、provider audit収集の欠落、恒久化したbreak-glass bypassから守る。 |
-| 何が対象か | SCMとCIの管理plane、cloud workload-identity trust、artifact registry保護、signing service policy、およびそれらを変更するhuman identity、session、request、approval、execution、provider audit event。 |
-| 何をするか | 各特権変更を、named current human、phishing-resistantで短寿命かつrecently reauthenticatedなsession、exact targetとbefore／after digest、独立承認、実行結果、unique provider eventへ結合する。緊急変更は1時間以内の失効と独立事後reviewを要求する。 |
-| 成功状態 | 全required serviceのfreshで完全なcollector evidenceがあり、通常変更は実行前に別人がexact digestを承認し、provider eventがactor／session／request／target／applied digestと一致する。緊急変更は期限内に別人がacceptまたはrevertし、欠落・stale・malformed・credential-bearing evidenceは`ERROR`になる。 |
-| 対象外・残余リスク | このoffline fixtureはlive provider設定、管理者在籍、hardware authenticator、audit backendの耐改ざん性、provider自身の侵害を証明しない。machine OIDCは`PSB-CICD-006`、runner lifecycleは`PSB-CICD-007`、workflow権限とPR境界は`PSB-CICD-004／005`が所有する。 |
+### セキュリティ上の問題
+
+workflowを安全にしても、SCM、CI、cloud federation、registry、signing serviceの管理者がprovider画面やAPIからbranch protection、environment、runner登録、OIDC trust、release保護、signing policyを直接変更できれば、review済みpipelineの外側で供給網のtrust boundaryを弱められる。
+
+### 誰から、または何から守るか
+
+phished／stolen管理者sessionを使う外部攻撃者、単独で不正変更するinsider、共有owner account、誤ったautomation、provider audit収集の欠落、恒久化したbreak-glass bypassから守る。
+
+### 何が対象か
+
+SCMとCIの管理plane、cloud workload-identity trust、artifact registry保護、signing service policy、およびそれらを変更するhuman identity、session、request、approval、execution、provider audit event。
+
+### 何をするか
+
+各特権変更を、named current human、phishing-resistantで短寿命かつrecently reauthenticatedなsession、exact targetとbefore／after digest、独立承認、実行結果、unique provider eventへ結合する。緊急変更は1時間以内の失効と独立事後reviewを要求する。
+
+### 成功状態
+
+全required serviceのfreshで完全なcollector evidenceがあり、通常変更は実行前に別人がexact digestを承認し、provider eventがactor／session／request／target／applied digestと一致する。緊急変更は期限内に別人がacceptまたはrevertし、欠落・stale・malformed・credential-bearing evidenceは`ERROR`になる。
+
+### 対象外・残余リスク
+
+このoffline fixtureはlive provider設定、管理者在籍、hardware authenticator、audit backendの耐改ざん性、provider自身の侵害を証明しない。machine OIDCは`PSB-CICD-006`、runner lifecycleは`PSB-CICD-007`、workflow権限とPR境界は`PSB-CICD-004／005`が所有する。
 
 ## Security problem
 

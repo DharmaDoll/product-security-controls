@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | AI製品はmodel名だけを確認してreleaseすると、goal hijack、tool misuse、unexpected execution、context poisoning、resource exhaustion、data egressを含む既知の失敗を抱えたまま本番へ進む。評価器停止、反復不足、古い結果、都合のよい閾値変更を合格扱いするとrelease gate自体がfail-openになる。 |
-| 誰から、または何から守るか | Adversarial入力を作る外部攻撃者、poisoned source／model、侵害された評価器やjudge、評価対象・suite・結果を差し替えるoperator、反復揺らぎ、CI障害、機密prompt／outputを証跡へ残すcollectorから守る。 |
-| 何が対象か | AI release candidate、model／gateway／runtime／RAGの上流control identity、評価器artifact、scenario suiteとoracle、既知安全／既知脆弱calibration、反復metric、閾値承認、実行sandbox、評価証跡、release decision。 |
-| 何をするか | SUT・評価器・suite・scenarioをexact digestへ固定し、6種類のinert scenarioを実行する。決定論的assertionと5回反復metricを分け、独立所有の閾値で判定し、known-vulnerable fixtureを確実に検知できることを校正する。network・credential・production accessなしで実行し、結果をexact release decisionへ結ぶ。 |
-| 成功状態 | Known-safe candidateの決定論的scenarioが全件一致し、確率的scenarioが5回中4回以上成功し、known-vulnerable calibrationが指定5件を検知する。完全・fresh・sanitizedな証跡だけが`PASS`となりreleaseは`ACCEPTED`、失敗は`BLOCKED`、反復不足は`INCOMPLETE`、評価不能は`ERROR`になる。 |
-| 対象外・残余リスク | Synthetic fixtureはlive model/provider/judge、未知attack、semantic品質、公平性、privacy、実production gate、統計的妥当性を証明しない。Garak、Giskard、Counterfit、ART等の製品adapter、実prompt保管、組織固有risk appetiteは別途reviewとadoption evidenceが必要。 |
+### セキュリティ上の問題
+
+AI製品はmodel名だけを確認してreleaseすると、goal hijack、tool misuse、unexpected execution、context poisoning、resource exhaustion、data egressを含む既知の失敗を抱えたまま本番へ進む。評価器停止、反復不足、古い結果、都合のよい閾値変更を合格扱いするとrelease gate自体がfail-openになる。
+
+### 誰から、または何から守るか
+
+Adversarial入力を作る外部攻撃者、poisoned source／model、侵害された評価器やjudge、評価対象・suite・結果を差し替えるoperator、反復揺らぎ、CI障害、機密prompt／outputを証跡へ残すcollectorから守る。
+
+### 何が対象か
+
+AI release candidate、model／gateway／runtime／RAGの上流control identity、評価器artifact、scenario suiteとoracle、既知安全／既知脆弱calibration、反復metric、閾値承認、実行sandbox、評価証跡、release decision。
+
+### 何をするか
+
+SUT・評価器・suite・scenarioをexact digestへ固定し、6種類のinert scenarioを実行する。決定論的assertionと5回反復metricを分け、独立所有の閾値で判定し、known-vulnerable fixtureを確実に検知できることを校正する。network・credential・production accessなしで実行し、結果をexact release decisionへ結ぶ。
+
+### 成功状態
+
+Known-safe candidateの決定論的scenarioが全件一致し、確率的scenarioが5回中4回以上成功し、known-vulnerable calibrationが指定5件を検知する。完全・fresh・sanitizedな証跡だけが`PASS`となりreleaseは`ACCEPTED`、失敗は`BLOCKED`、反復不足は`INCOMPLETE`、評価不能は`ERROR`になる。
+
+### 対象外・残余リスク
+
+Synthetic fixtureはlive model/provider/judge、未知attack、semantic品質、公平性、privacy、実production gate、統計的妥当性を証明しない。Garak、Giskard、Counterfit、ART等の製品adapter、実prompt保管、組織固有risk appetiteは別途reviewとadoption evidenceが必要。
 
 ## セキュリティ上の問題
 

@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | GitHub OAuth token、PAT、SSH key、App credentialが長寿命・過剰権限・平文保管・未棚卸しだと、単一credential theftがsource改変や組織侵害へ拡大する。 |
-| 誰から、または何から守るか | Phishing、malware、悪意あるtool、local access、漏洩credentialの再利用、owner不在、rotation・revocation失敗から守る。 |
-| 何が対象か | Developerとautomationのsource-platform credential、OAuth・PAT・SSH・GitHub App、IDEからGitHub MCPへのsecret delivery、scope、repository access、保管、期限、利用証跡、incident response。 |
-| 何をするか | Automationは短命installation token、GitHub MCPはOAuthを優先し、PAT fallbackをpurpose・owner・exact scope・秘密ストア・MCP子process・期限へbindして棚卸し、rotation、revokeを検証する。 |
-| 成功状態 | Credential classごとの最小権限・短寿命・hardwareまたはsecret-manager保護・利用monitoringに加え、GitHub MCPが既定read-onlyになり、orphan・stale・broad・平文・malformed recordは拒否される。 |
-| 対象外・残余リスク | Verifierはlive GitHub credentialを列挙・失効・実権限testせず、identity provider、developer endpoint、GitHub control plane自体の侵害を防がない。 |
+### セキュリティ上の問題
+
+GitHub OAuth token、PAT、SSH key、App credentialが長寿命・過剰権限・平文保管・未棚卸しだと、単一credential theftがsource改変や組織侵害へ拡大する。
+
+### 誰から、または何から守るか
+
+Phishing、malware、悪意あるtool、local access、漏洩credentialの再利用、owner不在、rotation・revocation失敗から守る。
+
+### 何が対象か
+
+Developerとautomationのsource-platform credential、OAuth・PAT・SSH・GitHub App、IDEからGitHub MCPへのsecret delivery、scope、repository access、保管、期限、利用証跡、incident response。
+
+### 何をするか
+
+Automationは短命installation token、GitHub MCPはOAuthを優先し、PAT fallbackをpurpose・owner・exact scope・秘密ストア・MCP子process・期限へbindして棚卸し、rotation、revokeを検証する。
+
+### 成功状態
+
+Credential classごとの最小権限・短寿命・hardwareまたはsecret-manager保護・利用monitoringに加え、GitHub MCPが既定read-onlyになり、orphan・stale・broad・平文・malformed recordは拒否される。
+
+### 対象外・残余リスク
+
+Verifierはlive GitHub credentialを列挙・失効・実権限testせず、identity provider、developer endpoint、GitHub control plane自体の侵害を防がない。
 
 ## Security problem
 

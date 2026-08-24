@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Build時には安全だったartifactも、dependency・base imageの新規脆弱性、support終了、registry lifecycleの時間変化により危険になる。検出だけしても、再build・再deploy・旧digest除去まで追跡しなければ本番riskは残る。 |
-| 誰から、または何から守るか | 侵害dependency、古いbase image、既知脆弱性、support終了、partial rollout、mutable tag、inventory欠落、運用放置、scanner／registry／deployment collector障害から守る。 |
-| 何が対象か | Active deployment、artifact digest、SBOM serial、vulnerability／support／registry evidence、rebuild decision、source revision、build／provenance／signature、registry publication、admission receipt。 |
-| 何をするか | Exactな稼働digestを起点にcurrent evidenceを評価し、policyでownerと期限を決め、clean rebuildのnew digestをrelease・admitし、全environmentからold digestが消えたことを別に検証する。 |
-| 成功状態 | `REMEDIATED`は、新digestのevidence-completeなbuild、immutable publication、全targetのadmission、fresh inventoryによるold digestゼロが揃った場合だけ成立する。検査不能は`ERROR`、期限超過は`OVERDUE`となる。 |
-| 対象外・残余リスク | Offline fixtureはlive scanner、全cluster inventory、build platform、registry、admission controllerを証明しない。新build自体の安全性は既存build／release／container controlが担う。 |
+### セキュリティ上の問題
+
+Build時には安全だったartifactも、dependency・base imageの新規脆弱性、support終了、registry lifecycleの時間変化により危険になる。検出だけしても、再build・再deploy・旧digest除去まで追跡しなければ本番riskは残る。
+
+### 誰から、または何から守るか
+
+侵害dependency、古いbase image、既知脆弱性、support終了、partial rollout、mutable tag、inventory欠落、運用放置、scanner／registry／deployment collector障害から守る。
+
+### 何が対象か
+
+Active deployment、artifact digest、SBOM serial、vulnerability／support／registry evidence、rebuild decision、source revision、build／provenance／signature、registry publication、admission receipt。
+
+### 何をするか
+
+Exactな稼働digestを起点にcurrent evidenceを評価し、policyでownerと期限を決め、clean rebuildのnew digestをrelease・admitし、全environmentからold digestが消えたことを別に検証する。
+
+### 成功状態
+
+`REMEDIATED`は、新digestのevidence-completeなbuild、immutable publication、全targetのadmission、fresh inventoryによるold digestゼロが揃った場合だけ成立する。検査不能は`ERROR`、期限超過は`OVERDUE`となる。
+
+### 対象外・残余リスク
+
+Offline fixtureはlive scanner、全cluster inventory、build platform、registry、admission controllerを証明しない。新build自体の安全性は既存build／release／container controlが担う。
 
 ## Goal
 

@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Coding agentはrepository文書、issue、Web、API response、tool outputに含まれる文字列をinstructionと誤認し、本来のgoalを捨ててcredential取得、外部送信、control無効化、package導入、privileged操作を行う可能性がある。 |
-| 誰から、または何から守るか | 悪意あるcontributor・issue投稿者・Web publisher・API提供者、侵害されたMCP／scanner、直接promptを送る利用者、agentのtrust判定ミス、evidence collector／evaluator障害から守る。 |
-| 何が対象か | Agentのroot goalとinstruction hierarchy、repository policy、developer credential、network egress、dependency installation、command execution、legitimate task結果、pre-action audit。 |
-| 何をするか | 6種類の入力を常にuntrusted dataとして分類し、embedded requestを5つのaction classへ正規化する。AI-001／002／004のexact identityへ結び付け、外部runtime boundaryでtool実行前に拒否する。 |
-| 成功状態 | 6 scenarioすべてでgoalとtrust境界が維持され、危険操作はtool実行前にdenyされ、redacted auditが残り、拒否後も本来のtaskが正確に完了する。証跡不能は`ERROR`になる。 |
-| 対象外・残余リスク | Synthetic fixtureはlive modelの耐性、実endpointへのpolicy配布、未知の難読化、画像・音声、memory poisoning、multi-agent injectionを証明しない。検知は補助で、強制境界はPSB-AI-004に依存する。 |
+### セキュリティ上の問題
+
+Coding agentはrepository文書、issue、Web、API response、tool outputに含まれる文字列をinstructionと誤認し、本来のgoalを捨ててcredential取得、外部送信、control無効化、package導入、privileged操作を行う可能性がある。
+
+### 誰から、または何から守るか
+
+悪意あるcontributor・issue投稿者・Web publisher・API提供者、侵害されたMCP／scanner、直接promptを送る利用者、agentのtrust判定ミス、evidence collector／evaluator障害から守る。
+
+### 何が対象か
+
+Agentのroot goalとinstruction hierarchy、repository policy、developer credential、network egress、dependency installation、command execution、legitimate task結果、pre-action audit。
+
+### 何をするか
+
+6種類の入力を常にuntrusted dataとして分類し、embedded requestを5つのaction classへ正規化する。AI-001／002／004のexact identityへ結び付け、外部runtime boundaryでtool実行前に拒否する。
+
+### 成功状態
+
+6 scenarioすべてでgoalとtrust境界が維持され、危険操作はtool実行前にdenyされ、redacted auditが残り、拒否後も本来のtaskが正確に完了する。証跡不能は`ERROR`になる。
+
+### 対象外・残余リスク
+
+Synthetic fixtureはlive modelの耐性、実endpointへのpolicy配布、未知の難読化、画像・音声、memory poisoning、multi-agent injectionを証明しない。検知は補助で、強制境界はPSB-AI-004に依存する。
 
 ## セキュリティ上の問題
 

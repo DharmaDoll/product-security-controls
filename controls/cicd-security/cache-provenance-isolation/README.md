@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | CI cacheはrunをまたいでbytesを再利用するため、低信頼jobが書いたtoolやdependencyを後続のsecret-bearing jobがrestoreすると、workflow上の権限分離を迂回してcode executionを持ち込める。broad keyやprefix fallbackは別contextのcacheを暗黙に選ぶ。 |
-| 誰から、または何から守るか | untrusted PR作成者、侵害されたproducer job、cache storageを改ざんする攻撃者、古い署名済みcacheのreplay、誤ったkey設計、評価器や暗号toolの障害から守る。 |
-| 何が対象か | cache producer record、restore request、cache内容と展開path、repository／workflow／trust class／platform／revision／dependency identity、署名鍵、policy、restore quality gate。 |
-| 何をするか | producer recordをEd25519署名し、cache keyと要求をstable repository ID、full-SHA workflow、trust class、platform、revision、lock digest、content digest、path、24時間以下の期限へ結合する。prefix restoreと異なるtrust class間の移送を拒否する。 |
-| 成功状態 | 正規のtrusted producerから同一contextのtrusted consumerへのexact restoreだけが7チェックを通過し、改ざん・cross-boundary・期限切れはfinding、評価不能は独立したERRORになる。 |
-| 対象外・残余リスク | trusted producer自体の侵害、live provider設定、秘密鍵運用、archive全entryの安全な展開、同一untrusted class内での悪意あるcache利用は別controlと導入先運用が必要。exact revisionはcache hit率を下げる。 |
+### セキュリティ上の問題
+
+CI cacheはrunをまたいでbytesを再利用するため、低信頼jobが書いたtoolやdependencyを後続のsecret-bearing jobがrestoreすると、workflow上の権限分離を迂回してcode executionを持ち込める。broad keyやprefix fallbackは別contextのcacheを暗黙に選ぶ。
+
+### 誰から、または何から守るか
+
+untrusted PR作成者、侵害されたproducer job、cache storageを改ざんする攻撃者、古い署名済みcacheのreplay、誤ったkey設計、評価器や暗号toolの障害から守る。
+
+### 何が対象か
+
+cache producer record、restore request、cache内容と展開path、repository／workflow／trust class／platform／revision／dependency identity、署名鍵、policy、restore quality gate。
+
+### 何をするか
+
+producer recordをEd25519署名し、cache keyと要求をstable repository ID、full-SHA workflow、trust class、platform、revision、lock digest、content digest、path、24時間以下の期限へ結合する。prefix restoreと異なるtrust class間の移送を拒否する。
+
+### 成功状態
+
+正規のtrusted producerから同一contextのtrusted consumerへのexact restoreだけが7チェックを通過し、改ざん・cross-boundary・期限切れはfinding、評価不能は独立したERRORになる。
+
+### 対象外・残余リスク
+
+trusted producer自体の侵害、live provider設定、秘密鍵運用、archive全entryの安全な展開、同一untrusted class内での悪意あるcache利用は別controlと導入先運用が必要。exact revisionはcache hit率を下げる。
 
 ## Security problem and threat scenario
 

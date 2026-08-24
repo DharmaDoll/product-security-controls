@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | AI agentは停止条件が弱いとtoken・cost・時間・tool call・retry・recursionを消費し続け、denial-of-wallet、外部service負荷、重複side effect、長時間の権限保持を引き起こす。ログが欠けた状態を「利用なし」と扱うことも危険である。 |
-| 誰から、または何から守るか | resource-intensiveな依頼を送る攻撃者、prompt injection、暴走・loopするagent、障害時のretry storm、recursive workflow、侵害されたtool、usage collector・alert pipeline・circuit breakerの故障から守る。 |
-| 何が対象か | 1 agent sessionのinput/output/total token、整数micro-unit cost、wall-clock duration、tool call、高影響操作、retry、recursion、security anomaly、breaker decision、alert receipt。 |
-| 何をするか | session単位のhard budgetと80% warningをmodel外のpolicyで判定し、warning時はread-onlyへ制限、上限超過またはanomaly時は新規model callとside effectをblockする。sanitized telemetryとalert deliveryも検証する。 |
-| 成功状態 | 正常sessionだけが継続し、warningはside effectを停止、上限超過・unknown tool連発・approval replayはcircuit breakerを開く。必要alertが120秒以内に届き、収集欠損やevaluator障害は`ERROR`になる。 |
-| 対象外・残余リスク | fixtureはproviderのbilling、tokenizer、gateway、backend、alert receiverのlive enforcementを証明しない。予算値は例であり、事業SLOや契約上限ではない。multi-agent全体予算、kill-switch後の復旧、model品質・安全性は別controlで扱う。 |
+### セキュリティ上の問題
+
+AI agentは停止条件が弱いとtoken・cost・時間・tool call・retry・recursionを消費し続け、denial-of-wallet、外部service負荷、重複side effect、長時間の権限保持を引き起こす。ログが欠けた状態を「利用なし」と扱うことも危険である。
+
+### 誰から、または何から守るか
+
+resource-intensiveな依頼を送る攻撃者、prompt injection、暴走・loopするagent、障害時のretry storm、recursive workflow、侵害されたtool、usage collector・alert pipeline・circuit breakerの故障から守る。
+
+### 何が対象か
+
+1 agent sessionのinput/output/total token、整数micro-unit cost、wall-clock duration、tool call、高影響操作、retry、recursion、security anomaly、breaker decision、alert receipt。
+
+### 何をするか
+
+session単位のhard budgetと80% warningをmodel外のpolicyで判定し、warning時はread-onlyへ制限、上限超過またはanomaly時は新規model callとside effectをblockする。sanitized telemetryとalert deliveryも検証する。
+
+### 成功状態
+
+正常sessionだけが継続し、warningはside effectを停止、上限超過・unknown tool連発・approval replayはcircuit breakerを開く。必要alertが120秒以内に届き、収集欠損やevaluator障害は`ERROR`になる。
+
+### 対象外・残余リスク
+
+fixtureはproviderのbilling、tokenizer、gateway、backend、alert receiverのlive enforcementを証明しない。予算値は例であり、事業SLOや契約上限ではない。multi-agent全体予算、kill-switch後の復旧、model品質・安全性は別controlで扱う。
 
 ## セキュリティ上の問題
 

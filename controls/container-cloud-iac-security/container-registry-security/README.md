@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Registryが平文通信、広い権限、長寿命credential、mutable release、監査欠落、無期限のstale imageを許すと、正しいbuild後でもimageの窃取・差し替え・再利用が起きる。 |
-| 誰から、または何から守るか | 外部攻撃者、network attacker、盗まれたdeveloper credential、over-privileged CI identity、compromised publisher、registry／audit／lifecycle service障害から守る。 |
-| 何が対象か | Private／release container registryのendpoint、repository、actor、pull／push／delete／admin権限、release tagとdigest、audit record、image lifecycle inventory。 |
-| 何をするか | TLSとexact trust anchor、default-denyのrepository/action scope、短寿命identity、protected reference immutability、attributable audit、期限付きの非deployable lifecycleを検証する。 |
-| 成功状態 | 7 checksのpolicyと証跡が一致し、anonymous／cross-repository write、release置換、unaudited action、stale deployable imageを拒否し、証跡異常は`ERROR`になる。 |
-| 対象外・残余リスク | Fixtureはlive registry enforcementを証明せず、imageの脆弱性・malware、署名・provenance、workload admission、registry可用性をこのcontrol単独では保証しない。 |
+### セキュリティ上の問題
+
+Registryが平文通信、広い権限、長寿命credential、mutable release、監査欠落、無期限のstale imageを許すと、正しいbuild後でもimageの窃取・差し替え・再利用が起きる。
+
+### 誰から、または何から守るか
+
+外部攻撃者、network attacker、盗まれたdeveloper credential、over-privileged CI identity、compromised publisher、registry／audit／lifecycle service障害から守る。
+
+### 何が対象か
+
+Private／release container registryのendpoint、repository、actor、pull／push／delete／admin権限、release tagとdigest、audit record、image lifecycle inventory。
+
+### 何をするか
+
+TLSとexact trust anchor、default-denyのrepository/action scope、短寿命identity、protected reference immutability、attributable audit、期限付きの非deployable lifecycleを検証する。
+
+### 成功状態
+
+7 checksのpolicyと証跡が一致し、anonymous／cross-repository write、release置換、unaudited action、stale deployable imageを拒否し、証跡異常は`ERROR`になる。
+
+### 対象外・残余リスク
+
+Fixtureはlive registry enforcementを証明せず、imageの脆弱性・malware、署名・provenance、workload admission、registry可用性をこのcontrol単独では保証しない。
 
 ## 何を守るcontrolか
 

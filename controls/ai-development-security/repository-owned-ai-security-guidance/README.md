@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | AI coding agent向けの`AGENTS.md`やCodeGuard指示がmutable、未レビュー、自己承認、または評価不能だと、悪意あるrules fileがcontrol回避を正当化し、見かけ上だけ安全な結果を作れる。 |
-| 誰から、または何から守るか | Rules-file backdoor、侵害されたguidance配布元、悪意あるcontributor、AI agentの誤判断、benchmarkのcherry-pick、collector／evaluator障害から守る。 |
-| 何が対象か | Root `AGENTS.md`、repository-owned Project CodeGuard profile、実験手順、semantic review、frozen task corpus、baseline／guided結果、評価criteria。 |
-| 何をするか | Guidanceをrepository path・revision・SHA-256 bundleへ固定して意味を独立レビューし、同一prompt・初期state・model・反復・scorerのpaired benchmarkで安全性と使いやすさを別々に測る。 |
-| 成功状態 | 改ざんと権限上書きを拒否し、4 task×2反復が完全に対応し、安全invariant改善、unsafe recommendation、task成功、false blockを分離して表示し、証跡不能は`ERROR`となる。 |
-| 対象外・残余リスク | Synthetic fixtureはlive modelの効果、agentが実際に指示へ従ったこと、sandboxやtool権限の強制を証明しない。今回の結論は`PILOT`で、live効果は`NOT_CHECKED`である。 |
+### セキュリティ上の問題
+
+AI coding agent向けの`AGENTS.md`やCodeGuard指示がmutable、未レビュー、自己承認、または評価不能だと、悪意あるrules fileがcontrol回避を正当化し、見かけ上だけ安全な結果を作れる。
+
+### 誰から、または何から守るか
+
+Rules-file backdoor、侵害されたguidance配布元、悪意あるcontributor、AI agentの誤判断、benchmarkのcherry-pick、collector／evaluator障害から守る。
+
+### 何が対象か
+
+Root `AGENTS.md`、repository-owned Project CodeGuard profile、実験手順、semantic review、frozen task corpus、baseline／guided結果、評価criteria。
+
+### 何をするか
+
+Guidanceをrepository path・revision・SHA-256 bundleへ固定して意味を独立レビューし、同一prompt・初期state・model・反復・scorerのpaired benchmarkで安全性と使いやすさを別々に測る。
+
+### 成功状態
+
+改ざんと権限上書きを拒否し、4 task×2反復が完全に対応し、安全invariant改善、unsafe recommendation、task成功、false blockを分離して表示し、証跡不能は`ERROR`となる。
+
+### 対象外・残余リスク
+
+Synthetic fixtureはlive modelの効果、agentが実際に指示へ従ったこと、sandboxやtool権限の強制を証明しない。今回の結論は`PILOT`で、live効果は`NOT_CHECKED`である。
 
 ## セキュリティ上の問題
 

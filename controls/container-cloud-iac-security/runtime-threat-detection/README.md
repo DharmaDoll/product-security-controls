@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Admission時に安全だったcontainerでも、脆弱性悪用、悪意ある依存関係、侵害後の操作により、実行中にshell起動、重要file変更、権限昇格、runtime socket操作、不審通信、resource濫用が発生し得る。 |
-| 誰から、または何から守るか | Applicationへ侵入した外部攻撃者、悪意あるまたは侵害されたdependency・image、内部不正、誤操作、sensor停止、event drop、通知経路障害から守る。 |
-| 何が対象か | Admit済みcontainer workload、exact image digest、process・file・privilege・runtime境界・network・resource event、Falco/Sysdig adapter、sensor health、alert delivery、response handoff。 |
-| 何をするか | Falco JSONまたはSysdig runtime policy eventを共通schemaへ正規化し、admission時のworkload/image identityへ結び、6種類の挙動、rule完全性、sequence、drop、sensor状態、通知到達性を検証する。 |
-| 成功状態 | Review済みruleが全て有効で、sensorと通知経路が正常、event欠落がなく、検知eventが正確なworkloadへ結び付く。違反は`DETECTED`、観測不能は`ERROR`となり、破壊的responseは独立承認なしに実行されない。 |
-| 対象外・残余リスク | Fixtureはlive clusterへのsensor導入、kernel telemetry完全性、実際のSOC応答を証明しない。未知の攻撃、rule回避、誤検知、sensorのhost侵害、暗号化通信内容は残余リスクである。 |
+### セキュリティ上の問題
+
+Admission時に安全だったcontainerでも、脆弱性悪用、悪意ある依存関係、侵害後の操作により、実行中にshell起動、重要file変更、権限昇格、runtime socket操作、不審通信、resource濫用が発生し得る。
+
+### 誰から、または何から守るか
+
+Applicationへ侵入した外部攻撃者、悪意あるまたは侵害されたdependency・image、内部不正、誤操作、sensor停止、event drop、通知経路障害から守る。
+
+### 何が対象か
+
+Admit済みcontainer workload、exact image digest、process・file・privilege・runtime境界・network・resource event、Falco/Sysdig adapter、sensor health、alert delivery、response handoff。
+
+### 何をするか
+
+Falco JSONまたはSysdig runtime policy eventを共通schemaへ正規化し、admission時のworkload/image identityへ結び、6種類の挙動、rule完全性、sequence、drop、sensor状態、通知到達性を検証する。
+
+### 成功状態
+
+Review済みruleが全て有効で、sensorと通知経路が正常、event欠落がなく、検知eventが正確なworkloadへ結び付く。違反は`DETECTED`、観測不能は`ERROR`となり、破壊的responseは独立承認なしに実行されない。
+
+### 対象外・残余リスク
+
+Fixtureはlive clusterへのsensor導入、kernel telemetry完全性、実際のSOC応答を証明しない。未知の攻撃、rule回避、誤検知、sensorのhost侵害、暗号化通信内容は残余リスクである。
 
 ## 何を守るcontrolか
 

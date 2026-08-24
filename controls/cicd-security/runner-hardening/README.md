@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | 長寿命または共有runnerは、以前のjobが残したprocess、workspace、credentialや改変されたimageを次のjobへ引き継ぎ、cloud metadata、host socket、management networkへの到達点にもなり得る。 |
-| 誰から、または何から守るか | 悪意あるcontributor、侵害されたdependency／workflow、runner imageへのimplant、運用者の設定誤り、teardown／evidence collectorの失敗から守る。 |
-| 何が対象か | GitHub-hosted runnerの選択、self-hosted runner fleet、runner group、provisioning image、registration authority、startup state、network境界、job終了後のderegistration・破棄・log。 |
-| 何をするか | 未信頼jobをreview済みhosted profileへroutingし、self-hostedはtrusted scopeだけのJIT one-job instanceに限定する。digest検証済みimageからcleanに起動し、host資産を遮断し、外部logを残して期限内に破棄する。 |
-| 成功状態 | 全dispatchがexact profileへ一致し、self-hostedは1 jobだけ処理する。prior stateとhost credentialがなく、metadata／management／host socketへ到達せず、jobとrunner generationに紐づくteardown receiptと外部logがfreshかつ完全である。collector欠落やstale evidenceは`ERROR`になる。 |
-| 対象外・残余リスク | Providerのcontrol plane、GitHub-hosted VMの実破棄、job内部のapplication egress、workflow token、build sandboxをこのfixtureだけでは証明しない。live provider／provisioner adapterとnetwork probeが別途必要である。 |
+### セキュリティ上の問題
+
+長寿命または共有runnerは、以前のjobが残したprocess、workspace、credentialや改変されたimageを次のjobへ引き継ぎ、cloud metadata、host socket、management networkへの到達点にもなり得る。
+
+### 誰から、または何から守るか
+
+悪意あるcontributor、侵害されたdependency／workflow、runner imageへのimplant、運用者の設定誤り、teardown／evidence collectorの失敗から守る。
+
+### 何が対象か
+
+GitHub-hosted runnerの選択、self-hosted runner fleet、runner group、provisioning image、registration authority、startup state、network境界、job終了後のderegistration・破棄・log。
+
+### 何をするか
+
+未信頼jobをreview済みhosted profileへroutingし、self-hostedはtrusted scopeだけのJIT one-job instanceに限定する。digest検証済みimageからcleanに起動し、host資産を遮断し、外部logを残して期限内に破棄する。
+
+### 成功状態
+
+全dispatchがexact profileへ一致し、self-hostedは1 jobだけ処理する。prior stateとhost credentialがなく、metadata／management／host socketへ到達せず、jobとrunner generationに紐づくteardown receiptと外部logがfreshかつ完全である。collector欠落やstale evidenceは`ERROR`になる。
+
+### 対象外・残余リスク
+
+Providerのcontrol plane、GitHub-hosted VMの実破棄、job内部のapplication egress、workflow token、build sandboxをこのfixtureだけでは証明しない。live provider／provisioner adapterとnetwork probeが別途必要である。
 
 ## Security problem
 

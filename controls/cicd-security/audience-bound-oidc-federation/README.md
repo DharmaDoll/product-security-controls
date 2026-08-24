@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | OIDCへ移行して長期cloud keyをなくしても、cloud側のtrust policyがorganization wildcard、誤ったaudience、可変workflow refを許すと、別repositoryや侵害jobが短期credentialを取得できる。 |
-| 誰から、または何から守るか | fork／PR作成者、侵害されたActionやdependency、悪意あるrepository、差し替えられたreusable workflow、期限切れ・replay token、過剰なcloud role設定から守る。 |
-| 何が対象か | GitHub Actions OIDC JWT、cloud trust policy、protected deploy job、repository secret inventory、reusable workflow identity、交換後の一時credential。 |
-| 何をするか | JWT署名とissuer、audience、不変ID付きsubject、repository、ref、environment、workflowを完全一致で検証し、発行jobとcloud権限・寿命・replayを制限する。 |
-| 成功状態 | protected deploy jobだけが署名済みtokenを一度交換でき、15分以下かつ対象resource・action限定のcredentialを得て、静的cloud keyは存在しない。 |
-| 対象外・残余リスク | 短期credentialも同じjob内の悪意あるcodeには窃取され得る。provider固有IAM、GitHub Environment設定、鍵取得・rotation、live auditは導入先で追加確認する。 |
+### セキュリティ上の問題
+
+OIDCへ移行して長期cloud keyをなくしても、cloud側のtrust policyがorganization wildcard、誤ったaudience、可変workflow refを許すと、別repositoryや侵害jobが短期credentialを取得できる。
+
+### 誰から、または何から守るか
+
+fork／PR作成者、侵害されたActionやdependency、悪意あるrepository、差し替えられたreusable workflow、期限切れ・replay token、過剰なcloud role設定から守る。
+
+### 何が対象か
+
+GitHub Actions OIDC JWT、cloud trust policy、protected deploy job、repository secret inventory、reusable workflow identity、交換後の一時credential。
+
+### 何をするか
+
+JWT署名とissuer、audience、不変ID付きsubject、repository、ref、environment、workflowを完全一致で検証し、発行jobとcloud権限・寿命・replayを制限する。
+
+### 成功状態
+
+protected deploy jobだけが署名済みtokenを一度交換でき、15分以下かつ対象resource・action限定のcredentialを得て、静的cloud keyは存在しない。
+
+### 対象外・残余リスク
+
+短期credentialも同じjob内の悪意あるcodeには窃取され得る。provider固有IAM、GitHub Environment設定、鍵取得・rotation、live auditは導入先で追加確認する。
 
 ## Security problem
 

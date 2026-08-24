@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | AI agentのmodel出力はもっともらしくても信頼できる命令ではない。free-form出力、承認後に変わったtarget／parameter、不正なtool結果、timeout後の無条件retryを実行すると、未承認操作、誤対象への変更、二重実行、偽の成功判定につながる。 |
-| 誰から、または何から守るか | prompt injectionを仕込む攻撃者、侵害されたmodel・tool・gateway、承認と実行の間で値を変える競合、malformed response、network timeout、agentまたは実装者の誤ったretry処理から守る。 |
-| 何が対象か | model proposal、typed tool call、policy decision、PSB-AI-004 authorization receipt、execution envelope、idempotency identity、tool result、reconciliation state、監査証跡。 |
-| 何をするか | model出力をstrict schemaで検証してcanonical request digestを作り、独立policy・高影響操作の承認・実行・結果を同じdigestとresource identityへ束縛する。replayを拒否し、実行結果が不明なら隔離して照合する。 |
-| 成功状態 | schema不正とscope逸脱は実行前にdenyされ、許可された操作だけがexact target／parameterで1回dispatchされる。結果はaction固有schemaとrequest identityが一致し、unknown outcomeは承認を戻さず自動retryしない。検証不能は`ERROR`となる。 |
-| 対象外・残余リスク | deterministic fixtureはlive agent、MCP gateway、外部service、backend idempotency storeの実 enforcementを証明しない。承認者が正確だが有害な操作を承認するリスク、tool自体の悪意、application authorization、rollbackの安全性は別途扱う。 |
+### セキュリティ上の問題
+
+AI agentのmodel出力はもっともらしくても信頼できる命令ではない。free-form出力、承認後に変わったtarget／parameter、不正なtool結果、timeout後の無条件retryを実行すると、未承認操作、誤対象への変更、二重実行、偽の成功判定につながる。
+
+### 誰から、または何から守るか
+
+prompt injectionを仕込む攻撃者、侵害されたmodel・tool・gateway、承認と実行の間で値を変える競合、malformed response、network timeout、agentまたは実装者の誤ったretry処理から守る。
+
+### 何が対象か
+
+model proposal、typed tool call、policy decision、PSB-AI-004 authorization receipt、execution envelope、idempotency identity、tool result、reconciliation state、監査証跡。
+
+### 何をするか
+
+model出力をstrict schemaで検証してcanonical request digestを作り、独立policy・高影響操作の承認・実行・結果を同じdigestとresource identityへ束縛する。replayを拒否し、実行結果が不明なら隔離して照合する。
+
+### 成功状態
+
+schema不正とscope逸脱は実行前にdenyされ、許可された操作だけがexact target／parameterで1回dispatchされる。結果はaction固有schemaとrequest identityが一致し、unknown outcomeは承認を戻さず自動retryしない。検証不能は`ERROR`となる。
+
+### 対象外・残余リスク
+
+deterministic fixtureはlive agent、MCP gateway、外部service、backend idempotency storeの実 enforcementを証明しない。承認者が正確だが有害な操作を承認するリスク、tool自体の悪意、application authorization、rollbackの安全性は別途扱う。
 
 ## セキュリティ上の問題
 

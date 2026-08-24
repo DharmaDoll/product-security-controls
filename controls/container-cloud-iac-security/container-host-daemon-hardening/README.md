@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Production container hostがgeneral-purpose化し、patch遅延、public daemon API、runtime socket、弱いfile権限、kernel isolation欠落、broad adminを抱えると、1 containerの侵害がnode takeoverへ拡大する。 |
-| 誰から、または何から守るか | Compromised workload、external attacker、stolen operator identity、malicious local process、patch／inventory／audit障害、改変されたboot chainから守る。 |
-| 何が対象か | Linux production／shared container hostのOS、kernel、Docker／containerd／CRI-O daemon、socket、設定・binary・storage・service unit、management ingress、operator、audit、hardware trust。 |
-| 何をするか | Hostを専用・最小化して更新し、daemon管理面、user namespace、seccomp／LSM、protected path、operator RBAC、private network、immutable audit、secure boot／attestationを検証する。 |
-| 成功状態 | 9 checksがPASSし、host takeover経路はFAIL、unsupported platformは`NOT_CHECKED`、collector・schema・freshness異常は`ERROR`としてcleanと区別される。 |
-| 対象外・残余リスク | Offline fixtureはlive host enforcementを証明せず、workload admission、registry、image scan、runtime behavior、application vulnerability、SLSA Build securityは別controlで扱う。 |
+### セキュリティ上の問題
+
+Production container hostがgeneral-purpose化し、patch遅延、public daemon API、runtime socket、弱いfile権限、kernel isolation欠落、broad adminを抱えると、1 containerの侵害がnode takeoverへ拡大する。
+
+### 誰から、または何から守るか
+
+Compromised workload、external attacker、stolen operator identity、malicious local process、patch／inventory／audit障害、改変されたboot chainから守る。
+
+### 何が対象か
+
+Linux production／shared container hostのOS、kernel、Docker／containerd／CRI-O daemon、socket、設定・binary・storage・service unit、management ingress、operator、audit、hardware trust。
+
+### 何をするか
+
+Hostを専用・最小化して更新し、daemon管理面、user namespace、seccomp／LSM、protected path、operator RBAC、private network、immutable audit、secure boot／attestationを検証する。
+
+### 成功状態
+
+9 checksがPASSし、host takeover経路はFAIL、unsupported platformは`NOT_CHECKED`、collector・schema・freshness異常は`ERROR`としてcleanと区別される。
+
+### 対象外・残余リスク
+
+Offline fixtureはlive host enforcementを証明せず、workload admission、registry、image scan、runtime behavior、application vulnerability、SLSA Build securityは別controlで扱う。
 
 ## 何を守るcontrolか
 

@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Dependencyやuntrusted sourceを実行するbuild jobにcredential、deploy権限、広いnetworkやhost権限があると、build compromiseが組織侵害へ直結する。 |
-| 誰から、または何から守るか | 侵害されたdependency、悪意あるbuild script、untrusted contributor、runner設定ミス、telemetry停止から守る。 |
-| 何が対象か | CI build environment、runner filesystem、credential、source、artifact、egress network、deploy pipeline、runtime telemetry。 |
-| 何をするか | Buildをephemeral・non-root・read-only・credential-free環境へ隔離し、default-deny egressとtelemetryを要求し、deployをartifactだけ受け取る別境界に分ける。 |
-| 成功状態 | Untrusted buildはread-only control-plane accessだけを持ち、credential・deploy権限・runtime socket・broad egressを持たず、検証不能時は停止する。 |
-| 対象外・残余リスク | JSON fixtureは実runner sandboxやfirewallを構築せず、許可先domainの侵害、DNS・proxy・artifact smugglingはplatform側の追加対策が必要である。 |
+### セキュリティ上の問題
+
+Dependencyやuntrusted sourceを実行するbuild jobにcredential、deploy権限、広いnetworkやhost権限があると、build compromiseが組織侵害へ直結する。
+
+### 誰から、または何から守るか
+
+侵害されたdependency、悪意あるbuild script、untrusted contributor、runner設定ミス、telemetry停止から守る。
+
+### 何が対象か
+
+CI build environment、runner filesystem、credential、source、artifact、egress network、deploy pipeline、runtime telemetry。
+
+### 何をするか
+
+Buildをephemeral・non-root・read-only・credential-free環境へ隔離し、default-deny egressとtelemetryを要求し、deployをartifactだけ受け取る別境界に分ける。
+
+### 成功状態
+
+Untrusted buildはread-only control-plane accessだけを持ち、credential・deploy権限・runtime socket・broad egressを持たず、検証不能時は停止する。
+
+### 対象外・残余リスク
+
+JSON fixtureは実runner sandboxやfirewallを構築せず、許可先domainの侵害、DNS・proxy・artifact smugglingはplatform側の追加対策が必要である。
 
 ## Goal
 

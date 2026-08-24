@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | RAGは外部文書をmodel contextへ昇格させるため、未認可・poisoned・別tenant・削除済みcontentがindexへ入ると、後のqueryで「信頼できる知識」として繰り返し返される。 |
-| 誰から、または何から守るか | 悪意あるcontent publisher、侵害connector／index writer、誤設定したshared vector DB、stale cache／replica、source ownerの失効漏れ、evidence collector障害から守る。 |
-| 何が対象か | Source registry、document bytes、chunk、embedding model、corpus snapshot、principal／tenant／classification、retrieval result、revocation／deletion tombstone。 |
-| 何をするか | Sourceをowner・revision・digest・license・tenantへ固定し、poisoningをembedding前に拒否し、chunkとmodelを結び、retrievalを別途認可し、source provenanceと削除を検証する。 |
-| 成功状態 | 未承認／poisoned sourceはindexへ入らず、許可chunkだけがexact snapshotに存在し、cross-tenant・over-classified・revoked retrievalはdeny、検証不能は`ERROR`になる。 |
-| 対象外・残余リスク | Live vector DB、connector、embedding、cache／replica削除、未知semantic poisoning、modelがcontextへ従う挙動、最終response leakageはfixtureだけでは証明しない。 |
+### セキュリティ上の問題
+
+RAGは外部文書をmodel contextへ昇格させるため、未認可・poisoned・別tenant・削除済みcontentがindexへ入ると、後のqueryで「信頼できる知識」として繰り返し返される。
+
+### 誰から、または何から守るか
+
+悪意あるcontent publisher、侵害connector／index writer、誤設定したshared vector DB、stale cache／replica、source ownerの失効漏れ、evidence collector障害から守る。
+
+### 何が対象か
+
+Source registry、document bytes、chunk、embedding model、corpus snapshot、principal／tenant／classification、retrieval result、revocation／deletion tombstone。
+
+### 何をするか
+
+Sourceをowner・revision・digest・license・tenantへ固定し、poisoningをembedding前に拒否し、chunkとmodelを結び、retrievalを別途認可し、source provenanceと削除を検証する。
+
+### 成功状態
+
+未承認／poisoned sourceはindexへ入らず、許可chunkだけがexact snapshotに存在し、cross-tenant・over-classified・revoked retrievalはdeny、検証不能は`ERROR`になる。
+
+### 対象外・残余リスク
+
+Live vector DB、connector、embedding、cache／replica削除、未知semantic poisoning、modelがcontextへ従う挙動、最終response leakageはfixtureだけでは証明しない。
 
 ## Goal
 

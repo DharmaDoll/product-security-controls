@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Supplier SBOMを存在や署名だけで信頼すると、正しく署名された別製品・別artifactや失効signerのinventoryが通常portfolioへ混入する。 |
-| 誰から、または何から守るか | 外部forger、transfer channel compromise、誤ったsupplier release job、未知・期限切れ・失効signer、status source・crypto verifier障害から守る。 |
-| 何が対象か | Supplier artifact、CycloneDX SBOM、signed envelope、detached signature、consumer trust root、signer status snapshot、portfolio upload identity。 |
-| 何をするか | 署名とkey digest、supplier・product・version、artifact・SBOM digest、serial・root identity、signer lifecycleを照合し、least-privilege import前に判定する。 |
-| 成功状態 | 全期待値を検証した入力だけが`ACCEPTED_FOR_PORTFOLIO_IMPORT`となり、不正・不一致は`QUARANTINE`、検証基盤障害は`ERROR`として通常importをblockする。 |
-| 対象外・残余リスク | Fixtureは完全なCycloneDX schema、production PKI・OCSP・CRL・transparencyを再現せず、正規supplier signerやbuild自体の侵害、SBOM omissionを検出できない場合がある。 |
+### セキュリティ上の問題
+
+Supplier SBOMを存在や署名だけで信頼すると、正しく署名された別製品・別artifactや失効signerのinventoryが通常portfolioへ混入する。
+
+### 誰から、または何から守るか
+
+外部forger、transfer channel compromise、誤ったsupplier release job、未知・期限切れ・失効signer、status source・crypto verifier障害から守る。
+
+### 何が対象か
+
+Supplier artifact、CycloneDX SBOM、signed envelope、detached signature、consumer trust root、signer status snapshot、portfolio upload identity。
+
+### 何をするか
+
+署名とkey digest、supplier・product・version、artifact・SBOM digest、serial・root identity、signer lifecycleを照合し、least-privilege import前に判定する。
+
+### 成功状態
+
+全期待値を検証した入力だけが`ACCEPTED_FOR_PORTFOLIO_IMPORT`となり、不正・不一致は`QUARANTINE`、検証基盤障害は`ERROR`として通常importをblockする。
+
+### 対象外・残余リスク
+
+Fixtureは完全なCycloneDX schema、production PKI・OCSP・CRL・transparencyを再現せず、正規supplier signerやbuild自体の侵害、SBOM omissionを検出できない場合がある。
 
 ## Goal
 

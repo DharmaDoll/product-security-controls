@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Agentが文書やtool outputをmemoryへ保存すると、untrusted instructionやcredentialが元のtrust情報を失ったまま後続sessionへ再注入され、goal hijack、情報漏えい、context枯渇を継続させる可能性がある。 |
-| 誰から、または何から守るか | Memory poisoningを仕込むcontent提供者、侵害tool、別user／session／task、過剰な保存を行うagent、cleanup／collector／evaluator障害、誤ったdata classificationから守る。 |
-| 何が対象か | Memory write candidate、payloadとprovenance、classification、user／session／task scope、TTL、active store、retrieval decision、expired payload、deletion tombstone。 |
-| 何をするか | 保存前にexact payload、source trust、classification、size、TTL、scopeを検査し、read時にも全scopeを再認可する。期限切れpayloadを削除し、contentを含まないtombstoneだけを残す。 |
-| 成功状態 | 承認summaryだけがactiveとなり、poisoned・credential-class・oversized writeが拒否される。Exact scopeだけがreadでき、cross-scopeとtombstoneはdeny、期限切れpayloadは5分以内に消える。証跡不能は`ERROR`となる。 |
-| 対象外・残余リスク | Local fixtureはhosted providerのmemory、backup、cache、replica、vector index、encryption、residency、管理者access、実削除を証明しない。これらはlive evidenceが得られるまで`NOT_CHECKED`である。 |
+### セキュリティ上の問題
+
+Agentが文書やtool outputをmemoryへ保存すると、untrusted instructionやcredentialが元のtrust情報を失ったまま後続sessionへ再注入され、goal hijack、情報漏えい、context枯渇を継続させる可能性がある。
+
+### 誰から、または何から守るか
+
+Memory poisoningを仕込むcontent提供者、侵害tool、別user／session／task、過剰な保存を行うagent、cleanup／collector／evaluator障害、誤ったdata classificationから守る。
+
+### 何が対象か
+
+Memory write candidate、payloadとprovenance、classification、user／session／task scope、TTL、active store、retrieval decision、expired payload、deletion tombstone。
+
+### 何をするか
+
+保存前にexact payload、source trust、classification、size、TTL、scopeを検査し、read時にも全scopeを再認可する。期限切れpayloadを削除し、contentを含まないtombstoneだけを残す。
+
+### 成功状態
+
+承認summaryだけがactiveとなり、poisoned・credential-class・oversized writeが拒否される。Exact scopeだけがreadでき、cross-scopeとtombstoneはdeny、期限切れpayloadは5分以内に消える。証跡不能は`ERROR`となる。
+
+### 対象外・残余リスク
+
+Local fixtureはhosted providerのmemory、backup、cache、replica、vector index、encryption、residency、管理者access、実削除を証明しない。これらはlive evidenceが得られるまで`NOT_CHECKED`である。
 
 ## セキュリティ上の問題
 

@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Mutableまたは出所不明のimageや、root・host access・無制限resourceを持つworkloadをadmitすると、application侵害がnodeやclusterへ拡大する。 |
-| 誰から、または何から守るか | Registry・publisher侵害、forged provenance、application内code execution、malicious workload、resource exhaustion、admission controller障害から守る。 |
-| 何が対象か | Kubernetes AdmissionReview、OCI manifest digest、SLSA provenance、Pod security context、capability、host境界、resource、NetworkPolicy、admission policy。 |
-| 何をするか | Exact OCI digestと`PSB-REL-001`のauthenticated provenanceを結び、non-root、drop ALL、read-only、host isolation、resource bound、default-deny networkをadmission前に検証する。 |
-| 成功状態 | 全9 checksとplatform evidenceが一致したworkloadだけがallow候補となり、policy違反・malformed input・verifier停止はdenyまたはerrorとしてfail closedになる。 |
-| 対象外・残余リスク | Fixtureはlive API server、admission controller、CNI、runtime enforcementを証明せず、許可済みimageやapplication logic自体の脆弱性も排除しない。 |
+### セキュリティ上の問題
+
+Mutableまたは出所不明のimageや、root・host access・無制限resourceを持つworkloadをadmitすると、application侵害がnodeやclusterへ拡大する。
+
+### 誰から、または何から守るか
+
+Registry・publisher侵害、forged provenance、application内code execution、malicious workload、resource exhaustion、admission controller障害から守る。
+
+### 何が対象か
+
+Kubernetes AdmissionReview、OCI manifest digest、SLSA provenance、Pod security context、capability、host境界、resource、NetworkPolicy、admission policy。
+
+### 何をするか
+
+Exact OCI digestと`PSB-REL-001`のauthenticated provenanceを結び、non-root、drop ALL、read-only、host isolation、resource bound、default-deny networkをadmission前に検証する。
+
+### 成功状態
+
+全9 checksとplatform evidenceが一致したworkloadだけがallow候補となり、policy違反・malformed input・verifier停止はdenyまたはerrorとしてfail closedになる。
+
+### 対象外・残余リスク
+
+Fixtureはlive API server、admission controller、CNI、runtime enforcementを証明せず、許可済みimageやapplication logic自体の脆弱性も排除しない。
 
 ## 何を守るcontrolか
 

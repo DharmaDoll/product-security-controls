@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Agent間messageを単なるmodel contextとして信頼すると、偽装sender、権限増幅、cross-tenant data移送、budget増幅、replay、再委譲により、一体のagent侵害がagent chain全体へ伝播する。 |
-| 誰から、または何から守るか | Goal-hijacked／侵害済みagent、偽装agent、改ざんされたmessage transport、stale/replayed delegation、過剰なorchestrator設定、collector・crypto verifier障害から守る。 |
-| 何が対象か | Orchestratorとworker/reviewer agentのidentity・public key、parent request、delegation envelope、capability、tenant・resource・data classification、resource budget、replay state、isolated runtime、signed response。 |
-| 何をするか | Agent間delegationとresponseをEd25519署名し、exact sender/recipient edge、parent request、権限・data・budget ceiling、TTL・nonce・sequence・hopをmodel外で検証してから専用contextで実行する。 |
-| 成功状態 | 正当な1-hop review delegationだけが許可され、署名偽造、権限・tenant・budget逸脱、replay、onward delegation、ambient credential、response差替えは遮断され、評価不能は`ERROR`になる。 |
-| 対象外・残余リスク | Synthetic public-key fixtureはlive agent identity、transport、key custody、atomic replay ledger、process isolation、model provider、multi-hop recoveryを証明しない。Live enforcementは`NOT_CHECKED`である。 |
+### セキュリティ上の問題
+
+Agent間messageを単なるmodel contextとして信頼すると、偽装sender、権限増幅、cross-tenant data移送、budget増幅、replay、再委譲により、一体のagent侵害がagent chain全体へ伝播する。
+
+### 誰から、または何から守るか
+
+Goal-hijacked／侵害済みagent、偽装agent、改ざんされたmessage transport、stale/replayed delegation、過剰なorchestrator設定、collector・crypto verifier障害から守る。
+
+### 何が対象か
+
+Orchestratorとworker/reviewer agentのidentity・public key、parent request、delegation envelope、capability、tenant・resource・data classification、resource budget、replay state、isolated runtime、signed response。
+
+### 何をするか
+
+Agent間delegationとresponseをEd25519署名し、exact sender/recipient edge、parent request、権限・data・budget ceiling、TTL・nonce・sequence・hopをmodel外で検証してから専用contextで実行する。
+
+### 成功状態
+
+正当な1-hop review delegationだけが許可され、署名偽造、権限・tenant・budget逸脱、replay、onward delegation、ambient credential、response差替えは遮断され、評価不能は`ERROR`になる。
+
+### 対象外・残余リスク
+
+Synthetic public-key fixtureはlive agent identity、transport、key custody、atomic replay ledger、process isolation、model provider、multi-hop recoveryを証明しない。Live enforcementは`NOT_CHECKED`である。
 
 ## セキュリティ上の問題
 

@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Goalを逸脱・侵害されたagentが停止命令を無視できる、または停止後に古いkey・session・approvalを再利用できると、tool操作、model利用、memory汚染、agent間伝播が継続し、拙速な復旧で再侵害する。 |
-| 誰から、または何から守るか | Prompt injectionやsupply-chain compromiseを受けたagent、誤った自律判断、侵害operator、retry automation、agent自身へ依存したkill switch、control-plane・collector・署名検証障害から守る。 |
-| 何が対象か | Agent/session identity、model・tool・delegation・memory authority、agent key、approval、進行中action、incident evidence、fallback runbook、復旧用identityとread-only canary。 |
-| 何をするか | Model・agent・repository・extensionから独立したcontrol planeで、署名付き停止命令をexact agent/sessionへ適用する。全authorityを失効し、不確実なactionを隔離し、model非依存fallbackを使い、二者承認後に新しいidentityで段階復旧する。 |
-| 成功状態 | 検知から60秒以内に新規model/tool/delegation/memory操作が止まり、旧authorityが無効化される。証跡保全とfallback試験後、旧key/sessionのreplayが拒否され、独立した二者署名により新sessionのread-only canaryだけが再開する。 |
-| 対象外・残余リスク | Synthetic fixtureはlive provider、gateway、key custody、credential revocation、process kill、SIEM、incident teamの実運用を証明しない。外部side effectのrollback、full-authority復旧、原因となったmodelの安全性、組織PSIRT成熟度は別途必要である。 |
+### セキュリティ上の問題
+
+Goalを逸脱・侵害されたagentが停止命令を無視できる、または停止後に古いkey・session・approvalを再利用できると、tool操作、model利用、memory汚染、agent間伝播が継続し、拙速な復旧で再侵害する。
+
+### 誰から、または何から守るか
+
+Prompt injectionやsupply-chain compromiseを受けたagent、誤った自律判断、侵害operator、retry automation、agent自身へ依存したkill switch、control-plane・collector・署名検証障害から守る。
+
+### 何が対象か
+
+Agent/session identity、model・tool・delegation・memory authority、agent key、approval、進行中action、incident evidence、fallback runbook、復旧用identityとread-only canary。
+
+### 何をするか
+
+Model・agent・repository・extensionから独立したcontrol planeで、署名付き停止命令をexact agent/sessionへ適用する。全authorityを失効し、不確実なactionを隔離し、model非依存fallbackを使い、二者承認後に新しいidentityで段階復旧する。
+
+### 成功状態
+
+検知から60秒以内に新規model/tool/delegation/memory操作が止まり、旧authorityが無効化される。証跡保全とfallback試験後、旧key/sessionのreplayが拒否され、独立した二者署名により新sessionのread-only canaryだけが再開する。
+
+### 対象外・残余リスク
+
+Synthetic fixtureはlive provider、gateway、key custody、credential revocation、process kill、SIEM、incident teamの実運用を証明しない。外部side effectのrollback、full-authority復旧、原因となったmodelの安全性、組織PSIRT成熟度は別途必要である。
 
 ## セキュリティ上の問題
 

@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Coding agentはshell、filesystem、Git、networkをdeveloper権限で操作でき、prompt上の注意だけでは誤操作や権限悪用を止められない。 |
-| 誰から、または何から守るか | 悪意あるrepository指示、prompt injection、侵害されたMCP・Skill・plugin・hook、盗まれたidentity、agentまたは承認者の判断ミスから守る。 |
-| 何が対象か | AI coding agent、sourceとGit history、developer credential、agent policy、extension、host filesystem、network destination、外部serviceへの操作。 |
-| 何をするか | Managed sandbox、workspace限定write、network default deny、extension capability制約、typed command broker、署名付き単回approval、sanitized auditをprovider共通policyで強制する。 |
-| 成功状態 | Claude CodeとCodex adapterが同じ最小権限結果を満たし、未分類・改ざん・期限切れ・replay・評価不能な操作は実行前にfail closedとなる。 |
-| 対象外・残余リスク | Static fixtureは実agent binaryが設定を読み込んだ証明ではなく、承認済みtoolやdeveloper endpoint自体の侵害、model出力の安全性を完全には保証しない。 |
+### セキュリティ上の問題
+
+Coding agentはshell、filesystem、Git、networkをdeveloper権限で操作でき、prompt上の注意だけでは誤操作や権限悪用を止められない。
+
+### 誰から、または何から守るか
+
+悪意あるrepository指示、prompt injection、侵害されたMCP・Skill・plugin・hook、盗まれたidentity、agentまたは承認者の判断ミスから守る。
+
+### 何が対象か
+
+AI coding agent、sourceとGit history、developer credential、agent policy、extension、host filesystem、network destination、外部serviceへの操作。
+
+### 何をするか
+
+Managed sandbox、workspace限定write、network default deny、extension capability制約、typed command broker、署名付き単回approval、sanitized auditをprovider共通policyで強制する。
+
+### 成功状態
+
+Claude CodeとCodex adapterが同じ最小権限結果を満たし、未分類・改ざん・期限切れ・replay・評価不能な操作は実行前にfail closedとなる。
+
+### 対象外・残余リスク
+
+Static fixtureは実agent binaryが設定を読み込んだ証明ではなく、承認済みtoolやdeveloper endpoint自体の侵害、model出力の安全性を完全には保証しない。
 
 ## セキュリティ上の問題
 

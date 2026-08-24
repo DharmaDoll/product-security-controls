@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Skill、MCP server、plugin、外部promptはagentへ指示やtool権限を追加するsupply-chain dependencyである。名前だけを信頼すると、review後の差し替え、tool poisoning、credential収集、隠れた副作用を許してしまう。 |
-| 誰から、または何から守るか | 悪意ある／侵害されたpublisher、marketplaceの差し替え、lookalike dependency、過剰権限設定、自己承認、期限切れreview、失効情報collectorの障害から守る。 |
-| 何が対象か | Agent Skill、MCP server、plugin、外部prompt packageのcanonical source、commit、artifact、license、owner、semantic review、capability、benchmark、期限、revocation、runtime identity。 |
-| 何をするか | 依存物をfull commitとSHA-256へ固定し、publisherと異なるreviewerが意味を確認する。filesystem／network／secret／tool権限をdependency別にallow-list化し、exact identityへbenchmarkとrevocationを結び付ける。 |
-| 成功状態 | 5件・4種類のfixtureがexact policyを満たし、mutable・自己承認・過剰権限・期限切れ・失効は`FAIL`、改ざん・欠落・stale・collector／evaluator障害は`ERROR`になる。承認identityとruntime dispositionをPSB-AI-004へ引き渡せる。 |
-| 対象外・残余リスク | Offline synthetic fixtureはlive dependencyの安全性、publisherやrevocation sourceの信頼性、endpointでの実効権限を証明しない。実行時強制はPSB-AI-004が担当する。 |
+### セキュリティ上の問題
+
+Skill、MCP server、plugin、外部promptはagentへ指示やtool権限を追加するsupply-chain dependencyである。名前だけを信頼すると、review後の差し替え、tool poisoning、credential収集、隠れた副作用を許してしまう。
+
+### 誰から、または何から守るか
+
+悪意ある／侵害されたpublisher、marketplaceの差し替え、lookalike dependency、過剰権限設定、自己承認、期限切れreview、失効情報collectorの障害から守る。
+
+### 何が対象か
+
+Agent Skill、MCP server、plugin、外部prompt packageのcanonical source、commit、artifact、license、owner、semantic review、capability、benchmark、期限、revocation、runtime identity。
+
+### 何をするか
+
+依存物をfull commitとSHA-256へ固定し、publisherと異なるreviewerが意味を確認する。filesystem／network／secret／tool権限をdependency別にallow-list化し、exact identityへbenchmarkとrevocationを結び付ける。
+
+### 成功状態
+
+5件・4種類のfixtureがexact policyを満たし、mutable・自己承認・過剰権限・期限切れ・失効は`FAIL`、改ざん・欠落・stale・collector／evaluator障害は`ERROR`になる。承認identityとruntime dispositionをPSB-AI-004へ引き渡せる。
+
+### 対象外・残余リスク
+
+Offline synthetic fixtureはlive dependencyの安全性、publisherやrevocation sourceの信頼性、endpointでの実効権限を証明しない。実行時強制はPSB-AI-004が担当する。
 
 ## セキュリティ上の問題
 

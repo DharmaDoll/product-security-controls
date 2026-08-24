@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Package install時のlifecycle scriptやsource buildは、dependencyを利用する前にdeveloper端末やCIの権限で任意codeを実行できる。 |
-| 誰から、または何から守るか | 侵害・偽装されたpackage、悪意あるmaintainer、typosquatting、source distribution fallback、広すぎるまたは期限切れ例外から守る。 |
-| 何が対象か | npm・pnpm・Bun・pip等のdependency install、lifecycle script、build backend、source distribution、repository-owned policy、例外。 |
-| 何をするか | Install-time executionをdefault denyにし、必要なpackage・script・versionだけをowner・理由・期限付きで承認し、hash固定wheel等の非実行経路を優先する。 |
-| 成功状態 | 未承認scriptとsource buildが実行されず、例外はexactかつ有効期限内で、missing・malformed policyやverifier failureはfail closedとなる。 |
-| 対象外・残余リスク | Install後のimport、test、compiler plugin、application runtimeでの悪性code実行や、承認済みscript自体の安全性は保証しない。 |
+### セキュリティ上の問題
+
+Package install時のlifecycle scriptやsource buildは、dependencyを利用する前にdeveloper端末やCIの権限で任意codeを実行できる。
+
+### 誰から、または何から守るか
+
+侵害・偽装されたpackage、悪意あるmaintainer、typosquatting、source distribution fallback、広すぎるまたは期限切れ例外から守る。
+
+### 何が対象か
+
+npm・pnpm・Bun・pip等のdependency install、lifecycle script、build backend、source distribution、repository-owned policy、例外。
+
+### 何をするか
+
+Install-time executionをdefault denyにし、必要なpackage・script・versionだけをowner・理由・期限付きで承認し、hash固定wheel等の非実行経路を優先する。
+
+### 成功状態
+
+未承認scriptとsource buildが実行されず、例外はexactかつ有効期限内で、missing・malformed policyやverifier failureはfail closedとなる。
+
+### 対象外・残余リスク
+
+Install後のimport、test、compiler plugin、application runtimeでの悪性code実行や、承認済みscript自体の安全性は保証しない。
 
 ## セキュリティ上の問題
 

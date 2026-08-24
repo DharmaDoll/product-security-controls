@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Lockfile差分に新しいdirect／transitive dependency、version、source、license、脆弱性、provenance gapが混入しても、通常のcode reviewだけでは変更範囲とriskを見落としやすい。 |
-| 誰から、または何から守るか | 侵害されたmaintainer・registry、malicious dependency、dependency confusion、既知脆弱性、license不適合、review bot障害、自己承認、期限なし例外から守る。 |
-| 何が対象か | Base／proposed lock graph、direct・transitive packageとedge、exact version、registry・source commit、license、advisory snapshot、provenance、review approval、例外。 |
-| 何をするか | Baseとheadのdependency graph差分だけを抽出し、追加・version・source・edgeを、freshで完全なadvisory、license policy、subject-bound provenance、非author承認、期限付き例外へ照合する。 |
-| 成功状態 | 全dependency deltaがdirect／transitive context付きで表示され、approved source、脆弱性閾値、license、provenance、非author承認を満たす。不完全・stale・malformed evidenceは`ERROR`となる。 |
-| 対象外・残余リスク | 正常判定はdependencyが無害であることを保証しない。未知脆弱性、悪意あるがadvisory未登録のcode、実lockfile parser、artifact hash、install script、runtime behaviorは別controlまたはadapterが必要である。 |
+### セキュリティ上の問題
+
+Lockfile差分に新しいdirect／transitive dependency、version、source、license、脆弱性、provenance gapが混入しても、通常のcode reviewだけでは変更範囲とriskを見落としやすい。
+
+### 誰から、または何から守るか
+
+侵害されたmaintainer・registry、malicious dependency、dependency confusion、既知脆弱性、license不適合、review bot障害、自己承認、期限なし例外から守る。
+
+### 何が対象か
+
+Base／proposed lock graph、direct・transitive packageとedge、exact version、registry・source commit、license、advisory snapshot、provenance、review approval、例外。
+
+### 何をするか
+
+Baseとheadのdependency graph差分だけを抽出し、追加・version・source・edgeを、freshで完全なadvisory、license policy、subject-bound provenance、非author承認、期限付き例外へ照合する。
+
+### 成功状態
+
+全dependency deltaがdirect／transitive context付きで表示され、approved source、脆弱性閾値、license、provenance、非author承認を満たす。不完全・stale・malformed evidenceは`ERROR`となる。
+
+### 対象外・残余リスク
+
+正常判定はdependencyが無害であることを保証しない。未知脆弱性、悪意あるがadvisory未登録のcode、実lockfile parser、artifact hash、install script、runtime behaviorは別controlまたはadapterが必要である。
 
 ## このcontrolの役割
 

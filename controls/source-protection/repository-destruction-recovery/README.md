@@ -2,14 +2,40 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | source-platformのowner権限を奪われると、多数repository、branch／tag、設定、監査証跡を短時間で削除され得る。同じ管理境界のmutable backupや未検証mirrorは攻撃者と一緒に消され、存在するだけでは復旧可能性を証明しない。 |
-| 誰から、または何から守るか | stolen／phished administrator sessionを使う外部攻撃者、単独の悪意ある管理者、誤ったbulk automation、partial inventory、backup corruption、audit／alert障害、試していないrestore手順から守る。 |
-| 何が対象か | critical repositoryのstable inventory、repository deletion API、管理session、Git objectsとrefs、保護設定、backup security domain、audit event、alert、containment、restore drill。 |
-| 何をするか | 1 requestの削除を1 repositoryへ制限し、許可時は独立承認とrecent reauthenticationを要求する。全critical repositoryを別security domainの30日compliance-lock backupへ保存し、5分以内alert、actor authority失効、30日以内の全件isolated restore drillを検証する。 |
-| 成功状態 | 完全な2-repository fixtureでbulk requestが拒否され、backup、audit、alert、containment、RPO 24時間／RTO 4時間以内のcontent／refs／settings digest一致restoreが7チェックを通過する。評価不能はERRORになる。 |
-| 対象外・残余リスク | fixtureはlive provider設定やstorage object lockを証明せず、issues、PR、LFS、wiki、release、hook等すべてのprovider objectを網羅しない。実削除を行わないisolated drillであり、product固有RPO／RTOとprovider adapterが必要。 |
+### セキュリティ上の問題
+
+source-platformのowner権限を奪われると、多数repository、branch／tag、設定、監査証跡を
+短時間で削除され得る。同じ管理境界のmutable backupや未検証mirrorは攻撃者と一緒に
+消され、存在するだけでは復旧可能性を証明しない。
+
+### 誰から、または何から守るか
+
+stolen／phished administrator sessionを使う外部攻撃者、単独の悪意ある管理者、誤った
+bulk automation、partial inventory、backup corruption、audit／alert障害、試していない
+restore手順から守る。
+
+### 何が対象か
+
+critical repositoryのstable inventory、repository deletion API、管理session、Git objectsと
+refs、保護設定、backup security domain、audit event、alert、containment、restore drill。
+
+### 何をするか
+
+1 requestの削除を1 repositoryへ制限し、許可時は独立承認とrecent reauthenticationを
+要求する。全critical repositoryを別security domainの30日compliance-lock backupへ保存し、
+5分以内alert、actor authority失効、30日以内の全件isolated restore drillを検証する。
+
+### 成功状態
+
+完全な2-repository fixtureでbulk requestが拒否され、backup、audit、alert、containment、
+RPO 24時間／RTO 4時間以内のcontent／refs／settings digest一致restoreが7チェックを通過する。
+評価不能はERRORになる。
+
+### 対象外・残余リスク
+
+fixtureはlive provider設定やstorage object lockを証明せず、issues、PR、LFS、wiki、release、
+hook等すべてのprovider objectを網羅しない。実削除を行わないisolated drillであり、
+product固有RPO／RTOとprovider adapterが必要。
 
 ## Security problem and boundary
 

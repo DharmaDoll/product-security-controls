@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Releaseへ署名が付いていても、mutable tag、別artifact、広い長期credential、exportable key、署名失敗を無視するpipelineでは、攻撃者や誤設定が正規releaseらしい不正artifactを生成できる。 |
-| 誰から、または何から守るか | Compromised release job・maintainer、署名鍵窃取、artifact差替え、TOCTOU、broad authorization、stale signer inventory、署名・transparency service障害から守る。 |
-| 何が対象か | Release artifact bytes／digest、immutable releaseとsource revision、signing request、workload authorization、signerとkey version、署名statement、publication／transparency receipt、release gate。 |
-| 何をするか | Exact digestだけを短寿命・audience／scope-bound workload identityで、非exportableかつsign-onlyのKMS／HSM／keyless signerへ渡し、署名とreceiptが揃うまでreleaseをblockする。 |
-| 成功状態 | Artifact・request・authorization・signer・statement・signature・receiptが一つのrelease identityへ一致し、改ざんや不完全な署名はFAIL、検証不能はERRORとなりreleaseできない。 |
-| 対象外・残余リスク | Offline fixtureはlive KMS／HSM、Fulcio、Rekor、OIDC issuer、key custody、publication ACLを証明しない。Consumer検証は`PSB-REL-001`、配布は`PSB-REL-002`が別に必要。 |
+### セキュリティ上の問題
+
+Releaseへ署名が付いていても、mutable tag、別artifact、広い長期credential、exportable key、署名失敗を無視するpipelineでは、攻撃者や誤設定が正規releaseらしい不正artifactを生成できる。
+
+### 誰から、または何から守るか
+
+Compromised release job・maintainer、署名鍵窃取、artifact差替え、TOCTOU、broad authorization、stale signer inventory、署名・transparency service障害から守る。
+
+### 何が対象か
+
+Release artifact bytes／digest、immutable releaseとsource revision、signing request、workload authorization、signerとkey version、署名statement、publication／transparency receipt、release gate。
+
+### 何をするか
+
+Exact digestだけを短寿命・audience／scope-bound workload identityで、非exportableかつsign-onlyのKMS／HSM／keyless signerへ渡し、署名とreceiptが揃うまでreleaseをblockする。
+
+### 成功状態
+
+Artifact・request・authorization・signer・statement・signature・receiptが一つのrelease identityへ一致し、改ざんや不完全な署名はFAIL、検証不能はERRORとなりreleaseできない。
+
+### 対象外・残余リスク
+
+Offline fixtureはlive KMS／HSM、Fulcio、Rekor、OIDC issuer、key custody、publication ACLを証明しない。Consumer検証は`PSB-REL-001`、配布は`PSB-REL-002`が別に必要。
 
 ## Goalとcontrol boundary
 

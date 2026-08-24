@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Model名や「scan済み」という表示だけを信頼すると、mutable revision、別byte、unsafe serialization、未承認dataset、別modelの検査結果がtraining・evaluation・servingへ入る。 |
-| 誰から、または何から守るか | 悪意ある／侵害されたmodel・dataset publisher、registryやtransfer pathの改ざん、失効signer、custom loader、誤ったrelease job、signer status・crypto verifier障害から守る。 |
-| 何が対象か | Model weight artifact、dataset、loader、取得manifest、CycloneDX ML-BOM、inspection attestation、signer status、deployment handoff。 |
-| 何をするか | HTTPS sourceとfull revision、実byteのSHA-256、非実行形式、bounded static inspection、model-data-loader graph、署名とsigner lifecycle、dataset authorization、handoffを一つのexact identityへ照合する。 |
-| 成功状態 | Model codeを一度もimport／deserializeせず全9 checkが通り、exact staging handoffだけが`ACCEPTED_FOR_STAGING`となる。不一致は`QUARANTINE`、検証不能は`ERROR`になる。 |
-| 対象外・残余リスク | Live modelの精度・bias・privacy・backdoor不存在、dataset consent実在、production HSM／registry／scanner、RAG index、AI TEVV、runtime sandboxは証明しない。 |
+### セキュリティ上の問題
+
+Model名や「scan済み」という表示だけを信頼すると、mutable revision、別byte、unsafe serialization、未承認dataset、別modelの検査結果がtraining・evaluation・servingへ入る。
+
+### 誰から、または何から守るか
+
+悪意ある／侵害されたmodel・dataset publisher、registryやtransfer pathの改ざん、失効signer、custom loader、誤ったrelease job、signer status・crypto verifier障害から守る。
+
+### 何が対象か
+
+Model weight artifact、dataset、loader、取得manifest、CycloneDX ML-BOM、inspection attestation、signer status、deployment handoff。
+
+### 何をするか
+
+HTTPS sourceとfull revision、実byteのSHA-256、非実行形式、bounded static inspection、model-data-loader graph、署名とsigner lifecycle、dataset authorization、handoffを一つのexact identityへ照合する。
+
+### 成功状態
+
+Model codeを一度もimport／deserializeせず全9 checkが通り、exact staging handoffだけが`ACCEPTED_FOR_STAGING`となる。不一致は`QUARANTINE`、検証不能は`ERROR`になる。
+
+### 対象外・残余リスク
+
+Live modelの精度・bias・privacy・backdoor不存在、dataset consent実在、production HSM／registry／scanner、RAG index、AI TEVV、runtime sandboxは証明しない。
 
 ## Goal
 

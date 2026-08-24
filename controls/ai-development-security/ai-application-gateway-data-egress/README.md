@@ -2,14 +2,29 @@
 
 ## このcontrolを一枚で理解する
 
-| 観点 | 内容 |
-|---|---|
-| セキュリティ上の問題 | ApplicationがLLM providerへ直接接続すると、未承認model・tenant・region・retentionへsecret、source、個人情報、規制対象dataを送信できる。Gateway障害や観測欠損をallowに変換すると、policyは容易に迂回される。 |
-| 誰から、または何から守るか | Prompt injectionや不正入力を送る利用者、侵害・誤設定されたapplication、盗まれたworkload identity、direct provider SDK、未承認model/provider、classification・redaction・gateway・telemetry障害から守る。 |
-| 何が対象か | Application workload identity、LLM request route、provider・model・provider tenant・region、training/retention条件、input/output classification、送信byte・field数、redaction結果、gateway decisionとtelemetry。 |
-| 何をするか | 署名付き短寿命workload sessionをexact gateway audienceへbindし、全requestをmandatory HTTPS gatewayへ強制する。Targetを完全allowlistし、dataをlocal分類・最小化・redactionまたはdenyしてからdispatchを決定する。 |
-| 成功状態 | Publicと完全redaction済みpersonal-data fixtureだけが承認される。Secret、未承認target、wrong tenant/region、direct bypass、unknown workload、size超過はupstream dispatch前にdenyされ、gateway health不明は`ERROR`になる。 |
-| 対象外・残余リスク | Synthetic fixtureはlive application route、IdP、gateway、provider contract、region、training/retention、telemetry receiverを証明しない。Semantic data classification、provider内部処理、response filtering、model safety、法的適合性も別途確認が必要である。 |
+### セキュリティ上の問題
+
+ApplicationがLLM providerへ直接接続すると、未承認model・tenant・region・retentionへsecret、source、個人情報、規制対象dataを送信できる。Gateway障害や観測欠損をallowに変換すると、policyは容易に迂回される。
+
+### 誰から、または何から守るか
+
+Prompt injectionや不正入力を送る利用者、侵害・誤設定されたapplication、盗まれたworkload identity、direct provider SDK、未承認model/provider、classification・redaction・gateway・telemetry障害から守る。
+
+### 何が対象か
+
+Application workload identity、LLM request route、provider・model・provider tenant・region、training/retention条件、input/output classification、送信byte・field数、redaction結果、gateway decisionとtelemetry。
+
+### 何をするか
+
+署名付き短寿命workload sessionをexact gateway audienceへbindし、全requestをmandatory HTTPS gatewayへ強制する。Targetを完全allowlistし、dataをlocal分類・最小化・redactionまたはdenyしてからdispatchを決定する。
+
+### 成功状態
+
+Publicと完全redaction済みpersonal-data fixtureだけが承認される。Secret、未承認target、wrong tenant/region、direct bypass、unknown workload、size超過はupstream dispatch前にdenyされ、gateway health不明は`ERROR`になる。
+
+### 対象外・残余リスク
+
+Synthetic fixtureはlive application route、IdP、gateway、provider contract、region、training/retention、telemetry receiverを証明しない。Semantic data classification、provider内部処理、response filtering、model safety、法的適合性も別途確認が必要である。
 
 ## セキュリティ上の問題
 
