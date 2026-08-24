@@ -19,6 +19,7 @@ Framework registries currently include:
   requirements.
 - `owasp-agentic-top10/` — OWASP Top 10 for Agentic Applications 2026 risk
   categories for autonomous and tool-using AI systems.
+- `owasp-aisvs/` — OWASP AISVS 1.0 AI-specific verification requirements.
 - `owasp-asvs/` — OWASP ASVS 5.0.0 application verification requirements.
 - `slsa/` — SLSA source and build integrity requirements referenced by
   controls.

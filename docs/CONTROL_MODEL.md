@@ -173,6 +173,13 @@ target and excludes higher-level requirements. Its coverage view must retain
 unmapped requirements as explicit gaps. A mapped row is evidence relevant to a
 requirement; it is not by itself a framework level or compliance claim.
 
+The AISVS 1.0 profile retains all 191 pinned requirements across Levels 1, 2,
+and 3. `mapped-evidence` means only that an exact repository check has a reviewed
+relationship to that requirement; all other rows remain `gap`. The profile does
+not infer complete requirement satisfaction, live adoption, or an AISVS level,
+and it preserves the upstream assumption that AISVS Level N is assessed with
+ASVS Level N.
+
 Cross-control integration profiles use repository-owned row IDs and exact
 full check references to test whether an identity or security decision survives
 handoffs between controls. They do not add framework identifiers to

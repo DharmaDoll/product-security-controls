@@ -12,6 +12,8 @@ Copy `product-security-assessment-template.xlsx` outside this generated director
 
 `profiles/slsa-build-l2.csv` is the cumulative L1+L2 check view. `profiles/slsa-build-l2-coverage.csv` keeps unmapped requirements visible as gaps; mapped evidence is not a SLSA level claim.
 
+`profiles/owasp-aisvs/requirement-coverage.csv` and `.md` retain all 191 pinned AISVS 1.0 requirements. Exact reviewed control mappings are shown as `mapped-evidence`; every other requirement remains an explicit `gap`. This is not an AISVS level, live-adoption, or compliance claim.
+
 `profiles/application-vulnerability-assessment/status.json` records `INPUT_REQUIRED` until an organization source manifest is supplied; the generator never represents a missing source as an empty checklist.
 
 `governance/control-readiness.csv` and `.md` show repository maturity, mapping debt, and assessment-adapter availability. Organization adoption, evidence freshness, and exception debt remain `NOT_CHECKED` until populated in a copied assessment workbook; repository E3 fixtures are never converted into live adoption.

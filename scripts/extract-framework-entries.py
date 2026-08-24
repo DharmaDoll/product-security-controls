@@ -122,6 +122,84 @@ def asvs_entries(path: Path) -> list[dict[str, Any]]:
     return sorted(entries, key=lambda entry: entry["id"])
 
 
+def aisvs_entries(path: Path, source_commit: str) -> list[dict[str, Any]]:
+    """Extract versioned AISVS requirements from the released Markdown tree."""
+
+    if not re.fullmatch(r"[0-9a-f]{40}", source_commit):
+        raise ValueError("AISVS source commit must be a full commit SHA")
+    if not path.is_dir():
+        raise ValueError("AISVS source must be the released language directory")
+
+    version = path.parent.name
+    if not re.fullmatch(r"\d+\.\d+", version):
+        raise ValueError(
+            "AISVS source directory must be nested below a version such as 1.0"
+        )
+
+    entries: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for source_file in sorted(path.glob("0x10-C[0-9][0-9]-*.md")):
+        chapter_id = ""
+        chapter_title = ""
+        section_id = ""
+        section_title = ""
+        source_url = (
+            "https://github.com/OWASP/AISVS/blob/"
+            f"{source_commit}/{version}/en/{source_file.name}"
+        )
+        for line_number, line in enumerate(
+            source_file.read_text(encoding="utf-8").splitlines(), start=1
+        ):
+            chapter_match = re.fullmatch(r"# (C\d+) (.+)", line)
+            if chapter_match:
+                chapter_id, chapter_title = chapter_match.groups()
+                continue
+            section_match = re.fullmatch(r"## (C\d+\.\d+) (.+)", line)
+            if section_match:
+                section_id, section_title = section_match.groups()
+                continue
+            requirement_match = re.fullmatch(
+                r"\| \*\*(\d+\.\d+\.\d+)\*\* \| "
+                r"\*\*Verify that\*\* .+ \| ([123]) \|",
+                line,
+            )
+            if requirement_match is None:
+                continue
+            short_id, level = requirement_match.groups()
+            expected_chapter = f"C{short_id.split('.', 1)[0]}"
+            expected_section = f"C{short_id.rsplit('.', 1)[0]}"
+            if chapter_id != expected_chapter or section_id != expected_section:
+                raise ValueError(
+                    f"{source_file}:{line_number}: requirement {short_id} is outside "
+                    "its declared chapter or section"
+                )
+            entry_id = f"v{version}-C{short_id}"
+            if entry_id in seen:
+                raise ValueError(f"duplicate AISVS requirement {entry_id}")
+            seen.add(entry_id)
+            entries.append(
+                {
+                    "id": entry_id,
+                    "title": f"{chapter_title} / {section_title}",
+                    "type": "verification-requirement",
+                    "level": int(level),
+                    "chapter": chapter_id,
+                    "section": section_id,
+                    "source_url": source_url,
+                }
+            )
+
+    if not entries:
+        raise ValueError("AISVS source contains no verification requirements")
+
+    def sort_key(entry: dict[str, Any]) -> tuple[int, int, int]:
+        short_id = entry["id"].split("-C", 1)[1]
+        chapter, section, requirement = short_id.split(".")
+        return int(chapter), int(section), int(requirement)
+
+    return sorted(entries, key=sort_key)
+
+
 class OSPSParser(HTMLParser):
     def __init__(self, source_url: str) -> None:
         super().__init__()
@@ -182,14 +260,20 @@ EXTRACTORS = {
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("kind", choices=sorted(EXTRACTORS))
+    parser.add_argument("kind", choices=sorted([*EXTRACTORS, "aisvs"]))
     parser.add_argument("source", type=Path)
     parser.add_argument("registry", type=Path)
     args = parser.parse_args()
 
     with args.registry.open("r", encoding="utf-8") as handle:
         registry = json.load(handle)
-    registry["entries"] = EXTRACTORS[args.kind](args.source)
+    if args.kind == "aisvs":
+        registry["entries"] = aisvs_entries(
+            args.source,
+            registry.get("source", {}).get("commit", ""),
+        )
+    else:
+        registry["entries"] = EXTRACTORS[args.kind](args.source)
     with args.registry.open("w", encoding="utf-8") as handle:
         json.dump(registry, handle, ensure_ascii=False, indent=2)
         handle.write("\n")

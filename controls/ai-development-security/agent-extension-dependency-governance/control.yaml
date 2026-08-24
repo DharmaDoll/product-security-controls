@@ -187,7 +187,7 @@ checks:
       evidence:
         - runtime handoff count
         - PSB-AI-004 inventory dependency record IDs
-    mapping_status: unmapped
+    mapping_status: reviewed
 mappings:
   - framework: mitre-atlas
     version: "2026.05 (format 6.0.0)"
@@ -228,6 +228,28 @@ mappings:
       - AID-004
       - AID-005
       - AID-006
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C10.1.1
+    relationship: verifies
+    confidence: high
+    rationale: Exact official source commit and local artifact digest plus current independent review directly verify that governed MCP components come from a trusted immutable source and are integrity checked, without asserting runtime safety.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AID-001
+      - AID-002
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C10.1.2
+    relationship: verifies
+    confidence: high
+    rationale: The dependency capability allow-list and exact runtime handoff permit only reviewed MCP server identities and tool sets; PSB-AI-004 remains responsible for live enforcement.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AID-004
+      - AID-007
 limitations:
   - Synthetic metadata-only artifacts prove the verifier contract and do not establish the security of a live third-party Skill MCP server plugin or prompt.
   - SHA-256 and immutable commits detect changes but do not prove that reviewed behavior has no latent vulnerability or malicious logic.

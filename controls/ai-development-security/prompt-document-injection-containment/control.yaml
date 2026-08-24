@@ -325,6 +325,33 @@ mappings:
     applies_to:
       - AII-003
       - AII-007
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C2.1.3
+    relationship: verifies
+    confidence: high
+    rationale: Six exact untrusted steering surfaces are classified as data and their injected policy credential network dependency and privilege requests are blocked before the requested action, directly exercising the core prompt-injection screening outcome.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AII-001
+      - AII-002
+      - AII-003
+      - AII-004
+      - AII-005
+      - AII-006
+      - AII-007
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C2.1.6
+    relationship: verifies
+    confidence: high
+    rationale: The root goal and repository-owned policy precedence remain authoritative after untrusted content is processed, and attempts to rewrite that hierarchy are denied before execution.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AII-002
+      - AII-003
 limitations:
   - All source documents instructions decisions and outputs are inert deterministic fixtures and no model tool network service credential package manager or privileged command is invoked.
   - Normalized run evidence validates the contract but does not prove that Claude Code Codex or another live model produced the recorded disposition.

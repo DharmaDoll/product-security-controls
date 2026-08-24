@@ -211,6 +211,7 @@ Each control is mapped to applicable items from:
 - NIST SP 800-190 container implementation guidance
 - MITRE ATLAS
 - OWASP Top 10 for Agentic Applications 2026
+- OWASP AISVS 1.0
 - GitHub security guidance
 - OpenSSF OSPS Baseline
 - CISA Product Security Bad Practices
@@ -228,6 +229,7 @@ NIST SSDF      → secure software development practices
 NIST SP 800-190 → application-container countermeasure guidance
 MITRE ATLAS    → adversary behavior targeting AI-enabled systems
 OWASP Agentic Top 10 → major risk categories for autonomous and tool-using AI systems
+OWASP AISVS    → AI-specific testable security verification requirements
 OpenSSF OSPS   → open source project security requirements
 CISA PSBP      → focused product security bad practices to avoid
 This repository→ concrete implementation and verification examples

@@ -32,6 +32,7 @@
 │   ├── nist-sp-800-190/
 │   ├── openssf-osps-baseline/
 │   ├── owasp-agentic-top10/
+│   ├── owasp-aisvs/
 │   ├── owasp-top10/
 │   ├── owasp-asvs/
 │   ├── slsa/
@@ -119,6 +120,11 @@ or supporting checks and explicit gaps; `sitf-attack-flows.json` composes
 cross-component review paths. Their generated views live under
 `generated/checklists/profiles/sitf/` and fail closed on missing techniques or
 stale references.
+
+`frameworks/owasp-aisvs/registry.json` pins all 191 AISVS 1.0 core verification
+requirements to an exact official commit, source tree, and PDF digest. The
+generated `profiles/owasp-aisvs/requirement-coverage.csv` and `.md` views retain
+unmapped requirements as explicit gaps and never infer an AISVS level.
 
 `policies/organization-assessments/first-psirt-capability.json` preserves the
 integrity-recorded FIRST source identities, service catalog, cumulative

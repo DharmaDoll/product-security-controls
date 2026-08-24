@@ -335,6 +335,32 @@ mappings:
       - MAD-007
       - MAD-008
       - MAD-009
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C9.4.1
+    relationship: verifies
+    confidence: high
+    rationale: Each registered agent has an exact active public-key identity and both delegation and response payloads must authenticate the expected sender and recipient identities.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - MAD-001
+      - MAD-002
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C9.5.5
+    relationship: verifies
+    confidence: high
+    rationale: A signed delegation is admitted only on one explicit parent sender recipient purpose edge and cannot exceed capability tenant resource classification budget freshness replay or hop ceilings.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - MAD-003
+      - MAD-004
+      - MAD-005
+      - MAD-006
+      - MAD-007
+      - MAD-008
 limitations:
   - Synthetic public keys and precomputed signatures do not prove live agent enrollment key custody rotation revocation or transport authenticity.
   - The repository retains no fixture private key and cannot use these identities for production signing.

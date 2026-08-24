@@ -296,14 +296,20 @@ evidence for them:
   — implemented with all `ASI01..ASI10` identifiers and reviewed mappings for
   `PSB-AI-001..011`, the GitHub MCP slice in `PSB-SOURCE-004`, and the
   threat-derived release-gate slice in `PSB-DETECT-002`;
+- OWASP AISVS 1.0 as the detailed AI-specific verification requirement
+  framework — implemented with the complete 191-requirement locked release
+  inventory, immutable source identity, reviewed atomic mappings to existing
+  AI controls, and a generated coverage profile that preserves unmapped
+  requirements as gaps without claiming an AISVS level;
 - NIST SP 800-218A as the AI-specific SSDF community profile;
 - NIST AI RMF 1.0 and NIST AI 600-1 for governance, measurement, and
   generative-AI risk management;
 - OWASP Top 10 for LLM Applications 2025 as a coarse secondary risk taxonomy.
 
-Keep the roles separate: SP 800-218A supplies lifecycle practices, AI RMF and
-AI 600-1 supply risk-management outcomes, OWASP LLM and Agentic Top 10 classify
-broad risks, and MITRE ATLAS classifies attacker behavior. None of these
+Keep the roles separate: AISVS supplies AI-specific testable requirements,
+SP 800-218A supplies lifecycle practices, AI RMF and AI 600-1 supply
+risk-management outcomes, OWASP LLM and Agentic Top 10 classify broad risks,
+and MITRE ATLAS classifies attacker behavior. None of these
 mappings alone proves that an AI system is secure. Track revisions to AI RMF
 and agentic-AI guidance, and do not pin drafts or unstable identifiers into
 controls. The released OWASP Agentic `2026` baseline is no longer tracked as a
@@ -696,8 +702,9 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
     closes action cache poisoning through signed provenance, exact trust and
     producer identities, byte／path／lifetime binding, and fail-closed restore.
     `PSB-SOURCE-005` now closes the VCS mass-deletion slice through stable-ID
-    inventory, bulk-delete denial, attacker-separated immutable backup,
-    external alert, authority containment, and exact full-scope restore drills.
+    inventory, bounded destructive actions, attacker-separated retained recovery
+    copies, and exact isolated full-scope restore drills; audit and containment
+    compose from their owning controls.
     Prioritize remaining endpoint／CI／registry／production destructive recovery,
     exfiltration, malicious service provisioning, and sensor／agent poisoning
     gaps in later vertical slices.

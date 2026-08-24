@@ -280,6 +280,28 @@ mappings:
       - AIM-005
       - AIM-006
       - AIM-007
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C8.2.3
+    relationship: verifies
+    confidence: high
+    rationale: Every candidate retains source provenance and integrity and untrusted agent or tool-derived content is denied before persistent trusted memory unless it has explicit user-approved source trust.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AIM-001
+      - AIM-002
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C8.3.1
+    relationship: supports
+    confidence: medium
+    rationale: Retrieval denies expired or tombstoned agent-memory identities and deletes expired payloads within a bounded grace period; a live vector index and replica exclusion test remains separate adoption evidence.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AIM-006
+      - AIM-007
 limitations:
   - The store payloads decisions retrievals and tombstones are local deterministic fixtures and do not prove a hosted provider exposes or enforces equivalent controls.
   - SHA-256 detects substitution against reviewed metadata but is not an authenticated store commitment when an attacker can rewrite both data and policy.

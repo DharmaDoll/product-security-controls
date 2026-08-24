@@ -330,6 +330,33 @@ mappings:
       - ARB-007
       - ARB-008
       - ARB-009
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C9.1.2
+    relationship: verifies
+    confidence: high
+    rationale: Runtime decisions independently enforce per-session token cost duration tool-call high-impact retry and recursion ceilings before allocating more work or side effects.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - ARB-002
+      - ARB-003
+      - ARB-004
+      - ARB-005
+      - ARB-006
+      - ARB-007
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C12.2.2
+    relationship: supports
+    confidence: high
+    rationale: Excessive retries unknown-tool attempts approval replay and hook failures are detected as session anomalies and cause independently verified restriction circuit breaking and alert delivery.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - ARB-006
+      - ARB-008
+      - ARB-009
 limitations:
   - Aggregated fixture counters do not prove provider usage events tokenizer identity invoice accuracy or live collector authenticity.
   - The exact AI-004 policy digest is not a substitute for signed live telemetry and protected collector key custody.

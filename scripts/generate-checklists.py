@@ -123,6 +123,21 @@ SLSA_COVERAGE_HEADERS = [
     "Mapped Checks",
     "Mapping Rationale",
 ]
+AISVS_COVERAGE_HEADERS = [
+    "Profile",
+    "Framework Version",
+    "Chapter",
+    "Section",
+    "Requirement ID",
+    "Verification Level",
+    "Requirement Area",
+    "Status",
+    "Mapped Checks",
+    "Relationships",
+    "Mapping Rationale",
+    "Official Source",
+    "Claim Boundary",
+]
 GOVERNANCE_HEADERS = [
     "Control ID",
     "Domain",
@@ -466,6 +481,57 @@ def build_slsa_l2_profile(
     return selected_checks, coverage_rows
 
 
+def build_aisvs_profile(
+    controls: list[dict[str, Any]],
+    registry: dict[str, Any],
+) -> list[dict[str, str]]:
+    """Keep every pinned AISVS requirement visible, including mapping gaps."""
+
+    mappings_by_requirement: dict[str, list[tuple[str, dict[str, Any]]]] = defaultdict(
+        list
+    )
+    for control in controls:
+        for mapping in control["mappings"]:
+            if mapping["framework"] != "owasp-aisvs":
+                continue
+            for check_id in mapping["applies_to"]:
+                mappings_by_requirement[mapping["id"]].append(
+                    (f"{control['id']}-{check_id}", mapping)
+                )
+
+    rows: list[dict[str, str]] = []
+    for entry in registry["entries"]:
+        mapped = mappings_by_requirement.get(entry["id"], [])
+        rows.append(
+            {
+                "Profile": "owasp-aisvs-1.0",
+                "Framework Version": registry["mapping_version"],
+                "Chapter": entry["chapter"],
+                "Section": entry["section"],
+                "Requirement ID": entry["id"],
+                "Verification Level": str(entry["level"]),
+                "Requirement Area": entry["title"],
+                "Status": "mapped-evidence" if mapped else "gap",
+                "Mapped Checks": _joined(
+                    sorted({check_id for check_id, _ in mapped})
+                ),
+                "Relationships": _joined(
+                    sorted({mapping["relationship"] for _, mapping in mapped})
+                ),
+                "Mapping Rationale": _joined(
+                    sorted({mapping["rationale"] for _, mapping in mapped})
+                ),
+                "Official Source": entry["source_url"],
+                "Claim Boundary": (
+                    "A mapping identifies repository reference evidence for one "
+                    "requirement; it does not prove live adoption, an AISVS level, "
+                    "AI system security, or compliance."
+                ),
+            }
+        )
+    return rows
+
+
 def build_governance_rows(
     controls: list[dict[str, Any]],
 ) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
@@ -751,6 +817,65 @@ def write_supply_chain_reconciliation_markdown(
             row["Planned Controls"],
             row["Gap or Boundary Owner"],
             row["Remaining Work or Boundary"],
+        )
+        lines.append("| " + " | ".join(_markdown_cell(value) for value in values) + " |")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_aisvs_coverage_markdown(
+    path: Path, rows: list[dict[str, str]], registry: dict[str, Any]
+) -> None:
+    level_counts = Counter(row["Verification Level"] for row in rows)
+    mapped_counts = Counter(
+        row["Verification Level"]
+        for row in rows
+        if row["Status"] == "mapped-evidence"
+    )
+    lines = [
+        "# OWASP AISVS 1.0 requirement coverage",
+        "",
+        "Generated from the complete pinned AISVS 1.0 registry and reviewed "
+        "atomic control mappings. Do not edit manually.",
+        "",
+        f"Source commit: `{registry['source']['commit']}`; official PDF SHA-256: "
+        f"`{registry['source']['sha256']}`.",
+        "",
+        "`mapped-evidence` means that at least one exact repository check has a "
+        "reviewed relationship to the requirement. It does not prove live "
+        "organization adoption, complete requirement satisfaction, an AISVS "
+        "level, AI system security, or compliance. Unmapped requirements remain "
+        "visible as `gap`.",
+        "",
+        "AISVS Level N assumes the corresponding ASVS Level N is assessed in "
+        "parallel. This repository does not infer either level from this view.",
+        "",
+        "## Inventory",
+        "",
+        "| Verification level | Requirements | Mapped evidence | Gap |",
+        "|---:|---:|---:|---:|",
+    ]
+    for level in ("1", "2", "3"):
+        total = level_counts[level]
+        mapped = mapped_counts[level]
+        lines.append(f"| {level} | {total} | {mapped} | {total - mapped} |")
+    lines.extend(
+        [
+            "",
+            "## Requirement rows",
+            "",
+            "| Requirement | Level | Area | Status | Mapped checks | Relationships |",
+            "|---|---:|---|---|---|---|",
+        ]
+    )
+    for row in rows:
+        values = (
+            row["Requirement ID"],
+            row["Verification Level"],
+            row["Requirement Area"],
+            row["Status"],
+            row["Mapped Checks"],
+            row["Relationships"],
         )
         lines.append("| " + " | ".join(_markdown_cell(value) for value in values) + " |")
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -1053,6 +1178,10 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
         checklist_rows,
         registries["slsa"],
     )
+    aisvs_coverage = build_aisvs_profile(
+        controls,
+        registries["owasp-aisvs"],
+    )
     governance_rows, governance_summary = build_governance_rows(controls)
     supply_chain_reconciliation = load_reconciliation(
         REPOSITORY_ROOT
@@ -1110,6 +1239,22 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
         output / "profiles" / "slsa-build-l2-coverage.csv",
         SLSA_COVERAGE_HEADERS,
         slsa_l2_coverage,
+    )
+    write_csv(
+        output
+        / "profiles"
+        / "owasp-aisvs"
+        / "requirement-coverage.csv",
+        AISVS_COVERAGE_HEADERS,
+        aisvs_coverage,
+    )
+    write_aisvs_coverage_markdown(
+        output
+        / "profiles"
+        / "owasp-aisvs"
+        / "requirement-coverage.md",
+        aisvs_coverage,
+        registries["owasp-aisvs"],
     )
     write_csv(
         output
@@ -1173,6 +1318,7 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
     psirt_table = _dict_rows(psirt_rows, PSIRT_CAPABILITY_HEADERS)
     sitf_coverage_table = _dict_rows(sitf_coverage_rows, SITF_COVERAGE_HEADERS)
     sitf_flow_table = _dict_rows(sitf_flow_rows, SITF_ATTACK_FLOW_HEADERS)
+    aisvs_coverage_table = _dict_rows(aisvs_coverage, AISVS_COVERAGE_HEADERS)
     domain_sheets = [
         (domain[:31], GUIDELINE_HEADERS, _dict_rows(rows, GUIDELINE_HEADERS))
         for domain, rows in sorted(domains.items())
@@ -1198,6 +1344,7 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
             SLSA_COVERAGE_HEADERS,
             _dict_rows(slsa_l2_coverage, SLSA_COVERAGE_HEADERS),
         ),
+        ("AISVS 1.0 Coverage", AISVS_COVERAGE_HEADERS, aisvs_coverage_table),
         (
             "SSC Integration",
             SUPPLY_CHAIN_RECONCILIATION_HEADERS,
@@ -1229,6 +1376,7 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
             SLSA_COVERAGE_HEADERS,
             _dict_rows(slsa_l2_coverage, SLSA_COVERAGE_HEADERS),
         ),
+        ("AISVS 1.0 Coverage", AISVS_COVERAGE_HEADERS, aisvs_coverage_table),
         (
             "SSC Integration",
             SUPPLY_CHAIN_RECONCILIATION_HEADERS,
@@ -1269,6 +1417,10 @@ def generate_checklists(controls: list[dict[str, Any]], output: Path) -> None:
         "`profiles/slsa-build-l2.csv` is the cumulative L1+L2 check view. "
         "`profiles/slsa-build-l2-coverage.csv` keeps unmapped requirements "
         "visible as gaps; mapped evidence is not a SLSA level claim.\n\n"
+        "`profiles/owasp-aisvs/requirement-coverage.csv` and `.md` retain all "
+        "191 pinned AISVS 1.0 requirements. Exact reviewed control mappings are "
+        "shown as `mapped-evidence`; every other requirement remains an explicit "
+        "`gap`. This is not an AISVS level, live-adoption, or compliance claim.\n\n"
         "`profiles/application-vulnerability-assessment/status.json` records "
         "`INPUT_REQUIRED` until an organization source manifest is supplied; "
         "the generator never represents a missing source as an empty checklist.\n\n"

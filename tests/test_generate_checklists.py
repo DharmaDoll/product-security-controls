@@ -7,6 +7,7 @@ import tempfile
 import unittest
 import zipfile
 import xml.etree.ElementTree as ET
+from collections import Counter
 from pathlib import Path
 
 
@@ -194,6 +195,47 @@ class GenerateChecklistsTest(unittest.TestCase):
             7,
         )
         self.assertEqual(sum(row["Status"] == "gap" for row in coverage), 0)
+
+    def test_aisvs_profile_keeps_all_requirements_and_explicit_gaps(self) -> None:
+        registries = generate_checklists.discover_registries()
+        rows = generate_checklists.build_aisvs_profile(
+            self.controls,
+            registries["owasp-aisvs"],
+        )
+        self.assertEqual(len(rows), 191)
+        self.assertEqual(len({row["Requirement ID"] for row in rows}), 191)
+        self.assertEqual(
+            Counter(row["Verification Level"] for row in rows),
+            {"1": 51, "2": 95, "3": 45},
+        )
+        self.assertEqual({row["Status"] for row in rows}, {"mapped-evidence", "gap"})
+        self.assertGreater(sum(row["Status"] == "mapped-evidence" for row in rows), 0)
+        self.assertGreater(sum(row["Status"] == "gap" for row in rows), 0)
+        self.assertTrue(all(row["Claim Boundary"] for row in rows))
+        self.assertTrue(
+            all(
+                row["Mapped Checks"] and row["Mapping Rationale"]
+                for row in rows
+                if row["Status"] == "mapped-evidence"
+            )
+        )
+
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary)
+            generate_checklists.generate_checklists(self.controls, output)
+            csv_path = (
+                output
+                / "profiles"
+                / "owasp-aisvs"
+                / "requirement-coverage.csv"
+            )
+            markdown_path = csv_path.with_suffix(".md")
+            self.assertTrue(csv_path.is_file())
+            self.assertIn("not prove live", markdown_path.read_text(encoding="utf-8"))
+            workbook = output / "product-security-guideline.xlsx"
+            with zipfile.ZipFile(workbook) as archive:
+                workbook_xml = archive.read("xl/workbook.xml").decode("utf-8")
+                self.assertIn('name="AISVS 1.0 Coverage"', workbook_xml)
 
     def test_supply_chain_reconciliation_generates_explicit_current_dispositions(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

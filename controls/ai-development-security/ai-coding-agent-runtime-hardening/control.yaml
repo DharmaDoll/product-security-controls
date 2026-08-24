@@ -828,6 +828,74 @@ mappings:
       - AAR-015
       - AAR-022
       - AAR-024
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C9.3.1
+    relationship: verifies
+    confidence: high
+    rationale: Reviewed extensions and tool calls execute through a managed fail-closed agent sandbox with protected paths credentials and network unavailable outside exact policy; live provider process isolation remains adoption evidence.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AAR-001
+      - AAR-002
+      - AAR-003
+      - AAR-004
+      - AAR-012
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C9.2.1
+    relationship: verifies
+    confidence: high
+    rationale: Source publication and every classified high-impact operation remain blocked until one exact current independently issued approval passes validation; denied operations cannot request an override.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AAR-005
+      - AAR-008
+      - AAR-009
+      - AAR-010
+      - AAR-011
+      - AAR-014
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C9.2.8
+    relationship: verifies
+    confidence: high
+    rationale: Approval signatures cover canonical action class tool operation target parameters policy requester agent context request digest and a single-use approval identity, with atomic replay prevention.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AAR-009
+      - AAR-010
+      - AAR-011
+      - AAR-016
+      - AAR-017
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C9.5.1
+    relationship: verifies
+    confidence: high
+    rationale: Managed runtime policy restricts exact tool identities argument effects and bounded writes while an independent gateway and typed broker deny unclassified or indirect parameter paths before side effects.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AAR-012
+      - AAR-013
+      - AAR-015
+      - AAR-022
+      - AAR-024
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C10.1.2
+    relationship: verifies
+    confidence: high
+    rationale: Exact managed MCP identities and tool sets are allow-listed and reconciled against fresh installed runtime inventories, while unknown servers and extensions are denied.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AAR-012
+      - AAR-018
 limitations:
   - Static configuration verification does not prove that a deployed Claude Code or Codex binary loaded or enforced the reviewed settings.
   - Claude Code arrays merge across settings scopes so managed-only permission and domain locks plus repository broadening review are both required; this slice does not assess every setting key.

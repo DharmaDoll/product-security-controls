@@ -10,9 +10,9 @@ Generated from repository control metadata. Do not edit manually.
 |---|---:|---|
 | Catalog controls | 51 | Repository control packages; not organization adoption. |
 | Atomic checks | 462 | Assessable catalog rows generated from control metadata. |
-| Reviewed mapping checks | 403 | Checks with at least one reviewed framework relationship. |
+| Reviewed mapping checks | 405 | Checks with at least one reviewed framework relationship. |
 | Provisional mapping checks | 0 | Checks whose framework relationship still needs review. |
-| Unmapped checks | 59 | Explicit framework mapping debt; not silently inherited. |
+| Unmapped checks | 57 | Explicit framework mapping debt; not silently inherited. |
 | Assessment adapters | 1 | Controls with a repository read-only assessment interface. |
 | Organization adoption | NOT_CHECKED | Organization-owned assessment results are not committed here. |
 | Evidence freshness | NOT_CHECKED | No current organization evidence bundle was supplied. |
@@ -23,7 +23,7 @@ Generated from repository control metadata. Do not edit manually.
 | Control ID | Domain | Status | Reference Evidence | Checks | Reviewed | Provisional | Unmapped | Assessment Adapter | Organization Adoption | Evidence Freshness | Exception Debt | Governance Result |
 |---|---|---|---|---:|---:|---:|---:|---|---|---|---|---|
 | PSB-AI-001 | ai-development-security | prototype | E3 | 7 | 2 | 0 | 5 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
-| PSB-AI-002 | ai-development-security | prototype | E3 | 7 | 6 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
+| PSB-AI-002 | ai-development-security | prototype | E3 | 7 | 7 | 0 | 0 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-AI-003 | ai-development-security | prototype | E3 | 10 | 8 | 0 | 2 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-AI-004 | ai-development-security | prototype | E3 | 26 | 26 | 0 | 0 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-AI-005 | ai-development-security | prototype | E3 | 9 | 7 | 0 | 2 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
@@ -54,7 +54,7 @@ Generated from repository control metadata. Do not edit manually.
 | PSB-DEPS-002 | dependency-security | prototype | E3 | 5 | 4 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-DEPS-003 | dependency-security | prototype | E3 | 5 | 4 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-DEPS-004 | dependency-security | adopted | E3 | 9 | 9 | 0 | 0 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
-| PSB-DEPS-005 | dependency-security | prototype | E3 | 9 | 7 | 0 | 2 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
+| PSB-DEPS-005 | dependency-security | prototype | E3 | 9 | 8 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-DETECT-001 | detection-verification | adopted | E3 | 8 | 8 | 0 | 0 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-DETECT-002 | detection-verification | prototype | E3 | 10 | 8 | 0 | 2 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-GOV-001 | governance-operations | prototype | E3 | 7 | 6 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |

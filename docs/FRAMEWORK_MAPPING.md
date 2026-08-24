@@ -117,8 +117,34 @@ Keep the source roles separate:
   studies;
 - OWASP AI Agent Security Cheat Sheet is implementation guidance in
   `docs/SECURITY_GUIDANCE_SOURCES.md`;
-- a detailed requirement framework such as a future reviewed OWASP AISVS
-  registry would supply testable verification requirements.
+- OWASP AISVS supplies detailed testable AI-specific verification requirements.
+
+### OWASP AISVS
+
+Use the pinned AISVS `1.0` registry for AI／ML-specific implementation and
+verification requirements across training data, model lifecycle, runtime,
+identity, model supply chain, output behavior, memory／RAG, agent orchestration,
+MCP, adversarial robustness, and monitoring.
+
+Identifiers must use the official version-qualified form, for example
+`v1.0-C9.4.3`. Unqualified identifiers and references to `main` or a development
+folder are not accepted.
+
+Relationship examples:
+
+- supports
+- verifies
+- evidence-for
+
+Map only atomic checks whose implementation and evidence directly support the
+named requirement. Do not infer a mapping from a matching chapter name or from
+an OWASP Agentic Top 10／MITRE ATLAS relationship. The generated AISVS profile
+retains all 191 requirements and shows unmapped requirements as explicit gaps.
+
+A mapping is not a complete-requirement result, live organization adoption,
+AISVS level, AI system security, or compliance claim. AISVS Level N also assumes
+parallel assessment against ASVS Level N; neither level is inferred from fixture
+success or partial mappings in this repository.
 
 ### OWASP Top 10
 

@@ -1,0 +1,1745 @@
+{
+  "name": "owasp-aisvs",
+  "publisher": "OWASP Foundation",
+  "role": "requirement-framework",
+  "release": "OWASP Artificial Intelligence Security Verification Standard 1.0",
+  "mapping_version": "1.0",
+  "review_date": "2026-08-25",
+  "source": {
+    "url": "https://raw.githubusercontent.com/OWASP/AISVS/78775233666a2022dcfb82037e5e029116955c00/1.0/dist/AISVS-1.0.pdf",
+    "repository": "https://github.com/OWASP/AISVS",
+    "version_directory": "1.0",
+    "commit": "78775233666a2022dcfb82037e5e029116955c00",
+    "requirements_tree": "a8102d4e67cdf92348a32a18bbee2417d633a075",
+    "artifact": "1.0/dist/AISVS-1.0.pdf",
+    "git_blob": "78e871719bd94e37dc33ec29a326903302a56f7f",
+    "sha256": "ff15584843a53d4fd2b52940c98cb15f9ebe1340151d90d54bb74db9cf8468f6",
+    "license": "CC BY-SA 4.0"
+  },
+  "coverage": {
+    "scope": "All 191 core verification requirements in the twelve chapters of the locked official AISVS 1.0 English source tree",
+    "completeness": "complete-release-core-requirements",
+    "maintenance_owner": "product-security"
+  },
+  "entries": [
+    {
+      "id": "v1.0-C1.1.1",
+      "title": "Training Data Integrity & Traceability / Training Data Origin & Data Security",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C1",
+      "section": "C1.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C01-Training-Data-Integrity-and-Traceability.md"
+    },
+    {
+      "id": "v1.0-C1.1.2",
+      "title": "Training Data Integrity & Traceability / Training Data Origin & Data Security",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C1",
+      "section": "C1.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C01-Training-Data-Integrity-and-Traceability.md"
+    },
+    {
+      "id": "v1.0-C1.1.3",
+      "title": "Training Data Integrity & Traceability / Training Data Origin & Data Security",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C1",
+      "section": "C1.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C01-Training-Data-Integrity-and-Traceability.md"
+    },
+    {
+      "id": "v1.0-C1.1.4",
+      "title": "Training Data Integrity & Traceability / Training Data Origin & Data Security",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C1",
+      "section": "C1.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C01-Training-Data-Integrity-and-Traceability.md"
+    },
+    {
+      "id": "v1.0-C1.1.5",
+      "title": "Training Data Integrity & Traceability / Training Data Origin & Data Security",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C1",
+      "section": "C1.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C01-Training-Data-Integrity-and-Traceability.md"
+    },
+    {
+      "id": "v1.0-C1.2.1",
+      "title": "Training Data Integrity & Traceability / Data Labeling and Annotation Security",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C1",
+      "section": "C1.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C01-Training-Data-Integrity-and-Traceability.md"
+    },
+    {
+      "id": "v1.0-C1.2.2",
+      "title": "Training Data Integrity & Traceability / Data Labeling and Annotation Security",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C1",
+      "section": "C1.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C01-Training-Data-Integrity-and-Traceability.md"
+    },
+    {
+      "id": "v1.0-C1.2.3",
+      "title": "Training Data Integrity & Traceability / Data Labeling and Annotation Security",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C1",
+      "section": "C1.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C01-Training-Data-Integrity-and-Traceability.md"
+    },
+    {
+      "id": "v1.0-C1.3.1",
+      "title": "Training Data Integrity & Traceability / Training Data Quality and Security Assurance",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C1",
+      "section": "C1.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C01-Training-Data-Integrity-and-Traceability.md"
+    },
+    {
+      "id": "v1.0-C1.3.2",
+      "title": "Training Data Integrity & Traceability / Training Data Quality and Security Assurance",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C1",
+      "section": "C1.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C01-Training-Data-Integrity-and-Traceability.md"
+    },
+    {
+      "id": "v1.0-C1.3.3",
+      "title": "Training Data Integrity & Traceability / Training Data Quality and Security Assurance",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C1",
+      "section": "C1.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C01-Training-Data-Integrity-and-Traceability.md"
+    },
+    {
+      "id": "v1.0-C1.3.4",
+      "title": "Training Data Integrity & Traceability / Training Data Quality and Security Assurance",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C1",
+      "section": "C1.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C01-Training-Data-Integrity-and-Traceability.md"
+    },
+    {
+      "id": "v1.0-C1.3.5",
+      "title": "Training Data Integrity & Traceability / Training Data Quality and Security Assurance",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C1",
+      "section": "C1.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C01-Training-Data-Integrity-and-Traceability.md"
+    },
+    {
+      "id": "v1.0-C2.1.1",
+      "title": "Input Validation / Prompt Injection Defenses",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C2",
+      "section": "C2.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C02-Input-Validation.md"
+    },
+    {
+      "id": "v1.0-C2.1.2",
+      "title": "Input Validation / Prompt Injection Defenses",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C2",
+      "section": "C2.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C02-Input-Validation.md"
+    },
+    {
+      "id": "v1.0-C2.1.3",
+      "title": "Input Validation / Prompt Injection Defenses",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C2",
+      "section": "C2.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C02-Input-Validation.md"
+    },
+    {
+      "id": "v1.0-C2.1.4",
+      "title": "Input Validation / Prompt Injection Defenses",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C2",
+      "section": "C2.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C02-Input-Validation.md"
+    },
+    {
+      "id": "v1.0-C2.1.5",
+      "title": "Input Validation / Prompt Injection Defenses",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C2",
+      "section": "C2.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C02-Input-Validation.md"
+    },
+    {
+      "id": "v1.0-C2.1.6",
+      "title": "Input Validation / Prompt Injection Defenses",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C2",
+      "section": "C2.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C02-Input-Validation.md"
+    },
+    {
+      "id": "v1.0-C2.1.7",
+      "title": "Input Validation / Prompt Injection Defenses",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C2",
+      "section": "C2.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C02-Input-Validation.md"
+    },
+    {
+      "id": "v1.0-C2.1.8",
+      "title": "Input Validation / Prompt Injection Defenses",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C2",
+      "section": "C2.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C02-Input-Validation.md"
+    },
+    {
+      "id": "v1.0-C2.2.1",
+      "title": "Input Validation / Content & Policy Screening",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C2",
+      "section": "C2.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C02-Input-Validation.md"
+    },
+    {
+      "id": "v1.0-C2.2.2",
+      "title": "Input Validation / Content & Policy Screening",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C2",
+      "section": "C2.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C02-Input-Validation.md"
+    },
+    {
+      "id": "v1.0-C2.2.3",
+      "title": "Input Validation / Content & Policy Screening",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C2",
+      "section": "C2.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C02-Input-Validation.md"
+    },
+    {
+      "id": "v1.0-C2.2.4",
+      "title": "Input Validation / Content & Policy Screening",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C2",
+      "section": "C2.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C02-Input-Validation.md"
+    },
+    {
+      "id": "v1.0-C3.1.1",
+      "title": "Model Lifecycle Management & Change Control / Model Authorization & Integrity",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C3",
+      "section": "C3.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md"
+    },
+    {
+      "id": "v1.0-C3.1.2",
+      "title": "Model Lifecycle Management & Change Control / Model Authorization & Integrity",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C3",
+      "section": "C3.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md"
+    },
+    {
+      "id": "v1.0-C3.1.3",
+      "title": "Model Lifecycle Management & Change Control / Model Authorization & Integrity",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C3",
+      "section": "C3.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md"
+    },
+    {
+      "id": "v1.0-C3.2.1",
+      "title": "Model Lifecycle Management & Change Control / Model Validation & Testing",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C3",
+      "section": "C3.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md"
+    },
+    {
+      "id": "v1.0-C3.2.2",
+      "title": "Model Lifecycle Management & Change Control / Model Validation & Testing",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C3",
+      "section": "C3.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md"
+    },
+    {
+      "id": "v1.0-C3.2.3",
+      "title": "Model Lifecycle Management & Change Control / Model Validation & Testing",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C3",
+      "section": "C3.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md"
+    },
+    {
+      "id": "v1.0-C3.3.1",
+      "title": "Model Lifecycle Management & Change Control / Controlled Deployment & Rollback",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C3",
+      "section": "C3.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md"
+    },
+    {
+      "id": "v1.0-C3.3.2",
+      "title": "Model Lifecycle Management & Change Control / Controlled Deployment & Rollback",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C3",
+      "section": "C3.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md"
+    },
+    {
+      "id": "v1.0-C3.3.3",
+      "title": "Model Lifecycle Management & Change Control / Controlled Deployment & Rollback",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C3",
+      "section": "C3.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md"
+    },
+    {
+      "id": "v1.0-C3.4.1",
+      "title": "Model Lifecycle Management & Change Control / Secure Development Practices",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C3",
+      "section": "C3.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md"
+    },
+    {
+      "id": "v1.0-C3.4.2",
+      "title": "Model Lifecycle Management & Change Control / Secure Development Practices",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C3",
+      "section": "C3.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md"
+    },
+    {
+      "id": "v1.0-C3.5.1",
+      "title": "Model Lifecycle Management & Change Control / Pipeline Fine-Tuning",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C3",
+      "section": "C3.5",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md"
+    },
+    {
+      "id": "v1.0-C3.5.2",
+      "title": "Model Lifecycle Management & Change Control / Pipeline Fine-Tuning",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C3",
+      "section": "C3.5",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md"
+    },
+    {
+      "id": "v1.0-C3.5.3",
+      "title": "Model Lifecycle Management & Change Control / Pipeline Fine-Tuning",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C3",
+      "section": "C3.5",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md"
+    },
+    {
+      "id": "v1.0-C3.5.4",
+      "title": "Model Lifecycle Management & Change Control / Pipeline Fine-Tuning",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C3",
+      "section": "C3.5",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md"
+    },
+    {
+      "id": "v1.0-C4.1.1",
+      "title": "Infrastructure, Configuration & Deployment Security / AI Workload Sandboxing & Validation",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C4",
+      "section": "C4.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C04-Infrastructure.md"
+    },
+    {
+      "id": "v1.0-C4.1.2",
+      "title": "Infrastructure, Configuration & Deployment Security / AI Workload Sandboxing & Validation",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C4",
+      "section": "C4.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C04-Infrastructure.md"
+    },
+    {
+      "id": "v1.0-C4.1.3",
+      "title": "Infrastructure, Configuration & Deployment Security / AI Workload Sandboxing & Validation",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C4",
+      "section": "C4.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C04-Infrastructure.md"
+    },
+    {
+      "id": "v1.0-C4.1.4",
+      "title": "Infrastructure, Configuration & Deployment Security / AI Workload Sandboxing & Validation",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C4",
+      "section": "C4.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C04-Infrastructure.md"
+    },
+    {
+      "id": "v1.0-C4.2.1",
+      "title": "Infrastructure, Configuration & Deployment Security / AI Hardware Security",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C4",
+      "section": "C4.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C04-Infrastructure.md"
+    },
+    {
+      "id": "v1.0-C4.2.2",
+      "title": "Infrastructure, Configuration & Deployment Security / AI Hardware Security",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C4",
+      "section": "C4.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C04-Infrastructure.md"
+    },
+    {
+      "id": "v1.0-C4.2.3",
+      "title": "Infrastructure, Configuration & Deployment Security / AI Hardware Security",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C4",
+      "section": "C4.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C04-Infrastructure.md"
+    },
+    {
+      "id": "v1.0-C4.2.4",
+      "title": "Infrastructure, Configuration & Deployment Security / AI Hardware Security",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C4",
+      "section": "C4.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C04-Infrastructure.md"
+    },
+    {
+      "id": "v1.0-C4.2.5",
+      "title": "Infrastructure, Configuration & Deployment Security / AI Hardware Security",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C4",
+      "section": "C4.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C04-Infrastructure.md"
+    },
+    {
+      "id": "v1.0-C4.3.1",
+      "title": "Infrastructure, Configuration & Deployment Security / Edge & Distributed AI Security",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C4",
+      "section": "C4.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C04-Infrastructure.md"
+    },
+    {
+      "id": "v1.0-C4.3.2",
+      "title": "Infrastructure, Configuration & Deployment Security / Edge & Distributed AI Security",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C4",
+      "section": "C4.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C04-Infrastructure.md"
+    },
+    {
+      "id": "v1.0-C4.3.3",
+      "title": "Infrastructure, Configuration & Deployment Security / Edge & Distributed AI Security",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C4",
+      "section": "C4.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C04-Infrastructure.md"
+    },
+    {
+      "id": "v1.0-C4.3.4",
+      "title": "Infrastructure, Configuration & Deployment Security / Edge & Distributed AI Security",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C4",
+      "section": "C4.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C04-Infrastructure.md"
+    },
+    {
+      "id": "v1.0-C4.3.5",
+      "title": "Infrastructure, Configuration & Deployment Security / Edge & Distributed AI Security",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C4",
+      "section": "C4.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C04-Infrastructure.md"
+    },
+    {
+      "id": "v1.0-C5.1.1",
+      "title": "Access Control & Identity for AI Components & Users / Authentication",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C5",
+      "section": "C5.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C05-Access-Control-and-Identity.md"
+    },
+    {
+      "id": "v1.0-C5.1.2",
+      "title": "Access Control & Identity for AI Components & Users / Authentication",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C5",
+      "section": "C5.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C05-Access-Control-and-Identity.md"
+    },
+    {
+      "id": "v1.0-C5.2.1",
+      "title": "Access Control & Identity for AI Components & Users / AI Resource Authorization & Classification",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C5",
+      "section": "C5.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C05-Access-Control-and-Identity.md"
+    },
+    {
+      "id": "v1.0-C5.2.2",
+      "title": "Access Control & Identity for AI Components & Users / AI Resource Authorization & Classification",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C5",
+      "section": "C5.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C05-Access-Control-and-Identity.md"
+    },
+    {
+      "id": "v1.0-C5.2.3",
+      "title": "Access Control & Identity for AI Components & Users / AI Resource Authorization & Classification",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C5",
+      "section": "C5.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C05-Access-Control-and-Identity.md"
+    },
+    {
+      "id": "v1.0-C5.2.4",
+      "title": "Access Control & Identity for AI Components & Users / AI Resource Authorization & Classification",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C5",
+      "section": "C5.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C05-Access-Control-and-Identity.md"
+    },
+    {
+      "id": "v1.0-C5.2.5",
+      "title": "Access Control & Identity for AI Components & Users / AI Resource Authorization & Classification",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C5",
+      "section": "C5.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C05-Access-Control-and-Identity.md"
+    },
+    {
+      "id": "v1.0-C5.2.6",
+      "title": "Access Control & Identity for AI Components & Users / AI Resource Authorization & Classification",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C5",
+      "section": "C5.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C05-Access-Control-and-Identity.md"
+    },
+    {
+      "id": "v1.0-C5.2.7",
+      "title": "Access Control & Identity for AI Components & Users / AI Resource Authorization & Classification",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C5",
+      "section": "C5.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C05-Access-Control-and-Identity.md"
+    },
+    {
+      "id": "v1.0-C5.3.1",
+      "title": "Access Control & Identity for AI Components & Users / Multi-Tenant Isolation",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C5",
+      "section": "C5.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C05-Access-Control-and-Identity.md"
+    },
+    {
+      "id": "v1.0-C5.3.2",
+      "title": "Access Control & Identity for AI Components & Users / Multi-Tenant Isolation",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C5",
+      "section": "C5.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C05-Access-Control-and-Identity.md"
+    },
+    {
+      "id": "v1.0-C6.1.1",
+      "title": "Supply Chain Security for Models / Model Artifact Integrity",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C6",
+      "section": "C6.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C06-Supply-Chain.md"
+    },
+    {
+      "id": "v1.0-C6.1.2",
+      "title": "Supply Chain Security for Models / Model Artifact Integrity",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C6",
+      "section": "C6.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C06-Supply-Chain.md"
+    },
+    {
+      "id": "v1.0-C6.1.3",
+      "title": "Supply Chain Security for Models / Model Artifact Integrity",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C6",
+      "section": "C6.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C06-Supply-Chain.md"
+    },
+    {
+      "id": "v1.0-C6.1.4",
+      "title": "Supply Chain Security for Models / Model Artifact Integrity",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C6",
+      "section": "C6.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C06-Supply-Chain.md"
+    },
+    {
+      "id": "v1.0-C6.2.1",
+      "title": "Supply Chain Security for Models / AI BOM & Supply Chain Monitoring",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C6",
+      "section": "C6.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C06-Supply-Chain.md"
+    },
+    {
+      "id": "v1.0-C6.2.2",
+      "title": "Supply Chain Security for Models / AI BOM & Supply Chain Monitoring",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C6",
+      "section": "C6.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C06-Supply-Chain.md"
+    },
+    {
+      "id": "v1.0-C6.2.3",
+      "title": "Supply Chain Security for Models / AI BOM & Supply Chain Monitoring",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C6",
+      "section": "C6.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C06-Supply-Chain.md"
+    },
+    {
+      "id": "v1.0-C7.1.1",
+      "title": "Model Behavior, Output Control & Safety Assurance / Output Format Enforcement",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C7",
+      "section": "C7.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C07-Model-Behavior.md"
+    },
+    {
+      "id": "v1.0-C7.1.2",
+      "title": "Model Behavior, Output Control & Safety Assurance / Output Format Enforcement",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C7",
+      "section": "C7.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C07-Model-Behavior.md"
+    },
+    {
+      "id": "v1.0-C7.2.1",
+      "title": "Model Behavior, Output Control & Safety Assurance / Hallucination Detection & Mitigation",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C7",
+      "section": "C7.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C07-Model-Behavior.md"
+    },
+    {
+      "id": "v1.0-C7.2.2",
+      "title": "Model Behavior, Output Control & Safety Assurance / Hallucination Detection & Mitigation",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C7",
+      "section": "C7.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C07-Model-Behavior.md"
+    },
+    {
+      "id": "v1.0-C7.2.3",
+      "title": "Model Behavior, Output Control & Safety Assurance / Hallucination Detection & Mitigation",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C7",
+      "section": "C7.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C07-Model-Behavior.md"
+    },
+    {
+      "id": "v1.0-C7.3.1",
+      "title": "Model Behavior, Output Control & Safety Assurance / Output Safety",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C7",
+      "section": "C7.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C07-Model-Behavior.md"
+    },
+    {
+      "id": "v1.0-C7.3.2",
+      "title": "Model Behavior, Output Control & Safety Assurance / Output Safety",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C7",
+      "section": "C7.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C07-Model-Behavior.md"
+    },
+    {
+      "id": "v1.0-C7.3.3",
+      "title": "Model Behavior, Output Control & Safety Assurance / Output Safety",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C7",
+      "section": "C7.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C07-Model-Behavior.md"
+    },
+    {
+      "id": "v1.0-C7.3.4",
+      "title": "Model Behavior, Output Control & Safety Assurance / Output Safety",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C7",
+      "section": "C7.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C07-Model-Behavior.md"
+    },
+    {
+      "id": "v1.0-C7.4.1",
+      "title": "Model Behavior, Output Control & Safety Assurance / Source Attribution & Citation Integrity",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C7",
+      "section": "C7.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C07-Model-Behavior.md"
+    },
+    {
+      "id": "v1.0-C7.4.2",
+      "title": "Model Behavior, Output Control & Safety Assurance / Source Attribution & Citation Integrity",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C7",
+      "section": "C7.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C07-Model-Behavior.md"
+    },
+    {
+      "id": "v1.0-C7.4.3",
+      "title": "Model Behavior, Output Control & Safety Assurance / Source Attribution & Citation Integrity",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C7",
+      "section": "C7.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C07-Model-Behavior.md"
+    },
+    {
+      "id": "v1.0-C7.4.4",
+      "title": "Model Behavior, Output Control & Safety Assurance / Source Attribution & Citation Integrity",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C7",
+      "section": "C7.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C07-Model-Behavior.md"
+    },
+    {
+      "id": "v1.0-C8.1.1",
+      "title": "Memory, Embeddings & Vector Database Security / Access Controls on Memory & RAG Indices",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C8",
+      "section": "C8.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C08-Memory-Embeddings-and-Vector-Database.md"
+    },
+    {
+      "id": "v1.0-C8.1.2",
+      "title": "Memory, Embeddings & Vector Database Security / Access Controls on Memory & RAG Indices",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C8",
+      "section": "C8.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C08-Memory-Embeddings-and-Vector-Database.md"
+    },
+    {
+      "id": "v1.0-C8.1.3",
+      "title": "Memory, Embeddings & Vector Database Security / Access Controls on Memory & RAG Indices",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C8",
+      "section": "C8.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C08-Memory-Embeddings-and-Vector-Database.md"
+    },
+    {
+      "id": "v1.0-C8.2.1",
+      "title": "Memory, Embeddings & Vector Database Security / Embedding Sanitization & Validation",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C8",
+      "section": "C8.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C08-Memory-Embeddings-and-Vector-Database.md"
+    },
+    {
+      "id": "v1.0-C8.2.2",
+      "title": "Memory, Embeddings & Vector Database Security / Embedding Sanitization & Validation",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C8",
+      "section": "C8.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C08-Memory-Embeddings-and-Vector-Database.md"
+    },
+    {
+      "id": "v1.0-C8.2.3",
+      "title": "Memory, Embeddings & Vector Database Security / Embedding Sanitization & Validation",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C8",
+      "section": "C8.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C08-Memory-Embeddings-and-Vector-Database.md"
+    },
+    {
+      "id": "v1.0-C8.2.4",
+      "title": "Memory, Embeddings & Vector Database Security / Embedding Sanitization & Validation",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C8",
+      "section": "C8.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C08-Memory-Embeddings-and-Vector-Database.md"
+    },
+    {
+      "id": "v1.0-C8.2.5",
+      "title": "Memory, Embeddings & Vector Database Security / Embedding Sanitization & Validation",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C8",
+      "section": "C8.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C08-Memory-Embeddings-and-Vector-Database.md"
+    },
+    {
+      "id": "v1.0-C8.3.1",
+      "title": "Memory, Embeddings & Vector Database Security / Memory Expiry & Revocation",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C8",
+      "section": "C8.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C08-Memory-Embeddings-and-Vector-Database.md"
+    },
+    {
+      "id": "v1.0-C8.3.2",
+      "title": "Memory, Embeddings & Vector Database Security / Memory Expiry & Revocation",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C8",
+      "section": "C8.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C08-Memory-Embeddings-and-Vector-Database.md"
+    },
+    {
+      "id": "v1.0-C8.3.3",
+      "title": "Memory, Embeddings & Vector Database Security / Memory Expiry & Revocation",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C8",
+      "section": "C8.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C08-Memory-Embeddings-and-Vector-Database.md"
+    },
+    {
+      "id": "v1.0-C9.1.1",
+      "title": "Orchestration & Agentic Security / Execution Budgets, Loop Control, and Circuit Breakers",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C9",
+      "section": "C9.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.1.2",
+      "title": "Orchestration & Agentic Security / Execution Budgets, Loop Control, and Circuit Breakers",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C9",
+      "section": "C9.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.1.3",
+      "title": "Orchestration & Agentic Security / Execution Budgets, Loop Control, and Circuit Breakers",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.2.1",
+      "title": "Orchestration & Agentic Security / High-Impact Action Approval and Irreversibility Controls",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C9",
+      "section": "C9.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.2.2",
+      "title": "Orchestration & Agentic Security / High-Impact Action Approval and Irreversibility Controls",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.2.3",
+      "title": "Orchestration & Agentic Security / High-Impact Action Approval and Irreversibility Controls",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.2.4",
+      "title": "Orchestration & Agentic Security / High-Impact Action Approval and Irreversibility Controls",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.2.5",
+      "title": "Orchestration & Agentic Security / High-Impact Action Approval and Irreversibility Controls",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.2.6",
+      "title": "Orchestration & Agentic Security / High-Impact Action Approval and Irreversibility Controls",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.2.7",
+      "title": "Orchestration & Agentic Security / High-Impact Action Approval and Irreversibility Controls",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.2.8",
+      "title": "Orchestration & Agentic Security / High-Impact Action Approval and Irreversibility Controls",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C9",
+      "section": "C9.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.2.9",
+      "title": "Orchestration & Agentic Security / High-Impact Action Approval and Irreversibility Controls",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C9",
+      "section": "C9.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.2.10",
+      "title": "Orchestration & Agentic Security / High-Impact Action Approval and Irreversibility Controls",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C9",
+      "section": "C9.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.3.1",
+      "title": "Orchestration & Agentic Security / Component Isolation and Tool Authorization",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C9",
+      "section": "C9.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.3.2",
+      "title": "Orchestration & Agentic Security / Component Isolation and Tool Authorization",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C9",
+      "section": "C9.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.3.3",
+      "title": "Orchestration & Agentic Security / Component Isolation and Tool Authorization",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.3.4",
+      "title": "Orchestration & Agentic Security / Component Isolation and Tool Authorization",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.3.5",
+      "title": "Orchestration & Agentic Security / Component Isolation and Tool Authorization",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.3.6",
+      "title": "Orchestration & Agentic Security / Component Isolation and Tool Authorization",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.3.7",
+      "title": "Orchestration & Agentic Security / Component Isolation and Tool Authorization",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.3.8",
+      "title": "Orchestration & Agentic Security / Component Isolation and Tool Authorization",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C9",
+      "section": "C9.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.4.1",
+      "title": "Orchestration & Agentic Security / Agent and Orchestrator Identity",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.4.2",
+      "title": "Orchestration & Agentic Security / Agent and Orchestrator Identity",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.4.3",
+      "title": "Orchestration & Agentic Security / Agent and Orchestrator Identity",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C9",
+      "section": "C9.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.4.4",
+      "title": "Orchestration & Agentic Security / Agent and Orchestrator Identity",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C9",
+      "section": "C9.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.5.1",
+      "title": "Orchestration & Agentic Security / Agent Authorization, Delegation, and Continuous Enforcement",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.5",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.5.2",
+      "title": "Orchestration & Agentic Security / Agent Authorization, Delegation, and Continuous Enforcement",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.5",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.5.3",
+      "title": "Orchestration & Agentic Security / Agent Authorization, Delegation, and Continuous Enforcement",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.5",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.5.4",
+      "title": "Orchestration & Agentic Security / Agent Authorization, Delegation, and Continuous Enforcement",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.5",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.5.5",
+      "title": "Orchestration & Agentic Security / Agent Authorization, Delegation, and Continuous Enforcement",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.5",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.5.6",
+      "title": "Orchestration & Agentic Security / Agent Authorization, Delegation, and Continuous Enforcement",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C9",
+      "section": "C9.5",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.6.1",
+      "title": "Orchestration & Agentic Security / Shutdown and Graceful Degradation",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C9",
+      "section": "C9.6",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.6.2",
+      "title": "Orchestration & Agentic Security / Shutdown and Graceful Degradation",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C9",
+      "section": "C9.6",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C9.6.3",
+      "title": "Orchestration & Agentic Security / Shutdown and Graceful Degradation",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C9",
+      "section": "C9.6",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C09-Orchestration-and-Agentic-Action.md"
+    },
+    {
+      "id": "v1.0-C10.1.1",
+      "title": "Model Context Protocol (MCP) Security / Component Integrity",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C10",
+      "section": "C10.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.1.2",
+      "title": "Model Context Protocol (MCP) Security / Component Integrity",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C10",
+      "section": "C10.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.1.3",
+      "title": "Model Context Protocol (MCP) Security / Component Integrity",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C10",
+      "section": "C10.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.2.1",
+      "title": "Model Context Protocol (MCP) Security / Authentication & Authorization",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C10",
+      "section": "C10.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.2.2",
+      "title": "Model Context Protocol (MCP) Security / Authentication & Authorization",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C10",
+      "section": "C10.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.2.3",
+      "title": "Model Context Protocol (MCP) Security / Authentication & Authorization",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C10",
+      "section": "C10.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.2.4",
+      "title": "Model Context Protocol (MCP) Security / Authentication & Authorization",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C10",
+      "section": "C10.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.2.5",
+      "title": "Model Context Protocol (MCP) Security / Authentication & Authorization",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C10",
+      "section": "C10.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.2.6",
+      "title": "Model Context Protocol (MCP) Security / Authentication & Authorization",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C10",
+      "section": "C10.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.2.7",
+      "title": "Model Context Protocol (MCP) Security / Authentication & Authorization",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C10",
+      "section": "C10.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.3.1",
+      "title": "Model Context Protocol (MCP) Security / Secure Transport",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C10",
+      "section": "C10.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.3.2",
+      "title": "Model Context Protocol (MCP) Security / Secure Transport",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C10",
+      "section": "C10.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.3.3",
+      "title": "Model Context Protocol (MCP) Security / Secure Transport",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C10",
+      "section": "C10.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.3.4",
+      "title": "Model Context Protocol (MCP) Security / Secure Transport",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C10",
+      "section": "C10.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.3.5",
+      "title": "Model Context Protocol (MCP) Security / Secure Transport",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C10",
+      "section": "C10.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.4.1",
+      "title": "Model Context Protocol (MCP) Security / Schema, Message, and Input Validation",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C10",
+      "section": "C10.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.4.2",
+      "title": "Model Context Protocol (MCP) Security / Schema, Message, and Input Validation",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C10",
+      "section": "C10.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.4.3",
+      "title": "Model Context Protocol (MCP) Security / Schema, Message, and Input Validation",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C10",
+      "section": "C10.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.4.4",
+      "title": "Model Context Protocol (MCP) Security / Schema, Message, and Input Validation",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C10",
+      "section": "C10.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.4.5",
+      "title": "Model Context Protocol (MCP) Security / Schema, Message, and Input Validation",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C10",
+      "section": "C10.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.4.6",
+      "title": "Model Context Protocol (MCP) Security / Schema, Message, and Input Validation",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C10",
+      "section": "C10.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.4.7",
+      "title": "Model Context Protocol (MCP) Security / Schema, Message, and Input Validation",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C10",
+      "section": "C10.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C10.4.8",
+      "title": "Model Context Protocol (MCP) Security / Schema, Message, and Input Validation",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C10",
+      "section": "C10.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C10-MCP-Security.md"
+    },
+    {
+      "id": "v1.0-C11.1.1",
+      "title": "Adversarial Robustness / Model Alignment, Safety, and Robustness Testing and Training",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C11",
+      "section": "C11.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.1.2",
+      "title": "Adversarial Robustness / Model Alignment, Safety, and Robustness Testing and Training",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C11",
+      "section": "C11.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.1.3",
+      "title": "Adversarial Robustness / Model Alignment, Safety, and Robustness Testing and Training",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C11",
+      "section": "C11.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.1.4",
+      "title": "Adversarial Robustness / Model Alignment, Safety, and Robustness Testing and Training",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C11",
+      "section": "C11.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.1.5",
+      "title": "Adversarial Robustness / Model Alignment, Safety, and Robustness Testing and Training",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C11",
+      "section": "C11.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.2.1",
+      "title": "Adversarial Robustness / Membership-Inference and Model-Inversion Mitigation",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C11",
+      "section": "C11.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.2.2",
+      "title": "Adversarial Robustness / Membership-Inference and Model-Inversion Mitigation",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C11",
+      "section": "C11.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.2.3",
+      "title": "Adversarial Robustness / Membership-Inference and Model-Inversion Mitigation",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C11",
+      "section": "C11.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.2.4",
+      "title": "Adversarial Robustness / Membership-Inference and Model-Inversion Mitigation",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C11",
+      "section": "C11.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.2.5",
+      "title": "Adversarial Robustness / Membership-Inference and Model-Inversion Mitigation",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C11",
+      "section": "C11.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.3.1",
+      "title": "Adversarial Robustness / Model-Extraction Defense",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C11",
+      "section": "C11.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.3.2",
+      "title": "Adversarial Robustness / Model-Extraction Defense",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C11",
+      "section": "C11.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.3.3",
+      "title": "Adversarial Robustness / Model-Extraction Defense",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C11",
+      "section": "C11.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.3.4",
+      "title": "Adversarial Robustness / Model-Extraction Defense",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C11",
+      "section": "C11.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.4.1",
+      "title": "Adversarial Robustness / Model Runtime Anomaly Detection",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C11",
+      "section": "C11.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.4.2",
+      "title": "Adversarial Robustness / Model Runtime Anomaly Detection",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C11",
+      "section": "C11.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C11.4.3",
+      "title": "Adversarial Robustness / Model Runtime Anomaly Detection",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C11",
+      "section": "C11.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C11-Adversarial-Robustness.md"
+    },
+    {
+      "id": "v1.0-C12.1.1",
+      "title": "Monitoring, Logging & Anomaly Detection / Request & Response Logging",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C12",
+      "section": "C12.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.1.2",
+      "title": "Monitoring, Logging & Anomaly Detection / Request & Response Logging",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C12",
+      "section": "C12.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.1.3",
+      "title": "Monitoring, Logging & Anomaly Detection / Request & Response Logging",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C12",
+      "section": "C12.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.1.4",
+      "title": "Monitoring, Logging & Anomaly Detection / Request & Response Logging",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C12",
+      "section": "C12.1",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.2.1",
+      "title": "Monitoring, Logging & Anomaly Detection / Detection and Alerting",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C12",
+      "section": "C12.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.2.2",
+      "title": "Monitoring, Logging & Anomaly Detection / Detection and Alerting",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C12",
+      "section": "C12.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.2.3",
+      "title": "Monitoring, Logging & Anomaly Detection / Detection and Alerting",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C12",
+      "section": "C12.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.2.4",
+      "title": "Monitoring, Logging & Anomaly Detection / Detection and Alerting",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C12",
+      "section": "C12.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.2.5",
+      "title": "Monitoring, Logging & Anomaly Detection / Detection and Alerting",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C12",
+      "section": "C12.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.2.6",
+      "title": "Monitoring, Logging & Anomaly Detection / Detection and Alerting",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C12",
+      "section": "C12.2",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.3.1",
+      "title": "Monitoring, Logging & Anomaly Detection / Model, Data, and Performance Drift Detection",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C12",
+      "section": "C12.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.3.2",
+      "title": "Monitoring, Logging & Anomaly Detection / Model, Data, and Performance Drift Detection",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C12",
+      "section": "C12.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.3.3",
+      "title": "Monitoring, Logging & Anomaly Detection / Model, Data, and Performance Drift Detection",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C12",
+      "section": "C12.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.3.4",
+      "title": "Monitoring, Logging & Anomaly Detection / Model, Data, and Performance Drift Detection",
+      "type": "verification-requirement",
+      "level": 3,
+      "chapter": "C12",
+      "section": "C12.3",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.4.1",
+      "title": "Monitoring, Logging & Anomaly Detection / Proactive Security Behavior Monitoring",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C12",
+      "section": "C12.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.4.2",
+      "title": "Monitoring, Logging & Anomaly Detection / Proactive Security Behavior Monitoring",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C12",
+      "section": "C12.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.4.3",
+      "title": "Monitoring, Logging & Anomaly Detection / Proactive Security Behavior Monitoring",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C12",
+      "section": "C12.4",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.5.1",
+      "title": "Monitoring, Logging & Anomaly Detection / Training Data & Model Lifecycle Audit",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C12",
+      "section": "C12.5",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.5.2",
+      "title": "Monitoring, Logging & Anomaly Detection / Training Data & Model Lifecycle Audit",
+      "type": "verification-requirement",
+      "level": 1,
+      "chapter": "C12",
+      "section": "C12.5",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.5.3",
+      "title": "Monitoring, Logging & Anomaly Detection / Training Data & Model Lifecycle Audit",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C12",
+      "section": "C12.5",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    },
+    {
+      "id": "v1.0-C12.5.4",
+      "title": "Monitoring, Logging & Anomaly Detection / Training Data & Model Lifecycle Audit",
+      "type": "verification-requirement",
+      "level": 2,
+      "chapter": "C12",
+      "section": "C12.5",
+      "source_url": "https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C12-Monitoring-and-Logging.md"
+    }
+  ]
+}

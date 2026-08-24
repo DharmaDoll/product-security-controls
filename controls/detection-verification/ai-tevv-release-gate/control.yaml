@@ -360,6 +360,56 @@ mappings:
       - TEV-003
       - TEV-005
       - TEV-006
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C3.2.1
+    relationship: verifies
+    confidence: high
+    rationale: The pre-release suite runs deterministic input handling safety and output-policy scenarios plus repeated threshold behavior and known-vulnerable calibration before a release may be accepted.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - TEV-003
+      - TEV-004
+      - TEV-005
+      - TEV-006
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C6.1.4
+    relationship: verifies
+    confidence: high
+    rationale: The exact model artifact cannot be promoted by the fixture release gate unless its immutable reviewed behavioral suite completes with passing evidence bound to the release decision.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - TEV-001
+      - TEV-002
+      - TEV-003
+      - TEV-008
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C11.1.2
+    relationship: supports
+    confidence: medium
+    rationale: A version-controlled immutable AI security suite is bound to every exact release candidate and incomplete evaluation blocks release acceptance; product-specific alignment and disallowed-content coverage remains an explicit gap.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - TEV-001
+      - TEV-002
+      - TEV-008
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C11.1.3
+    relationship: verifies
+    confidence: high
+    rationale: Threat-derived goal hijack tool misuse unexpected execution context poisoning resource and egress cases use exact inert fixtures oracles and known-vulnerable calibration to exercise relevant adversarial techniques.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - TEV-003
+      - TEV-004
+      - TEV-006
 limitations:
   - The synthetic evaluator artifact subject behaviors and scenarios prove the evidence contract and negative state semantics but do not execute a live model provider judge or production release system.
   - The six inert scenarios cover bounded examples and do not establish complete attack coverage model robustness semantic quality fairness privacy legal safety or domain accuracy.

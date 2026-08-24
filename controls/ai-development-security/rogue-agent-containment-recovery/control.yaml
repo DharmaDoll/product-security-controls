@@ -360,6 +360,50 @@ mappings:
       - RRC-004
       - RRC-007
       - RRC-010
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C9.3.8
+    relationship: supports
+    confidence: high
+    rationale: Attributable approval-replay and invalid-delegation violations trigger an authenticated containment command that stops model tool delegation and memory channels within the deadline.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - RRC-002
+      - RRC-004
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C9.6.1
+    relationship: verifies
+    confidence: high
+    rationale: An authenticated manual containment command halts new model calls outputs tool dispatch delegation and memory writes for the exact agent session within sixty seconds.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - RRC-003
+      - RRC-004
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C9.6.3
+    relationship: verifies
+    confidence: high
+    rationale: The kill command and policy are owned by an out-of-band control plane whose authority and signing keys are outside the agent model repository and extension boundary.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - RRC-001
+      - RRC-003
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C12.4.3
+    relationship: verifies
+    confidence: high
+    rationale: The exact signed containment command and resulting ordered containment state are retained in complete sanitized audit evidence, including the kill-switch activation sequence.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - RRC-003
+      - RRC-011
 limitations:
   - Synthetic evidence does not prove live provider gateway process key ledger memory store identity provider SIEM or receiver enforcement.
   - Repository public keys and precomputed signatures do not prove production hardware-backed custody enrollment rotation revocation or phishing-resistant operator authentication.

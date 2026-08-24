@@ -212,7 +212,7 @@ checks:
       evidence:
         - sanitized AMS-008 error state
         - operations alert reference without model or dataset content
-    mapping_status: unmapped
+    mapping_status: reviewed
   - id: AMS-009
     title: Model intake evidence is metadata-only
     required_state: evidence excludes weight bytes dataset rows signatures public or private key material and source credentials
@@ -312,6 +312,83 @@ mappings:
     applies_to:
       - AMS-002
       - AMS-006
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C3.1.2
+    relationship: supports
+    confidence: high
+    rationale: A current model-scoped authorized signer signs the exact acquired model digest together with its ML-BOM dataset and verifier materials, while live provider key custody remains organization evidence.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AMS-001
+      - AMS-005
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C4.1.2
+    relationship: verifies
+    confidence: high
+    rationale: Intake permits only non-executable Safetensors with remote code disabled and statically validates its bounded structure without importing model code; executable serialization is rejected.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AMS-003
+      - AMS-004
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C6.1.2
+    relationship: verifies
+    confidence: high
+    rationale: Model and dataset intake requires exact approved HTTPS source full revision artifact digest license and use authorization before any staging handoff.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AMS-001
+      - AMS-006
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C6.1.3
+    relationship: verifies
+    confidence: high
+    rationale: Third-party model bytes are digest verified and included in a signed inspection statement from a current model-scoped signer before promotion.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AMS-001
+      - AMS-005
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C6.2.1
+    relationship: verifies
+    confidence: high
+    rationale: The CycloneDX 1.7 ML-BOM is versioned and machine readable and records exact application model dataset loader hashes licenses source revisions and dependency relationships.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AMS-002
+      - AMS-006
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C6.2.2
+    relationship: verifies
+    confidence: high
+    rationale: A current authorized Ed25519 signer binds the exact ML-BOM and its acquired model and dataset materials before the accepted bundle is handed to staging.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AMS-005
+      - AMS-007
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C6.2.3
+    relationship: verifies
+    confidence: high
+    rationale: Exact graph hash provenance license and loader fields are mandatory and malformed missing or unevaluable trusted inputs fail with ERROR instead of producing an accepted bundle.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AMS-002
+      - AMS-008
 limitations:
   - Synthetic tiny Safetensors and dataset fixtures do not establish security quality accuracy bias privacy or robustness of a live model or dataset.
   - The repository-native parser verifies the fields needed by this control and is not the full Safetensors 0.8.0 implementation or full CycloneDX 1.7 JSON Schema validator.

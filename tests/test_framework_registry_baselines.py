@@ -57,6 +57,11 @@ EXPECTED_BASELINES = {
         "count": 10,
         "known_id": "ASI04",
     },
+    "owasp-aisvs": {
+        "version": "1.0",
+        "count": 191,
+        "known_id": "v1.0-C9.4.3",
+    },
     "slsa": {
         "version": "1.2",
         "count": 9,

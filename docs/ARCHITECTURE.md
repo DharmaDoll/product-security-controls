@@ -65,6 +65,12 @@ support and owned gaps across endpoint, VCS, CI/CD, registry, and production.
 Unknown or missing techniques, stale check references, or single-component
 flows fail generation. These views are not compliance or live-adoption claims.
 
+The AISVS requirement registry is paired with a complete 191-requirement
+coverage view. Exact reviewed atomic mappings are shown as `mapped-evidence`;
+every other requirement remains an explicit `gap`. The view does not infer
+complete requirement satisfaction, live adoption, or an AISVS verification
+level.
+
 The FIRST PSIRT organization-assessment profile is likewise separate from the
 control catalog. It pins observed source identities, preserves the Services
 Framework service inventory, and generates cumulative Basic, Intermediate, and

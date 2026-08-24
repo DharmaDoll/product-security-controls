@@ -329,6 +329,50 @@ mappings:
       - AAI-005
       - AAI-006
       - AAI-008
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C7.1.1
+    relationship: verifies
+    confidence: high
+    rationale: Executable model proposals and returned action results must match strict reviewed schemas and unknown free-form fields or result shapes are rejected before execution or downstream use.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AAI-001
+      - AAI-007
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C9.3.2
+    relationship: verifies
+    confidence: high
+    rationale: Every tool result is validated against its action-specific schema status set bounded shape and exact request and resource identities before downstream consumption.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AAI-007
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C9.5.1
+    relationship: verifies
+    confidence: high
+    rationale: Independent policy restricts registered actions exact targets typed bounded parameters and freshness and prevents execution from diverging from the authorized decision.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AAI-003
+      - AAI-005
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C9.5.3
+    relationship: verifies
+    confidence: high
+    rationale: Action and resource authorization is derived by independent deterministic policy and bound to a separately issued authorization rather than accepted from model output.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AAI-003
+      - AAI-004
+      - AAI-005
 limitations:
   - The authorization receipt is synthetic metadata; signature verification atomic consumption and actor separation remain implemented and tested by PSB-AI-004.
   - The fixture does not contact a live model MCP gateway source platform or backend and leaves adopted enforcement NOT_CHECKED.

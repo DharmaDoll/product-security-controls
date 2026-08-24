@@ -346,6 +346,58 @@ mappings:
       - RAG-006
       - RAG-007
       - RAG-008
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C5.2.2
+    relationship: verifies
+    confidence: high
+    rationale: The exact requesting principal tenant and clearance are authorized before retrieval and every returned chunk must remain inside the same tenant and classification boundary.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - RAG-005
+      - RAG-006
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C5.2.7
+    relationship: supports
+    confidence: medium
+    rationale: Authorized tenant and classification metadata is copied from source through chunk snapshot and retrieval-result provenance; live prompt caches model outputs and downstream connectors remain outside fixture evidence.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - RAG-005
+      - RAG-007
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C7.4.2
+    relationship: supports
+    confidence: high
+    rationale: Result attribution is assembled from exact retrieval metadata and immutable source chunk snapshot and embedding identities rather than generated model text.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - RAG-007
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C8.1.3
+    relationship: verifies
+    confidence: high
+    rationale: Every retrieval enforces principal tenant and maximum-classification scope and one-field scope mismatches are denied before context is returned.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - RAG-006
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C8.2.4
+    relationship: verifies
+    confidence: high
+    rationale: An exact inert retrieval-manipulation marker is detected and the source is rejected before chunk embedding indexing or snapshot admission.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - RAG-003
 limitations:
   - Synthetic text fixtures and deterministic whole-document chunks do not represent production parsers OCR media extraction tokenizers semantic chunking or vector similarity behavior.
   - The inert marker verifies admission semantics and does not prove detection of obfuscated multilingual delayed multimodal or novel RAG poisoning.

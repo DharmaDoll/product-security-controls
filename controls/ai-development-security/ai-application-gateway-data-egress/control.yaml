@@ -345,6 +345,40 @@ mappings:
     applies_to:
       - AIG-002
       - AIG-004
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C9.5.4
+    relationship: verifies
+    confidence: high
+    rationale: Credential secret source-code and regulated classes are denied before provider dispatch while approved personal data is locally redacted and minimized so prohibited values cannot enter the model context.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AIG-005
+      - AIG-006
+      - AIG-007
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C12.1.1
+    relationship: supports
+    confidence: high
+    rationale: The authenticated workload session and every gateway decision produce a contiguous pre-dispatch interaction record with session target classification count digest and enforcement context but no content.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AIG-002
+      - AIG-008
+  - framework: owasp-aisvs
+    version: "1.0"
+    id: v1.0-C12.1.2
+    relationship: supports
+    confidence: high
+    rationale: Classification redaction minimization route and provider-policy decisions are independently derived and logged before dispatch with reasons and enforcement state suitable for audit without copying sensitive content.
+    reviewer: product-security
+    review_date: "2026-08-25"
+    applies_to:
+      - AIG-008
+      - AIG-009
 limitations:
   - Synthetic fixtures do not prove live application network routes identity provider gateway provider contract region training retention or telemetry receiver behavior.
   - Repository public keys and signatures do not establish production workload key custody rotation revocation or mTLS DPoP and workload-attestation strength.
