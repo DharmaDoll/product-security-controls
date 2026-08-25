@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate source-access credential policy metadata without reading secrets."""
+"""Validate secret-free reference policy metadata, not live organization adoption."""
 
 from __future__ import annotations
 
@@ -68,10 +68,10 @@ def verify(path: Path) -> int:
             failures += 1
 
     if failures:
-        print(f"REJECTED credential policy: {failures} control checks failed")
+        print(f"REJECTED credential policy reference: {failures} control checks failed")
         return 1
 
-    print("ACCEPTED credential policy")
+    print("ACCEPTED credential policy reference")
     return 0
 
 

@@ -68,8 +68,8 @@ for error_fixture in github-mcp-malformed.json github-mcp-sensitive.json; do
     "$temporary_directory/$error_fixture.txt" >/dev/null
 done
 
-echo "PASS secure credential lifecycle policy matched expected evidence"
-echo "PASS insecure credential lifecycle policy was rejected"
+echo "PASS secure credential lifecycle reference matched expected output"
+echo "PASS insecure credential lifecycle reference was rejected"
 echo "PASS malformed input remained distinct from a clean result"
-echo "PASS GitHub MCP OAuth-first and PAT-fallback profiles were distinguished"
+echo "PASS GitHub MCP OAuth-first and PAT-fallback reference profiles were distinguished"
 echo "PASS GitHub MCP malformed and sensitive evidence remained ERROR"

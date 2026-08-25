@@ -16,15 +16,144 @@ Developerとautomationのsource-platform credential、OAuth・PAT・SSH・GitHub
 
 ### 何をするか
 
-Automationは短命installation token、GitHub MCPはOAuthを優先し、PAT fallbackをpurpose・owner・exact scope・秘密ストア・MCP子process・期限へbindして棚卸し、rotation、revokeを検証する。
+GitHub／IdPの認証・PAT・OAuth／App設定を安全側へ変更し、automationを短命identityへ分離する。Credentialをowner・purpose・exact scope・保管・期限へbindし、棚卸し、失効、監査を運用する。
 
 ### 成功状態
 
-Credential classごとの最小権限・短寿命・hardwareまたはsecret-manager保護・利用monitoringに加え、GitHub MCPが既定read-onlyになり、orphan・stale・broad・平文・malformed recordは拒否される。
+Current GitHub／IdP設定と完全なinventoryがbaselineを満たし、専用test scopeでexpected allow、未付与permission／scope拒否、失効後の旧authority拒否を確認できる。未確認項目は`NOT_CHECKED`のまま残る。
 
 ### 対象外・残余リスク
 
-Verifierはlive GitHub credentialを列挙・失効・実権限testせず、identity provider、developer endpoint、GitHub control plane自体の侵害を防がない。
+Fixture verifierはlive設定や導入を証明しない。Identity provider、developer endpoint、GitHub control plane自体の侵害、取得済みcloneやsourceの回収は対象外である。
+
+## 導入
+
+### セキュリティ向上の効果はどこから生まれるか
+
+このcontrolの効果は、repository内のJSONをcopyすることではなく、次の実設定と運用から生まれます。
+
+- GitHub／IdPで2FA、phishing-resistant authentication、PAT、OAuth／GitHub App policyを強制する。
+- Developer user credentialをautomationから除き、GitHub App等の短命identityへ移す。
+- Active credentialをowner、purpose、repository、permission、expirationと結び付けてreviewする。
+- Offboarding、role change、device loss、exposure、長期未使用時にcredentialと関連sessionを失効する。
+- Credential lifecycleと利用eventを保持し、影響repositoryへ相関できるようにする。
+
+`secure/*.json`とverifierはreference baselineの説明とregression testです。それだけではlive GitHub
+accessは変わらず、organization adoptionの証明にもなりません。
+
+### 誰が何をするcontrolなのか
+
+| Role | 作業 |
+|---|---|
+| Product owner | 対象repository、必要なaccess、automation consumerを確定する |
+| Organization owner／IdP administrator | 2FA／SSO、PAT、OAuth／GitHub App、membership policyを変更する |
+| Repository administrator | App／PATのrepositoryとpermissionを限定し、user tokenをautomationから除く |
+| Platform／SRE | 短命automation identityとapproved secret deliveryを構築する |
+| Developer | Approved OAuth／hardware-backed SSHを使用し、PAT fallbackをprotected storeへ置く |
+| Security | Inventory、exception、audit coverage、revocation drillを独立reviewする |
+| Incident response | Exposure等でgrant、token、key、sessionを失効し影響を確認する |
+
+### 前提条件とtrust assumptions
+
+- GitHub organization、対象repository、credential class、automation consumerを列挙できること。
+- Organization ownerとsecurity reviewerを分離できること。
+- 利用中のGitHub plan、SAML／SCIM、IdP、MCP有無を把握していること。
+- 管理設定変更前にmember、outside collaborator、OAuth／GitHub App、PAT、SSHへの影響をreviewすること。
+- Positive／negative test用にproductionから分離したtest repositoryと専用test credentialを用意できること。
+
+### Copyまたは参照するfile
+
+| 用途 | File |
+|---|---|
+| 実設定と運用 | [`docs/github-adoption-runbook.md`](docs/github-adoption-runbook.md) |
+| General reference baseline | [`secure/credential-policy.json`](secure/credential-policy.json) |
+| GitHub MCP OAuth | [`secure/github-mcp-oauth.json`](secure/github-mcp-oauth.json) |
+| GitHub MCP PAT fallback | [`secure/github-mcp-auth-policy.json`](secure/github-mcp-auth-policy.json)と[`secure/github-mcp-pat-fallback.json`](secure/github-mcp-pat-fallback.json) |
+| 将来のread-only監査 | [`docs/read-only-audit-options.md`](docs/read-only-audit-options.md) |
+
+### 最短の導入手順
+
+詳細とrecoveryは[GitHub adoption runbook](docs/github-adoption-runbook.md)を使います。
+
+1. **Inventory**: 対象repository、member、App、OAuth、PAT、SSH、automation consumerとownerを記録する。
+2. **Authentication**: Organization Settingsの`Authentication security`で2FAを必須にし、利用可能なら
+   `Only allow secure two-factor methods`を有効にしてSMSを除外する。Passkey／security key要件は
+   IdP／enterprise policyで別に強制・確認する。
+3. **PAT**: `Personal access tokens`でclassic PAT accessをrestrictする。Fine-grained PATが必要なら
+   administrator approval、explicit repository、minimum permission、maximum lifetime 90日以下にする。
+4. **OAuth／App**: `OAuth app policy`でorganization access restrictionsを使用する。GitHub App installationを
+   owner reviewへ寄せ、installed Appを`Only select repositories`相当とminimum permissionにする。
+5. **Automation**: Developer OAuth／PAT consumerをGitHub App installation token等へ移し、旧credentialを失効する。
+6. **Storage**: TokenをOS keychain／approved secret manager、SSH keyを可能ならhardware-backed keyへ移す。
+7. **Operations**: 90日以内のinventory review、event-driven revocation、audit review、expiring exceptionを開始する。
+8. **Verify**: 専用test scopeでexpected allow、ungranted permission拒否、選択外repository拒否、失効後拒否を確認する。
+
+### 安全なself-test
+
+一つのcredential classずつ、専用test repositoryだけで実行します。実値をcommand history、log、
+repository evidenceへ残しません。
+
+| Test | 操作 | 期待状態 |
+|---|---|---|
+| Positive | 許可されたtest repositoryでprofile上のallowed operationを行う | 成功し、audit eventへ相関できる |
+| Negative: permission | 明示的に未付与のpermissionを必要とするinert operationを試す | `403`等で拒否され、変更がない |
+| Negative: scope | 選択外test repositoryをread | `403`または`404`で拒否される |
+| Revocation | 専用credentialを失効して同じreadを再試行 | `401`／`403`／`404`で旧authorityが拒否される |
+
+Read-only profileでは、専用test repositoryへのunique test ref作成をpermission negativeにできます。
+Write-capable automationは正当なwriteをpositiveとし、別の未付与permissionを選びます。操作が予期せず
+成功した場合は`FAIL`として独立adminがtest changeを除去し、permissionを是正します。
+
+### 期待する結果と状態
+
+Live adoptionは次の状態で判定します。
+
+- `PASS`: Current settingまたは実拒否結果がrequired stateを証明した。
+- `FAIL`: Current stateまたは実試験がunsafe stateを示した。
+- `NOT_CHECKED`: Plan、authority、endpoint、evidenceがなく確認していない。
+- `ERROR`: Collection、authentication、pagination、parse、freshness等に失敗した。
+- Reviewed `N/A`: 対象credential classまたはMCPを使用していない。
+
+Reference implementationは次で確認できます。
+
+```bash
+make verify-control CONTROL=PSB-SOURCE-004
+```
+
+Exit statusは`0=reference accepted`、`1=security finding`、`2=input／evidence error`です。
+
+### よくある失敗とrecovery
+
+- 2FA有効化でoutside collaboratorが外れた: compliantな2FA設定後にreviewして再招待する。
+- PAT lifetime policyで既存tokenが拒否された: consumerを新しいbounded credentialへ移し、旧tokenを明示失効する。
+- OAuth restrictionでApp／SSH accessが止まった: pre-change inventoryにあるapproved対象だけをreauthorizeする。
+- GitHub App migrationでautomationが停止した: App repository／permissionとconsumer設定を修正する。
+  Broad user PATを無期限に復活させない。
+- API／audit evidenceを取得できない: `PASS`にせず`NOT_CHECKED`または`ERROR`にする。
+
+### Server-side enforcementとrollback
+
+Developer-local設定だけでは完了しません。GitHub／IdP側のpolicy、App grant、PAT approval、audit、
+membership lifecycleを必ず維持します。Provider settingは一括自動rollbackせず、変更前stateと影響対象を
+reviewして設定単位で戻します。Rollbackでclassic PAT、unrestricted OAuth App、broad GitHub Appを
+黙って再許可しません。緊急経路は`PSB-GOV-002`のnarrow、owned、expiring exceptionを使います。
+
+### 導入完了条件
+
+- Scope内のcredentialとconsumerにowner、purpose、resource、permission、review、expiration／revocation stateがある。
+- GitHub／IdPのcurrent settingがbaselineを満たす。
+- Developer tokenをautomationが使用していない。
+- Expected allow、ungranted-permission denial、scope denial、revocation denialが専用test scopeで確認済みである。
+- Audit eventをownerとtargetへ相関できる。
+- 未確認項目とresidual riskが`NOT_CHECKED`として残り、fixture `PASS`をlive adoptionに使用していない。
+
+### Read-only監査を追加する場合
+
+今すぐcollectorを導入する必要はありません。Fine-grained PAT、installed GitHub Apps、SAML credential
+authorization、audit logの一部はGitHub API／exportでread-only確認できます。一方、IdP policy、
+keychain保管、IDE child-only delivery、SSH hardware custodyは別sourceが必要です。確認可能なfield、
+plan／permission制約、future collectorのfail-closed要件は
+[`docs/read-only-audit-options.md`](docs/read-only-audit-options.md)にまとめています。
 
 ## Security problem
 
@@ -78,7 +207,8 @@ CI/CD workload federation remains a separate control boundary.
   launches a floating image, enables every toolset, and has no lifecycle owner.
 
 The fixtures contain no token, private key, username, repository name, or
-production evidence. They are not applied to GitHub or the host.
+production evidence. They are not applied to GitHub or the host, and their
+success is not organization adoption evidence.
 
 ## Authentication selection
 
@@ -142,7 +272,7 @@ From the repository root:
 make verify-control CONTROL=PSB-SOURCE-004
 ```
 
-The verifier:
+The reference verifier:
 
 - accepts the secure metadata fixture;
 - rejects the insecure fixture with one finding for every atomic requirement;
@@ -153,10 +283,10 @@ The verifier:
 - treats malformed or credential-bearing MCP evidence as `ERROR` with exit
   code `2`, never as a clean configuration.
 
-Production adoption requires external evidence such as organization token
-policy, OAuth application grants, SSH-key inventory, audit-log records,
-credential-helper configuration, access review, and a sanitized revocation
-exercise.
+Production adoption follows the runbook and requires current organization token
+policy, OAuth and App grants, SSH inventory, audit records, protected-storage
+review, access review, and a sanitized revocation exercise. Missing live
+evidence remains `NOT_CHECKED`.
 
 ## Incident response
 
@@ -174,8 +304,8 @@ Deleting a token from a file or rewriting Git history does not revoke it.
 
 ## Limitations and operational cost
 
-This control validates declared policy metadata; it cannot enumerate or revoke
-live GitHub credentials. GitHub organization and enterprise settings, SSO,
+The repository verifier validates reference metadata; it cannot enumerate or
+revoke live GitHub credentials. GitHub organization and enterprise settings, SSO,
 audit-log retention, and token approval capabilities vary by plan and platform
 configuration. OAuth grants may be broader or longer-lived than desired even
 when local storage is protected. SSH commit signing and SSH authentication are
@@ -195,6 +325,14 @@ supporting relationships, not a compliance claim.
 
 ## References
 
+- [実装仕様書](docs/implementation-spec.md)
+- [実装計画書](docs/implementation-plan.md)
+- [GitHub adoption runbook](docs/github-adoption-runbook.md)
+- [Read-only audit options](docs/read-only-audit-options.md)
+- [GitHub personal access token policy](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/setting-a-personal-access-token-policy-for-your-organization)
+- [GitHub OAuth App access restrictions](https://docs.github.com/en/organizations/managing-oauth-access-to-your-organizations-data/about-oauth-app-access-restrictions)
+- [GitHub App request and installation restrictions](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/limiting-oauth-app-and-github-app-access-requests-and-installations)
+- [GitHub organization 2FA requirements](https://docs.github.com/en/organizations/keeping-your-organization-secure/managing-two-factor-authentication-for-your-organization/requiring-two-factor-authentication-in-your-organization)
 - [GitHub MCP Server setup](https://docs.github.com/en/copilot/how-tos/provide-context/use-mcp-in-your-ide/set-up-the-github-mcp-server)
 - [GitHub MCP Server README pinned at `3778a41476e31a072430cfee7c5d31c5f72def60`](https://github.com/github/github-mcp-server/blob/3778a41476e31a072430cfee7c5d31c5f72def60/README.md)
 - [GitHub MCP policies and governance pinned at `3778a41476e31a072430cfee7c5d31c5f72def60`](https://github.com/github/github-mcp-server/blob/3778a41476e31a072430cfee7c5d31c5f72def60/docs/policies-and-governance.md)

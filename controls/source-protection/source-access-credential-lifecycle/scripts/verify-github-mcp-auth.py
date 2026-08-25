@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify GitHub MCP authentication and least-authority metadata without secrets."""
+"""Verify a secret-free GitHub MCP reference profile, not live adoption."""
 
 from __future__ import annotations
 
@@ -220,9 +220,12 @@ def verify(policy_path: Path, oauth_path: Path, pat_path: Path) -> int:
     )
 
     if all(results):
-        print("ACCEPTED GitHub MCP authentication profile")
+        print("ACCEPTED GitHub MCP authentication reference profile")
         return 0
-    print(f"REJECTED GitHub MCP authentication profile: {sum(not item for item in results)} checks failed")
+    print(
+        "REJECTED GitHub MCP authentication reference profile: "
+        f"{sum(not item for item in results)} checks failed"
+    )
     return 1
 
 
