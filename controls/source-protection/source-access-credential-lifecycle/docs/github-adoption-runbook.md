@@ -1,332 +1,253 @@
-# PSB-SOURCE-004 GitHub最短導入runbook
+# PSB-SOURCE-004 GitHub導入runbook
 
-## このrunbookの位置付け
+## このrunbookで行うこと
 
-このrunbookが`PSB-SOURCE-004`の主実装です。GitHub／IdPの実設定とcredential lifecycle運用を
-変更し、current stateと専用test scopeの拒否結果を確認します。Repository内のJSONをcopyする
-だけではsecurity stateは変わりません。
+GitHub上のOAuth、PAT、SSH鍵、GitHub Appを、必要な利用者、リポジトリ、権限、期間だけに限定し、
+不要になったら確実に失効できる状態にします。
 
-対象はGitHub.com／GitHub Enterprise Cloudです。GitHub Enterprise Server、GitLab、Bitbucketは
-対象providerの機能とversionをreviewした別profileを必要とします。
+セキュリティ効果はGitHub／IdPの実設定と運用から生まれます。この文書やJSONサンプルをコピーするだけでは、
+実際のアクセス権は変わりません。
 
-## 1. 実施者
+対象はGitHub.com／GitHub Enterprise Cloudです。GitHub Enterprise Server、GitLab、Bitbucketでは、
+同じ目的を各サービスの機能に置き換えてください。
 
-| Role | このrunbookで行うこと |
+## 導入の全体像
+
+次の順序で進めます。組織設定を先に変更すると利用者や自動処理を停止させる可能性があるため、
+棚卸しと検証環境の準備を省略しないでください。
+
+| 順序 | 作業 | 完了の目安 |
+|---:|---|---|
+| 1 | 現在の認証情報を棚卸しする | 利用者、用途、対象、権限、有効期限が分かる |
+| 2 | 検証用リポジトリと認証情報を用意する | 本番へ影響せず許可・拒否・失効を試せる |
+| 3 | GitHub／IdPの組織設定を変更する | 二要素認証、PAT、OAuth App、GitHub Appが安全側に制限される |
+| 4 | 自動処理から個人トークンを除く | GitHub Appなどの短期IDへ移行できている |
+| 5 | 許可・拒否・失効試験を行う | 必要な操作だけが成功し、旧認証情報は拒否される |
+| 6 | 90日以内ごとの棚卸しと失効運用を始める | 放置された権限を継続的に検出・失効できる |
+
+## 1. 変更前に準備する
+
+### 担当者
+
+| 担当 | 主な作業 |
 |---|---|
-| Product owner | 対象repositoryと必要accessを承認する |
-| Organization owner | GitHub organization policyを変更する |
-| IdP administrator | SSO、phishing-resistant authentication、membership lifecycleを設定する |
-| Repository administrator | App／PATのrepositoryとpermissionを限定する |
-| Platform／SRE | Automation identityとconsumer migrationを実施する |
-| Developer | Approved interactive authenticationとprotected storageを使用する |
-| Security | Pre-change impact、current state、exception、drillをreviewする |
-| Incident response | Exposure時の失効と影響調査をownerとして実施する |
+| プロダクト責任者 | 対象リポジトリと必要なアクセスを決める |
+| GitHub組織管理者 | 組織設定を変更する |
+| IdP管理者 | SSO、強固な認証、メンバー削除を設定する |
+| リポジトリ管理者／Platform／SRE | AppとPATの対象・権限を限定し、自動処理を移行する |
+| セキュリティ担当 | 変更内容、棚卸し、例外、試験結果を確認する |
+| インシデント対応担当 | 漏えい時の失効と影響調査を行う |
 
-Organization ownerが自分の変更を唯一のsecurity reviewerとして承認しないでください。
+GitHub組織管理者だけで変更と承認を完結させず、セキュリティ担当など別の確認者を置きます。
 
-## 2. 開始前の確認
+### 現在の認証情報を棚卸しする
 
-### 2.1 対象scope
+組織の承認済み管理台帳へ、次を記録します。このリポジトリには、実在する組織名、利用者名、
+private repository名、認証情報の値をcommitしません。
 
-次を組織内の承認済みsystem of recordへ記録します。このrepositoryへ実organization名やuser情報を
-commitしません。
-
-- GitHub enterprise／organizationのstable IDと表示名。
-- Product-critical repositoryのstable ID。
-- Member、outside collaborator、service account、automation actor。
-- OAuth App、GitHub App、fine-grained／classic PAT、SSH／deploy key。
-- GitHub MCP利用の有無と対象IDE。
-- Credentialを利用するCI、bot、local tool、package／release consumer。
-
-Inventoryにcredential値、authorization header、private key、recovery codeを入れません。
-
-### 2.2 Pre-change impact
-
-設定変更前に次を確認します。
-
-- 2FA未準拠のmember、billing manager、outside collaborator、bot account。
-- Organization dataへ到達するOAuth Appと、そのreauthorization owner。
-- GitHub App installationとrepository／permission。
-- Classic PATとfine-grained PATのconsumer、expiration、migration owner。
-- SSH／deploy keyとautomation consumer。
-- 少なくとも2名のorganization ownerと、承認済みrecovery method。
-
-2FA要求は非準拠outside collaboratorのaccessへ影響します。OAuth App access restrictionの初回有効化も
-既存Appや一部SSH accessを停止させ得ます。通知、change window、recovery ownerなしに実施しません。
-
-### 2.3 Test scope
-
-次を用意します。
-
-- Production sourceを含まない専用private test repositoryを2つ。
-  - `allowed-test`: readを許可する。
-  - `unselected-test`: credential scopeから外す。
-- 一つのcredential class専用のtest identity／credential。
-- `allowed-test`でだけ使用するunique inert Git ref／operation marker。
-- Test credentialとtest repositoryを削除できる独立admin。
-
-## 3. Authentication securityを設定する
-
-実施者: Organization owner／IdP administrator。Reviewer: Security。
-
-1. GitHubで対象organizationを開く。
-2. `Settings`を開く。
-3. `Security`セクションの`Authentication security`を開く。
-4. `Require two-factor authentication for everyone in your organization`を選択する。
-5. 利用できる場合、`Only allow secure two-factor methods`も選択し、SMSを除外する。
-6. 影響対象を再確認して`Save`／`Confirm`する。
-7. Enterprise／IdPを使用する場合は、SAML SSOとmembership lifecycleを接続する。
-
-GitHubの`secure two-factor methods`にはauthenticator app等も含まれるため、この設定だけを
-phishing-resistantの証明にしません。Sensitive source accessにはpasskey／security keyをIdP／enterprise
-policyまたはreview可能なorganization policyで要求します。
-
-成功状態:
-
-- 全member／outside collaboratorに2FAが要求される。
-- SMS-only accessが許可されない。
-- Passkey／security keyのrequired stateをIdP／enterprise evidenceで確認できる。
-- Removed／blocked userをaudit eventと事前inventoryへ相関できる。
-
-## 4. Personal access token policyを設定する
-
-実施者: Organization owner。Reviewer: Security。
-
-### 4.1 Classic PAT
-
-1. Organization `Settings`を開く。
-2. `Personal access tokens`配下の`Settings`を開く。
-3. `Tokens (classic)` tabを選ぶ。
-4. Organization resourceへのclassic PAT accessを`Restrict access`にする。
-5. 既存consumerを確認して`Save`する。
-
-Classic PAT approvalという仕組みに依存しません。GitHubのorganization approval対象は
-fine-grained PATであり、classic PATはrestrictしない限りorganizationへ到達し得ます。
-
-### 4.2 Fine-grained PAT
-
-Fine-grained PATを完全に禁止できる場合はrestrictします。利用が必要な場合だけ次を設定します。
-
-1. `Fine-grained tokens` tabを選ぶ。
-2. Access policyを必要なfine-grained PATだけが利用できる状態にする。
-3. `Require approval of fine-grained personal access tokens`で`Require administrator approval`を選ぶ。
-4. `Set maximum lifetimes for personal access tokens`を`90 days`以下にする。
-5. `Pending requests`でowner、repository、permission、expiration、purposeをreviewする。
-6. Exact taskに必要なrequestだけをapproveし、broad／unowned requestをdenyする。
-
-Organization owner自身が作成するfine-grained PATはapprovalが不要となるprovider挙動があるため、
-owner tokenも別のsecurity reviewerがinventory上で確認します。
-
-成功状態:
-
-- Classic PATはorganization resourceへ到達しない。
-- Active fine-grained PATはownerが1つ、explicit repository、minimum permission、90日以下である。
-- Broad scopeは`PSB-GOV-002`のcurrent exceptionなしに存在しない。
-- Lifetime policyによるblockを失効と誤認せず、旧tokenを明示的にrevokeできる。
-
-## 5. OAuth AppとGitHub Appを制限する
-
-実施者: Organization owner。Reviewer: Security。
-
-### 5.1 OAuth App
-
-1. Organization `Settings`を開く。
-2. `Third-party Access`の`OAuth app policy`を開く。
-3. 現在許可されているAppとconsumerをpre-change inventoryへ照合する。
-4. `Restrict third-party application access`を有効にする。
-5. Business owner、purpose、必要scopeが確認できたAppだけをapprove／reauthorizeする。
-6. 未使用またはowner不在のApp accessをdenyする。
-
-初回有効化は既存OAuth Appと一部SSH accessへ影響し得ます。停止後に全Appを無条件で再許可せず、
-inventoryにある必要対象だけを戻します。
-
-### 5.2 GitHub App installation
-
-1. Organization `Settings`を開く。
-2. `Access`の`Member privileges`を開く。
-3. `GitHub Apps`でrepository administratorによる直接installationを許可せず、organization ownerの
-   request／review経路へ寄せる。
-4. `Third-party Access`の`GitHub Apps`でinstalled Appを一件ずつ開く。
-5. `Repository access`を`Only select repositories`相当にする。
-6. `Permissions`をtaskに必要なread／write operationだけへ限定する。
-7. Owner不在または未使用Appはsuspend後に影響を確認し、不要ならuninstallする。
-
-App request自体を無効にするかはorganization sizeとreview capacityで決めます。Request flowを
-無効にしてdeveloperがbroad PATへ逃げないよう、承認経路とresponse ownerを先に用意します。
-
-成功状態:
-
-- App installationにorganization owner reviewがある。
-- `All repositories`や不要なorganization permissionがない。
-- App ID、installation ID、repository selection、permission、owner、review dateがinventoryにある。
-
-## 6. Automationをuser tokenから移行する
-
-実施者: Platform／SREとrepository administrator。Reviewer: Security。
-
-1. Developer OAuth／PATを使うautomation consumerを一つ選ぶ。
-2. 専用GitHub Appまたは同等のshort-lived workload identityを用意する。
-3. Installationを必要repositoryだけへ限定する。
-4. Installation tokenをjob開始時に生成し、job終了後に破棄する。
-5. Tokenをapproved secret deliveryからexact consumerへ渡す。
-6. Test scopeでread／writeの必要operationを確認する。
-7. Consumerを切り替え、旧developer tokenをprovider側でrevokeする。
-8. 旧tokenが拒否されることを確認する。
-
-GitHub App installation tokenは短命でも、App installationがall repositories／broad permissionsなら
-blast radiusは大きいままです。Token lifetimeとApp grantを別々にreviewします。
-
-成功状態:
-
-- Automation inventoryにdeveloper OAuth／PATがない。
-- App installationとtokenがexact repository／permissionへ限定される。
-- Old authority denialを確認できる。
-
-## 7. Developer credentialを保護する
-
-実施者: Developer。Reviewer: Securityまたはendpoint owner。
-
-- Interactive Git／CLIはorganization-approved OAuthまたはhardware-backed SSHを優先する。
-- PATが不可避ならfine-grained、task専用、explicit repository、minimum permission、90日以下にする。
-- OAuth／PATはOS keychainまたはapproved secret managerへ保存する。
-- `.env`、shell profile、IDE JSON literal、Git remote URL、shell historyへcredential値を置かない。
-- SSH authentication keyは可能な範囲でnon-exportable、hardware-backed、user verification付きにする。
-- SSH authenticationとcommit signingのkey用途をinventoryで区別する。
-
-Endpoint storageとhardware custodyはGitHub APIから証明できません。Sanitized endpoint reviewを
-`PSB-SOURCE-001`のhost boundaryと組み合わせ、未確認なら`NOT_CHECKED`とします。
-
-## 8. GitHub MCPを使用する場合
-
-MCPを使わない場合、このsectionはreviewed `N/A`です。
-
-1. [`../secure/github-mcp-oauth.json`](../secure/github-mcp-oauth.json)のremote OAuthを第一選択にする。
-2. Local MCPがmemory-only OAuthを提供する場合もPATより優先する。
-3. PATが不可避な場合だけ、[`../secure/github-mcp-auth-policy.json`](../secure/github-mcp-auth-policy.json)
-   のbounded fallbackを使用する。
-4. PATはMCP専用、fine-grained、explicit repository、read-only、90日以下にする。
-5. IDE設定には`${input:github_token}`等のprotected referenceだけを置く。
-6. Secretをexact MCP childへだけ解決し、IDE parent／shell全体へexportしない。
-7. MCP artifactは`PSB-AI-002`、read-only toolset／write approvalは`PSB-AI-004`で別に強制する。
-
-`password: true`は表示maskにすぎない可能性があります。OS keychain保管とchild-only deliveryを
-live endpointで確認できない限り`SCL-015`は`NOT_CHECKED`です。
-
-## 9. Quarterly reviewを運用する
-
-実施者: Securityと各credential owner。Cadence: 90日以内。
-
-各credentialについて次を確認します。
-
-- Ownerが在籍し、現在のroleと一致する。
-- Purposeとconsumerが存在する。
-- Repositoryとpermissionが現在のtaskに必要である。
-- Last useが説明でき、unused credentialはrevoke候補である。
-- Expirationがpolicy内である。
-- OAuth／App／SSO authorizationがcurrentである。
-- Exceptionがactiveで、expiryとremediation ownerがある。
-
-Inventory sourceがpartial、pagination incomplete、stale、unreadableの場合、reviewを完了にしません。
-
-## 10. Revocation triggerを運用する
-
-実施者: Incident response／identity owner。Approver: Security。
-
-Trigger:
-
-- Offboarding。
-- Role／team／repository ownership change。
-- Device lossまたはendpoint compromise。
-- Credential exposureまたは疑い。
-- Owner不在、purpose消滅、長期未使用。
-- Broad permission、期限違反、invalid exceptionの発見。
-
-処理順序:
-
-1. 対象credential ID、owner、consumer、repository scopeを特定する。
-2. Provider側でOAuth grant、PAT、SSH key、App credential／installationをrevoke／suspendする。
-3. 関連sessionとdownstream credentialを無効化する。
-4. 必要consumerを新しいbounded identityへ移す。
-5. Old credentialで以前の許可操作が拒否されることを確認する。
-6. Sanitized audit evidenceから利用と影響repositoryを調査する。
-7. Exposure sourceを除去し、`PSB-SOURCE-003`と`PSB-GOV-004`へ必要なresponseを接続する。
-
-File削除、Git history rewrite、replacement発行、自然expiryだけでrevocation完了としません。
-
-## 11. Live verification
-
-### 11.1 Test record
-
-Credential値を含めず次を記録します。
-
-- Control／check ID。
-- Test repositoryのsanitized stable reference。
-- Credential classとsanitized provider ID。
-- Test actor role。
-- Started／completed timestamp。
-- Operation classとresult code。
-- Reviewerとresult (`PASS`／`FAIL`／`NOT_CHECKED`／`ERROR`)。
-
-### 11.2 Test sequence
-
-1. Allowed test repositoryのreadを実行し、成功とaudit相関を確認する。
-2. 明示的に未付与のpermissionを必要とするinert operationを試し、`403`等の拒否を確認する。
-   Read-only profileではunique test refの作成を使用できる。
-3. Unselected test repositoryをreadし、`403`／`404`の拒否を確認する。
-4. Test credentialをprovider側でrevokeする。
-5. Allowed readを再実行し、`401`／`403`／`404`の拒否を確認する。
-
-HTTPのread-only profileでは、`POST /repos/{owner}/{allowed-test}/git/refs`にdefault branchのcommitと
-uniqueな`refs/heads/psb-source-004-denial-<date>`を指定すると、`Contents: write`がないことを具体的に
-確認できます。期待結果は`403`／`404`で、`201`は`FAIL`です。Tokenをrequest例やlogへ埋め込まず、
-approved secret deliveryからtest client processへ渡します。
-
-Write-capable automationはapproved writeをpositiveとし、別の未付与permissionをnegativeに選びます。
-Unexpected operationが成功した場合は`FAIL`です。独立adminがtest changeを削除しpermissionを修正します。
-Error、timeout、rate limit、untrusted outputを拒否成功として扱いません。
-
-## 12. Evidence checklist
-
-導入完了時に、組織のprivate evidence systemで次を参照できる状態にします。
-
-- Current 2FA／SSO／phishing-resistant authentication policy。
-- Classic／fine-grained PAT policyとactive grant review。
-- Approved OAuth Appとinstalled GitHub App review。
-- Credential／consumer inventoryとquarterly review date。
-- Approved storage／SSH enrollment review。
-- Audit coverage、retention、representative lifecycle event。
-- Revocation drillとold-authority denial。
-- Active exceptionとexpiry、またはexceptionなしの確認。
-
-Policy文書やfixture outputだけをcurrent provider stateの代わりにしません。
-
-## 13. Common failureとrecovery
-
-| Failure | Recovery |
+| 記録する項目 | 内容 |
 |---|---|
-| 2FA変更でoutside collaboratorがremoved | Secure 2FA準拠後にowner reviewして再招待する |
-| PAT policyでconsumerが停止 | Bounded fine-grained PATまたはGitHub Appへ移し旧tokenをrevokeする |
-| OAuth restrictionでapproved Appが停止 | Inventoryとownerを確認し必要Appだけreauthorizeする |
-| App migrationでpermission不足 | Exact missing operationだけをreviewして追加する |
-| Audit APIがplan対象外 | UI／approved exportでmanual reviewしAPI checkは`NOT_CHECKED` |
-| Evidence collection failure | `ERROR`として再収集し、clean扱いしない |
-| Unexpected write succeeded | `FAIL`、test change cleanup、permission是正、再試験 |
+| 所有者 | 人、service account、GitHub Appなど |
+| 用途 | CLI、bot、release、MCPなど |
+| 認証方式 | OAuth、classic PAT、fine-grained PAT、SSH鍵、deploy key、GitHub App |
+| 対象 | 組織、明示したリポジトリ |
+| 権限 | read／write、organization permission、PAT permissionなど |
+| 期限・利用状況 | 有効期限、最終利用、最終確認日 |
+| 対応責任者 | 移行、更新、失効を行う人 |
 
-## 14. Rollback
+トークン、Authorization header、秘密鍵、recovery codeは台帳へ保存しません。
 
-- Organization policyを一括scriptで戻さない。
-- 変更前state、影響actor、security reviewer、rollback reasonを確認する。
-- Classic PAT、unrestricted OAuth、all-repository Appを黙って再許可しない。
-- Service continuityが必要なら、exact actor／repository／permission／期限のtemporary pathを作り、
-  `PSB-GOV-002` exceptionへ登録する。
-- Credential migrationはconsumer単位で戻し、old credentialを無期限に残さない。
+### 影響を確認する
 
-## 15. References
+設定変更前に、次を確認します。
 
-- [GitHub personal access token policy](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/setting-a-personal-access-token-policy-for-your-organization)
-- [Managing fine-grained PAT requests](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/managing-requests-for-personal-access-tokens-in-your-organization)
-- [OAuth App access restrictions](https://docs.github.com/en/organizations/managing-oauth-access-to-your-organizations-data/about-oauth-app-access-restrictions)
-- [GitHub App request and installation restrictions](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/limiting-oauth-app-and-github-app-access-requests-and-installations)
-- [Reviewing installed GitHub Apps](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/reviewing-github-apps-installed-in-your-organization)
-- [Requiring organization 2FA](https://docs.github.com/en/organizations/keeping-your-organization-secure/managing-two-factor-authentication-for-your-organization/requiring-two-factor-authentication-in-your-organization)
+- 二要素認証の要件を満たさないメンバー、外部コラボレーター、bot。
+- 現在利用中のOAuth App、GitHub App、classic／fine-grained PAT、SSH鍵、deploy key。
+- 各認証情報を使うCI、bot、CLI、package／release処理。
+- 承認済みの復旧手段を持つGitHub組織管理者が少なくとも2名いること。
+- 利用者への通知、変更時間帯、問題発生時の責任者。
+
+二要素認証やOAuth App制限を初めて有効にすると、利用者、App、一部のSSHアクセスが停止する場合があります。
+停止後にすべてを無条件で再許可せず、棚卸し済みの必要な対象だけを戻します。
+
+### 検証環境を用意する
+
+- 本番ソースを含まないprivate test repositoryを2つ作る。
+  - `allowed-test`: 読み取りを許可する。
+  - `unselected-test`: 認証情報の対象から外す。
+- 一つの認証方式だけに使う検証用ID／認証情報を用意する。
+- 検証用認証情報とリポジトリを削除できる、試験実施者とは別の管理者を決める。
+
+## 2. GitHub／IdPを設定する
+
+GitHubの画面名は英語表示を基準にしています。契約プランやUIによって項目が表示されない場合は、
+確認済みとして扱わず`NOT_CHECKED`にします。
+
+| 対象 | GitHub上の場所 | 推奨設定 | 担当 | 成功状態 |
+|---|---|---|---|---|
+| 二要素認証 | Organization `Settings` → `Authentication security` | `Require two-factor authentication for everyone in your organization`を有効化 | 組織管理者／IdP管理者 | 全メンバーと外部コラボレーターに二要素認証が必要 |
+| 安全な二要素認証 | 同上 | 利用できる場合は`Only allow secure two-factor methods`も有効化 | 組織管理者／IdP管理者 | SMSだけではアクセスできない |
+| Classic PAT | `Settings` → `Personal access tokens` → `Settings` → `Tokens (classic)` | Organization resourceへのアクセスを`Restrict access` | 組織管理者 | Classic PATが組織のリソースへ到達しない |
+| Fine-grained PAT | 同上 → `Fine-grained tokens` | 管理者承認を必須化。対象リポジトリと権限を限定。有効期限は90日以下 | 組織管理者 | 所有者、用途、対象、最小権限、期限が確認済み |
+| OAuth App | `Settings` → `Third-party Access` → `OAuth app policy` | `Restrict third-party application access`を有効化し、必要なAppだけを承認 | 組織管理者 | 所有者・用途・必要scopeが不明なAppは未承認 |
+| GitHub Appの申請 | `Settings` → `Member privileges` → `GitHub Apps` | インストールを組織管理者の確認経路へ集約 | 組織管理者 | メンバーが無審査でAppを追加できない |
+| インストール済みGitHub App | `Settings` → `Third-party Access` → `GitHub Apps` | `Only select repositories`相当と必要最小限のpermission | 組織管理者／リポジトリ管理者 | `All repositories`や不要な組織権限がない |
+| SSO／メンバー管理 | Enterprise／IdPの管理画面 | SAML SSO、強固な認証、SCIMなどの退職・異動連携 | IdP管理者 | 無効化した利用者のGitHubアクセスも停止する |
+
+### 設定時の注意
+
+- GitHubの`Only allow secure two-factor methods`はSMSを除外しますが、これだけでフィッシング耐性を
+  証明できるわけではありません。機微なアクセスにはIdP／Enterprise側でパスキーやセキュリティキーを要求します。
+- Fine-grained PATを使わない運用が可能なら、利用自体を制限します。必要な場合だけ、申請を一件ずつ確認します。
+- GitHub組織管理者が自分で作成したfine-grained PATも、別の確認者が台帳上で確認します。
+- 有効期限方針による利用停止は失効ではありません。不要な旧トークンは明示的にrevokeします。
+- Owner不在または未使用のGitHub Appは、影響を確認してsuspend／uninstallします。
+
+## 3. 自動処理から個人トークンを除く
+
+自動処理には、開発者個人のOAuthやPATではなく、専用GitHub Appなどの短期IDを使います。
+
+1. 個人トークンを使っている処理を一つ選ぶ。
+2. 専用GitHub Appまたは同等の短期workload identityを用意する。
+3. Appの対象を必要なリポジトリだけにし、権限を必要な操作だけに限定する。
+4. Job開始時にinstallation tokenを取得し、終了後は再利用しない。
+5. 承認済みのsecret deliveryから、対象プロセスだけへトークンを渡す。
+6. 検証環境で必要な操作を確認してから処理を切り替える。
+7. 旧個人トークンをGitHub側で失効し、再利用が拒否されることを確認する。
+
+Installation tokenが短期でも、GitHub App自体が全リポジトリへ広い権限を持っていれば影響範囲は大きいままです。
+トークンの寿命とAppの権限を別々に確認します。
+
+## 4. 開発者の認証情報を保護する
+
+端末側の詳細は`PSB-SOURCE-001`が担当します。このrunbookでは、GitHub上の認証情報と端末側の保護が
+接続されていることだけを確認します。
+
+- Git／CLIでは、組織が承認したOAuthまたはハードウェア保護されたSSH鍵を優先する。
+- PATが不可避なら、fine-grained、用途専用、対象リポジトリ明示、最小権限、90日以下とする。
+- OAuth／PATはOSのキーチェーンまたは承認済みシークレット管理サービスへ保存する。
+- `.env`、shell profile、IDEのJSON、Gitのremote URL、shell historyへ認証情報の値を置かない。
+- SSH認証鍵は可能ならexport不能で、利用者確認を伴うハードウェア保護鍵にする。
+- SSH認証とcommit署名を台帳上で区別する。
+
+端末上の保管やハードウェア保護はGitHub APIだけでは証明できません。`PSB-SOURCE-001`の端末確認と
+組み合わせ、証跡がなければ`NOT_CHECKED`にします。
+
+### GitHub MCPを使う場合
+
+MCPを使わない場合は、確認者が`N/A`と判断します。
+
+1. [`../secure/github-mcp-oauth.json`](../secure/github-mcp-oauth.json)のremote OAuthを優先する。
+2. PATが不可避な場合だけ、[`../secure/github-mcp-auth-policy.json`](../secure/github-mcp-auth-policy.json)の
+   限定的な代替構成を使う。
+3. PATはMCP専用、fine-grained、対象リポジトリ明示、読み取り専用、90日以下にする。
+4. IDE設定には`${input:github_token}`など、保護された値への参照だけを置く。
+5. 認証情報は対象のMCP子プロセスだけへ渡し、IDEやshell全体へexportしない。
+6. MCP binaryの正当性は`PSB-AI-002`、ツールの許可・書き込み承認は`PSB-AI-004`で確認する。
+
+`password: true`は表示を隠すだけの可能性があります。OSのキーチェーンへの保管と、子プロセスだけへの
+受け渡しを実端末で確認できない限り、`SCL-015`は`NOT_CHECKED`です。
+
+## 5. 許可・拒否・失効を試す
+
+認証情報の値を、コマンド履歴、ログ、試験記録へ残してはいけません。試験記録には、control／check ID、
+認証方式、サニタイズした対象ID、実施日時、操作の種類、結果、確認者だけを記録します。
+
+| 順序 | 試験 | 操作 | 期待結果 |
+|---:|---|---|---|
+| 1 | 許可確認 | `allowed-test`を読み取る | 成功し、監査イベントと対応付けられる |
+| 2 | 権限の拒否確認 | 明示的に付与していない権限を必要とする無害な操作を行う | `403`などで拒否され、変更がない |
+| 3 | 対象範囲の拒否確認 | `unselected-test`を読み取る | `403`または`404`で拒否される |
+| 4 | 失効確認 | 検証用認証情報を失効し、`allowed-test`を再度読み取る | `401`、`403`、`404`のいずれかで拒否される |
+
+読み取り専用の構成では、`allowed-test`へ一意なtest refを作成する操作を、権限の拒否確認に使えます。
+`POST /repos/{owner}/{allowed-test}/git/refs`へ、その時だけ使う`refs/heads/psb-source-004-denial-<date>`を
+指定します。期待結果は`403`または`404`です。`201`なら`FAIL`とし、別の管理者が変更を削除して権限を是正します。
+
+Timeout、rate limit、認証エラー、解析失敗は拒否成功ではなく`ERROR`です。
+
+### 結果の記録
+
+- `PASS`: 現在の設定または試験結果で要求状態を確認できた。
+- `FAIL`: 過剰権限、想定外の成功、失効漏れなどを確認した。
+- `NOT_CHECKED`: プラン、権限、端末、証跡が不足し確認できない。
+- `ERROR`: 収集、認証、API、解析、鮮度確認に失敗した。
+- 確認済みの`N/A`: 対象の認証方式やMCPを使用していない。
+
+## 6. 棚卸しと失効を継続する
+
+### 90日以内ごとの棚卸し
+
+すべての認証情報について、次を確認します。
+
+- 所有者が在籍し、現在の役割と一致している。
+- 用途と利用処理が現在も存在する。
+- 対象リポジトリと権限が現在の作業に必要である。
+- 最終利用を説明でき、未使用の認証情報を失効候補にしている。
+- 有効期限が方針内である。
+- OAuth、App、SSOの承認が現在も有効である。
+- 例外に所有者、承認、期限、是正責任者がある。
+
+一覧が一部しか取得できない、ページネーションが不完全、古い、読み取れない場合は、棚卸しを完了扱いにしません。
+
+### 直ちに失効する条件
+
+- 退職、異動、team／repository ownershipの変更。
+- 端末紛失、端末侵害、認証情報の漏えいまたはその疑い。
+- 所有者不在、用途消滅、長期未使用。
+- 過剰権限、期限違反、無効な例外の発見。
+
+### 失効の順序
+
+1. 対象ID、所有者、利用処理、対象リポジトリを特定する。
+2. GitHub側でOAuth grant、PAT、SSH鍵、App credential／installationをrevoke／suspendする。
+3. 関連セッションと下流の認証情報を無効化する。
+4. 必要な処理を新しい限定的なIDへ移す。
+5. 旧認証情報で以前の許可操作が拒否されることを確認する。
+6. 監査記録から利用状況と影響を受けたリポジトリを確認する。
+7. 漏えい元を除去し、必要に応じて`PSB-SOURCE-003`と`PSB-GOV-004`へ引き継ぐ。
+
+ファイル削除、Git履歴の書き換え、代替トークンの発行、自然な期限切れだけでは失効完了になりません。
+
+## 7. 導入完了の証跡
+
+組織のprivate evidence systemで、次を確認できれば導入完了です。
+
+- 現在の二要素認証、SSO、フィッシング耐性のある認証方針。
+- Classic／fine-grained PATの方針と、有効なPATの棚卸し結果。
+- 承認済みOAuth Appとインストール済みGitHub Appの確認結果。
+- 認証情報・利用処理一覧と、90日以内の確認日。
+- 端末上の保管状態とSSH鍵登録の確認結果。
+- 監査対象、保持期間、代表的なライフサイクルイベント。
+- 失効試験と旧認証情報の拒否結果。
+- 有効な例外と期限、または例外がないことの確認。
+
+方針文書やテスト用サンプルの出力を、現在のGitHub設定の代わりにしてはいけません。
+
+## 8. 失敗時の復旧とロールバック
+
+| 問題 | 対応 |
+|---|---|
+| 二要素認証変更で外部コラボレーターが除外された | 要件を満たす二要素認証の設定後、所有者が確認して再招待する |
+| PAT方針で処理が停止した | 限定的なfine-grained PATまたはGitHub Appへ移し、旧トークンを失効する |
+| OAuth制限で承認済みAppが停止した | 棚卸しと所有者を確認し、必要なAppだけを再認証する |
+| Appの権限が不足した | 不足している操作だけを確認して追加する |
+| Audit APIを利用できない | 管理画面または承認済みexportで確認し、API確認は`NOT_CHECKED`にする |
+| 証跡を収集できない | `ERROR`として再収集し、安全と判定しない |
+| 想定外の書き込みが成功した | `FAIL`とし、別の管理者が変更を除去して権限を是正し、再試験する |
+
+組織設定をscriptで一括して元へ戻してはいけません。変更前の状態、影響対象、戻す理由を別の確認者と確認し、
+設定単位で戻します。Classic PAT、無制限OAuth、全リポジトリ対象Appを黙って再許可しません。
+
+継続運用のため一時的な経路が必要なら、利用者、リポジトリ、権限、期限を限定し、
+`PSB-GOV-002`の例外として記録します。
+
+## 参考資料
+
+- [GitHubのpersonal access token方針](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/setting-a-personal-access-token-policy-for-your-organization)
+- [Fine-grained PAT申請の管理](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/managing-requests-for-personal-access-tokens-in-your-organization)
+- [OAuth Appのアクセス制限](https://docs.github.com/en/organizations/managing-oauth-access-to-your-organizations-data/about-oauth-app-access-restrictions)
+- [GitHub Appの申請・インストール制限](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/limiting-oauth-app-and-github-app-access-requests-and-installations)
+- [インストール済みGitHub Appの確認](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/reviewing-github-apps-installed-in-your-organization)
+- [GitHub組織での二要素認証要件](https://docs.github.com/en/organizations/keeping-your-organization-secure/managing-two-factor-authentication-for-your-organization/requiring-two-factor-authentication-in-your-organization)
 - [GitHub REST API: Git references](https://docs.github.com/en/rest/git/refs)

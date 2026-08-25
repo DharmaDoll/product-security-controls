@@ -314,9 +314,7 @@ binaryが正規品であることの証明ではありません。binaryは`PSB-
 
 ## フレームワークとの対応
 
-フレームワークとの対応は欠けているわけではありません。機械可読な正本を`control.yaml`へ置くという
-リポジトリ規約に従っていましたが、READMEには一覧を掲載していませんでした。これはREADMEの説明不足です。
-現在の対応は次のとおりです。
+機械可読な正本は`control.yaml`です。
 
 | フレームワーク | バージョン／ID | 関係 | 主な対象 |
 |---|---|---|---|
@@ -330,13 +328,11 @@ binaryが正規品であることの証明ではありません。binaryは`PSB-
 | OpenSSF OSPS Baseline | `2026.02.19`／`OSPS-AC-01.01` | `supports` | 機微な操作に対するMFAと集中管理された認証 |
 | OWASP Agentic Top 10 | `2026`／`ASI03` | `mitigates` | MCPでの権限継承、PATの過剰権限、agent identityの悪用 |
 
-各対応関係には、`control.yaml`で対象チェック、関係、信頼度、根拠、確認日を記録しています。
-これらは関連するセキュリティ要件や攻撃手法を示すものであり、正式な準拠や完全な対策を主張するものではありません。
+これは正式な準拠や完全な対策を主張するものではありません。
 
 ## 参考資料
 
 - [実装仕様書](docs/implementation-spec.md)
-- [実装計画書](docs/implementation-plan.md)
 - [GitHub導入runbook](docs/github-adoption-runbook.md)
 - [読み取り専用監査の選択肢](docs/read-only-audit-options.md)
 - [GitHubのpersonal access token方針](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/setting-a-personal-access-token-policy-for-your-organization)
