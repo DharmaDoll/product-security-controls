@@ -10,4 +10,4 @@ FAIL audit_events: expected=creation-authorization-use-change-revocation actual=
 FAIL exceptions: expected=owned-approved-justified-expiring actual=permanent-unowned
 FAIL user_credential_max_days: expected=integer-between-1-and-90 actual=0
 FAIL inventory_review_days: expected=integer-between-1-and-90 actual=0
-REJECTED credential policy: 12 control checks failed
+REJECTED credential policy reference: 12 control checks failed

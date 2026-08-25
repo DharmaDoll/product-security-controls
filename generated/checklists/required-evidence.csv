@@ -806,8 +806,8 @@ PSB-SOURCE-004,PSB-SOURCE-004-SCL-004,security,external-evidence,sanitized token
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-004,security,external-evidence,approved exception record
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-005,security,external-evidence,credential lifetime policy
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-005,security,external-evidence,sanitized expiration inventory
-PSB-SOURCE-004,PSB-SOURCE-004-SCL-006,developer,hybrid,sanitized credential storage assessment
-PSB-SOURCE-004,PSB-SOURCE-004-SCL-006,developer,hybrid,PSB-SOURCE-002 verifier output
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-006,developer,hybrid,current sanitized protected-storage review
+PSB-SOURCE-004,PSB-SOURCE-004-SCL-006,developer,hybrid,credential-free remote URL review
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-007,security,external-evidence,identity policy
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-007,security,external-evidence,sanitized authentication compliance record
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-008,shared,external-evidence,sanitized SSH key enrollment record

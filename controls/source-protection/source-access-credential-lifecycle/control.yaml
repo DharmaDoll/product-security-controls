@@ -27,6 +27,7 @@ implementations:
     - insecure/github-mcp-oauth.json
     - insecure/github-mcp-pat-fallback.json
   secure:
+    - docs/github-adoption-runbook.md
     - secure/credential-policy.json
     - secure/github-mcp-auth-policy.json
     - secure/github-mcp-oauth.json
@@ -35,9 +36,10 @@ verification:
   commands:
     - make verify-control CONTROL=PSB-SOURCE-004
   expected:
-    - secure metadata passes all 12 general lifecycle checks and five GitHub MCP authentication checks without containing a credential value
-    - insecure metadata is rejected with 12 general findings and five GitHub MCP findings with exit code 1
+    - reference metadata passes all 12 general lifecycle checks and five GitHub MCP authentication checks without containing a credential value or claiming live adoption
+    - insecure reference metadata is rejected with 12 general findings and five GitHub MCP findings with exit code 1
     - malformed or sensitive input is reported as ERROR with exit code 2 rather than a clean result
+    - live adoption requires current GitHub and IdP settings complete credential inventory and dedicated expected-allow ungranted-permission-denial scope-denial and revocation-denial tests while missing evidence remains NOT_CHECKED
 checks:
   - id: SCL-001
     title: Automation avoids developer user tokens
@@ -146,11 +148,11 @@ checks:
       why_required: protected storage and credential-free configuration remove common recoverable copies outside platform access policy
     verification:
       type: hybrid
-      method: inspect sanitized credential helper SSH agent and remote URL configuration and verify PSB-SOURCE-002
+      method: run the reference verifier then inspect sanitized credential helper SSH agent protected-store and credential-free remote URL state using the adoption runbook
       expected: plaintext credential stores embedded credentials and unprotected private key files are absent
       evidence:
-        - sanitized credential storage assessment
-        - PSB-SOURCE-002 verifier output
+        - current sanitized protected-storage review
+        - credential-free remote URL review
     mapping_status: reviewed
   - id: SCL-007
     title: Interactive source access is phishing resistant
@@ -525,7 +527,9 @@ mappings:
       - SCL-016
       - SCL-017
 limitations:
-  - The verifier checks policy metadata and fixtures but does not enumerate revoke or test live GitHub credentials.
+  - The guidance-first runbook depends on organization owners identity administrators developers and security reviewers applying and reviewing live settings; repository files alone do not enforce the control.
+  - The verifier checks reference metadata and fixtures but does not enumerate revoke or test live GitHub credentials.
+  - The read-only audit document describes optional API and evidence sources but this package does not implement a live collector.
   - OAuth PAT SSH and GitHub App capabilities differ and must be evaluated against the actual actor resource and operation.
   - Fine-grained PATs still become excessive when owner repository permissions or duration are broader than the task.
   - Hardware-backed SSH keys can be misused from a compromised authenticated endpoint session.

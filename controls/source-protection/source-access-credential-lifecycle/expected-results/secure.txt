@@ -10,4 +10,4 @@ PASS audit_events=creation-authorization-use-change-revocation
 PASS exceptions=owned-approved-justified-expiring
 PASS user_credential_max_days=90
 PASS inventory_review_days=90
-ACCEPTED credential policy
+ACCEPTED credential policy reference
