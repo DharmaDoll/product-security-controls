@@ -54,4 +54,4 @@ Generated control catalog. Do not edit manually.
 | [PSB-SOURCE-002](../controls/source-protection/git-hooks-baseline/README.md) | source-protection | リポジトリ所有の開発者向けGit hooksセキュリティベースライン | 13 | prototype | E3 |
 | [PSB-SOURCE-003](../controls/source-protection/public-repository-exposure/README.md) | source-protection | 公開リポジトリ露出とGitHub dorking検証 | 13 | reference | E3 |
 | [PSB-SOURCE-004](../controls/source-protection/source-access-credential-lifecycle/README.md) | source-protection | Govern source access credential lifecycle | 17 | prototype | E3 |
-| [PSB-SOURCE-005](../controls/source-protection/repository-destruction-recovery/README.md) | source-protection | Repository mass deletionを防止しimmutable backupから復旧可能性を検証する | 7 | prototype | E3 |
+| [PSB-SOURCE-005](../controls/source-protection/repository-destruction-recovery/README.md) | source-protection | Critical repositoryの破壊耐性と独立した復旧可能性を検証する | 4 | prototype | E3 |

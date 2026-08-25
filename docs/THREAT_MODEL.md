@@ -70,21 +70,22 @@
 - over-broad repository visibility, search indexing, or organization
   membership exposing content outside the intended trust boundary.
 - a compromised source-platform administrator or faulty bulk operation
-  deleting multiple critical repositories, refs, history, and protection
-  settings before responders can contain the actor;
+  destroying multiple critical repositories, refs, history, and protection
+  settings through one unbounded authority;
 - mutable, stale, same-authority, short-retained, or untested repository
   backups disappearing with the source organization or failing to restore the
   complete critical scope inside required RPO and RTO;
-- incomplete repository inventory, partial deletion audit, failed alert
-  delivery, or mismatched restore evidence being interpreted as recoverability.
+- incomplete repository inventory or mismatched restore evidence being
+  interpreted as recoverability.
 
 `PSB-SOURCE-005` owns the repository-wide destructive-action and recovery
-boundary. It binds complete stable-ID inventory, bulk-deletion denial,
-attacker-separated immutable backups, exact external alerting, actor-authority
-containment, and current all-scope digest-verified restore drills. Its offline
-fixtures do not prove live source-provider policy, backup object-lock
-enforcement, provider object completeness, identity revocation, or organization
-disaster-recovery readiness.
+boundary for product-critical source. It binds complete stable-ID inventory,
+bounded destructive actions, attacker-separated retained recovery copies, and
+current all-scope digest-verified restore drills. Privileged-change audit,
+credential containment, and incident authorization compose from their owning
+controls. Its offline fixtures do not prove live source-provider policy,
+recovery-copy lock enforcement, provider object completeness, identity
+revocation, or organization disaster-recovery readiness.
 
 ### Developer endpoint threats
 

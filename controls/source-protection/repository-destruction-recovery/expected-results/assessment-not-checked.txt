@@ -1,0 +1,7 @@
+SOURCE test-fixture
+POLICY id=repository-recovery-policy@sha256:a944b38f6e639fdb738f686180fa7f7cd152a8a66498616e440af33fcf747f50
+NOT_CHECKED RDR-001 organization evidence not provided: provider-inventory-not-connected
+NOT_CHECKED RDR-002 organization evidence not provided: deletion-policy-not-exported
+NOT_CHECKED RDR-003 organization evidence not provided: backup-evidence-not-connected
+NOT_CHECKED RDR-006 organization evidence not provided: restore-drill-not-performed
+INCOMPLETE 4 check(s) require organization evidence

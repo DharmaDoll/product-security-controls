@@ -832,16 +832,7 @@ PSB-SOURCE-004,PSB-SOURCE-004-SCL-016,security,hybrid,secure/github-mcp-pat-fall
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-016,security,hybrid,PSB-AI-004 capability verifier output
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-017,security,hybrid,secure/github-mcp-auth-policy.json
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-017,security,hybrid,live adoption assessment when available
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-001,repository-admin,hybrid,sanitized repository IDs and classifications
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-001,repository-admin,hybrid,collector identity pagination and capture time
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-002,repository-admin,hybrid,sanitized deletion request and decision
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-002,repository-admin,hybrid,approval and authentication metadata
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-003,shared,hybrid,metadata-only backup manifest
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-003,shared,hybrid,object-lock and retention decision
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-004,security,hybrid,sanitized audit correlation result
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-004,security,hybrid,external alert delivery receipt
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-005,incident-response,hybrid,content-free revocation receipt
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-005,incident-response,hybrid,incident-response authorization timeline
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-006,repository-admin,automated,metadata-only restore receipts
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-006,repository-admin,automated,RPO and RTO measurements
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-007,security,automated,sanitized negative-test output
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-001,repository-admin,hybrid,sanitized stable repository IDs criticality and collector completeness metadata
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-002,repository-admin,hybrid,sanitized deletion-control state and dry-run decision receipt
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-003,shared,hybrid,metadata-only recovery-copy manifest and retention decision
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-006,repository-admin,hybrid,metadata-only isolated restore receipts and RPO RTO measurements

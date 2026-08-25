@@ -2531,13 +2531,13 @@ Production archive manifests, signing-key custody, provider adapters, and
 protection from a trusted producer compromised before signing remain adoption
 and residual-risk work.
 
-### PSB-SOURCE-005 — Repository destruction prevention and recovery assurance
+### PSB-SOURCE-005 — Critical repository destruction resilience and recovery assurance
 
 Status: `implemented` — E3 provider-neutral critical-repository recovery slice
 
-Goal: limit a compromised source administrator or faulty bulk operation before
-it can delete multiple critical repositories, and prove that the complete
-repository scope can be restored from attacker-separated immutable state.
+Goal: prevent one source-platform authority from irreversibly destroying
+product-critical source, and prove that the complete critical scope can be
+restored from attacker-separated retained state within product RPO and RTO.
 
 Implemented in
 [`controls/source-protection/repository-destruction-recovery/`](../controls/source-protection/repository-destruction-recovery/):
@@ -2549,19 +2549,19 @@ Implemented in
 - content, refs, and protected-settings digests are retained within a 24-hour
   RPO under 30-day compliance object lock in another security domain that
   source administrators cannot delete;
-- exact deletion request, actor, session, targets, and decision join one
-  complete audit event and five-minute external alert receipt;
-- the destructive actor session and tokens are revoked before independently
-  authorized recovery starts;
 - a current isolated drill restores every required repository within a
   four-hour RTO and compares exact snapshot, content, refs, and settings state;
-- stale, partial, unavailable, malformed, symbolic, policy-tampered, or
-  sensitive evidence is `ERROR`, distinct from an unsafe-state finding;
-- `SITF T-V009` resolves to exact `RDR-001..006` checks without claiming live
-  provider adoption, complete backup contents, or enterprise disaster recovery.
+- absent organization evidence is `NOT_CHECKED`; stale, partial, malformed,
+  symbolic, policy-tampered, or sensitive evidence is `ERROR`, distinct from an
+  unsafe-state finding;
+- `SITF T-V009` resolves to exact `RDR-001`, `RDR-002`, `RDR-003`, and
+  `RDR-006` checks without claiming live provider adoption, complete recovery
+  contents, or enterprise disaster recovery.
 
-Provider-specific inventory, backup, audit, identity-revocation, and restore
-adapters plus product-specific RPO／RTO remain adoption work.
+Provider-specific inventory, recovery-copy, and restore adapters plus
+product-specific RPO／RTO remain adoption work. Privileged-change audit,
+identity revocation, and incident authorization remain integration requirements
+owned by their existing controls.
 
 ### Verified external downloads
 
