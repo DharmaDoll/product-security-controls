@@ -69,23 +69,22 @@
   information after the source repository is corrected;
 - over-broad repository visibility, search indexing, or organization
   membership exposing content outside the intended trust boundary.
-- a compromised source-platform administrator or faulty bulk operation
-  destroying multiple critical repositories, refs, history, and protection
-  settings through one unbounded authority;
+- a compromised GitHub administrator or mistaken administrative operation
+  deleting or transferring critical repositories or rewriting important refs;
 - mutable, stale, same-authority, short-retained, or untested repository
   backups disappearing with the source organization or failing to restore the
   complete critical scope inside required RPO and RTO;
-- incomplete repository inventory or mismatched restore evidence being
-  interpreted as recoverability.
+- incomplete repository scope or a backup completion log being interpreted as
+  recoverability without an isolated product restore.
 
 `PSB-SOURCE-005` owns the repository-wide destructive-action and recovery
-boundary for product-critical source. It binds complete stable-ID inventory,
-bounded destructive actions, attacker-separated retained recovery copies, and
-current all-scope digest-verified restore drills. Privileged-change audit,
-credential containment, and incident authorization compose from their owning
-controls. Its offline fixtures do not prove live source-provider policy,
-recovery-copy lock enforcement, provider object completeness, identity
-revocation, or organization disaster-recovery readiness.
+boundary for product-critical source. Its GitHub implementation restricts
+member deletion and transfer, protects critical refs with rulesets, requires
+GitHub-admin-independent retained backups, and requires an isolated product
+restore drill. Privileged-change audit, credential containment, and incident
+authorization compose from their owning controls. Its local Git restore test
+does not prove live GitHub settings, storage lock enforcement, non-Git object
+coverage, identity revocation, or organization disaster-recovery readiness.
 
 ### Developer endpoint threats
 

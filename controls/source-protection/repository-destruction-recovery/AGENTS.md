@@ -1,138 +1,49 @@
 # PSB-SOURCE-005 implementation instructions
 
-このcontrolを変更するagent向けの局所指示です。repository rootの`AGENTS.md`と
-`controls/AGENTS.md`を先に読み、このfileでは`PSB-SOURCE-005`固有の境界を補足します。
+このfileは`PSB-SOURCE-005`固有の実装境界を定める。repository rootと`controls/`の`AGENTS.md`を
+先に読むこと。
 
 ## Control essence
 
-- Domainは`source-protection`です。
-- 目的は、単一のsource-platform管理権限ではcritical repositoryを不可逆に消失させられず、
-  独立したrecovery copyからproduct固有のRPO／RTO内に復旧できることを実証することです。
-- 対象は、製品の再ビルド、security patch、incident investigationに必要なcritical
-  repositoryです。全repositoryへの一律適用を要求しません。
-- 本packageはbackup製品、source-platform管理製品、IdP、alert system、incident response
-  platformではありません。provider-neutralなpolicy、実装ガイド、sanitized read-only
-  assessmentを提供します。
+- Domainは`source-protection`である。
+- 対象は製品の再ビルド、security patch、incident investigationに不可欠なcritical repositoryである。
+- 実効性は、GitHubの削除制限、重要refのruleset、GitHub管理者から独立したretention-locked backup、
+  隔離restore drillから生まれる。
+- JSONへの自己申告、synthetic evidence、fixtureのPASSをorganizationの安全性として扱わない。
 
 ## Atomic checks
 
-中核checkは4つだけです。既存参照を安定させるためIDをrenumberしません。
+既存参照を安定させるためIDをrenumberしない。
 
-- `RDR-001`: critical repository scopeの完全性とstable provider ID。
-- `RDR-002`: bulk destructive actionの拒否、単一操作のdefault deny、独立承認、recent
-  phishing-resistant reauthentication。
-- `RDR-003`: source administratorが削除できない別security domainのcurrent retained
-  recovery copy。
-- `RDR-006`: 全critical scopeのisolated restore、RPO／RTO、content／refs／protected
-  settingsのexact comparison。
+- `RDR-001`: product ownerがcritical repositoryをGitHub numeric IDで特定する。
+- `RDR-002`: memberのrepository削除・移管を禁止し、重要branch／tagの削除とforce pushをrulesetで
+  制限する。
+- `RDR-003`: GitHub Organization Ownerが削除できない別security accountにcurrent backupを保持する。
+- `RDR-006`: 隔離先への実restoreとproduct build／patch確認をRPO／RTO内に行う。
 
-旧`RDR-004`のaudit／alert実装と旧`RDR-005`のcredential containmentは、本controlの
-production integration prerequisiteですがatomic checkとして再実装しません。旧`RDR-007`の
-strict parsing、policy identity、redaction、fail-closed semanticsはverifier invariantとtestで
-維持します。
+checkを変更する場合は`control.yaml`の`applies_to`、context、verification、mappingも更新する。
 
-checkを追加・変更する場合は、`control.yaml`の`applies_to`、`context.threat_actor`、
-`context.attack_or_failure_scenario`、`context.why_required`、mappingを同じ変更で更新します。
-大きなchecklistを維持するためだけにcheckを追加しないでください。
+## Implementation rules
 
-## Relationship to other controls
+- READMEはGitHub管理者が実施する画面設定、backup boundary、restore手順を具体的に示す。
+- provider-neutralな架空のpolicy、evidence schema、assessment adapterを追加しない。
+- GitHub設定を自動変更するscriptを追加しない。read-only commandまたは明示的な管理者操作にする。
+- backup credentialへrepository admin、delete、Organization Owner権限を与えない。
+- production repositoryをself-testで削除、上書き、renameしない。
+- GitHub live state、backup storage、restore結果を見ていない場合は、導入済み・検証済みと主張しない。
 
-- `PSB-CICD-008`はprivileged control-plane変更のapprovalとaudit correlationを所有します。
-- `PSB-SOURCE-004`はOAuth、PAT、SSH、App credentialのinventory、lifecycle、revocationを
-  所有します。
-- `PSB-GOV-001`はincident scope、証跡保全、containment、response authorizationを所有します。
-- 本controlはcritical sourceのdestructive-action limit、independent recovery copy、restore
-  assuranceだけを所有し、上記controlのscriptやschemaを複製しません。
+## Verification boundary
 
-SITF `T-V009`とMITRE ATT&CK `T1485`はattack behaviorとのrelationshipです。SSDF、SLSA、
-ASVS、OWASP Top 10、formal complianceとの関係を追加する場合は、check単位の直接的な根拠を
-別途reviewしてください。
+`tests/test.sh`はtemporary local Git repositoryをmirror backupし、source消失後にbranch／tagを復元できる
+ことと、不完全なrestoreを検出できることだけを確認する。GitHub organization setting、storage lock、
+RPO／RTO、Issues／PR等の復元を証明するtestへ見せかけない。
 
-## Adoption-first implementation
-
-- READMEの一枚要約直後に、prerequisites、copy対象、明示的activation、harmless self-test、
-  exit status、failure recovery、server-side enforcement、rollbackを置きます。
-- 最短pathはPython 3.10以上のstandard libraryだけで動作させます。Docker、package manager、
-  network access、sudoを要求しません。
-- provider-specific API clientやbackup SDKは、documented gapと具体的adopter requirementが
-  ない限り追加しません。
-- local activationはglobal Git、shell、IDE、OS、source provider、backup storageを変更しません。
-- 実削除、実credential revoke、production restore、in-place overwrite、auto-remediationを
-  fixtureやself-testへ入れません。
-- provider固有のthresholdやobject coverageは、working minimal pathの後にadopter tuningとして
-  記録します。
-
-## Evidence and assessment
-
-Assessmentはorganization systemを変更せず、adopterが明示的に渡したsanitized evidenceだけを
-評価します。evidenceを指定しないcanonical assessmentは全checkを`NOT_CHECKED`にします。
-
-- `PASS`: freshでauthoritativeなevidenceがrequired stateを示す。
-- `FAIL`: 評価可能なevidenceがunsafe stateを示す。
-- `NOT_CHECKED`: provider、backup、restore等の外部証跡が未提供。
-- `ERROR`: collector、parser、schema、freshness、policy identity等により評価不能。
-
-`NOT_CHECKED`と`ERROR`をclean、問題なし、導入済みとして扱ってはいけません。fixture successも
-organization adoption evidenceではありません。
-
-Evidenceにはstable repository ID、security-domain ID、snapshot identity、timestamps、decision、
-digest等のmetadataだけを入れます。repository content、credential、token、username、内部endpoint、
-raw audit payload、production dataを保存または出力しません。
-
-`scripts/verify.py`は次をfail closedで扱います。
-
-- content-derived policy identity mismatch
-- unknown／missing field、wrong type、malformed JSON、size超過
-- staleまたはfuture evidence、partial pagination
-- duplicate／missing stable ID
-- symlink input
-- sensitive field
-- recovery-copy／restore digest mismatch
-
-Error outputはsanitized field pathまたはreason codeだけを示し、入力値をechoしません。
-
-## Policy tuning
-
-`secure/policy.json`の24時間RPO、4時間RTO、30日retention／drill interval、15分以内の
-reauthenticationはreference baselineです。より厳しい値を許容します。弱める場合はproduct impact
-analysis、owner、理由、期限を持つreview済みexceptionを要求します。
-
-Policy contentを変更したらcanonical SHA-256の`policy_id`を更新し、fixtureのbindingとpolicy
-tamper testを同時に更新します。単にtestを通すためにbaselineやverifier safeguardを弱めては
-いけません。
-
-`python3 scripts/policy_id.py secure/policy.json`でcandidate IDを表示し、
-`--check`でembedded IDとの一致を検証します。helperはpolicyを自動上書きしません。
-
-## Verification strategy
-
-人間が読める次のケースを維持します。
-
-- secure evidence: exit `0`、4 checkが`PASS`
-- unsafe evidence: exit `1`、具体的な`FAIL`
-- evidence not connected: exit `3`、`NOT_CHECKED`
-- collector／parser failure: exit `2`、`ERROR`
-- missing repositoryとpartial paginationを別ケースとして扱う
-- same-domain mutable recovery copy、bulk dry-run許可、partial／in-place restore、digest mismatch
-- malformed、stale、symbolic、policy tamper、sensitive evidenceのfail-closed behavior
-- sensitive markerがtext、JSON、CSVへ出ないこと
-
-固定した`--as-of`をfixture testに使い、wall clockに依存させません。live/no-evidence smoke testは
-schema、sanitization、supported exitだけを確認し、実行環境のorganization complianceを要求しません。
-
-変更後はcontrol directoryから実行します。
+変更後は次を実行する。
 
 ```bash
-bash tests/test.sh
-```
-
-repository rootからも実行します。
-
-```bash
+bash controls/source-protection/repository-destruction-recovery/tests/test.sh
 make verify-control CONTROL=PSB-SOURCE-005
 make validate-controls
 ```
 
-Assessment contractを変更した場合は、`make assess-control CONTROL=PSB-SOURCE-005`も実行し、
-生成されたorganization-specific resultをcommitしません。indexやmappingに影響するmetadata変更では
-repository generatorを実行し、review済みの生成差分だけを更新します。
+metadata変更後はrepository generatorを実行し、PSB-SOURCE-005に由来する生成差分をreviewする。

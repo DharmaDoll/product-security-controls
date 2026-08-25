@@ -2533,35 +2533,35 @@ and residual-risk work.
 
 ### PSB-SOURCE-005 — Critical repository destruction resilience and recovery assurance
 
-Status: `implemented` — E3 provider-neutral critical-repository recovery slice
+Status: `reference` — E1 GitHub implementation and recovery runbook
 
-Goal: prevent one source-platform authority from irreversibly destroying
-product-critical source, and prove that the complete critical scope can be
-restored from attacker-separated retained state within product RPO and RTO.
+Goal: restrict common GitHub repository and ref destruction paths, retain
+product-critical source outside the GitHub administration boundary, and
+restore it to an isolated target within product RPO and RTO.
 
 Implemented in
 [`controls/source-protection/repository-destruction-recovery/`](../controls/source-protection/repository-destruction-recovery/):
 
-- a fresh completely paginated inventory binds every required critical
-  repository to one stable provider ID;
-- bulk deletion is denied and any permitted single deletion requires recent
-  phishing-resistant reauthentication plus independent approval;
-- content, refs, and protected-settings digests are retained within a 24-hour
-  RPO under 30-day compliance object lock in another security domain that
-  source administrators cannot delete;
-- a current isolated drill restores every required repository within a
-  four-hour RTO and compares exact snapshot, content, refs, and settings state;
-- absent organization evidence is `NOT_CHECKED`; stale, partial, malformed,
-  symbolic, policy-tampered, or sensitive evidence is `ERROR`, distinct from an
-  unsafe-state finding;
+- product owners identify critical repositories by GitHub numeric repository
+  ID and assign an owner, RPO, and RTO;
+- GitHub member privileges restrict repository deletion and transfer to
+  Organization Owners, while active rulesets restrict deletion and force push
+  for critical branches and tags;
+- Git mirrors and required LFS data are retained in a separate security
+  account whose protected versions cannot be deleted by GitHub administrators
+  or the backup writer;
+- an isolated drill restores real retained state and requires the development
+  team to exercise the product build or security-patch path within RTO;
+- a local positive and negative restore test demonstrates only Git branch and
+  tag mechanics and is not presented as live GitHub or backup adoption proof;
 - `SITF T-V009` resolves to exact `RDR-001`, `RDR-002`, `RDR-003`, and
   `RDR-006` checks without claiming live provider adoption, complete recovery
   contents, or enterprise disaster recovery.
 
-Provider-specific inventory, recovery-copy, and restore adapters plus
+Organization-specific storage, scheduling, non-Git object coverage, and
 product-specific RPO／RTO remain adoption work. Privileged-change audit,
-identity revocation, and incident authorization remain integration requirements
-owned by their existing controls.
+identity revocation, and incident authorization remain integration
+requirements owned by their existing controls.
 
 ### Verified external downloads
 

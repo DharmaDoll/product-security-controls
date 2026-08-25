@@ -832,7 +832,7 @@ PSB-SOURCE-004,PSB-SOURCE-004-SCL-016,security,hybrid,secure/github-mcp-pat-fall
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-016,security,hybrid,PSB-AI-004 capability verifier output
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-017,security,hybrid,secure/github-mcp-auth-policy.json
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-017,security,hybrid,live adoption assessment when available
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-001,repository-admin,hybrid,sanitized stable repository IDs criticality and collector completeness metadata
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-002,repository-admin,hybrid,sanitized deletion-control state and dry-run decision receipt
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-003,shared,hybrid,metadata-only recovery-copy manifest and retention decision
-PSB-SOURCE-005,PSB-SOURCE-005-RDR-006,repository-admin,hybrid,metadata-only isolated restore receipts and RPO RTO measurements
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-001,shared,manual,reviewed critical-repository register and dated product-owner approval
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-002,repository-admin,manual,current GitHub organization setting and ruleset review record
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-003,shared,external-evidence,backup job result storage access-policy review and retention-lock configuration from the actual backup service
+PSB-SOURCE-005,PSB-SOURCE-005-RDR-006,shared,hybrid,dated restore-drill record containing scope elapsed time ref comparison LFS result settings result and build or patch outcome

@@ -1,221 +1,236 @@
-# PSB-SOURCE-005: Critical repositoryの破壊耐性と独立復旧を検証する
+# PSB-SOURCE-005: Critical repositoryの破壊を制限し、GitHub外から復旧できるようにする
 
 ## このcontrolを一枚で理解する
 
 ### セキュリティ上の問題
 
-source-platformの強い管理権限を奪われると、製品の再ビルド、セキュリティ修正、
-incident investigationに必要なrepository、refs、履歴、保護設定をまとめて失い得る。
-同じ管理権限で消せるmirrorや、実際に戻したことのないbackupは復旧保証にならない。
+GitHub Organization Ownerやrepository administratorのsessionが侵害されると、製品の再ビルド、
+security patch、incident investigationに必要なrepositoryや重要branch／tagを破壊される可能性が
+ある。GitHub上のfork、同じOrganization内のmirror、未検証のbackupだけでは、同じ侵害や設定不備で
+同時に失われる。
 
 ### 誰から、または何から守るか
 
-stolen administrator sessionを使う攻撃者、悪意ある管理者、誤ったbulk automation、
-不完全なrepository inventory、同一authorityのmutable copy、破損したexport、試されて
-いないrestore手順から守る。
+侵害されたGitHub管理者session、過剰なrepository admin権限、誤った削除操作や自動化、GitHub障害、
+backupの設定不備、復元したことのないbackupから守る。
 
 ### 何が対象か
 
-製品の再ビルド、security patch、incident responseに必要と分類したcritical repository
-だけを対象とする。stable provider ID、destructive-action control、独立したrecovery copy、
-Git objects／refs／protected settings、isolated restore drillを確認する。
+製品の再ビルド、緊急security patch、incident investigationに不可欠とproduct ownerが指定した
+critical repositoryを対象とする。短命なsandboxや他の正本から再生成できるrepositoryまで一律に
+対象にはしない。
 
 ### 何をするか
 
-critical scopeを完全に列挙し、一度の破壊操作を1 repositoryへ制限する。source
-administratorが削除できない別security domainへcurrent recovery copyを保持し、全scopeを
-isolated targetへ戻してRPO、RTO、content／refs／settings digestを比較する。
+GitHubでrepositoryの削除・移管権限をOrganization Ownerへ限定し、重要branch／tagの削除とforce
+pushをrulesetで防ぐ。さらに、GitHub管理者が削除できない別accountのretention-locked storageへ
+Git dataを定期退避し、隔離したrepositoryへ実際に復元する。
 
 ### 成功状態
 
-全critical repositoryがstable IDで一意に確認され、bulk destructive actionが拒否され、
-各repositoryに独立したcurrent recovery copyがあり、期限内のisolated restore drillで
-選択したcopyと同じcontent、refs、protected settingsを復元できる。
+通常のrepository adminはrepositoryを削除・移管できず、重要branch／tagを破壊できない。critical
+repositoryごとにGitHubの管理境界外へ保存された新しいbackupがあり、そのbackupから全branch／tagと
+必要なLFS objectをRPO／RTO内に復元し、製品を再ビルドまたは修正できる。
 
 ### 対象外・残余リスク
 
-本controlはprovider、backup製品、IdP、alert基盤を構築せず、organization全体のdisaster
-recoveryを証明しない。Issues、PR、LFS、release assets等の復元対象はproviderごとに定義が
-必要であり、provider control-planeやbackup root authorityの侵害リスクは残る。
+GitHub Organization Owner自身の侵害、GitHubとbackup accountの同時侵害、backup encryption keyの
+喪失は残余riskである。`git clone --mirror`だけではIssues、Pull Requests、Discussions、Packages、
+Actions artifacts、team permission、secret、外部integrationを復元しない。必要な対象は別途backup
+製品またはprovider APIで追加する。
+
+## セキュリティ向上の効果はどこから生まれるか
+
+このcontrolの効果はscriptやchecklistを置くことからは生まれません。次の実設定と運用から生まれます。
+
+1. GitHubの削除権限を狭め、repository adminの侵害だけではrepository全体を消せなくする。
+2. rulesetで重要branch／tagの削除とforce pushを止め、source historyの破壊を難しくする。
+3. GitHub Organization Ownerに削除権限がないstorageへbackupし、GitHub侵害時にもcopyを残す。
+4. 実際に隔離環境へrestoreし、「保存した」ではなく「戻せる」ことを確認する。
+
+GitHubの削除repository復元機能は補助策であり、このcontrolの独立backupではありません。削除後90日
+以内という制約があり、team permissionも復元されず、復元操作もOrganization Ownerへ依存するためです。
+
+## 誰が何をするcontrolなのか
+
+このcontrolの主担当は一般のapplication developerではなく、product owner、GitHub Organization
+Owner、platform／SREです。
+
+- **Product owner**: 製品を再ビルド、修正、調査するために不可欠なrepositoryを指定し、RPOとRTOを
+  決める。
+- **GitHub Organization Owner**: memberによるrepository削除・移管を禁止し、critical repositoryへ
+  rulesetを適用する。Owner人数とbreak-glass経路を最小化する。
+- **Platform／SRE**: GitHubとは別のsecurity accountへbackupを定期保存し、retention lockと削除拒否を
+  管理する。
+- **Development team**: restore drillで戻したsourceからbuild、security patch、調査に必要な操作が
+  できるか確認する。
+- **Product Security**: 設定とrestore drillの結果をreviewし、例外にowner、理由、期限を持たせる。
 
 ## 最短の導入手順
 
-### 前提とtrust assumption
+このcontrolの導入にPython package、Docker、assessment JSONは不要です。採用時は
+[`secure/README.md`](secure/README.md)を運用runbookへコピーし、以下を実施します。
 
-- Python 3.10以上を使用する。Docker、追加package、network接続は不要。
-- critical repositoryの選定、RPO、RTO、retentionはproduct ownerとrepository adminが
-  合意する。
-- source provider、backup storage、restore drillから取得する証跡が正本であることは、
-  adopter側のcollectorとreviewに依存する。
-- fixtureはsynthetic exampleであり、organization adoptionの証跡ではない。
+### 1. Critical repositoryを決める
 
-### コピーするもの
+product ownerとrepository adminが、製品の再ビルド、security patch、incident investigationに必要な
+repositoryを列挙します。renameに影響されないGitHub numeric repository IDも記録します。
 
-最も簡単な方法は、このcontrol directoryをreviewしてそのままコピーすることです。
-最低限必要なのは次です。
-
-- `secure/policy.json`
-- `scripts/verify.py`
-- `scripts/policy_id.py`
-- `assessment/assess.py`
-- `docs/check-implementation-guide.md`
-
-`secure/evidence.json`と`insecure/evidence.json`はschemaとself-testの例としてだけ使います。
-
-### 明示的なactivation
-
-1. `secure/policy.json`のcritical repository IDと組織固有のRPO／RTOをreviewする。
-2. `docs/check-implementation-guide.md`に従い、provider、backup、restoreからsecretを含まない
-   normalized evidenceを作る。
-3. evidence fileを明示してread-only assessmentを実行する。
+Organization内のrepository一覧は、read-only権限のGitHub CLIで取得できます。
 
 ```bash
-python3 assessment/assess.py \
-  --workspace . \
-  --policy secure/policy.json \
-  --evidence organization-recovery-evidence.json \
-  --json-output /tmp/PSB-SOURCE-005.json \
-  --csv-output /tmp/PSB-SOURCE-005.csv
+export GH_ORG="example-org"
+gh api --paginate "/orgs/${GH_ORG}/repos?type=all&per_page=100" \
+  --jq '.[] | [.id, .full_name, .visibility, .archived] | @tsv'
 ```
 
-この手順はGit、shell、IDE、OS、source provider、backup storageの設定を変更しません。
+出力をそのまま「critical」とみなしてはいけません。product ownerが必要性を判断し、各対象にowner、
+RPO、RTOを記録します。
 
-### Harmless self-test
+### 2. Repositoryの削除・移管をOrganization Ownerへ限定する
 
-repository rootから次を実行します。
+GitHubで次を設定します。
+
+1. Organizationの **Settings** を開く。
+2. **Member privileges** を開く。
+3. **Repository deletion and transfer** で、memberによるrepository削除・移管を許可する設定を
+   無効にする。
+4. GitHub Enterprise policyを利用できる場合は、全Organizationで削除・移管をOrganization Ownerへ
+   限定する。
+5. Organization Ownerを日常のrepository管理者と分離し、人数を必要最小限にする。
+
+これにより、通常のrepository admin sessionが盗まれてもrepository全体の削除・移管はできなく
+なります。Organization Ownerの侵害は防げないため、次の独立backupが必要です。
+
+### 3. 重要branch／tagの破壊をrulesetで止める
+
+critical repositoryを対象にOrganization rulesetまたはrepository rulesetを作成します。
+
+- Enforcement status: **Active**
+- Target repositories: 手順1で選んだcritical repositoryだけ
+- Target refs: default branch、release branch、release tag
+- **Restrict deletions**: 有効
+- **Block force pushes**: 有効
+- Bypass list: broadな`Repository admin`や全Ownerを入れず、review済みbreak-glass teamだけ
+
+rulesetはbranch／tagを守りますが、repository全体の削除を止める機能ではありません。手順2と必ず
+組み合わせます。
+
+### 4. GitHub管理者から独立したbackupを作る
+
+最低限、Git history、全local branch／tag、利用している場合はGit LFS objectを退避します。
 
 ```bash
-make verify-control CONTROL=PSB-SOURCE-005
+git clone --mirror "https://github.com/${GH_ORG}/critical-repository.git"
+git -C critical-repository.git fsck --full
+git -C critical-repository.git for-each-ref \
+  --format='%(refname) %(objectname)' refs/heads refs/tags
 ```
 
-control directoryから直接実行する場合:
+Git LFSを使用している場合は、mirror directoryで次も実行します。
 
 ```bash
-bash tests/test.sh
+git -C critical-repository.git lfs fetch --all
 ```
 
-self-testはsynthetic metadataだけを使い、実repositoryの削除、credential失効、network access、
-production restoreを行いません。
+保存先は次の条件を満たす必要があります。
 
-### 結果と終了status
+- GitHub Organization Ownerが管理者ではない別cloud account／projectである。
+- backup jobのGitHub credentialはread-onlyであり、repository削除権限を持たない。
+- backup writerは新しいobjectを書けるが、既存objectとretention policyを削除・短縮できない。
+- object versioningとretention lockを有効にし、RPOより短い間隔でbackupする。
+- storage accountのbreak-glass credentialとencryption keyをGitHub credentialから分離する。
 
-- exit `0`: 全中核checkが`PASS`
-- exit `1`: authoritative evidenceでunsafe stateを確認した`FAIL`
-- exit `2`: collector、parser、schema、policy identity等の評価に失敗した`ERROR`
-- exit `3`: 必要なorganization evidenceが未提供の`NOT_CHECKED`
+具体例として、別AWS accountのS3 Object Lock `COMPLIANCE` modeを使用できます。providerは任意ですが、
+「GitHub adminがbackupも削除できる」構成は不可です。
 
-`NOT_CHECKED`と`ERROR`を「問題なし」に読み替えてはいけません。
+### 5. 隔離した場所へ実際にrestoreする
 
-### よくある失敗と回復
-
-- `NOT_CHECKED`: 表示されたcheckのprovider／backup／drill evidenceを接続する。
-- `ERROR`: malformed JSON、unknown field、stale collector、partial pagination、policy ID、
-  symlink、sensitive fieldを修正して再実行する。
-- `FAIL`: policyを弱めず、対象scope、destructive-action control、recovery copy、restore
-  procedureを修正する。
-- policyを変更した場合は、次でcontent-derived `policy_id`を計算してfileへ反映し、変更をreviewする。
+少なくとも四半期ごと、またはproduct ownerが定めた間隔で、productionとは異なるOrganizationまたは
+Git serverへ復元します。既存production repositoryを上書きしてはいけません。
 
 ```bash
-python3 scripts/policy_id.py secure/policy.json
+git -C critical-repository.git fsck --full
+git -C critical-repository.git push --all \
+  "https://github.com/example-recovery-org/restore-critical-repository.git"
+git -C critical-repository.git push --tags \
+  "https://github.com/example-recovery-org/restore-critical-repository.git"
 ```
 
-### CI／server-side enforcement
+復元後に次を確認します。
 
-local assessmentだけではdestructive actionを止められません。source provider側の権限制御、
-backup側のretentionとdelete denial、定期restore drill、audit／incident integrationを別途
-強制してください。assessmentはそれらのsanitized evidenceを検証する役割です。
+- 必要なbranch／tagとcommitがbackup時点と一致する。
+- LFSを使用するrepositoryでは必要なLFS objectをcheckoutできる。
+- ruleset、branch protection、default branchをrunbookから再設定できる。
+- 開発チームがbuildまたはsecurity patchを実行できる。
+- 復元開始から上記確認までがRTO以内である。
 
-### Rollback
+Issues、Pull Requests、Releases、Packages等が製品復旧に必要なら、mirror backupとは別に復元対象と
+手順を追加します。
 
-コピーしたcontrol directory、生成したassessment結果、adopterが明示的に追加した定期実行
-設定だけを削除します。source providerやbackup storageの保護設定をrollbackで弱めては
-いけません。
+## 検証方法
 
-## このcontrolの位置付け
+このpackageはorganizationの状態をJSONへ自己申告させません。実環境では、GitHub設定を画面または
+APIでreviewし、実backupを隔離先へrestoreして確認します。
 
-このcontrolはrepository backup製品でもincident response platformでもありません。
-critical product sourceについて、次の4つのsecurity outcomeを小さなpolicy、実装ガイド、
-sanitized read-only assessmentで確認するreference implementationです。
-
-1. `RDR-001`: critical repository scopeが完全である。
-2. `RDR-002`: 一つの侵害authorityや操作によるdestructive blast radiusが限定される。
-3. `RDR-003`: 同じsource authorityでは消せないcurrent recovery copyがある。
-4. `RDR-006`: 全critical scopeをisolated targetへ期限内に正確に戻せる。
-
-全repositoryへ一律適用するcontrolではありません。短命なsandbox、他の正本から再生成できる
-mirror、製品復旧に不要なrepositoryは、ownerのreviewにより対象外にできます。
-
-## Check実装ガイド
-
-各checkの最小構成、組織実装、必要証跡、`NOT_CHECKED`条件、限界は
-[`docs/check-implementation-guide.md`](docs/check-implementation-guide.md)にまとめています。
-
-provider固有の設定値をfixtureから推測しません。live adapterがない場合はsanitized exportを
-入力し、証跡がなければ`NOT_CHECKED`を返します。外部systemをmockして架空の`PASS`を作りません。
-
-## Policyとevidence
-
-`secure/policy.json`はreference baselineです。24時間RPO、4時間RTO、30日retention／drill
-interval、15分以内のreauthenticationを例示します。より厳しい値へ変更できます。弱める場合は
-product impact analysisとowner、理由、期限を持つexceptionが必要です。
-
-Normalized evidenceは次だけを含みます。
-
-- stable repository ID、criticality、collector identity、freshness、pagination completeness
-- destructive-action controlのnormalized stateとharmless dry-run decision
-- recovery-copy identity、security domain、retention、lock、delete authority、digest
-- isolated restoreのscope、duration、copy identity、content／refs／settings digest
-
-repository content、credential、token、username、内部endpoint、raw audit payload、production
-dataは含めません。
-
-## Verificationとassessmentの違い
-
-fixture verificationは、reference implementationとnegative testが意図どおり動くことを確認
-します。organization assessmentは、adopterが与えた外部証跡の範囲だけを評価します。
+repositoryに含まれるself-testは、Git mirrorがbranch／tagを保持して復元でき、不完全なrestoreを
+検出できることだけをlocal temporary directoryで確認します。
 
 ```bash
 make verify-control CONTROL=PSB-SOURCE-005
-make assess-control CONTROL=PSB-SOURCE-005
 ```
 
-evidenceを指定しないcanonical assessmentは、外部証跡を勝手に発見せず、4 checkすべてを
-`NOT_CHECKED`としてsanitized JSON／CSVへ出力します。
+期待する出力は次です。
+
+```text
+PASS mirror backup preserves branches and tags after source loss
+PASS incomplete restore is detected
+```
+
+このself-testの成功はGitHub設定、storage separation、organizationのbackup、RPO／RTO達成を証明しません。
+それらは手順2から5の実施によってのみ確認できます。
+
+## よくある不十分な実装
+
+[`insecure/README.md`](insecure/README.md)に代表例を示します。特に次はbackupとして不十分です。
+
+- 同じGitHub Organization内のprivate forkだけを保持する。
+- GitHub Organization Ownerがbackup storageのadministratorでもある。
+- `git clone`だけを取り、他branch、tag、LFS、必要なprovider metadataを対象外にしたままにする。
+- backup jobへrepository admin／delete権限を与える。
+- backup完了logだけを見て、一度もrestoreしない。
+
+## 運用コストとfailure recovery
+
+- backup storage、API利用、retention期間、定期restore用の隔離repositoryに費用がかかる。
+- backup失敗時は前回成功を現在の成功として扱わず、RPO超過としてownerへ通知する。
+- restore失敗時はbackup世代、LFS不足、permission、rate limit、settings runbookを切り分け、成功するまで
+  recovery-readyとみなさない。
+- critical repositoryの追加、rename、移管、archive時に対象一覧とbackup jobを更新する。
+
+## Rollback
+
+このreference guideやlocal self-testは削除できますが、導入済みの削除制限、ruleset、retention lockを
+単なるrollbackとして弱めてはいけません。controlを廃止する場合は、代替の復旧手段、backup保管期限、
+data disposal approvalをproduct ownerとsecurity ownerが先に決定します。
 
 ## 既存controlとの分担
 
-- `PSB-CICD-008`はprivileged control-plane変更のapprovalとaudit correlationを所有する。
-- `PSB-SOURCE-004`はOAuth、PAT、SSH、App credentialのinventory、lifecycle、revocationを
-  所有する。
-- `PSB-GOV-001`はincident scope、証跡保全、containmentとresponse runbookを所有する。
-- 本controlはそれらを再実装せず、critical sourceのdestructive-action limit、独立copy、
-  restore assuranceだけを所有する。
-
-Audit delivery、actor authority containment、recovery authorizationはproduction recoveryの
-重要な前提ですが、本controlのfixtureで導入済みと主張しません。
-
-## Limitations and operational cost
-
-- provider-neutral evidence contractであり、live GitHub／GitLab／Bitbucket設定を証明しない。
-- providerごとにIssue、PR、Discussion、Wiki、LFS、Release、Package、Actions artifact、hook、
-  key、environment等の復元対象表が必要になる。
-- lock metadataだけではstorage enforcement、root account、key custody、legal holdを証明しない。
-- digest一致だけではaccess control、notification、external integration等のbehaviorを完全に
-  証明しない。
-- restore drillにはstorage、API、operator時間、isolated quota、cleanup、cost budgetが必要。
-- source providerとbackup providerの両control planeが同時に侵害されるriskは残る。
+- `PSB-CICD-008`はprivileged control-plane変更のapprovalとauditを扱う。
+- `PSB-SOURCE-004`はGitHub App、PAT、SSH key等のcredential lifecycleを扱う。
+- `PSB-GOV-001`はincident時のcontainment、authorization、response runbookを扱う。
+- 本controlはcritical sourceの削除制限、独立backup、実restoreだけを扱う。
 
 ## Framework relationship
 
-SITF `1.0.0@d1d1536`の`T-V009 Mass Deletion of Repositories`へ`mitigates`、MITRE
-ATT&CK `v19.1`の`T1485 Data Destruction`へ限定的な`mitigates`として関連付けます。
-どちらもattack behaviorとの関係であり、compliance、complete mitigation、organization
-adoptionを意味しません。SSDF、SLSA、ASVS、OWASP Top 10へのmappingは主張しません。
+SITF `1.0.0@d1d1536`の`T-V009 Mass Deletion of Repositories`とMITRE ATT&CK `v19.1`の
+`T1485 Data Destruction`を限定的にmitigateする。これはattack behaviorとの関係であり、GitHub設定や
+backupのorganization adoption、formal compliance、完全なdisaster recoveryを意味しない。
 
-## References
+## 公式reference
 
-- [Pinned SITF source and coverage boundary](../../../docs/SITF_COVERAGE.md)
-- [Repository threat model](../../../docs/THREAT_MODEL.md)
-- [Control-plane change boundary](../../cicd-security/privileged-control-plane-change/README.md)
-- [Source credential lifecycle boundary](../source-access-credential-lifecycle/README.md)
-- [Supply-chain incident readiness boundary](../../governance-operations/supply-chain-incident-readiness/README.md)
+- [GitHub: repositoryの削除・移管権限を設定する](https://docs.github.com/en/enterprise-cloud@latest/organizations/managing-organization-settings/setting-permissions-for-deleting-or-transferring-repositories)
+- [GitHub: rulesetで利用できるrule](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets)
+- [GitHub: repositoryをbackupする](https://docs.github.com/en/repositories/archiving-a-github-repository/backing-up-a-repository)
+- [GitHub: 削除したrepositoryを復元する際の制約](https://docs.github.com/en/enterprise-cloud@latest/repositories/creating-and-managing-repositories/restoring-a-deleted-repository)
+- [AWS: S3 Object Lock](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html)

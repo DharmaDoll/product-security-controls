@@ -213,7 +213,7 @@
       "technique_id": "T-V009",
       "disposition": "implemented",
       "check_refs": ["PSB-SOURCE-005-RDR-001", "PSB-SOURCE-005-RDR-002", "PSB-SOURCE-005-RDR-003", "PSB-SOURCE-005-RDR-006"],
-      "rationale": "Complete stable-ID scope bounded destructive actions attacker-separated retained recovery copies and exact isolated restore drills directly reduce repository mass-deletion impact; audit containment and live provider adoption remain external integration requirements."
+      "rationale": "GitHub deletion and critical-ref restrictions, GitHub-admin-independent retained backups, and real isolated restore drills directly reduce repository mass-deletion impact; audit containment and live organization adoption remain external integration requirements."
     },
     {
       "technique_id": "T-V010",

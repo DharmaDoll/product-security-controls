@@ -1,6 +1,0 @@
-POLICY id=repository-recovery-policy@sha256:a944b38f6e639fdb738f686180fa7f7cd152a8a66498616e440af33fcf747f50
-PASS RDR-001 critical repository scope is exact complete and stable-ID bound
-PASS RDR-002 destructive repository actions have a bounded blast radius
-PASS RDR-003 critical repositories have current attacker-separated recovery copies
-PASS RDR-006 an isolated restore drill proves complete recovery within RPO and RTO
-ACCEPTED checks=4 critical-repository-recovery-assurance=verified

@@ -1,121 +1,105 @@
 id: PSB-SOURCE-005
-title: Critical repositoryの破壊耐性と独立した復旧可能性を検証する
+title: Critical repositoryの破壊を制限しGitHub外から復旧できるようにする
 domain: source-protection
-summary: 単一のsource-platform管理権限による不可逆な消失を防ぎ、critical repositoryを独立したrecovery copyから所定のRPOとRTO内に復旧できることを検証する。
+summary: GitHubでcritical repositoryと重要refの破壊権限を狭め、GitHub管理者が削除できないbackupから実際に復元できる状態を作る。
 check_context_version: "1.0"
 security_functions:
   - prevent
-  - verify
+  - respond
 threats:
   - id: SOURCE-MASS-REPOSITORY-DELETION
-    description: A compromised source-platform administrator or faulty automation destroys multiple critical repositories and their refs settings or history.
+    description: A compromised GitHub administrator session or mistaken administration destroys product-critical repositories branches tags or history.
   - id: SOURCE-BACKUP-CO-DESTRUCTION
-    description: The same compromised authority can delete the source repositories and their mutable same-domain recovery copies.
+    description: The same GitHub authority can delete both the source repository and a same-domain mutable backup.
   - id: SOURCE-RECOVERY-FALSE-ASSURANCE
-    description: An incomplete inventory stale recovery copy or untested restore path is interpreted as recoverability.
+    description: An incomplete unretained or never-restored backup is assumed to provide product recovery.
 implementations:
   insecure:
-    - insecure/evidence.json
+    - insecure/README.md
   secure:
-    - secure/policy.json
-    - secure/evidence.json
+    - secure/README.md
 verification:
   commands:
     - make verify-control CONTROL=PSB-SOURCE-005
-    - make assess-control CONTROL=PSB-SOURCE-005
   expected:
-    - secure fixture proves exact critical scope bounded destructive action attacker-separated recovery copies and a complete isolated restore drill
-    - unsafe authoritative evidence returns FAIL without being confused with unavailable evidence
-    - missing organization evidence returns NOT_CHECKED and collector parser or malformed-input failure returns ERROR
-    - policy tamper stale partial symbolic or credential-bearing evidence never produces PASS
-    - assessment output contains only check identities statuses and sanitized messages
-assessment:
-  command: assessment/assess.py
-  platforms:
-    - linux
-    - macos
-  output_formats:
-    - json
-    - csv
-  result_statuses:
-    - PASS
-    - FAIL
-    - NOT_CHECKED
-    - ERROR
+    - a local mirror backup preserves branches and tags after the source repository is removed
+    - a restore that omits a required tag is detected as incomplete
+    - the local self-test does not claim to verify GitHub settings backup-account separation or organization RPO and RTO
 checks:
   - id: RDR-001
-    title: Critical repository scope is complete and stable-ID bound
-    required_state: every repository required to rebuild patch or investigate the product occurs once by immutable provider ID in a fresh completely paginated inventory
-    responsible_role: repository-admin
-    applies_to:
-      - source-repository-inventory
-      - critical-repository-scope
-    context:
-      threat_actor: compromised administrator or incomplete inventory collector omitting a critical repository outside the visible scope
-      attack_or_failure_scenario: deletion safeguards and restore drills cover only known repositories while one product-critical repository is missing duplicated renamed or represented by a mutable name
-      why_required: prevention and recovery can be evaluated only against a complete stable-ID scope; a perfect recovery copy for listed repositories cannot compensate for an omitted product source
-    verification:
-      type: hybrid
-      method: compare fresh completely paginated provider inventory evidence to the adopter policy stable-ID set
-      expected: exact unique critical scope passes and missing duplicate partial stale or unavailable scope does not pass
-      evidence:
-        - sanitized stable repository IDs criticality and collector completeness metadata
-    mapping_status: reviewed
-  - id: RDR-002
-    title: Destructive repository actions have a bounded blast radius
-    required_state: bulk deletion is denied and any permitted single-repository deletion is default-deny independently approved and recently phishing-resistant reauthenticated
-    responsible_role: repository-admin
-    applies_to:
-      - repository-deletion-control
-      - source-platform-administrator-session
-    context:
-      threat_actor: attacker using a stolen owner session or faulty repository administration automation
-      attack_or_failure_scenario: one credential or automation request destroys multiple critical repositories before a human can intervene
-      why_required: a per-request limit and independent authorization reduce the amount of product source that one compromised authority or error can destroy before recovery is needed
-    verification:
-      type: hybrid
-      method: inspect normalized provider deletion-control state and a harmless denied bulk-operation policy test
-      expected: default allow bulk targets self approval missing phishing-resistant reauthentication or an allowed harmless bulk test fails
-      evidence:
-        - sanitized deletion-control state and dry-run decision receipt
-    mapping_status: reviewed
-  - id: RDR-003
-    title: Critical repositories have current attacker-separated recovery copies
-    required_state: every required repository has a current retention-locked metadata-bound recovery copy in a security domain that source administrators cannot delete
+    title: Product-critical repositories are explicitly identified
+    required_state: the product owner identifies every repository required for rebuilding security patching or incident investigation by GitHub numeric repository ID and assigns an owner RPO and RTO
     responsible_role: shared
     applies_to:
-      - repository-recovery-copy
-      - backup-security-domain
-      - backup-retention
+      - critical-repository-register
+      - github-organization-repository-inventory
     context:
-      threat_actor: compromised source-platform administrator attempting to destroy repositories and recovery copies with the same authority
-      attack_or_failure_scenario: a recovery copy is stale mutable short-retained or stored under the source administration boundary and disappears with the source organization
-      why_required: destructive-action controls may be bypassed; an independently retained exact copy is the last source state from which product patching rebuilding and investigation can resume
+      threat_actor: product inventory drift repository rename transfer or an administrator who overlooks a product-critical repository
+      attack_or_failure_scenario: deletion restrictions and backups cover a visible subset while an omitted repository is destroyed and prevents rebuilding patching or investigation
+      why_required: safeguards can protect only the repositories selected for them and another repository backup cannot replace omitted product source
     verification:
-      type: hybrid
-      method: compare recovery-copy age domain retention lock delete authority and content refs settings digests for every required stable repository ID
-      expected: missing same-domain mutable source-admin-deletable stale or short-retained recovery copies fail
+      type: manual
+      method: product owner and repository admin compare the complete paginated GitHub organization inventory with the product build and incident dependencies
+      expected: every required repository appears once by numeric GitHub ID with an owner RPO and RTO and exclusions have an explicit reason
       evidence:
-        - metadata-only recovery-copy manifest and retention decision
+        - reviewed critical-repository register and dated product-owner approval
     mapping_status: reviewed
-  - id: RDR-006
-    title: An isolated restore drill proves complete recovery within RPO and RTO
-    required_state: a current isolated drill restores every required repository within the adopter objectives and matches the selected recovery copy content refs and protected-settings digests
+  - id: RDR-002
+    title: GitHub repository and important ref destruction is restricted
+    required_state: organization members cannot delete or transfer repositories and active rulesets block deletion and force push for critical branches and tags without broad administrator bypass
     responsible_role: repository-admin
     applies_to:
-      - repository-restore-drill
-      - git-object-and-ref-state
-      - repository-protection-settings
+      - github-member-privileges
+      - github-organization-rulesets
+      - critical-branches-and-tags
     context:
-      threat_actor: latent copy corruption incomplete export missing protected settings or an operator procedure that has never restored the complete critical scope
-      attack_or_failure_scenario: recovery copies exist but cannot recreate every required repository object ref and security setting inside the product recovery objective
-      why_required: storage receipts prove retention only; an isolated full-scope restore with exact-state comparison demonstrates that product source can actually be recovered
+      threat_actor: attacker using a compromised repository administrator session or an administrator making a destructive mistake
+      attack_or_failure_scenario: an administrator deletes or transfers the repository or removes or rewrites critical branches and release tags
+      why_required: GitHub-side restrictions reduce which common administrative identities can destroy the source and preserve time for containment before recovery is required
+    verification:
+      type: manual
+      method: an Organization Owner reviews Member privileges and each active ruleset target rule and bypass list in GitHub
+      expected: member deletion and transfer is disabled and critical refs have deletion and force-push restrictions with only reviewed break-glass bypass
+      evidence:
+        - current GitHub organization setting and ruleset review record
+    mapping_status: reviewed
+  - id: RDR-003
+    title: Critical repositories have GitHub-admin-independent retained backups
+    required_state: every critical repository is backed up within its RPO to retention-locked storage in a separate security account that GitHub Organization Owners and the backup writer cannot delete
+    responsible_role: shared
+    applies_to:
+      - git-mirror-backup
+      - backup-security-account
+      - backup-retention-lock
+    context:
+      threat_actor: compromised GitHub Organization Owner or backup job credential attempting to destroy source and recovery copies
+      attack_or_failure_scenario: a mirror in the same GitHub organization or mutable storage is deleted together with the source or is too old to meet product recovery needs
+      why_required: GitHub-side protection can be bypassed by an Owner or provider failure so an independently administered retained copy is the final source recovery boundary
+    verification:
+      type: external-evidence
+      method: platform and security owners review backup freshness storage account ownership writer IAM retention mode and an attempted delete denial for a non-production backup object
+      expected: all critical repositories are current and neither GitHub administrators nor the backup writer can shorten retention or delete protected backup versions
+      evidence:
+        - backup job result storage access-policy review and retention-lock configuration from the actual backup service
+    mapping_status: reviewed
+  - id: RDR-006
+    title: An isolated restore proves product source can be recovered
+    required_state: every critical repository is restored to a non-production target within RTO with required branches tags LFS objects protection settings and a successful product build or patch check
+    responsible_role: shared
+    applies_to:
+      - isolated-repository-restore
+      - product-build-and-patch-path
+      - recovery-time-objective
+    context:
+      threat_actor: latent backup corruption omitted refs missing LFS data configuration loss or an unpracticed recovery procedure
+      attack_or_failure_scenario: backup jobs report success but operators cannot recreate usable protected product source before the recovery deadline
+      why_required: storage and backup completion do not demonstrate recoverability and only an isolated end-to-end restore exposes missing data permissions settings and operational steps
     verification:
       type: hybrid
-      method: compare drill age isolation scope duration recovery-copy identities and exact content refs settings digests
-      expected: missing partial stale slow in-place mismatched or unverified restore evidence fails and absent organization evidence remains NOT_CHECKED
+      method: platform and development teams restore an actual retained backup to an isolated target compare required refs and settings then run the product build or security-patch path
+      expected: the complete critical scope is usable within RTO without modifying a production repository and every failure remains open until a successful rerun
       evidence:
-        - metadata-only isolated restore receipts and RPO RTO measurements
+        - dated restore-drill record containing scope elapsed time ref comparison LFS result settings result and build or patch outcome
     mapping_status: reviewed
 mappings:
   - framework: sitf
@@ -123,7 +107,7 @@ mappings:
     id: T-V009
     relationship: mitigates
     confidence: high
-    rationale: Complete stable-ID scope bounded destructive actions attacker-separated retained recovery copies and exact isolated restore drills directly reduce repository mass-deletion impact while live provider adoption remains external.
+    rationale: Restricting GitHub deletion and ref rewriting while retaining GitHub-admin-independent backups and exercising real restores directly reduces the impact of repository mass deletion when adopted.
     reviewer: product-security
     review_date: "2026-08-25"
     applies_to:
@@ -136,7 +120,7 @@ mappings:
     id: T1485
     relationship: mitigates
     confidence: medium
-    rationale: Destructive-action limits independent retained recovery copies and verified restoration reduce the impact and duration of source data destruction without claiming enterprise disaster-recovery coverage.
+    rationale: Destruction restrictions independent retained backups and tested recovery reduce source data-destruction impact without preventing every Organization Owner or provider-level destructive path.
     reviewer: product-security
     review_date: "2026-08-25"
     applies_to:
@@ -144,13 +128,12 @@ mappings:
       - RDR-003
       - RDR-006
 limitations:
-  - The runnable implementation assesses provider-neutral sanitized evidence and does not configure GitHub GitLab Bitbucket backup storage identity providers or alert receivers.
-  - The control applies to repositories classified critical for product rebuilding security patching or incident investigation; applying it to every temporary or reproducible repository is not required.
-  - Stable repository IDs settings and export shapes require a reviewed provider adapter with complete organization scope including archived disabled transferred and forked repositories where relevant.
-  - Recovery-copy lock metadata is not proof of storage-provider enforcement root-account separation key custody legal retention or resistance to provider control-plane compromise.
-  - Digest equality does not prove semantic correctness of every provider object such as issues pull requests discussions release assets LFS objects packages hooks keys environments or external integrations.
-  - Audit delivery credential containment and incident authorization are integration dependencies owned by privileged-change credential-lifecycle and incident-readiness controls rather than duplicated here.
-  - Reference RPO RTO retention reauthentication and drill-age values require product impact analysis and may be made stricter; weakening them requires a reviewed time-bound exception.
-status: prototype
+  - The package documents a GitHub implementation but does not change a live organization create cloud storage or schedule backups.
+  - GitHub rulesets protect selected branches and tags but do not prevent an authorized Organization Owner from deleting the repository.
+  - A Git mirror does not include issues pull requests discussions packages Actions artifacts team permissions secrets or external integrations.
+  - Organization-specific backup storage identity retention encryption and recovery automation require platform-owned implementation and review.
+  - The local restore self-test verifies Git branch and tag behavior only and is not organization adoption evidence.
+  - GitHub and backup control-plane compromise key loss malicious source changes before backup and destructive actions outside the selected critical scope remain residual risks.
+status: reference
 owner: product-security
-evidence_level: E3
+evidence_level: E1
