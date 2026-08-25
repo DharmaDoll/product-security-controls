@@ -5,7 +5,7 @@
 このページは、実装済みcontrolを目的別に探すための入口です。
 `control.yaml`を正本として`make generate-index`で生成されます。
 
-現在、**51 controls / 462 atomic checks**を収録しています。
+現在、**51 controls / 459 atomic checks**を収録しています。
 
 ## 使い方
 
@@ -23,7 +23,7 @@
 |---|---|---:|---:|
 | [Secure Design](#domain-secure-design) | 脅威モデリング、trust boundary、abuse caseなど、実装前の設計判断。 | 0 | 0 |
 | [Secure Coding](#domain-secure-coding) | 認証・認可、入力処理、secret、暗号など、application実装の安全性。 | 1 | 6 |
-| [Source Protection](#domain-source-protection) | 開発端末、Git、repository、source access credential、公開露出の保護。 | 5 | 79 |
+| [Source Protection](#domain-source-protection) | 開発端末、Git、repository、source access credential、公開露出の保護。 | 5 | 76 |
 | [Dependency Security](#domain-dependency-security) | registry、cooldown、install script、lockfile、artifact integrityの保護。 | 5 | 38 |
 | [CI/CD Security](#domain-cicd-security) | workflow dependency、command injection、権限、未信頼PR境界の保護。 | 9 | 58 |
 | [Build Security](#domain-build-security) | build隔離、hosted build、credential境界、provenance生成の保護。 | 3 | 16 |
@@ -63,7 +63,7 @@
 | [PSB-SOURCE-002](source-protection/git-hooks-baseline/README.md) | コミット前とプッシュ前に、追加される内容と到達可能なGit履歴を検査し、情報漏洩につながる変更を検出する。 | [CISA Product Security Bad Practices](../generated/mappings/cisa-product-security-bad-practices.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify` | 13 | `prototype` / `E3` |
 | [PSB-SOURCE-003](source-protection/public-repository-exposure/README.md) | 対象を限定したGitHub検索、到達可能な全Git履歴のスキャン、公開範囲の証跡を組み合わせ、情報露出を検出して是正する。 | [CISA Product Security Bad Practices](../generated/mappings/cisa-product-security-bad-practices.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `detect`, `verify`, `respond`, `govern` | 13 | `reference` / `E3` |
 | [PSB-SOURCE-004](source-protection/source-access-credential-lifecycle/README.md) | OAuthトークン、PAT、SSH鍵、ソース管理基盤とGitHub MCPの認証情報について、権限、存続期間、保管、process delivery、悪用可能性を制限する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify`, `respond`, `govern` | 17 | `prototype` / `E3` |
-| [PSB-SOURCE-005](source-protection/repository-destruction-recovery/README.md) | Critical repositoryの完全inventory、bulk deletion拒否、攻撃者と分離したimmutable backup、外部alert、authority containment、全件restore drillを一つの証跡へ結合する。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [sitf](../generated/mappings/sitf.md) | `prevent`, `detect`, `respond`, `verify` | 7 | `prototype` / `E3` |
+| [PSB-SOURCE-005](source-protection/repository-destruction-recovery/README.md) | 単一のsource-platform管理権限による不可逆な消失を防ぎ、critical repositoryを独立したrecovery copyから所定のRPOとRTO内に復旧できることを検証する。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [sitf](../generated/mappings/sitf.md) | `prevent`, `verify` | 4 | `prototype` / `E3` |
 
 <a id="domain-dependency-security"></a>
 
