@@ -55,3 +55,4 @@ Generated control catalog. Do not edit manually.
 | [PSB-SOURCE-003](../controls/source-protection/public-repository-exposure/README.md) | source-protection | 公開リポジトリ露出とGitHub dorking検証 | 13 | reference | E3 |
 | [PSB-SOURCE-004](../controls/source-protection/source-access-credential-lifecycle/README.md) | source-protection | Govern source access credential lifecycle | 17 | prototype | E3 |
 | [PSB-SOURCE-005](../controls/source-protection/repository-destruction-recovery/README.md) | source-protection | Critical repositoryの破壊を制限しGitHub外から復旧できるようにする | 4 | reference | E1 |
+| [PSB-SOURCE-006](../controls/source-protection/github-organization-governance/README.md) | source-protection | GitHub Organizationのaccess、既定値、Actions、App、監査driftを継続管理する | 10 | prototype | E3 |

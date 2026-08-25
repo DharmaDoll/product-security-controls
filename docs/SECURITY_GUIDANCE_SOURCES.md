@@ -1093,7 +1093,8 @@ Disposition and limitations:
   `d679eeafe653aa9632dd2f2b02d60ab0dbe0a87557d79d6694fac734ed386e7b`
 - Repository review date: `2026-08-14`
 - Related controls:
-  - `PSB-SOURCE-001..004` — endpoint, repository, and identity boundaries;
+  - `PSB-SOURCE-001..004` and `PSB-SOURCE-006` — endpoint, repository,
+    identity, and GitHub Organization posture boundaries;
   - `PSB-CICD-001..008` — workflow, credential, runner, and control-plane
     protections;
   - `PSB-IAC-001`, `PSB-BUILD-001..003`, and `PSB-REL-001..005` — IaC,
@@ -1180,7 +1181,7 @@ Disposition and limitations:
 
 ### REF-CICD-017 — GitHub Organizationの安全な運用と継続的モニタリング
 
-- Status: `identified`
+- Status: `adopted-partially`
 - Type: practitioner operational presentation
 - Publisher: GMO Flatt Security / Shisho Cloud
 - Publication date: `2022-05-16`
@@ -1192,17 +1193,20 @@ Disposition and limitations:
 - Repository review date: `2026-08-14`
 - Related controls and plans:
   - `PSB-SOURCE-004` — source credential lifecycle;
+  - `PSB-SOURCE-006` — Organization access、default、Actions、App、
+    repository security coverage、audit／drift／alertのprovider-neutral contract;
   - `PSB-CICD-004..008` — Actions privilege, trust, runner, and administrator
     boundaries;
   - `PSB-GOV-002..003` — exceptions and adoption evidence.
 
-Potential contribution:
+Adopted contribution:
 
 - provide Japanese operational context for organization-wide configuration
   inventory, policy drift, access review, installed application review, and
   continuous monitoring;
-- inform provider-adapter evidence and ownership questions that static
-  workflow analysis cannot answer.
+- inform `PSB-SOURCE-006` provider-adapter evidence, ownership, freshness,
+  alerting, and fail-closed questions that static workflow analysis cannot
+  answer.
 
 Disposition and limitations:
 
@@ -1230,7 +1234,8 @@ Disposition and limitations:
 - Related controls and plans:
   - `PSB-CICD-008` — privileged provider-setting change and audit evidence;
   - `PSB-GOV-002` — narrow, owned, expiring exceptions;
-  - future GitHub organization posture and drift adapters, not yet reserved.
+  - `PSB-SOURCE-006` — provider-neutral GitHub Organization posture and drift
+    contract without adopting the Allstar App.
 
 Potential contribution:
 

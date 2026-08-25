@@ -1,0 +1,11 @@
+PASS GHO-001 organization snapshot is complete fresh stable and policy bound
+PASS GHO-002 organization authentication and provisioning are enforced
+PASS GHO-003 Organization Owner authority is bounded attributable and recently reviewed
+PASS GHO-004 member team and outside-collaborator access is owned scoped and current
+PASS GHO-005 organization repository defaults deny broad ambient authority
+PASS GHO-006 organization Actions policy limits repositories actions token authority and fork trust
+PASS GHO-007 installed application access is complete resource bounded and recently reviewed
+PASS GHO-008 every repository has the required security configuration or a current public review
+PASS GHO-009 audit export drift evaluation and alert delivery are healthy
+PASS GHO-010 weak policy local exceptions and evidence failure cannot produce a clean result
+NOT_CHECKED live GitHub settings IdP enforcement audit backend and mutation remain organization evidence

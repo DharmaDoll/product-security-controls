@@ -174,7 +174,8 @@ GitHub側に過剰なOAuthの権限付与、長寿命PAT、退職者のSSH鍵、
 | コントロール | 主に守る境界 | このコントロールに含めないもの |
 |---|---|---|
 | `PSB-SOURCE-001` | 開発者端末。OS、暗号化、マルウェア対策、キーチェーン、ローカルの鍵、IDE、実行環境を保護する | GitHub上の全権限の棚卸し、対象リポジトリ・権限・有効期限の承認、退職時のサービス側失効 |
-| `PSB-SOURCE-004` | ソース管理基盤の認可。OAuth、PAT、SSH鍵、GitHub Appを発行から失効・監査まで管理する | 端末全体のハードニング、MDM／EDR、ディスク暗号化、マルウェア封じ込め |
+| `PSB-SOURCE-004` | ソース管理基盤の認可。OAuth、PAT、SSH鍵、GitHub App credentialを発行から失効・監査まで管理する | 端末全体のハードニング、Organization全体のmember／team／App grant、既定値、Actions、repository security coverage |
+| `PSB-SOURCE-006` | GitHub Organization全体のidentity関係、Owner、member、team、outside collaborator、App、既定値、Actions、repository coverage、monitoring | 個々のcredential値、storage、発行、rotation、失効の実行 |
 
 `SCL-005`の有効期限、`SCL-006`の保管、`SCL-007`の強固な認証、`SCL-008`のハードウェア保護鍵は、
 PSB-SOURCE-004で別の端末対策を再実装するための項目ではありません。PSB-SOURCE-001が提供する端末側の

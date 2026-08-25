@@ -1,0 +1,195 @@
+{
+  "schema": "psb-github-organization-governance-snapshot/v1",
+  "policy_sha256": "637933364cd7413e00ccc53e7566ca91de48e60c1d84018d7d7677063bb00fe8",
+  "collector": {
+    "status": "COMPLETE",
+    "observed_at": "2026-08-26T03:00:00Z",
+    "api_version": "2022-11-28",
+    "pages_complete": true,
+    "source_health": {
+      "actions": "HEALTHY",
+      "applications": "HEALTHY",
+      "audit": "HEALTHY",
+      "members": "HEALTHY",
+      "organization": "HEALTHY",
+      "repositories": "HEALTHY",
+      "teams": "HEALTHY"
+    },
+    "errors": [],
+    "live_mutation": false
+  },
+  "organization": {
+    "login": "example-org",
+    "database_id": 424242,
+    "node_id": "O_SYNTHETIC_424242",
+    "two_factor_requirement_enabled": false,
+    "sso_enforced": false,
+    "provisioning_mode": "manual",
+    "provisioning_status": "DEGRADED",
+    "unlinked_identity_count": 2,
+    "offboarding_sla_hours": 168,
+    "default_repository_permission": "write",
+    "members_can_create_repositories": true,
+    "members_can_create_public_repositories": true,
+    "members_can_create_private_repositories": true,
+    "members_can_create_internal_repositories": true,
+    "members_can_fork_private_repositories": true
+  },
+  "access_inventory": {
+    "complete": true,
+    "expected_principal_count": 4,
+    "principals": [
+      {
+        "actor_id": 1001,
+        "role": "owner",
+        "identity_type": "human",
+        "affiliation": "employee",
+        "authentication_assurance": "password-only",
+        "provisioning_state": "ACTIVE",
+        "reviewed_at": "2025-01-01T00:00:00Z"
+      },
+      {
+        "actor_id": 1002,
+        "role": "owner",
+        "identity_type": "shared-service-account",
+        "affiliation": "unknown",
+        "authentication_assurance": "password-only",
+        "provisioning_state": "ACTIVE",
+        "reviewed_at": "2025-01-01T00:00:00Z"
+      },
+      {
+        "actor_id": 1003,
+        "role": "owner",
+        "identity_type": "human",
+        "affiliation": "contractor",
+        "authentication_assurance": "sms",
+        "provisioning_state": "ACTIVE",
+        "reviewed_at": "2025-01-01T00:00:00Z"
+      },
+      {
+        "actor_id": 1004,
+        "role": "owner",
+        "identity_type": "human",
+        "affiliation": "former-employee",
+        "authentication_assurance": "password-only",
+        "provisioning_state": "ORPHANED",
+        "reviewed_at": "2025-01-01T00:00:00Z"
+      }
+    ],
+    "expected_outside_collaborator_count": 1,
+    "outside_collaborators": [
+      {
+        "actor_id": 2001,
+        "sponsor_actor_id": 9999,
+        "repository_ids": [501, 502],
+        "permission": "admin",
+        "granted_at": "2025-01-01T00:00:00Z",
+        "expires_at": "2027-01-01T00:00:00Z",
+        "reviewed_at": "2025-01-01T00:00:00Z"
+      }
+    ],
+    "expected_team_count": 1,
+    "teams": [
+      {
+        "team_id": 3001,
+        "owner_actor_id": 9999,
+        "reviewed_at": "2025-01-01T00:00:00Z",
+        "repository_grants": [
+          {
+            "repository_id": 501,
+            "permission": "admin"
+          }
+        ]
+      }
+    ]
+  },
+  "actions": {
+    "enabled_repositories": "all",
+    "enabled_repository_ids": [501, 502],
+    "allowed_actions": "all",
+    "require_full_length_sha": false,
+    "default_workflow_permissions": "write",
+    "can_approve_pull_request_reviews": true,
+    "fork_pull_request_workflows_send_write_tokens": true,
+    "fork_pull_request_workflows_send_secrets": true
+  },
+  "integrations": {
+    "complete": true,
+    "expected_github_app_count": 1,
+    "github_apps": [
+      {
+        "installation_id": 6001,
+        "owner_actor_id": 9999,
+        "repository_selection": "all",
+        "repository_ids": [501, 502],
+        "permissions": {
+          "administration": "write",
+          "contents": "write",
+          "members": "write",
+          "metadata": "read"
+        },
+        "reviewed_at": "2025-01-01T00:00:00Z"
+      }
+    ],
+    "expected_oauth_app_count": 0,
+    "oauth_apps": []
+  },
+  "repository_security": {
+    "complete": true,
+    "expected_repository_count": 2,
+    "repositories": [
+      {
+        "repository_id": 501,
+        "visibility": "public",
+        "archived": false,
+        "security_configuration": "ad-hoc",
+        "features": {
+          "dependency_graph": true,
+          "dependabot_alerts": false,
+          "secret_scanning": false,
+          "secret_scanning_push_protection": false
+        }
+      },
+      {
+        "repository_id": 502,
+        "visibility": "private",
+        "archived": false,
+        "security_configuration": "none",
+        "features": {
+          "dependency_graph": false,
+          "dependabot_alerts": false,
+          "secret_scanning": false,
+          "secret_scanning_push_protection": false
+        }
+      }
+    ]
+  },
+  "monitoring": {
+    "audit_log": {
+      "status": "HEALTHY",
+      "complete": true,
+      "observed_at": "2026-08-26T03:00:00Z",
+      "retention_days": 7,
+      "export_boundary": "same-github-organization",
+      "categories": [
+        "membership"
+      ],
+      "sequence_gap_count": 3
+    },
+    "drift": {
+      "status": "DRIFT",
+      "evaluated_at": "2026-08-26T03:10:00Z",
+      "open_finding_count": 8
+    },
+    "alert_delivery": {
+      "status": "DELIVERED",
+      "tested_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  "local_exceptions": [
+    {
+      "scope": "all-organization-settings",
+      "expires_at": "never"
+    }
+  ]
+}

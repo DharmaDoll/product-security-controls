@@ -76,6 +76,15 @@
   complete critical scope inside required RPO and RTO;
 - incomplete repository scope or a backup completion log being interpreted as
   recoverability without an isolated product restore.
+- excessive or stale Organization Owners, members, teams, outside
+  collaborators, or installed applications retaining source authority after
+  ownership, employment, purpose, or review expires;
+- permissive Organization repository defaults, private-fork policy, Actions
+  settings, or incomplete security-configuration rollout silently weakening
+  newly created or omitted repositories;
+- partial pagination, stale organization snapshots, audit export gaps, posture
+  drift, or failed alert delivery being interpreted as a clean GitHub
+  Organization security state;
 
 `PSB-SOURCE-005` owns the repository-wide destructive-action and recovery
 boundary for product-critical source. Its GitHub implementation restricts
@@ -85,6 +94,16 @@ restore drill. Privileged-change audit, credential containment, and incident
 authorization compose from their owning controls. Its local Git restore test
 does not prove live GitHub settings, storage lock enforcement, non-Git object
 coverage, identity revocation, or organization disaster-recovery readiness.
+
+`PSB-SOURCE-006` owns the cross-repository GitHub Organization posture
+boundary. It reconciles stable organization, principal, team, application, and
+repository identities; enforces restrictive Organization defaults and Actions
+policy; verifies complete repository security-configuration coverage; and
+requires healthy independently retained audit, drift, and alert evidence. Its
+provider-neutral E3 snapshot does not prove live GitHub or IdP enforcement,
+perform remediation, replace credential lifecycle in `PSB-SOURCE-004`, replace
+destruction recovery in `PSB-SOURCE-005`, or replace privileged-change
+correlation in `PSB-CICD-008`.
 
 ### Developer endpoint threats
 

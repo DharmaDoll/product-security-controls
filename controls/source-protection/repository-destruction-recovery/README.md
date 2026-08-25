@@ -218,6 +218,8 @@ data disposal approvalをproduct ownerとsecurity ownerが先に決定します�
 
 - `PSB-CICD-008`はprivileged control-plane変更のapprovalとauditを扱う。
 - `PSB-SOURCE-004`はGitHub App、PAT、SSH key等のcredential lifecycleを扱う。
+- `PSB-SOURCE-006`はOrganization Owner、member／team／App、hosted defaults、Actions、
+  repository security coverage、継続monitoringを扱う。
 - `PSB-GOV-001`はincident時のcontainment、authorization、response runbookを扱う。
 - 本controlはcritical sourceの削除制限、独立backup、実restoreだけを扱う。
 

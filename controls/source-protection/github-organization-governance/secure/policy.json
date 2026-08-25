@@ -1,0 +1,78 @@
+{
+  "schema": "psb-github-organization-governance-policy/v1",
+  "snapshot_schema": "psb-github-organization-governance-snapshot/v1",
+  "maximum_snapshot_age_hours": 24,
+  "maximum_access_review_age_days": 90,
+  "identity": {
+    "require_two_factor_authentication": true,
+    "require_sso": true,
+    "allowed_provisioning_modes": [
+      "enterprise-managed-users",
+      "saml-scim"
+    ],
+    "maximum_offboarding_sla_hours": 24
+  },
+  "owners": {
+    "minimum": 2,
+    "maximum": 3,
+    "require_human_identity": true,
+    "require_phishing_resistant_authentication": true
+  },
+  "outside_collaborators": {
+    "maximum_grant_days": 90,
+    "allowed_repository_permissions": [
+      "pull",
+      "triage"
+    ]
+  },
+  "organization_defaults": {
+    "default_repository_permission": "none",
+    "members_can_create_repositories": false,
+    "members_can_create_public_repositories": false,
+    "members_can_create_private_repositories": false,
+    "members_can_create_internal_repositories": false,
+    "members_can_fork_private_repositories": false
+  },
+  "actions": {
+    "enabled_repositories": "selected",
+    "allowed_actions": "selected",
+    "require_full_length_sha": true,
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": false,
+    "fork_pull_request_workflows_send_write_tokens": false,
+    "fork_pull_request_workflows_send_secrets": false
+  },
+  "integrations": {
+    "maximum_review_age_days": 90,
+    "forbidden_write_permissions": [
+      "actions",
+      "administration",
+      "members",
+      "organization_administration",
+      "workflows"
+    ]
+  },
+  "repository_security": {
+    "required_features": [
+      "dependency_graph",
+      "dependabot_alerts",
+      "secret_scanning",
+      "secret_scanning_push_protection"
+    ],
+    "maximum_public_review_age_days": 90
+  },
+  "monitoring": {
+    "minimum_retention_days": 180,
+    "maximum_alert_test_age_days": 30,
+    "required_categories": [
+      "actions-policy",
+      "application-access",
+      "membership",
+      "organization-settings",
+      "repository-visibility",
+      "rulesets"
+    ],
+    "required_export_boundary": "independent-security-account"
+  },
+  "allow_local_exceptions": false
+}

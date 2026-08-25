@@ -1,0 +1,380 @@
+id: PSB-SOURCE-006
+title: GitHub Organizationのaccess、既定値、Actions、App、監査driftを継続管理する
+domain: source-protection
+summary: GitHub Organizationのidentity、Owner、member、team、outside collaborator、repository既定値、Actions、installed App、security configuration、auditを一つのfreshなsecret-free snapshotとして検証する。
+check_context_version: "1.0"
+security_functions:
+  - prevent
+  - detect
+  - verify
+  - govern
+threats:
+  - id: GITHUB-ORG-ACCESS-DRIFT
+    description: 退職者、過剰なOwner、放置team、outside collaborator、またはinstalled Appがreview外のsource accessを保持する。
+  - id: GITHUB-ORG-INSECURE-DEFAULTS
+    description: Organizationのbase permission、repository作成、private fork、security configurationの既定値が新規または既存repositoryへ危険な状態を拡散する。
+  - id: GITHUB-ORG-ACTIONS-TRUST-EXPANSION
+    description: Organization Actions policyが全repository、任意Action、write default token、forkへのcredential提供を許し、repository-local controlを迂回する。
+  - id: GITHUB-ORG-MONITORING-GAP
+    description: Membership、App、visibility、Actions、ruleset、Organization設定のdriftまたは不正変更がaudit欠落やalert failureにより検知されない。
+  - id: GITHUB-ORG-EVIDENCE-FAIL-OPEN
+    description: Partial pagination、stale snapshot、API failure、count mismatch、secret-bearing evidence、または弱いpolicyが安全なOrganization postureとして報告される。
+implementations:
+  insecure:
+    - insecure/organization-snapshot.json
+  secure:
+    - secure/policy.json
+    - secure/organization-snapshot.json
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-SOURCE-006
+  expected:
+    - complete fresh stable-ID secret-free snapshotだけが評価される
+    - SSOとprovisioningがhealthyでunlinked identityがなくoffboarding SLAが24時間以内である
+    - Organization Ownerが2名以上3名以下の記名humanでphishing-resistant authenticationと90日以内reviewを持つ
+    - member team outside collaboratorがcurrent owner exact repository scope bounded permission expiryおよび90日以内reviewを持つ
+    - repository既定権限とmember作成およびprivate forkが制限される
+    - Actionsがselected repositoryとselected Actionに限定されfull SHA read-only tokenおよびfork credential denyを強制する
+    - GitHub AppとOAuth App inventoryが完全でselected repository current owner reviewおよびhigh-risk write denyを持つ
+    - 全repositoryへrequired security configurationが適用されpublic repositoryはPSB-SOURCE-003 reviewを持つ
+    - audit export drift evaluation alert deliveryがfreshでgapなくindependent boundaryへ保全される
+    - weak policy local exception missing stale partial malformed secret-bearing adapter failureはcleanにならない
+checks:
+  - id: GHO-001
+    title: Organization posture snapshot is complete fresh stable and policy bound
+    required_state: complete pagination and healthy sources for one stable GitHub organization with evidence age at most 24 hours and exact policy SHA-256
+    responsible_role: security
+    applies_to:
+      - github-organization-inventory
+      - github-governance-evidence
+    context:
+      threat_actor: failed GitHub API pagination stale cache renamed organization or collector returning a partial successful-looking document
+      attack_or_failure_scenario: an omitted member repository application or setting is absent from the assessment while old or unrelated evidence is reported as the current organization
+      why_required: every later posture decision depends on a complete current population and exact tenant and policy identity so local setting checks cannot compensate for missing inventory
+    verification:
+      type: hybrid
+      method: run make verify-control CONTROL=PSB-SOURCE-006 and bind a reviewed read-only GitHub collector to stable organization IDs complete pagination and source health
+      expected: exact current policy digest stable organization identity complete counts healthy sources and a 24-hour snapshot pass while partial stale or mismatched evidence is ERROR
+      evidence:
+        - sanitized organization snapshot
+        - read-only collector health and pagination receipt
+    mapping_status: reviewed
+  - id: GHO-002
+    title: Organization authentication and provisioning are enforced
+    required_state: organization 2FA and SSO enforced with healthy SAML SCIM or enterprise-managed-user provisioning no unlinked identity and offboarding SLA at most 24 hours
+    responsible_role: shared
+    applies_to:
+      - github-organization-identity
+      - identity-provider-integration
+    context:
+      threat_actor: credential phisher former worker IdP synchronization failure or administrator leaving GitHub identity disconnected from the authoritative directory
+      attack_or_failure_scenario: a password-only or unlinked identity retains source access after the IdP denies access or the employment relationship ends
+      why_required: repository grants cannot remove access promptly when organization authentication and deprovisioning are not connected to the authoritative identity lifecycle
+    verification:
+      type: external-evidence
+      method: inspect current GitHub authentication settings IdP assignment SCIM health unlinked identity report and an offboarding timing sample
+      expected: required authentication is enforced every active identity is linked and deprovisioning completes within the reviewed 24-hour ceiling
+      evidence:
+        - current GitHub authentication settings
+        - sanitized IdP and provisioning health evidence
+        - offboarding timing result
+    mapping_status: reviewed
+  - id: GHO-003
+    title: Organization Owner authority is bounded and attributable
+    required_state: two or three individually attributable human Owners with phishing-resistant authentication active provisioning and review age at most 90 days
+    responsible_role: security
+    applies_to:
+      - github-organization-owner
+      - break-glass-administration
+    context:
+      threat_actor: attacker using a phished Owner account insider using a shared owner identity or former administrator retaining the highest organization role
+      attack_or_failure_scenario: an excessive stale shared or weakly authenticated Owner can change membership applications policies repositories and security settings without a narrower repository grant
+      why_required: Owner is an organization-wide bypass boundary so bounding identity count assurance and recurring review reduces both takeover paths and unaccountable administration
+    verification:
+      type: hybrid
+      method: compare complete membership and IdP evidence with the policy and review each Owner disposition independently
+      expected: exactly two to three current human Owners have phishing-resistant authentication and a review no older than 90 days
+      evidence:
+        - sanitized Owner inventory
+        - authentication assurance evidence
+        - dated independent Owner review
+    mapping_status: reviewed
+  - id: GHO-004
+    title: Member team and outside-collaborator access is owned scoped and current
+    required_state: current member affiliation owned non-admin teams and sponsored read-only or triage outside-collaborator grants with exact repositories expiry at most 90 days and current review
+    responsible_role: repository-admin
+    applies_to:
+      - github-organization-member
+      - github-team
+      - github-outside-collaborator
+    context:
+      threat_actor: former contributor forgotten contractor orphaned team broad outside collaborator or SCIM delay preserving valid access
+      attack_or_failure_scenario: a non-Owner identity or team retains source modification or administration rights beyond its current work and becomes an attacker path after compromise
+      why_required: Owner minimization does not constrain ordinary organization grants so each remaining access path needs a current sponsor exact repository scope bounded permission and expiry decision
+    verification:
+      type: hybrid
+      method: reconcile complete GitHub member team outside-collaborator and repository inventories and verify owner permission expiry and 90-day review fields
+      expected: every grant resolves to a current actor and known repository while stale orphaned admin overlong or expired grants fail
+      evidence:
+        - sanitized member team and outside-collaborator inventory
+        - sponsor and access-review decisions
+    mapping_status: reviewed
+  - id: GHO-005
+    title: Organization repository defaults deny ambient authority
+    required_state: default repository permission is none and member repository creation public creation private creation internal creation and private repository forking are disabled
+    responsible_role: repository-admin
+    applies_to:
+      - github-organization-member-privileges
+      - github-repository-defaults
+    context:
+      threat_actor: ordinary member compromised developer account or accidental administration relying on permissive organization defaults
+      attack_or_failure_scenario: a new repository inherits broad access becomes public or is privately forked before product-specific review and repository controls are applied
+      why_required: restrictive organization defaults close the creation-time interval that per-repository review and later rulesets cannot retroactively eliminate
+    verification:
+      type: hybrid
+      method: evaluate the normalized current Organization Member privileges and repository default settings against secure policy
+      expected: no member receives repository access creation or private-fork authority solely from organization defaults
+      evidence:
+        - current Organization Member privileges snapshot
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: GHO-006
+    title: Organization Actions policy constrains execution and token trust
+    required_state: Actions enabled only for the exact repository inventory with selected actions full-length SHA requirement read-only default token no PR approval and no fork write token or secret delivery
+    responsible_role: ci-platform
+    applies_to:
+      - github-organization-actions-policy
+      - github-actions-token-defaults
+      - fork-pull-request-policy
+    context:
+      threat_actor: malicious Action compromised reusable workflow untrusted fork author or administrator broadening organization execution settings
+      attack_or_failure_scenario: repository-local workflow review is bypassed because hosted Organization policy admits mutable code broad default writes or credentials into an untrusted fork run
+      why_required: Organization-side policy is the common enforcement boundary above individual workflow files and can prevent new or overlooked repositories from silently selecting weaker execution defaults
+    verification:
+      type: hybrid
+      method: compare a complete current GitHub Organization Actions settings snapshot and selected repository IDs with the secure policy
+      expected: any all-repository all-action mutable-reference write-default PR-approval or fork-credential setting fails
+      evidence:
+        - current Organization Actions policy snapshot
+        - selected repository inventory
+        - sanitized verifier output
+    mapping_status: reviewed
+  - id: GHO-007
+    title: Installed application access is complete bounded and reviewed
+    required_state: every GitHub App and OAuth App has a current owner selected repository set review age at most 90 days and no Actions administration members organization-administration or workflow write permission
+    responsible_role: security
+    applies_to:
+      - github-app-installation
+      - github-oauth-application
+      - organization-integration-access
+    context:
+      threat_actor: compromised third-party application abandoned integration malicious maintainer or installer granting organization-wide administration
+      attack_or_failure_scenario: an application keeps broad source membership workflow or settings authority after its owner or purpose disappears and bypasses human access reviews
+      why_required: application grants are independent valid identities and reviewing members alone leaves persistent non-human organization access unbounded
+    verification:
+      type: hybrid
+      method: reconcile complete installed GitHub App and authorized OAuth App inventories with current owners repository selections permissions and review dates
+      expected: missing applications all-repository grants orphaned owners stale review and high-risk writes fail while collection failure is ERROR
+      evidence:
+        - sanitized application installation inventory
+        - permission and repository-selection review
+    mapping_status: reviewed
+  - id: GHO-008
+    title: Repository security configuration covers the complete organization inventory
+    required_state: every repository has the organization security baseline with dependency graph Dependabot alerts secret scanning and push protection while public repositories have a current PSB-SOURCE-003 review
+    responsible_role: security
+    applies_to:
+      - github-organization-repository-inventory
+      - github-security-configuration
+      - public-repository-review
+    context:
+      threat_actor: newly created repository configuration drift accidental public visibility or administrator excluding a repository from organization security rollout
+      attack_or_failure_scenario: a repository falls outside secret dependency and exposure detection while an aggregate organization dashboard hides the missing target
+      why_required: feature enablement must reconcile to the exact repository population because strong defaults or one passing repository do not demonstrate complete organization coverage
+    verification:
+      type: hybrid
+      method: compare the complete repository inventory to assigned security configurations feature states and PSB-SOURCE-003 public exposure decisions
+      expected: missing target missing feature ad-hoc configuration unknown visibility or stale public review fails
+      evidence:
+        - repository-to-security-configuration coverage export
+        - PSB-SOURCE-003 review reference for public repositories
+    mapping_status: reviewed
+  - id: GHO-009
+    title: Organization audit drift and alert monitoring are healthy
+    required_state: complete fresh audit categories retained at least 180 days in an independent security account with zero sequence gaps zero open posture drift and a successful alert test within 30 days
+    responsible_role: security
+    applies_to:
+      - github-organization-audit-log
+      - organization-posture-drift
+      - security-alert-delivery
+    context:
+      threat_actor: compromised administrator silent settings drift audit exporter outage retention misconfiguration or disconnected alert receiver
+      attack_or_failure_scenario: a membership App Actions visibility or ruleset change persists without timely detection because the event is missing mutable with the source or never delivered to responders
+      why_required: a point-in-time baseline cannot detect later bypass and independently retained complete telemetry plus tested delivery is the evidence boundary for continuous operation
+    verification:
+      type: hybrid
+      method: inspect audit coverage retention export boundary sequence health current drift decision and harmless alert delivery receipt
+      expected: missing category short retention same-authority storage event gaps open drift and stale or failed alert tests fail while exporter unavailability is ERROR
+      evidence:
+        - sanitized audit export health receipt
+        - posture drift result
+        - alert delivery test receipt
+    mapping_status: reviewed
+  - id: GHO-010
+    title: Weak policy and evidence failure cannot produce a clean posture
+    required_state: repository security floors cannot be weakened local exceptions are absent secrets are excluded and missing stale partial malformed count-mismatched or adapter-error evidence returns ERROR
+    responsible_role: security
+    applies_to:
+      - github-governance-policy
+      - github-governance-verifier
+      - github-governance-evidence
+    context:
+      threat_actor: configuration drift broad local exception failed collector malformed API response or responder copying credentials into assessment evidence
+      attack_or_failure_scenario: the verifier reports a clean organization after lowering policy thresholds or losing part of the inventory and the assessment itself creates a new secret exposure
+      why_required: fail-closed policy floors and sanitized error handling preserve the meaning of every other check when collection or governance cannot establish the required state
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-SOURCE-006
+      expected: weak policy local exception stale partial malformed count-mismatched secret-bearing and adapter-error fixtures never exit zero and evidence errors exit two
+      evidence:
+        - negative-test output
+        - redaction test result
+    mapping_status: reviewed
+mappings:
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GH-ADMIN-AUDIT-EVENTS
+    relationship: verifies
+    confidence: high
+    rationale: The control requires complete current Organization audit categories independent retention sequence health drift evaluation and tested alert delivery without treating API failure as a clean result.
+    reviewer: product-security
+    review_date: "2026-08-26"
+    applies_to:
+      - GHO-001
+      - GHO-009
+      - GHO-010
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GH-ADMIN-SAML-IAM
+    relationship: supports
+    confidence: high
+    rationale: Enforced SSO linked organization identities phishing-resistant Owner assurance and explicit deprovisioning evidence support the source access identity boundary described by the pinned GitHub administration guidance.
+    reviewer: product-security
+    review_date: "2026-08-26"
+    applies_to:
+      - GHO-002
+      - GHO-003
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GH-ADMIN-SCIM-ORGANIZATIONS
+    relationship: supports
+    confidence: high
+    rationale: Healthy provisioning no unlinked identities bounded offboarding and current membership reconciliation support SCIM-based organization lifecycle management while live IdP enforcement remains external evidence.
+    reviewer: product-security
+    review_date: "2026-08-26"
+    applies_to:
+      - GHO-002
+      - GHO-004
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHSC-SECURE-ACCOUNTS
+    relationship: supports
+    confidence: high
+    rationale: Bounded attributable Owners current member and collaborator access and strong organization authentication reduce persistent valid-account paths without claiming complete account security.
+    reviewer: product-security
+    review_date: "2026-08-26"
+    applies_to:
+      - GHO-002
+      - GHO-003
+      - GHO-004
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GH-ADMIN-ACTIONS-ORGANIZATION
+    relationship: verifies
+    confidence: high
+    rationale: The Organization-side snapshot verifies selected repositories selected Actions immutable reference policy read-only workflow defaults and fork credential denial described by the pinned administration page.
+    reviewer: product-security
+    review_date: "2026-08-26"
+    applies_to:
+      - GHO-006
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GH-ADMIN-CREDENTIAL-TYPES
+    relationship: supports
+    confidence: medium
+    rationale: Complete owned resource-bounded GitHub App and OAuth App reviews complement credential-specific lifecycle checks by governing non-human organization grants.
+    reviewer: product-security
+    review_date: "2026-08-26"
+    applies_to:
+      - GHO-007
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHSC-SECURE-CODE
+    relationship: supports
+    confidence: medium
+    rationale: Restrictive repository defaults and complete organization security-configuration coverage support protection of source repositories while repository-specific enforcement remains with its owning controls.
+    reviewer: product-security
+    review_date: "2026-08-26"
+    applies_to:
+      - GHO-005
+      - GHO-008
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-AC-02.01
+    relationship: supports
+    confidence: high
+    rationale: Bounding Owner collaborator team and application grants to accountable current least-privilege access supports the baseline requirement to restrict collaborator permissions.
+    reviewer: product-security
+    review_date: "2026-08-26"
+    applies_to:
+      - GHO-003
+      - GHO-004
+      - GHO-007
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-AC-04.01
+    relationship: supports
+    confidence: medium
+    rationale: Organization read-only workflow defaults and denial of fork credential delivery support least-privilege CI behavior but do not replace workflow-level PSB-CICD-004 verification.
+    reviewer: product-security
+    review_date: "2026-08-26"
+    applies_to:
+      - GHO-006
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1078
+    relationship: mitigates
+    confidence: medium
+    rationale: Strong organization identity enforcement bounded Owners and current member and collaborator access reduce continued abuse of valid GitHub accounts without preventing all credential theft.
+    reviewer: product-security
+    review_date: "2026-08-26"
+    applies_to:
+      - GHO-002
+      - GHO-003
+      - GHO-004
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1098
+    relationship: mitigates
+    confidence: medium
+    rationale: Complete recurring review of Owners members teams outside collaborators and applications reduces unauthorized persistent account and grant manipulation paths.
+    reviewer: product-security
+    review_date: "2026-08-26"
+    applies_to:
+      - GHO-003
+      - GHO-004
+      - GHO-007
+limitations:
+  - The E3 verifier evaluates normalized synthetic metadata and does not call GitHub or an IdP mutate Organization settings remove access install security configurations or configure audit streaming.
+  - A complete provider adapter needs GitHub plan-specific permissions stable IDs complete pagination API versioning rate-limit handling and IdP or SCIM joins that this offline slice does not supply.
+  - SAML SCIM enterprise-managed users SHA pinning security configurations and audit retention capabilities depend on the adopted GitHub plan and may require a PSB-GOV-002 exception or compensating control rather than silent downgrade.
+  - Snapshot PASS is not live Organization adoption and the public fixtures contain no real users repository names application identities credentials or production evidence.
+  - Organization Owner or GitHub provider compromise can falsify hosted state and requires independent identity audit and backup boundaries.
+  - Repository deletion transfer important-ref recovery and GitHub-independent backup remain PSB-SOURCE-005 rather than this posture verifier.
+  - Credential issuance storage rotation and revocation remain PSB-SOURCE-004 and PSB-GOV-004.
+  - Exact administrator change approval execution and provider-event correlation remain PSB-CICD-008.
+  - Repository-local workflow semantics ruleset target correctness CODEOWNERS behavior and application code risk require their owning controls even when the Organization baseline passes.
+  - Allstar is not installed or authorized and no automated remediation is performed by this control.
+status: prototype
+owner: product-security
+evidence_level: E3

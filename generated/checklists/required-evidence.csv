@@ -836,3 +836,27 @@ PSB-SOURCE-005,PSB-SOURCE-005-RDR-001,shared,manual,reviewed critical-repository
 PSB-SOURCE-005,PSB-SOURCE-005-RDR-002,repository-admin,manual,current GitHub organization setting and ruleset review record
 PSB-SOURCE-005,PSB-SOURCE-005-RDR-003,shared,external-evidence,backup job result storage access-policy review and retention-lock configuration from the actual backup service
 PSB-SOURCE-005,PSB-SOURCE-005-RDR-006,shared,hybrid,dated restore-drill record containing scope elapsed time ref comparison LFS result settings result and build or patch outcome
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-001,security,hybrid,sanitized organization snapshot
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-001,security,hybrid,read-only collector health and pagination receipt
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-002,shared,external-evidence,current GitHub authentication settings
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-002,shared,external-evidence,sanitized IdP and provisioning health evidence
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-002,shared,external-evidence,offboarding timing result
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-003,security,hybrid,sanitized Owner inventory
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-003,security,hybrid,authentication assurance evidence
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-003,security,hybrid,dated independent Owner review
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-004,repository-admin,hybrid,sanitized member team and outside-collaborator inventory
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-004,repository-admin,hybrid,sponsor and access-review decisions
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-005,repository-admin,hybrid,current Organization Member privileges snapshot
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-005,repository-admin,hybrid,sanitized verifier output
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-006,ci-platform,hybrid,current Organization Actions policy snapshot
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-006,ci-platform,hybrid,selected repository inventory
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-006,ci-platform,hybrid,sanitized verifier output
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-007,security,hybrid,sanitized application installation inventory
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-007,security,hybrid,permission and repository-selection review
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-008,security,hybrid,repository-to-security-configuration coverage export
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-008,security,hybrid,PSB-SOURCE-003 review reference for public repositories
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-009,security,hybrid,sanitized audit export health receipt
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-009,security,hybrid,posture drift result
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-009,security,hybrid,alert delivery test receipt
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-010,security,automated,negative-test output
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-010,security,automated,redaction test result

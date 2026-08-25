@@ -61,6 +61,8 @@ PSB-GOV-003 ──> organization-owned FIRST PSIRT capability profile
 PSB-SOURCE-003 + PSB-SOURCE-004 + PSB-GOV-001 ──> PSB-GOV-004
 PSB-CICD-006 + PSB-REL-004 ──────────────────────> PSB-GOV-004 adapters
 
+PSB-SOURCE-004 + PSB-SOURCE-005 + PSB-CICD-008 ──> PSB-SOURCE-006 Organization posture
+
 PSB-GOV-001 + PSB-GOV-003 + build/release/container evidence ──> PSB-GOV-005
 
 PSB-AI-001 ──> PSB-AI-002 ──┐
@@ -2530,6 +2532,51 @@ Implemented in
 Production archive manifests, signing-key custody, provider adapters, and
 protection from a trusted producer compromised before signing remain adoption
 and residual-risk work.
+
+### PSB-SOURCE-006 — GitHub Organization governance and continuous posture
+
+Status: `implemented` — E3 provider-neutral Organization snapshot and
+fail-closed governance slice
+
+Domain: `source-protection`
+
+Goal: keep one GitHub Organization's identity, access, hosted defaults,
+Actions, applications, repository security coverage, and monitoring state
+inside an explicit reviewed baseline instead of relying on repository-local
+configuration alone.
+
+Implemented in
+[`controls/source-protection/github-organization-governance/`](../controls/source-protection/github-organization-governance/):
+
+- exact policy-byte SHA-256, stable organization identity, complete counts,
+  complete pagination, source health, and 24-hour snapshot freshness;
+- required 2FA／SSO, approved SAML／SCIM or Enterprise Managed User
+  provisioning, no unlinked identities, and bounded offboarding;
+- two-to-three attributable human Owners plus current member, team, outside
+  collaborator, sponsor, repository, permission, expiry, and review evidence;
+- deny-oriented repository defaults, selected full-SHA Organization Actions,
+  read-only workflow defaults, and fork credential denial;
+- complete GitHub／OAuth App inventory with owner, selected repositories,
+  current review, and high-risk write-permission denial;
+- complete repository-to-security-configuration coverage with a
+  `PSB-SOURCE-003` handoff for intentionally public repositories;
+- independently retained audit categories, sequence health, posture drift,
+  and harmless alert-delivery evidence;
+- unsafe settings and local exceptions as findings, with weak policy, stale,
+  partial, count-mismatched, malformed, secret-bearing, and adapter-failure
+  evidence prevented from producing a clean result.
+
+The slice uses the pinned GitHub Security Guidance administration pages for
+reviewed mappings. DS-202 and `REF-CICD-017` are tool-independent or
+non-normative design input. OpenSSF Allstar remains uninstalled and
+unauthorized; a future live adapter must demonstrate least privilege,
+pagination, rate-limit, schema, alert, and error behavior without adding
+automatic remediation to the verifier.
+
+Live GitHub／IdP collectors, current hosted enforcement, provider-side
+mutation, audit-backend integrity, and organization adoption remain external
+evidence. Credential lifecycle, destructive recovery, and privileged change
+approval stay with `PSB-SOURCE-004`, `PSB-SOURCE-005`, and `PSB-CICD-008`.
 
 ### PSB-SOURCE-005 — Critical repository destruction resilience and recovery assurance
 

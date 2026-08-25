@@ -50,7 +50,9 @@ pagination漏れ、audit event遅延、emergency pathの放置もfailure source�
 - `PSB-CICD-006`: pipeline workloadがcloud authorityを得るOIDC claim;
 - `PSB-CICD-007`: runner routing、registration、one-job lifecycleとteardown;
 - `PSB-CICD-008`: human administratorによるprovider control-plane変更のidentity、
-  exact configuration、approval、execution、audit、emergency reviewの連結。
+  exact configuration、approval、execution、audit、emergency reviewの連結;
+- `PSB-SOURCE-006`: GitHub Organizationのcurrent access、default、Actions、App、
+  repository coverage、audit／drift healthのcomplete posture。
 
 ## Insecure example
 

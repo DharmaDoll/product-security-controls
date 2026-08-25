@@ -167,6 +167,16 @@ secret reference only for the exact MCP child, and binds the default read-only
 toolset to `PSB-AI-002` dependency and `PSB-AI-004` runtime ownership. Live IDE
 secret storage and process inheritance evidence remain `NOT_CHECKED`.
 
+GitHub Organization governance is implemented as `PSB-SOURCE-006`. Its E3
+provider-neutral contract binds a complete fresh secret-free snapshot to one
+stable organization and exact policy bytes; evaluates SSO／provisioning,
+bounded Owners, member／team／outside-collaborator access, restrictive
+repository defaults, Organization Actions policy, installed applications,
+repository security-configuration coverage, and independent audit／drift／alert
+health; and returns `ERROR` for stale, partial, malformed, count-mismatched,
+secret-bearing, or adapter-failure evidence. Live GitHub and IdP collectors,
+hosted enforcement, and remediation remain organization adoption work.
+
 Prioritize ATT&CK, SSDF, and SLSA mappings.
 
 ### SLSA Build Level 2 target
@@ -473,6 +483,12 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
     branch settings, create／delete／organization-wide push rulesets,
     CI／registry, Azure, GCP, and non-policy
     signing operations remain external.
+12. `PSB-SOURCE-006` — GitHub Organization governance — implemented at E3
+    with stable-ID complete inventory, policy-digest binding, SSO／provisioning,
+    Owner and collaborator review, restrictive repository defaults,
+    Organization Actions and App policy, complete security-configuration
+    coverage, independent audit／drift／alert health, and fail-closed evidence.
+    Live GitHub／IdP collection and mutation remain external adoption work.
 
 ### P2 — Exposure reduction and release completeness
 
@@ -681,9 +697,11 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
     Keep AI governance, training, security champions, KPI targets, PSIRT
     capability, and customer assurance as organization-owned profiles rather
     than documentation-only technical controls.
-17. Extend the pinned GitHub guidance registry with the reviewed
-    administration subset for repository／organization Actions policy,
-    CODEOWNERS, rulesets, SAML／SCIM, audit events, and credential types.
+17. The pinned GitHub guidance registry includes the reviewed administration
+    subset for repository／organization Actions policy, CODEOWNERS, rulesets,
+    SAML／SCIM, audit events, and credential types. `PSB-SOURCE-006` now maps
+    the unique Organization posture, access-review, Actions／App,
+    repository-coverage, and monitoring boundary to that registry.
     Reconcile デジタル庁 DS-202 and NSA／CISA CI/CD guidance as
     tool-independent design sources, not compliance frameworks. DS-202 and its
     GitHub Actions／Terraform appendix have official PDF SHA-256 values;
