@@ -16,11 +16,11 @@ Dependency update、package versionと公開時刻、managed registry proxy、cl
 
 ### 何をするか
 
-Dependency取得をapproved proxyへ固定し、新versionを既定7日間保留し、必要な緊急採用だけをexact package・version・owner・期限付きで例外化する。
+Resolverまたはtrusted CIで新versionを既定7日間保留し、lockfileへ固定する。利用可能な組織では取得をapproved proxyへ限定し、必要な緊急採用だけをexact package・version・owner・期限付きで例外化する。
 
 ### 成功状態
 
-採用versionがcooldownを満たすか有効なexact例外を持ち、取得元とartifact integrityが固定され、proxyまたはmetadata障害はpublic fallbackせず停止する。
+採用versionがcooldownを満たすか有効なexact例外を持ち、通常buildがreview済みlockfileを再現する。Full profileでは取得元とartifact integrityも固定され、proxyまたはmetadata障害はpublic fallbackせず停止する。
 
 ### 対象外・残余リスク
 
@@ -56,6 +56,115 @@ cooldown判定はdependency update時とlockfile review時に行います。
 Git hooksは、manifest／lockfile変更時に検証コマンドの実行を促す補助には使えますが、
 package managerによるresolveそのものの強制境界にはしません。
 
+## Cooldownとlockfileの役割分担
+
+`package-lock.json`と`npm ci`は、既にreviewしたversionを固定して通常installでのdriftを防ぎます。
+一方、`npm install <package>`、dependency update、localに存在しないpackageを使う`npx`では、
+新しいversionをlockfileへ入れる前のresolutionが発生します。この段階で公開後の経過時間を確認するのが
+cooldownです。
+
+推奨する多層構成は、age gate、lockfile＋frozen install、integrity、install-script default deny、
+sandbox、最小権限credentialの順です。HumanやAI agentへ毎回安全判断を求めるのではなく、通常の
+dependency追加を要求できても、基準時間未満のversionをpackage manager／CIが物理的にresolveできない
+構成にします。
+
+個人開発では72時間が利便性との実用的な開始点になり得ますが、このcontrolのfull reference baselineは
+168時間です。24時間、72時間、168時間のいずれもpackageの安全性を保証せず、publishからcommunity／
+vendorの検知・削除までの時間を買うだけです。詳細とincident例は
+[実装仕様書](docs/implementation-spec.md#2-cooldownとlockfileの役割分担)を参照してください。
+
+## Managed proxyを利用できない場合
+
+`registry.npmjs.org`等へ直接接続する環境でも、package managerのnative age gateまたはtrusted CI verifierを
+使える場合はcooldownを自動化できます。失われるのは中央proxyによるmalware解析、経路強制、取得追跡、
+事後通知であり、cooldownそのものとは区別します。
+
+### npmの最短導入
+
+前提はPython 3.10+、`min-release-age`が導入されたnpm `11.10.0`以上のreview済みruntime、official public
+registryへのHTTPS接続です。古いnpmは未知の`.npmrc` keyを表示してもenforcementしないため、native gateとして
+扱いません。このlocal導入手順で古いnpmからdependency updateを実行せず、supported npmへ更新するか、
+隔離されたupdate serviceが作ったgraphの全candidateをProfile 2で判定します。
+既存`.npmrc`と同名scriptがないことを確認し、repository rootで次を実行します。既存fileがある場合は停止し、
+内容を手動でmerge reviewしてください。
+
+```bash
+(
+  set -eu
+  test ! -e .npmrc
+  test ! -e scripts/check_npm_release_age.py
+  mkdir -p scripts
+  cp controls/dependency-security/release-cooldown/secure/direct-public-registry/.npmrc .npmrc
+  cp controls/dependency-security/release-cooldown/scripts/check_npm_release_age.py scripts/
+  chmod 0755 scripts/check_npm_release_age.py
+)
+```
+
+`.npmrc`は`registry=https://registry.npmjs.org/`、`min-release-age=7`、`save-exact=true`、
+`package-lock=true`だけを設定します。Global npm設定は変更しません。実効設定で7日未満へのoverrideや
+`min-release-age-exclude`がないことも確認してください。
+
+Networkを使わないpositive／negative self-testは次です。
+
+```bash
+python3 controls/dependency-security/release-cooldown/scripts/check_npm_release_age.py \
+  --config controls/dependency-security/release-cooldown/secure/direct-public-registry/.npmrc \
+  --package example-cooldown-package \
+  --version 1.0.0 \
+  --metadata-file controls/dependency-security/release-cooldown/tests/fixtures/npm-packument.json \
+  --as-of 2026-07-27T00:00:00Z
+
+python3 controls/dependency-security/release-cooldown/scripts/check_npm_release_age.py \
+  --config controls/dependency-security/release-cooldown/secure/direct-public-registry/.npmrc \
+  --package example-cooldown-package \
+  --version 2.0.0 \
+  --metadata-file controls/dependency-security/release-cooldown/tests/fixtures/npm-packument.json \
+  --as-of 2026-07-27T00:00:00Z
+```
+
+最初は`ACCEPTED ... age_hours=624`とexit `0`、次は`COOLDOWN_WAIT ... remaining_hours=144`とexit `1`に
+なります。Missing／malformed metadata、network failure、clock overrideは`ERROR`とexit `2`です。
+Fixtureの`ACCEPTED`はlive registryやorganization adoptionの証拠ではありません。
+
+実際の新規追加は、exact versionを選んで次のread-only checkを先に実行します。`--live`だけがnetwork accessを
+有効にし、official npm registryのfull metadataを最大32 MiB、10秒timeout、redirectなしで取得します。
+Package artifactはdownloadも実行もしません。
+
+```bash
+python3 scripts/check_npm_release_age.py \
+  --config .npmrc \
+  --package your-package-name \
+  --version 1.2.3 \
+  --live
+
+# exit 0を確認してから実行する
+npm install --save-exact --ignore-scripts your-package-name@1.2.3
+```
+
+CIでは、base-to-headのdependency deltaから得たすべてのexact package／versionについて、PRが変更できない
+trusted copyのcheckerとconfigをinstallより前に実行します。Exit `1`は待機、exit `2`は検証不能として、どちらも
+mergeとfull install CIをblockします。通常buildは`npm ci`を使います。Graph deltaの完全性は`PSB-DEPS-004`、
+lockfile／integrityは`PSB-DEPS-003`、install script拒否は`PSB-DEPS-002`をcompositionしてください。
+一件のdirect dependencyだけをcheckして、同時に追加されたtransitive dependencyを未確認のまま許可しません。
+
+Native gateもCI verifierも使えない場合は、lockfileとhuman reviewを使うoperational fallbackとします。
+
+1. 新規追加前にofficial registryのpublish timestampをread-only確認し、7日以上経過したexact versionを選ぶ。
+2. npmでは`npm install --save-exact <package>@<version>`を使い、`package.json`と`package-lock.json`を同じPRへcommitする。
+3. 通常のCI／release buildは`npm install`ではなく`npm ci`に固定する。
+4. Dependabot等のyoung-version PRは、install／buildより先にageを判定し、7日未満なら`COOLDOWN_WAIT`として保留する。
+5. 待機後にrelease、advisory、provenanceを再確認してから、install scriptsを原則拒否したsecretなしの隔離CIでtestする。
+
+`npm ci`はmanifestとlockfileの不一致を失敗させ、install中にlockfileを書き換えませんが、artifactが安全で
+あることやbytesが常に同一であることを単独では保証しません。Integrity検証、install-script制限、sandbox、
+最小権限credentialを併用します。GreenなCIもmalware不在の証明にはなりません。緊急security updateと
+詳細なDependabot flowは[実装仕様書](docs/implementation-spec.md#35-managed-proxyなしでpublic-registryへ直接接続する場合)を参照してください。
+
+Recoveryではnpm version、実効config、UTC clock、registry到達性、package／version identityを直して再実行し、
+age gateを下げたり除外を追加したりしません。Rollbackはcopyしたscriptと、新規作成した`.npmrc`だけをreviewの
+上で削除します。既存`.npmrc`へmergeした場合は、この導入で追加した4行だけを戻します。Server-side required
+checkを外す場合は、同等以上のnative／proxy enforcementへ移行したことを先に確認します。
+
 ## 脅威と失敗シナリオ
 
 主な失敗シナリオは`DEPENDENCY-NEW-RELEASE-COMPROMISE`です。
@@ -71,7 +180,8 @@ cooldownは公開直後の自動採用を遅らせますが、悪意あるversio
 もう1つの失敗シナリオは`DEPENDENCY-PROXY-BYPASS`です。各開発者がregistryを
 任意設定すると、攻撃者または設定driftによってpublic registryへのdirect fallbackが
 選ばれ、malicious-package検査、download追跡、事後通知を迂回できます。このcontrolは
-client経路をmanaged security proxyへ固定します。
+full reference profileでclient経路をmanaged security proxyへ固定します。Proxyを使わないscopeでは、
+native／CI age gateと明示したresidual riskで代替します。
 
 ## 実装例
 
@@ -106,6 +216,10 @@ client経路をmanaged security proxyへ固定します。
 - `clients/`
   - npm、pip、uv、pnpm、Yarnのnative cooldown sample
   - npm、pip、Go、Composerのproxy-only client profile
+- `direct-public-registry/.npmrc`
+  - official npm registry、7日age gate、exact save、lockfile生成をrepository-localに設定
+- `scripts/check_npm_release_age.py`
+  - exact npm versionのpublish timestampをinstall前にread-only確認
 
 安全なfixtureには、公開から7日以上経過した通常dependencyと、緊急security fixを
 想定した、owner・理由・承認者・開始時刻・失効時刻付きのexact version例外が
@@ -126,6 +240,7 @@ client経路をmanaged security proxyへ固定します。
 - `pip`の`extra-index-url`、Goの`,direct`、ComposerのPackagist fallback
 - proxy blocklistをrelease cooldownと誤認するpolicy
 - plaintext credentialと、provider承認済みの無害なcanaryを指定しない動作確認
+- direct-public npmでcooldownを0日とし、永続除外、`before` override、range保存、lockfile無効化を許可
 
 fixtureで使用するpackage名、registry、artifactはすべてsyntheticです。
 
@@ -268,6 +383,7 @@ install script制御と組み合わせる必要があります。
 
 ## 参考資料
 
+- [実装仕様書](docs/implementation-spec.md)
 - [Takumi Guard documentation](https://shisho.dev/docs/t/guard/)
 - [Takumi Guard quickstart](https://shisho.dev/docs/t/guard/quickstart/)
 - [Takumi Guard for Go](https://shisho.dev/docs/t/guard/quickstart/golang/)
@@ -277,6 +393,8 @@ install script制御と組み合わせる必要があります。
 - [uv dependency resolution](https://docs.astral.sh/uv/concepts/resolution/)
 - [uv settings reference](https://docs.astral.sh/uv/reference/settings/)
 - [npm config reference](https://docs.npmjs.com/cli/v11/using-npm/config/)
+- [npm CLI changelog: `min-release-age` added in 11.10.0](https://github.com/npm/cli/blob/latest/CHANGELOG.md#11100-2026-02-11)
+- [npm registry package metadata response](https://github.com/npm/registry/blob/main/docs/responses/package-metadata.md)
 - [pnpm dependency resolution settings](https://pnpm.io/settings/dependency-resolution)
 - [Yarn configuration](https://yarnpkg.com/configuration/yarnrc/)
 - [pip install reference](https://pip.pypa.io/en/stable/cli/pip_install/)

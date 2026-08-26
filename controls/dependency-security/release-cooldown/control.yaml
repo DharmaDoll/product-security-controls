@@ -28,6 +28,7 @@ implementations:
     - insecure/clients/yarnrc.yml
     - insecure/clients/go.env
     - insecure/clients/composer.json
+    - insecure/direct-public-registry/.npmrc
   secure:
     - secure/cooldown-policy.json
     - secure/lockfile.json
@@ -43,6 +44,8 @@ implementations:
     - secure/clients/yarnrc.yml
     - secure/clients/go.env
     - secure/clients/composer.json
+    - secure/direct-public-registry/.npmrc
+    - scripts/check_npm_release_age.py
 verification:
   commands:
     - make verify-control CONTROL=PSB-DEPS-001
@@ -56,6 +59,9 @@ verification:
     - proxy障害はERRORとなり、malicious-package blocklistを168時間cooldownの代替として扱わない
     - npm、pip、uv、pnpm、Yarnのnative cooldown sampleが168時間baselineを維持する
     - metadata欠落をfail-openにする設定と永続的なpackage除外が拒否される
+    - official npm registryのexact versionがinstall前に判定され、fresh releaseはCOOLDOWN_WAITとなる
+    - direct-public npm設定の短縮、永続除外、before override、range保存、lockfile無効化が拒否される
+    - npm registry metadataの欠落、malformed response、network failure、live clock overrideがERRORとなる
 checks:
   - id: COOL-001
     title: New dependency releases observe the minimum cooldown
@@ -283,6 +289,10 @@ limitations:
   - Proxy blocklistは既知またはproviderが検知したpackageに依存し、malicious packageをすべて遮断できるとは限らない。
   - このlocal fixtureはMDM適用状態、public registryへの実network egress拒否、またはproxy serviceの可用性を単独では証明しない。
   - Native profileはpackage managerの対応version、設定precedence、registryのpublish-time metadataに依存し、local fixtureだけでは実端末への適用状態を証明しない。
+  - Direct-public npm adapterは一つのexact package versionだけを判定するため、CIはPSB-DEPS-004のtrusted graph deltaから全候補を列挙する必要がある。
+  - Direct-public registryではmanaged proxyのmalware blocking、download tracking、breach notification、central egress enforcementを利用できない。
+  - Repository .npmrcより優先されるCLI、environment、user設定はlive effective-config verificationなしでは検出できない。
+  - npm 11.10.0未満はmin-release-ageを保持または表示してもnative enforcementを提供しないため、trusted CI adapterが必要である。
   - cooldowns.devはcommunity-maintainedな機能発見用referenceであり、framework mappingまたは公式な設定仕様として扱わない。
   - cooldowns helper scriptは実行せず、global user configurationを暗黙変更する導入方法をこのcontrolは許可しない。
 status: prototype

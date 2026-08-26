@@ -1,0 +1,6 @@
+FAIL npm min-release-age is 0 days; reference minimum is 7
+FAIL npm configuration contains a persistent age-gate exclusion
+FAIL npm before can override the repository age gate
+FAIL npm save-exact must be true
+FAIL npm package-lock must be true
+REJECTED 5 npm cooldown configuration finding(s)

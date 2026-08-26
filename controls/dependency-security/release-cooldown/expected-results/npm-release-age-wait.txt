@@ -1,0 +1,1 @@
+COOLDOWN_WAIT example-cooldown-package@2.0.0 age_hours=24 minimum_hours=168 remaining_hours=144 source=fixture
