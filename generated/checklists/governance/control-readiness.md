@@ -9,10 +9,10 @@ Generated from repository control metadata. Do not edit manually.
 | Metric | Value | Meaning |
 |---|---:|---|
 | Catalog controls | 51 | Repository control packages; not organization adoption. |
-| Atomic checks | 459 | Assessable catalog rows generated from control metadata. |
-| Reviewed mapping checks | 403 | Checks with at least one reviewed framework relationship. |
+| Atomic checks | 452 | Assessable catalog rows generated from control metadata. |
+| Reviewed mapping checks | 398 | Checks with at least one reviewed framework relationship. |
 | Provisional mapping checks | 0 | Checks whose framework relationship still needs review. |
-| Unmapped checks | 56 | Explicit framework mapping debt; not silently inherited. |
+| Unmapped checks | 54 | Explicit framework mapping debt; not silently inherited. |
 | Assessment adapters | 1 | Controls with a repository read-only assessment interface. |
 | Organization adoption | NOT_CHECKED | Organization-owned assessment results are not committed here. |
 | Evidence freshness | NOT_CHECKED | No current organization evidence bundle was supplied. |
@@ -70,6 +70,6 @@ Generated from repository control metadata. Do not edit manually.
 | PSB-REL-005 | release-integrity | prototype | E3 | 8 | 7 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-SOURCE-001 | source-protection | prototype | E3 | 29 | 27 | 0 | 2 | available | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-SOURCE-002 | source-protection | prototype | E3 | 13 | 12 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
-| PSB-SOURCE-003 | source-protection | reference | E3 | 13 | 10 | 0 | 3 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
+| PSB-SOURCE-003 | source-protection | prototype | E3 | 6 | 5 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-SOURCE-004 | source-protection | prototype | E3 | 17 | 17 | 0 | 0 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-SOURCE-005 | source-protection | reference | E1 | 4 | 4 | 0 | 0 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |

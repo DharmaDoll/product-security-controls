@@ -52,6 +52,6 @@ Generated control catalog. Do not edit manually.
 | [PSB-REL-005](../controls/release-integrity/artifact-signing-generation/README.md) | release-integrity | exact release artifactへ保護されたidentityで署名する | 8 | prototype | E3 |
 | [PSB-SOURCE-001](../controls/source-protection/developer-endpoint-hardening/README.md) | source-protection | Harden developer endpoints and local trust boundaries | 29 | prototype | E3 |
 | [PSB-SOURCE-002](../controls/source-protection/git-hooks-baseline/README.md) | source-protection | リポジトリ所有の開発者向けGit hooksセキュリティベースライン | 13 | prototype | E3 |
-| [PSB-SOURCE-003](../controls/source-protection/public-repository-exposure/README.md) | source-protection | 公開リポジトリ露出とGitHub dorking検証 | 13 | reference | E3 |
+| [PSB-SOURCE-003](../controls/source-protection/public-repository-exposure/README.md) | source-protection | 自社domainを起点とするpublic repository exposure monitoring | 6 | prototype | E3 |
 | [PSB-SOURCE-004](../controls/source-protection/source-access-credential-lifecycle/README.md) | source-protection | Govern source access credential lifecycle | 17 | prototype | E3 |
 | [PSB-SOURCE-005](../controls/source-protection/repository-destruction-recovery/README.md) | source-protection | Critical repositoryの破壊を制限しGitHub外から復旧できるようにする | 4 | reference | E1 |
