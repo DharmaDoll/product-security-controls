@@ -38,6 +38,46 @@ E3 fixtureはGitHubやIdPへ接続せず設定変更も行わないため、live
 Credential lifecycleは`PSB-SOURCE-004`、source破壊とbackupは`PSB-SOURCE-005`、特権変更の承認連鎖は
 `PSB-CICD-008`、漏洩後rotationは`PSB-GOV-004`が所有する。GitHubまたはIdP自体の侵害も残る。
 
+## このcontrolで採用する実装方式
+
+このcontrolの正式な最小実装は、案1のguidance-first GitHub baselineです。Organization OwnerとIdP管理者が
+GitHub／IdPの実設定を変更し、Securityがcurrent stateと運用結果を独立reviewします。具体的な画面項目、
+推奨値、実施順序、成功状態は
+[`docs/github-adoption-runbook.md`](docs/github-adoption-runbook.md)にまとめています。
+
+### セキュリティ向上の効果はどこから生まれるか
+
+- GitHubで2FA、SSO、Member privileges、Actions、App、security configurationを実際に制限する;
+- IdPでprovisioningとoffboardingを実際に動かす;
+- Owner、member、team、outside collaborator、Appを定期reviewする;
+- AuditをGitHub管理者から独立した場所へ保全し、driftとalert deliveryを継続確認する。
+
+Documentation、`secure/policy.json`、synthetic snapshot、verifierをcopyするだけでは、これらのsecurity
+stateは変化しません。Repository内の実装はminimum floorとfail-closed evidence contractを提供します。
+
+### 誰が何をするcontrolなのか
+
+- Product ownerは対象repositoryと必要なaccessを確定する;
+- Organization Owner／IdP管理者はidentity、Owner、Member privilegesを設定する;
+- Repository administratorはteamとoutside collaboratorのexact grantを管理する;
+- CI platformはOrganization Actions policyを設定する;
+- SecurityはApp、repository coverage、例外、audit、drift、alertを独立reviewする。
+
+詳細なresponsibility、変更前確認、live evidenceはadoption runbookをcanonical手順とします。
+
+### 最短の導入手順
+
+1. Adoption runbookに従い、対象Organization、担当者、GitHub plan、変更影響を確認する。
+2. GitHub／IdPのlive settingをrunbookのminimum baselineへ変更する。
+3. `secure/policy.json`と`scripts/verify.py`を上書きなしでrepository-localにcopyまたは参照する。
+4. Secure／insecure fixtureのharmless self-testを実行する。
+5. Live current state、audit export、alert canary、access reviewを組織のevidence systemで確認する。
+
+案2のread-only collectorは、live APIの完全性と必要権限を確認できるadopter向けの任意拡張です。案3の
+continuous governanceはまだ本controlへ導入せず、現実的な構成、段階導入、Allstar等の候補を
+[`docs/governance-automation-options.md`](docs/governance-automation-options.md)に設計案としてだけ記録します。
+いずれもfixture PASSをlive adoptionへ昇格させず、自動remediationをverificationへ混ぜません。
+
 ## なぜOrganization単位のcontrolが必要か
 
 Repository-local workflow、ruleset、scannerは、そのrepositoryが既にinventoryへ入り、期待する

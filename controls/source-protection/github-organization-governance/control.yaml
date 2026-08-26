@@ -25,6 +25,7 @@ implementations:
   secure:
     - secure/policy.json
     - secure/organization-snapshot.json
+    - docs/github-adoption-runbook.md
 verification:
   commands:
     - make verify-control CONTROL=PSB-SOURCE-006
