@@ -768,34 +768,18 @@ PSB-SOURCE-002,PSB-SOURCE-002-GHK-012,developer,automated,negative-test output
 PSB-SOURCE-002,PSB-SOURCE-002-GHK-014,developer,hybrid,reviewed run-gitleaks.sh
 PSB-SOURCE-002,PSB-SOURCE-002-GHK-014,developer,hybrid,sanitized Gitleaks output
 PSB-SOURCE-002,PSB-SOURCE-002-GHK-014,developer,hybrid,digest-pinned image evidence
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-001,repository-admin,hybrid,reviewed exposure policy
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-001,repository-admin,hybrid,sanitized visibility evidence code
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-002,security,automated,sanitized verifier output
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-002,security,automated,reviewed query catalog
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-003,security,hybrid,query completion evidence codes
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-003,security,hybrid,sanitized finding counts
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-004,security,automated,sanitized all-history scanner output
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-004,security,automated,complete-clone acquisition evidence
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-005,security,external-evidence,sanitized surface evidence codes
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-005,security,external-evidence,sanitized open-alert count
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-006,repository-admin,external-evidence,sanitized Actions exposure evidence code
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-006,repository-admin,external-evidence,sanitized release and Pages evidence codes
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-007,repository-admin,external-evidence,sanitized security-configuration evidence
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-007,repository-admin,external-evidence,sanitized alert count
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-008,repository-admin,external-evidence,sanitized delegated-bypass configuration
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-008,repository-admin,external-evidence,sanitized bypass review record
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-009,incident-response,hybrid,sanitized provider revocation evidence
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-009,incident-response,hybrid,sanitized remediation timeline
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-010,incident-response,external-evidence,sanitized copy-disposition record
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-010,incident-response,external-evidence,sanitized GitHub Support case reference when applicable
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-010,incident-response,external-evidence,sanitized rescan evidence
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-011,security,automated,negative-test output
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-012,security,automated,reviewed organization-indicators.json
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-012,security,automated,sanitized organization exposure scanner output
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-012,security,automated,complete-clone acquisition evidence
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-013,security,hybrid,reviewed organization-indicators.json
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-013,security,hybrid,access-controlled generated dork catalog
-PSB-SOURCE-003,PSB-SOURCE-003-PRE-013,security,hybrid,sanitized search result disposition
+PSB-SOURCE-003,PSB-SOURCE-003-MON-001,security,automated,sanitized unit-test output
+PSB-SOURCE-003,PSB-SOURCE-003-MON-001,security,automated,reviewed domain ownership record
+PSB-SOURCE-003,PSB-SOURCE-003-MON-002,security,automated,sanitized unit-test output
+PSB-SOURCE-003,PSB-SOURCE-003-MON-003,security,hybrid,sanitized unit-test output
+PSB-SOURCE-003,PSB-SOURCE-003-MON-003,security,hybrid,access-controlled live state commit
+PSB-SOURCE-003,PSB-SOURCE-003-MON-003,security,hybrid,notification delivery record
+PSB-SOURCE-003,PSB-SOURCE-003-MON-004,repository-admin,hybrid,sanitized unit-test output
+PSB-SOURCE-003,PSB-SOURCE-003-MON-004,repository-admin,hybrid,live workflow run URL
+PSB-SOURCE-003,PSB-SOURCE-003-MON-004,repository-admin,hybrid,access-controlled identity permission review
+PSB-SOURCE-003,PSB-SOURCE-003-MON-004,repository-admin,hybrid,state branch ruleset export
+PSB-SOURCE-003,PSB-SOURCE-003-MON-005,security,manual,access-controlled browser review record
+PSB-SOURCE-003,PSB-SOURCE-003-MON-006,security,automated,negative-test output
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-001,repository-admin,hybrid,sanitized policy verifier output
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-001,repository-admin,hybrid,automation identity inventory
 PSB-SOURCE-004,PSB-SOURCE-004-SCL-002,security,external-evidence,sanitized PAT policy and inventory

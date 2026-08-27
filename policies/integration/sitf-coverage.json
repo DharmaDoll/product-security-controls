@@ -171,16 +171,16 @@
     {
       "technique_id": "T-V003",
       "disposition": "gap",
-      "check_refs": ["PSB-SOURCE-001-DEH-004", "PSB-SOURCE-003-PRE-004", "PSB-SOURCE-004-SCL-003"],
+      "check_refs": ["PSB-SOURCE-001-DEH-004", "PSB-SOURCE-003-MON-002", "PSB-SOURCE-004-SCL-003"],
       "remaining_work": "Verify repository read authorization, bulk-clone and archive-download detection, egress controls, and attributable response for sensitive repositories.",
-      "rationale": "Secret scanning reduces stored secret exposure and credentials are scoped, but an authorized read session can still exfiltrate repository content."
+      "rationale": "Domain-anchored public exposure monitoring and scoped credentials reduce some stored-secret exposure, but an authorized read session can still exfiltrate non-public repository content."
     },
     {
       "technique_id": "T-V004",
       "disposition": "gap",
-      "check_refs": ["PSB-SOURCE-003-PRE-010", "PSB-SOURCE-003-PRE-013"],
+      "check_refs": ["PSB-SOURCE-003-MON-001", "PSB-SOURCE-003-MON-002", "PSB-SOURCE-003-MON-005"],
       "remaining_work": "Define ownership and monitoring for work-related personal repositories, forks, archives, and tokens without assuming enterprise controls cover personal accounts.",
-      "rationale": "Fork remnants and organization searches are reviewed, but personal repository read and export activity remains outside the current evidence boundary."
+      "rationale": "Owned-domain API and browser searches can surface some public personal repositories and forks, but personal repository read and export activity remains outside the current evidence boundary."
     },
     {
       "technique_id": "T-V005",
@@ -191,9 +191,10 @@
     },
     {
       "technique_id": "T-V006",
-      "disposition": "implemented",
-      "check_refs": ["PSB-SOURCE-003-PRE-001", "PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-005"],
-      "rationale": "Public visibility requires explicit approval, and the privileged-change evidence binds the exact before and after repository state to the approved request."
+      "disposition": "gap",
+      "check_refs": ["PSB-SOURCE-003-MON-002", "PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-005"],
+      "remaining_work": "Enforce repository visibility changes through independent approval and provider audit alerts, then correlate newly public repositories with exposure monitoring.",
+      "rationale": "Privileged-change evidence can bind reviewed configuration changes and public monitoring can detect some domain-anchored content after exposure, but neither currently proves provider-side prevention or alerting for every visibility change."
     },
     {
       "technique_id": "T-V007",
@@ -205,9 +206,9 @@
     {
       "technique_id": "T-V008",
       "disposition": "gap",
-      "check_refs": ["PSB-SOURCE-003-PRE-001", "PSB-SOURCE-003-PRE-006"],
+      "check_refs": ["PSB-SOURCE-003-MON-002", "PSB-SOURCE-003-MON-005"],
       "remaining_work": "Detect compromised organization accounts creating or repurposing repositories for payload hosting, including releases, Pages, and workflow artifacts.",
-      "rationale": "Public exposure review covers owned content but does not directly identify malicious repository hosting after account compromise."
+      "rationale": "Public API and browser exposure review covers domain-anchored content but does not directly identify malicious repository hosting after account compromise or comprehensively inspect Releases and Pages."
     },
     {
       "technique_id": "T-V009",
@@ -266,9 +267,9 @@
     {
       "technique_id": "T-C006",
       "disposition": "gap",
-      "check_refs": ["PSB-SOURCE-003-PRE-006", "PSB-CICD-004-PERM-002"],
+      "check_refs": ["PSB-SOURCE-003-MON-001", "PSB-SOURCE-003-MON-002", "PSB-SOURCE-003-MON-005", "PSB-CICD-004-PERM-002"],
       "remaining_work": "Scan workflow definitions, logs, artifacts, and public search results for secret-reference enumeration patterns without exposing secret values.",
-      "rationale": "Public Actions output review and job-token minimization are supporting controls but do not directly detect GitHub Search-based secret enumeration."
+      "rationale": "Domain-anchored API and browser reconnaissance plus job-token minimization expose some searchable material from the defender view but do not detect an attacker performing GitHub Search-based secret enumeration."
     },
     {
       "technique_id": "T-C007",

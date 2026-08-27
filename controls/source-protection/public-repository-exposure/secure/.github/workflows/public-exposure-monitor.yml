@@ -1,0 +1,136 @@
+name: Public exposure monitor
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: psb-source-003-public-exposure-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - name: Check out reviewed monitor code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Prepare private workspace
+        shell: bash
+        run: mkdir -p generated/assessment
+
+      - name: Generate human-review GET links
+        id: queries
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/monitor-public-exposure.py queries \
+            --config secure/domain-monitor.json \
+            --output generated/queries.md
+          result=$?
+          echo "status=$result" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Read dedicated state branch
+        id: state
+        if: steps.queries.outputs.status == '0'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          MONITOR_REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/monitor-public-exposure.py state-read \
+            --repository "$MONITOR_REPOSITORY" \
+            --output generated/state-snapshot.json
+          result=$?
+          echo "status=$result" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Collect public-only GitHub observations
+        id: collect
+        if: steps.queries.outputs.status == '0' && steps.state.outputs.status == '0'
+        env:
+          PUBLIC_SEARCH_TOKEN: ${{ secrets.PUBLIC_SEARCH_TOKEN }}
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/monitor-public-exposure.py collect \
+            --config secure/domain-monitor.json \
+            --state-snapshot generated/state-snapshot.json \
+            --output generated/observations.json
+          result=$?
+          echo "status=$result" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Reconcile and persist state
+        id: reconcile
+        if: steps.collect.outputs.status == '0'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/monitor-public-exposure.py reconcile \
+            --state-snapshot generated/state-snapshot.json \
+            --observations generated/observations.json \
+            --output-dir generated/assessment
+          result=$?
+          echo "status=$result" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Publish private Actions summary
+        if: always()
+        env:
+          QUERIES_STATUS: ${{ steps.queries.outputs.status }}
+          STATE_STATUS: ${{ steps.state.outputs.status }}
+          COLLECT_STATUS: ${{ steps.collect.outputs.status }}
+          RECONCILE_STATUS: ${{ steps.reconcile.outputs.status }}
+        shell: bash
+        run: |
+          if test -f generated/assessment/summary.md; then
+            sed -n '1,240p' generated/assessment/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if test -f generated/queries.md; then
+            sed -n '1,320p' generated/queries.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if test "${QUERIES_STATUS:-2}" -ne 0; then
+            echo "## SCAN_ERROR" >> "$GITHUB_STEP_SUMMARY"
+            echo "Query generation did not complete." >> "$GITHUB_STEP_SUMMARY"
+          elif test "${STATE_STATUS:-2}" -ne 0; then
+            echo "## SCAN_ERROR" >> "$GITHUB_STEP_SUMMARY"
+            echo "State branch read did not complete." >> "$GITHUB_STEP_SUMMARY"
+          elif test "${COLLECT_STATUS:-2}" -ne 0; then
+            echo "## SCAN_ERROR" >> "$GITHUB_STEP_SUMMARY"
+            echo "Provider collection did not complete." >> "$GITHUB_STEP_SUMMARY"
+          elif test "${RECONCILE_STATUS:-2}" -eq 2; then
+            echo "## SCAN_ERROR" >> "$GITHUB_STEP_SUMMARY"
+            echo "State reconciliation did not complete." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Enforce scanner outcome
+        if: always()
+        env:
+          QUERIES_STATUS: ${{ steps.queries.outputs.status }}
+          STATE_STATUS: ${{ steps.state.outputs.status }}
+          COLLECT_STATUS: ${{ steps.collect.outputs.status }}
+          RECONCILE_STATUS: ${{ steps.reconcile.outputs.status }}
+        shell: bash
+        run: |
+          test "${QUERIES_STATUS:-2}" -eq 0 || exit 2
+          test "${STATE_STATUS:-2}" -eq 0 || exit 2
+          test "${COLLECT_STATUS:-2}" -eq 0 || exit 2
+          case "${RECONCILE_STATUS:-2}" in
+            0) exit 0 ;;
+            1) exit 1 ;;
+            *) exit 2 ;;
+          esac
