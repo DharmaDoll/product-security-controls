@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import base64
+import io
 import importlib.util
 import json
 import os
+import sys
 import tempfile
 import unittest
+from contextlib import redirect_stderr
 from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
@@ -82,7 +85,7 @@ class ConfigurationAndQueryTests(unittest.TestCase):
         self.assertIn("site:gist.github.com", rendered)
         self.assertIn("not executed by the scanner", rendered)
 
-    def test_unsafe_and_duplicate_domains_are_rejected(self):
+    def test_unsafe_domain_forms_are_rejected(self):
         with self.assertRaises(monitor.MonitorError):
             monitor.load_configuration(CONTROL_DIR / "insecure" / "domain-monitor.json")
         invalid_values = [
@@ -95,6 +98,28 @@ class ConfigurationAndQueryTests(unittest.TestCase):
         for value in invalid_values:
             with self.subTest(value=value), self.assertRaises(monitor.MonitorError):
                 monitor.normalize_domain(value)
+
+    def test_duplicate_domain_ids_and_values_are_rejected(self):
+        duplicate_cases = {
+            "id": [
+                {"id": "ORG-DOMAIN-PRIMARY", "value": "one.example.invalid"},
+                {"id": "ORG-DOMAIN-PRIMARY", "value": "two.example.invalid"},
+            ],
+            "value": [
+                {"id": "ORG-DOMAIN-PRIMARY", "value": "corp.example.invalid"},
+                {"id": "ORG-DOMAIN-SECONDARY", "value": "corp.example.invalid"},
+            ],
+        }
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            for label, domains in duplicate_cases.items():
+                config_path = Path(temporary_directory) / f"duplicate-{label}.json"
+                config_path.write_bytes(
+                    monitor.json_bytes(
+                        {"schema_version": monitor.CONFIG_SCHEMA_VERSION, "domains": domains}
+                    )
+                )
+                with self.subTest(label=label), self.assertRaises(monitor.MonitorError):
+                    monitor.load_configuration(config_path)
 
 
 class ProviderNormalizationTests(unittest.TestCase):
@@ -217,6 +242,36 @@ class ProviderNormalizationTests(unittest.TestCase):
                 "https://github.com/outside/example/issues/4)bad", "github.com"
             )
 
+    def test_search_collection_limits_fail_closed(self):
+        with self.assertRaises(monitor.MonitorError):
+            monitor.validate_search_page(
+                {"total_count": 1001, "incomplete_results": False, "items": []},
+                None,
+            )
+
+        query = {
+            "id": "ORG-DOMAIN-PRIMARY-API-CODE-DOMAIN",
+            "indicator_id": "ORG-DOMAIN-PRIMARY",
+            "surface": "github-code",
+            "endpoint": "search/code",
+            "query": '"corp.example.invalid" in:file',
+        }
+        next_page = "https://api.github.com/search/code?page=2"
+        transport = QueueTransport(
+            [
+                response(
+                    {"total_count": 0, "incomplete_results": False, "items": []},
+                    {"Link": f'<{next_page}>; rel="next"'},
+                )
+            ]
+        )
+        client = monitor.GitHubClient("public-token", transport=transport, search_interval=0)
+        with (
+            patch.object(monitor, "MAX_SEARCH_PAGES", 1),
+            self.assertRaises(monitor.MonitorError),
+        ):
+            monitor.collect_search_query(client, query, {})
+
 
 class GistDeltaTests(unittest.TestCase):
     def test_first_gist_cursor_uses_one_hour_lookback(self):
@@ -262,6 +317,61 @@ class GistDeltaTests(unittest.TestCase):
             "html_url": "https://gist.github.com/user/abc123",
             "history": [{"version": "b" * 40}],
             "files": {},
+        }
+        with self.assertRaises(monitor.MonitorError):
+            monitor.collect_gist_detail(detail, [], {})
+
+    def test_gist_collection_limits_fail_closed(self):
+        item_transport = QueueTransport(
+            [response([{"id": "abc123"}, {"id": "def456"}])]
+        )
+        item_client = monitor.GitHubClient(
+            "public-token", transport=item_transport, search_interval=0
+        )
+        with (
+            patch.object(monitor, "MAX_GISTS_PER_RUN", 1),
+            self.assertRaises(monitor.MonitorError),
+        ):
+            monitor.collect_gist_delta(
+                item_client,
+                [{"id": "ORG-DOMAIN-PRIMARY", "value": "corp.example.invalid"}],
+                datetime(2026, 8, 26, tzinfo=timezone.utc),
+                {},
+            )
+
+        next_page = "https://api.github.com/gists/public?page=2"
+        page_transport = QueueTransport(
+            [response([], {"Link": f'<{next_page}>; rel="next"'})]
+        )
+        page_client = monitor.GitHubClient(
+            "public-token", transport=page_transport, search_interval=0
+        )
+        with (
+            patch.object(monitor, "MAX_GIST_PAGES", 1),
+            self.assertRaises(monitor.MonitorError),
+        ):
+            monitor.collect_gist_delta(
+                page_client,
+                [{"id": "ORG-DOMAIN-PRIMARY", "value": "corp.example.invalid"}],
+                datetime(2026, 8, 26, tzinfo=timezone.utc),
+                {},
+            )
+
+        too_many_files = {
+            f"file-{index}.txt": {
+                "filename": f"file-{index}.txt",
+                "truncated": False,
+                "content": "safe fixture",
+            }
+            for index in range(301)
+        }
+        detail = {
+            "id": "abc123",
+            "public": True,
+            "truncated": False,
+            "html_url": "https://gist.github.com/user/abc123",
+            "history": [{"version": "b" * 40}],
+            "files": too_many_files,
         }
         with self.assertRaises(monitor.MonitorError):
             monitor.collect_gist_detail(detail, [], {})
@@ -368,6 +478,50 @@ class ReconciliationTests(unittest.TestCase):
 
 
 class StateApiAndWorkflowTests(unittest.TestCase):
+    def test_cli_failures_exit_two_and_hide_unexpected_details(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output_path = Path(temporary_directory) / "queries.md"
+            stderr = io.StringIO()
+            with (
+                patch.object(
+                    sys,
+                    "argv",
+                    [
+                        str(SCANNER_PATH),
+                        "queries",
+                        "--config",
+                        str(CONTROL_DIR / "insecure" / "domain-monitor.json"),
+                        "--output",
+                        str(output_path),
+                    ],
+                ),
+                redirect_stderr(stderr),
+            ):
+                self.assertEqual(monitor.main(), 2)
+            self.assertIn("ERROR queries: domain value is invalid", stderr.getvalue())
+            self.assertFalse(output_path.exists())
+
+        secret = "NOT_A_REAL_TOKEN_SHOULD_NOT_LEAK"
+
+        def fail_unexpectedly(unused_args):
+            raise RuntimeError(secret)
+
+        parser = SimpleNamespace(
+            parse_args=lambda: SimpleNamespace(
+                command="collect", handler=fail_unexpectedly
+            )
+        )
+        stderr = io.StringIO()
+        with patch.object(monitor, "build_parser", return_value=parser), redirect_stderr(
+            stderr
+        ):
+            self.assertEqual(monitor.main(), 2)
+        self.assertEqual(
+            stderr.getvalue(),
+            "ERROR collect: unexpected scanner failure\n",
+        )
+        self.assertNotIn(secret, stderr.getvalue())
+
     def test_reconcile_prepares_output_before_state_and_gates_on_output_failure(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             temporary = Path(temporary_directory)
