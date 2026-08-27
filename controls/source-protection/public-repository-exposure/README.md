@@ -348,6 +348,16 @@ Normative な再実装仕様は `docs/PUBLIC_EXPOSURE_MONITOR_POC_SPEC.md` で�
 
 ## Framework mapping
 
-Machine-readable mapping は `control.yaml` に記録します。MITRE ATT&CK は攻撃者の公開情報検索行動との関連、
-NIST SSDF 等は repeatable detection を支援する関係を示すだけで、formal compliance や完全な coverage を
-主張しません。
+Framework mapping は存在します。Canonical なmachine-readable mappingは
+[`control.yaml`](control.yaml)に記録し、READMEでは次のように要約します。
+
+| Framework | Version | ID | Relationship | Confidence | このcontrolとの関係 |
+| --- | --- | --- | --- | --- | --- |
+| MITRE ATT&CK | v19.1 | `T1593.003` Code Repositories | `detects` | high | 攻撃者がpublic code repositoryを検索する偵察行動を、owned-domain検索によって防御側から再現し、外部から発見できる情報を検出する。 |
+| MITRE ATT&CK | v19.1 | `T1552.001` Credentials In Files | `detects` | medium | Domainに関連するpublic code／Gistからcredentialまたはcredential周辺設定の候補を検出する。Credentialの存在や有効性までは確認しない。 |
+| NIST SSDF | 1.1（SP 800-218, 2022） | `RV.1.1` | `supports` | medium | Public surfaceの反復収集、差分、review、失敗の明示により、潜在的なsecurity issueを特定・確認する活動を支援する。 |
+| OpenSSF OSPS Baseline | 2026.02.19 | `OSPS-BR-07.01` | `supports` | low | Public fileとcollaboration contentの監視によりsecret／credentialの安全な取扱いを補助するが、公開防止やrotateは実施しない。 |
+
+MITRE ATT&CK mappingは関連する攻撃行動を示すもので、対策の完全性を意味しません。NIST SSDF／OpenSSF
+mappingもformal compliance、完全なsecret検出、organization adoptionの証明ではありません。Check単位の
+`applies_to`、rationale、reviewer、review dateは`control.yaml`を正とします。
