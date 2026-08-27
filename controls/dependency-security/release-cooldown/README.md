@@ -2,14 +2,35 @@
 
 ## このcontrolを一枚で理解する
 
-| 項目 | このcontrolで行うこと |
-|---|---|
-| セキュリティ上の問題 | 公開直後のdependency versionをすぐ採用すると、maintainer侵害や悪性releaseが発見・削除される前に、開発端末やCIでそのコードを実行してしまう。 |
-| 誰から、または何から守るか | 侵害されたmaintainer／registry、悪性versionを即座に取り込むupdate botやAI agent、cooldownを弱める設定drift、proxy迂回から守る。 |
-| 何が対象か | 新しいdependencyの追加、既存dependencyの更新、lockfile再生成、Dependabot等のupdate PR。既にreview済みのlockfileを使う通常installは再判定の対象にしない。 |
-| 何をするか | 新versionの公開から原則7日間はresolverまたはrequired CI checkで採用を止める。その後にexact versionをlockfileへ固定し、通常buildはfrozen／locked modeで再現する。 |
-| 成功状態 | 7日未満のversionと判定不能なversionはinstall前かつmerge前に停止する。通常CIはreview済みlockfileだけを使い、緊急例外はexact version・別承認者・期限付きに限定される。 |
-| 対象外・残余リスク | 7日経過はpackageの安全性を保証しない。長期潜伏malware、typosquatting、既知脆弱性、artifact差替え、install script、runtime behaviorは別controlで扱う。 |
+### セキュリティ上の問題
+
+公開直後のdependency versionをすぐ採用すると、maintainer侵害や悪性releaseが発見・削除される前に、
+開発端末やCIでそのコードを実行してしまいます。
+
+### 誰から、または何から守るか
+
+侵害されたmaintainer／registryだけでなく、悪性versionを即座に取り込むupdate botやAI agent、cooldownを
+弱める設定drift、managed proxyを迂回する取得経路から守ります。
+
+### 何が対象か
+
+新しいdependencyの追加、既存dependencyの更新、lockfile再生成、Dependabot等のupdate PRが対象です。
+既にreview済みのlockfileを使う通常installでは、新しいversionを選び直しません。
+
+### 何をするか
+
+新versionの公開から原則7日間は、resolverまたはrequired CI checkで採用を止めます。待機後にexact versionを
+lockfileへ固定し、通常buildはfrozen／locked modeで再現します。
+
+### 成功状態
+
+7日未満のversionと判定不能なversionが、install前かつmerge前に停止します。通常CIはreview済みlockfileだけを
+使い、緊急例外はexact version・別承認者・期限付きに限定されます。
+
+### 対象外・残余リスク
+
+7日経過はpackageの安全性を保証しません。長期潜伏malware、typosquatting、既知脆弱性、artifact差替え、
+install script、runtime behaviorは別controlで扱います。
 
 ## なぜ必要なのか
 
@@ -82,7 +103,7 @@ package managerまたはCIが物理的に通さない」という境界にしま
 
 | 案 | 向いている環境 | Security効果が生まれる場所 | 位置付け |
 |---|---|---|---|
-| 案1: native age gate | npm、pip、uv、pnpm、Yarnの対応versionを使える | Package managerのresolver | 最小導入。Local guardrail |
+| 案1: native age gate | npm、[pip／uv／pnpm／Yarn等](https://cooldowns.dev/)の対応versionを使える | Package managerのresolver | 最小導入。Local guardrail |
 | 案2: trusted CI required check | Team開発、update bot、複数ecosystem | PRが変更できないCI判定とbranch protection | Repository単位の強制境界 |
 | 案3: managed registry proxy | 複数repository、managed endpoint、中央運用 | Proxy route、egress policy、provider検査 | Bypass防止とmalware検知を加える多層防御 |
 | 運用fallback | Native gateもtrusted CIも使えない | Reviewerとprotected branch | 自動強制ではない。暫定運用 |
@@ -149,6 +170,14 @@ npm ci
 
 `npm ci`はlockfileを要求し、manifestと不一致なら失敗し、install中にlockfileを書き換えません。ただし、
 dependencyの安全性やartifact bytesの真正性を単独で保証するものではありません。
+
+### npm以外のpackage manager
+
+pip、uv、pnpm、Yarn等の設定例は、ecosystem別に整理された
+[Dependency Cooldowns](https://cooldowns.dev/)から対象toolを選ぶと簡単に確認できます。このrepositoryで
+review済みのcopy元は[`secure/clients/`](secure/clients/)です。`cooldowns.dev`は設定を見つけるための
+community referenceとして使い、対応version、設定単位、優先順位、metadata欠落時の挙動は、導入時に
+各package managerの公式documentationで確認してください。
 
 ## 案2: PRで確実に止める
 
