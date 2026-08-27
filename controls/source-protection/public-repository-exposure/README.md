@@ -7,14 +7,35 @@ scanner core PoC と再実装仕様を提供し、本番の Slack／case-managem
 
 ## このcontrolを一枚で理解する
 
-| ラベル | 内容 |
-| --- | --- |
-| セキュリティ上の問題 | 自社 domain、従業員 email suffix、内部 endpoint、設定断片が public code、Issue、PR、Gist 等へ現れると、攻撃者は通常の検索から資産を列挙し、credential 探索や標的選定に利用できる。 |
-| 誰から、または何から守るか | GitHub／Web 検索を使う外部攻撃者と収集 bot、公開範囲を誤る投稿者、rate limit・pagination・state 更新失敗を「0件」と誤認する監視運用。 |
-| 何が対象か | 設定した自社 domain に一致する GitHub の public code、public repository の Issue／PR、新規・更新 public Gist、および人が通常の browser GET 検索で確認する GitHub／Gist／Web index。 |
-| 何をするか | Domain から固定 query を生成し、公式 REST API の結果を差分化する。既知 finding と期限付き review は専用 state branch に保存し、`NEW`／`REOPENED` の sanitized JSON を通知 adapter へ渡す。 |
-| 成功状態 | Trusted schedule が完走し、新規候補が review され、同一候補は重複通知されず、review 期限切れや remediation 後の再出現は再通知され、scanner failure は exit `2` になる。 |
-| 対象外・残余リスク | GitHub の index 外・過去 Git 履歴・削除済み Gist・外部 cache・画像・難読化情報は網羅しない。Browser query は人が開かなければ検査にならず、0件も過去露出がなかった証明にはならない。 |
+### セキュリティ上の問題
+
+自社 domain、従業員 email suffix、内部 endpoint、設定断片が public code、Issue、PR、Gist 等へ現れると、
+攻撃者は通常の検索から資産を列挙し、credential 探索や標的選定に利用できます。
+
+### 誰から、または何から守るか
+
+GitHub／Web 検索を使う外部攻撃者と収集 bot、公開範囲を誤る投稿者、rate limit・pagination・state 更新失敗を
+「0件」と誤認する監視運用から守ります。
+
+### 何が対象か
+
+設定した自社 domain に一致する GitHub の public code、public repository の Issue／PR、新規・更新 public
+Gist、および人が通常の browser GET 検索で確認する GitHub／Gist／Web index が対象です。
+
+### 何をするか
+
+Domain から固定 query を生成し、公式 REST API の結果を差分化します。既知 finding と期限付き review は専用
+state branch に保存し、`NEW`／`REOPENED` の sanitized JSON を通知 adapter へ渡します。
+
+### 成功状態
+
+Trusted schedule が完走し、新規候補が review され、同一候補は重複通知されない状態です。Review 期限切れや
+remediation 後の再出現は再通知され、scanner failure は exit `2` になります。
+
+### 対象外・残余リスク
+
+GitHub の index 外・過去 Git 履歴・削除済み Gist・外部 cache・画像・難読化情報は網羅しません。Browser
+query は人が開かなければ検査にならず、0件も過去露出がなかった証明にはなりません。
 
 ## セキュリティ向上の効果はどこから生まれるか
 
