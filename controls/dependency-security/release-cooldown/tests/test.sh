@@ -131,6 +131,145 @@ test "$malformed_native_status" -eq 2 || {
   exit 1
 }
 
+npm_checker="$control/scripts/check_npm_release_age.py"
+npm_config="$control/secure/direct-public-registry/.npmrc"
+npm_metadata="$control/tests/fixtures/npm-packument.json"
+
+python3 "$npm_checker" \
+  --config "$npm_config" \
+  --package example-cooldown-package \
+  --version 1.0.0 \
+  --metadata-file "$npm_metadata" \
+  --as-of "$as_of" >"$temporary_directory/npm-accepted.txt"
+diff -u "$control/expected-results/npm-release-age-accepted.txt" \
+  "$temporary_directory/npm-accepted.txt"
+
+python3 "$npm_checker" \
+  --config "$npm_config" \
+  --package example-cooldown-package \
+  --version 1.1.0 \
+  --metadata-file "$npm_metadata" \
+  --as-of "$as_of" >"$temporary_directory/npm-boundary.txt"
+grep -F "age_hours=168 minimum_hours=168" \
+  "$temporary_directory/npm-boundary.txt" >/dev/null
+
+set +e
+python3 "$npm_checker" \
+  --config "$npm_config" \
+  --package example-cooldown-package \
+  --version 1.1.1 \
+  --metadata-file "$npm_metadata" \
+  --as-of "$as_of" >"$temporary_directory/npm-before-boundary.txt"
+npm_before_boundary_status=$?
+set -e
+test "$npm_before_boundary_status" -eq 1 || {
+  echo "expected npm release just inside cooldown to exit 1, got $npm_before_boundary_status" >&2
+  exit 1
+}
+grep -F "remaining_hours=1" "$temporary_directory/npm-before-boundary.txt" >/dev/null
+
+set +e
+python3 "$npm_checker" \
+  --config "$npm_config" \
+  --package example-cooldown-package \
+  --version 2.0.0 \
+  --metadata-file "$npm_metadata" \
+  --as-of "$as_of" >"$temporary_directory/npm-wait.txt"
+npm_wait_status=$?
+set -e
+test "$npm_wait_status" -eq 1 || {
+  echo "expected fresh npm release exit 1, got $npm_wait_status" >&2
+  exit 1
+}
+diff -u "$control/expected-results/npm-release-age-wait.txt" \
+  "$temporary_directory/npm-wait.txt"
+
+set +e
+python3 "$npm_checker" \
+  --config "$control/insecure/direct-public-registry/.npmrc" \
+  --package example-cooldown-package \
+  --version 2.0.0 \
+  --metadata-file "$npm_metadata" \
+  --as-of "$as_of" >"$temporary_directory/npm-insecure-config.txt"
+npm_insecure_config_status=$?
+set -e
+test "$npm_insecure_config_status" -eq 1 || {
+  echo "expected insecure npm config exit 1, got $npm_insecure_config_status" >&2
+  exit 1
+}
+diff -u "$control/expected-results/npm-release-age-insecure-config.txt" \
+  "$temporary_directory/npm-insecure-config.txt"
+
+set +e
+python3 "$npm_checker" \
+  --config "$npm_config" \
+  --package example-cooldown-package \
+  --version 1.0.0 \
+  --metadata-file "$temporary_directory/missing-packument.json" \
+  --as-of "$as_of" >"$temporary_directory/npm-missing.txt" 2>&1
+npm_missing_status=$?
+set -e
+test "$npm_missing_status" -eq 2 || {
+  echo "expected missing npm metadata exit 2, got $npm_missing_status" >&2
+  exit 1
+}
+grep -F "ERROR cannot read registry metadata fixture" \
+  "$temporary_directory/npm-missing.txt" >/dev/null
+
+printf '%s\n' '{"name":' >"$temporary_directory/malformed-packument.json"
+set +e
+python3 "$npm_checker" \
+  --config "$npm_config" \
+  --package example-cooldown-package \
+  --version 1.0.0 \
+  --metadata-file "$temporary_directory/malformed-packument.json" \
+  --as-of "$as_of" >"$temporary_directory/npm-malformed.txt" 2>&1
+npm_malformed_status=$?
+set -e
+test "$npm_malformed_status" -eq 2 || {
+  echo "expected malformed npm metadata exit 2, got $npm_malformed_status" >&2
+  exit 1
+}
+
+printf '%s\n' \
+  'registry=https://example-token:example-secret@registry.npmjs.org/' \
+  'min-release-age=7' \
+  'save-exact=true' \
+  'package-lock=true' >"$temporary_directory/credential-npmrc"
+set +e
+python3 "$npm_checker" \
+  --config "$temporary_directory/credential-npmrc" \
+  --package example-cooldown-package \
+  --version 1.0.0 \
+  --metadata-file "$npm_metadata" \
+  --as-of "$as_of" >"$temporary_directory/npm-credential.txt" 2>&1
+npm_credential_status=$?
+set -e
+test "$npm_credential_status" -eq 2 || {
+  echo "expected credential-bearing npm config exit 2, got $npm_credential_status" >&2
+  exit 1
+}
+if grep -F "example-secret" "$temporary_directory/npm-credential.txt" >/dev/null; then
+  echo "npm checker leaked a credential value" >&2
+  exit 1
+fi
+
+set +e
+python3 "$npm_checker" \
+  --config "$npm_config" \
+  --package example-cooldown-package \
+  --version 1.0.0 \
+  --live \
+  --as-of "$as_of" >"$temporary_directory/npm-live-clock.txt" 2>&1
+npm_live_clock_status=$?
+set -e
+test "$npm_live_clock_status" -eq 2 || {
+  echo "expected live clock override exit 2, got $npm_live_clock_status" >&2
+  exit 1
+}
+grep -F "ERROR --as-of cannot override the clock in --live mode" \
+  "$temporary_directory/npm-live-clock.txt" >/dev/null
+
 echo "PASS stable and exact-exception dependencies accepted"
 echo "PASS zero cooldown fresh version unapproved registry and missing integrity rejected"
 echo "PASS expired cooldown exception rejected"
@@ -138,3 +277,6 @@ echo "PASS tampered artifact rejected"
 echo "PASS missing and malformed metadata fail closed"
 echo "PASS managed registry proxy enforced and malformed proxy policy fails closed"
 echo "PASS native cooldown clients preserve the baseline and reject persistent bypasses"
+echo "PASS direct-public npm age check accepts the boundary and waits before it"
+echo "PASS direct-public npm config weakening metadata failure and clock override fail closed"
+echo "PASS direct-public npm checker redacts credential-bearing configuration"
