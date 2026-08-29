@@ -1,303 +1,172 @@
-# PSB-SOURCE-006: GitHub Organizationのaccess、既定値、Actions、App、監査driftを継続管理する
+# PSB-SOURCE-006: GitHub Organization governance
 
 ## このcontrolを一枚で理解する
 
-### セキュリティ上の問題
-
-Repositoryごとの設定が安全でも、GitHub Organizationに過剰なOwner、放置されたmember・team・outside
-collaborator・App、危険なrepository既定値、広いActions policy、security configurationの適用漏れ、
-監査停止があると、新しいrepositoryや管理面からsource protectionを迂回できる。
-
-### 誰から、または何から守るか
-
-Phished Organization Owner、侵害されたmemberやthird-party App、退職者、放置されたcontractor、
-誤操作する管理者、不完全なSAML／SCIM連携、partial GitHub API、audit exporterやalert receiverの障害、
-安全基準を弱めるlocal exceptionから守る。
-
-### 何が対象か
-
-一つのGitHub Organizationについて、identity連携、Owner、member、team、outside collaborator、
-Organizationのrepository既定値、Actions policy、GitHub／OAuth App、全repositoryのsecurity
-configuration、audit export、posture drift、alert deliveryを対象とする。
-
-### 何をするか
-
-Read-only provider adapterからstable ID、完全pagination、source healthを持つsecret-free snapshotを作り、
-repository-owned policyのSHA-256へbindする。Access・既定値・Actions・App・repository coverage・monitoringを
-検証し、弱いpolicy、未管理例外、不完全・stale・malformed・secret-bearing evidenceをfail closedにする。
-
-### 成功状態
-
-24時間以内の完全なsnapshotで、SSO／provisioning、2～3名の記名Owner、90日以内のaccess review、
-deny-orientedなOrganization defaults、selectedかつfull-SHAのActions、限定App、全repositoryのsecurity
-coverage、独立保全されたauditとdrift／alertの健全性が確認される。検証不能は`PASS`にならない。
-
-### 対象外・残余リスク
-
-E3 fixtureはGitHubやIdPへ接続せず設定変更も行わないため、live Organizationへの導入を証明しない。
-Credential lifecycleは`PSB-SOURCE-004`、source破壊とbackupは`PSB-SOURCE-005`、特権変更の承認連鎖は
-`PSB-CICD-008`、漏洩後rotationは`PSB-GOV-004`が所有する。GitHubまたはIdP自体の侵害も残る。
-
-## このcontrolで採用する実装方式
-
-このcontrolの正式な最小実装は、案1のguidance-first GitHub baselineです。Organization OwnerとIdP管理者が
-GitHub／IdPの実設定を変更し、Securityがcurrent stateと運用結果を独立reviewします。具体的な画面項目、
-推奨値、実施順序、成功状態は
-[`docs/github-adoption-runbook.md`](docs/github-adoption-runbook.md)にまとめています。
-
-### セキュリティ向上の効果はどこから生まれるか
-
-- GitHubで2FA、SSO、Member privileges、Actions、App、security configurationを実際に制限する;
-- IdPでprovisioningとoffboardingを実際に動かす;
-- Owner、member、team、outside collaborator、Appを定期reviewする;
-- AuditをGitHub管理者から独立した場所へ保全し、driftとalert deliveryを継続確認する。
-
-Documentation、`secure/policy.json`、synthetic snapshot、verifierをcopyするだけでは、これらのsecurity
-stateは変化しません。Repository内の実装はminimum floorとfail-closed evidence contractを提供します。
-
-### 誰が何をするcontrolなのか
-
-- Product ownerは対象repositoryと必要なaccessを確定する;
-- Organization Owner／IdP管理者はidentity、Owner、Member privilegesを設定する;
-- Repository administratorはteamとoutside collaboratorのexact grantを管理する;
-- CI platformはOrganization Actions policyを設定する;
-- SecurityはApp、repository coverage、例外、audit、drift、alertを独立reviewする。
-
-詳細なresponsibility、変更前確認、live evidenceはadoption runbookをcanonical手順とします。
-
-### 最短の導入手順
-
-1. Adoption runbookに従い、対象Organization、担当者、GitHub plan、変更影響を確認する。
-2. GitHub／IdPのlive settingをrunbookのminimum baselineへ変更する。
-3. `secure/policy.json`と`scripts/verify.py`を上書きなしでrepository-localにcopyまたは参照する。
-4. Secure／insecure fixtureのharmless self-testを実行する。
-5. Live current state、audit export、alert canary、access reviewを組織のevidence systemで確認する。
-
-案2のread-only collectorは、live APIの完全性と必要権限を確認できるadopter向けの任意拡張です。案3の
-continuous governanceはまだ本controlへ導入せず、現実的な構成、段階導入、Allstar等の候補を
-[`docs/governance-automation-options.md`](docs/governance-automation-options.md)に設計案としてだけ記録します。
-いずれもfixture PASSをlive adoptionへ昇格させず、自動remediationをverificationへ混ぜません。
-
-## なぜOrganization単位のcontrolが必要か
-
-Repository-local workflow、ruleset、scannerは、そのrepositoryが既にinventoryへ入り、期待する
-Organization policyの下で運用されていることを前提にします。次の状態は個別repositoryだけでは十分に
-確認できません。
-
-- Organization Ownerやoutside collaboratorが誰で、現在も必要か;
-- member／teamのgrantがどのrepositoryへ届くか;
-- 新しいrepositoryがどのbase permission、visibility、fork policyで作られるか;
-- OrganizationのActions policyがどのrepositoryとActionを許すか;
-- GitHub App／OAuth Appがどのresourceとpermissionを保持するか;
-- security configurationが完全なrepository inventoryへ届いているか;
-- hosted settingのdriftをauditとalertで継続検知できるか。
-
-このcontrolは、これらを一つのsecret-free relationship snapshotとして評価します。GitHub UIの
-checkboxを列挙するだけではなく、inventory completeness、stable identity、freshness、policy identity、
-error stateを検証対象にします。
-
-## 既存controlとの境界
-
-| Control | 所有する責務 |
+| 項目 | 内容 |
 |---|---|
-| `PSB-SOURCE-003` | Public repository、Git history、非code面の露出検出とcredential-first remediation |
-| `PSB-SOURCE-004` | OAuth、PAT、SSH、GitHub App credentialの発行、storage、review、revoke |
-| `PSB-SOURCE-005` | Critical repositoryの削除・移管・重要ref破壊制限、独立backup、restore drill |
-| `PSB-SOURCE-006` | Organization-wide access関係、既定値、Actions、App、repository security coverage、継続monitoring |
-| `PSB-CICD-008` | 特権設定変更のactor、session、before／after、approval、execution、audit eventの結合 |
-| `PSB-GOV-002` | Narrow、owned、approved、time-boundなsecurity exception |
-
-`PSB-SOURCE-006`は`PSB-CICD-008`の変更イベントを再実装しません。現在のOrganization postureと完全な
-対象集合を確認し、設定変更の正当性や承認はそのcontrolへ引き渡します。
-
-## 安全な例と安全でない例
-
-[`secure/policy.json`](secure/policy.json)は次のfloorを固定します。
-
-- Snapshot、access review、outside collaborator、App review、alert testの期限;
-- SSO、2FA、SAML／SCIMまたはEnterprise Managed Users、24時間以内offboarding;
-- 2～3名の記名human Ownerとphishing-resistant authentication;
-- `none`のbase permission、member repository作成とprivate forkのdeny;
-- selected repository／selected Action、full SHA、read-only `GITHUB_TOKEN`、fork credential deny;
-- selected repositoryだけのApp、high-risk Organization／Actions write deny;
-- dependency graph、Dependabot alerts、secret scanning、push protection;
-- 180日以上のaudit retention、独立security account、必須event category、alert test;
-- local exception禁止と`PSB-GOV-002`への一本化。
-
-[`secure/organization-snapshot.json`](secure/organization-snapshot.json)はreal user、repository、App、
-tokenを含まないsynthetic snapshotです。Stable numeric ID、count、freshness、policy digest、healthを持ちます。
-
-[`insecure/organization-snapshot.json`](insecure/organization-snapshot.json)は意図的に危険です。4名のOwner、
-shared account、manual provisioning、admin contractor／team、全repository・全Action、write token、fork secret、
-all-repository App、security feature欠落、短いaudit retention、open drift、恒久local exceptionを隔離して
-示します。Live Organizationへ適用する設定ではありません。
+| セキュリティ上の問題 | Repository単位の保護が正しくても、OrganizationのOwner、member、team、outside collaborator、既定値、Actions、App、security configuration、auditにdriftがあると管理面からsource protectionを迂回できる。 |
+| 誰から、または何から守るか | Phished Owner、侵害されたmemberやApp、退職者、放置されたcontractor、誤操作する管理者、IdP同期不良、不完全なAPI収集、audit／alert障害から守る。 |
+| 何が対象か | 一つのGitHub Organizationと、それに接続するIdP、全repository、Organization-wide Actions policy、App、security configuration、監査運用。 |
+| 何をするか | GitHubとIdPの実設定を下記のminimum baselineへ変更し、各`GHO-001`〜`GHO-010`をcurrent UIまたはread-only APIと実運用結果で確認する。 |
+| 成功状態 | 全10 checkがcurrent stateで満たされ、設定者とは別のreviewer、取得時刻、対象、確認結果が記録される。取得不能・partial・staleは`PASS`にしない。 |
+| 対象外・残余リスク | Documentation、policy JSON、fixture、verifierのcopyだけではGitHubは安全にならない。GitHub／IdP自体の侵害、repository-local workflow、credential lifecycle、backup、特権変更承認は別controlで扱う。 |
 
 ## 最短の導入手順
 
-### 前提条件とtrust assumption
+1. Organization Owner、IdP administrator、repository administrator、CI platform、Securityを決める。
+2. GitHub planとenterprise policyで利用できる設定を確認し、変更ticketと二人目のOwnerを用意する。
+3. [GitHub adoption runbook](docs/github-adoption-runbook.md)の順に、live settingを`GHO-002`〜`GHO-009`のminimumへ変更する。
+4. 同runbookのread-only APIまたはUI確認を実施し、`GHO-001`と`GHO-010`を含めて結果を記録する。
+5. 全checkにcurrent evidence、reviewer、次回review日があることをSecurityが確認する。
 
-- Organization Owner、IdP管理者、repository管理者、security reviewerを識別し、同一人物だけで完結させない;
-- GitHub plan、SAML／SCIMまたはEnterprise Managed Users、Actions policy、security configuration、audit APIの
-  利用可否を確認する;
-- Provider adapterはread-only GitHub Appまたはfine-grained tokenを使い、secret値をsnapshotへ出さない;
-- Organization、member、team、repository、Appにはrename後も追跡できるstable provider IDを使う;
-- Pagination、rate limit、API version、schema change、permission denialを`ERROR`として返す;
-- Fixture PASSをlive Organizationの`PASS`へ昇格しない。
+最小導入にcollector、SaaS App、自動remediationは不要です。組織規模により必要になった場合の案だけを
+[automation options](docs/governance-automation-options.md)に分離しています。
 
-### コピーするファイル
+## Minimum baseline
 
-最低限、次をadopter repositoryのreview対象directoryへコピーまたは参照します。
+詳細なUI path、read-only API、期待結果、plan制約は各checkのリンク先にあります。
 
-```text
-secure/policy.json
-scripts/verify.py
-```
+| Check | 変更する実設定・運用 | 最小値 | 担当 |
+|---|---|---|---|
+| [`GHO-001`](docs/github-adoption-runbook.md#gho-001-target-and-evidence) | Organization targetと収集境界 | numeric ID／node IDで対象を固定し、全page、取得時刻、source health、policy digestを記録。24時間以内 | Security |
+| [`GHO-002`](docs/github-adoption-runbook.md#gho-002-authentication-and-provisioning) | `Settings > Security > Authentication security`とIdP | 2FAとSAML SSOをrequired、SCIMまたはEMUをhealthy、unlinked identity 0、offboarding 24時間以内 | Organization Owner／IdP administrator |
+| [`GHO-003`](docs/github-adoption-runbook.md#gho-003-organization-owners) | `People > Role: Owner` | 2〜3名の記名human、phishing-resistant authentication、90日以内review | Organization Owner／Security |
+| [`GHO-004`](docs/github-adoption-runbook.md#gho-004-members-teams-and-outside-collaborators) | `People`、`Teams`、outside collaborator grants | current sponsor、exact repository、最小permission。Outside collaboratorは原則`pull`／`triage`、90日以内expiry／review | Repository administrator |
+| [`GHO-005`](docs/github-adoption-runbook.md#gho-005-repository-defaults) | `Settings > Access > Member privileges` | `Base permissions: None`、member repository creation無効、private repository forking無効 | Organization Owner |
+| [`GHO-006`](docs/github-adoption-runbook.md#gho-006-github-actions) | `Settings > Actions > General` | selected repositories／selected Actions、full commit SHA、default `GITHUB_TOKEN: read`、PR approval無効、forkへのwrite token／secret無効 | CI platform |
+| [`GHO-007`](docs/github-adoption-runbook.md#gho-007-github-apps-and-oauth-apps) | `Settings > Third-party Access`とApp installation policy | 全Appにowner、purpose、selected repositories、最小permission、90日以内review。High-risk writeなし | Security／Organization Owner |
+| [`GHO-008`](docs/github-adoption-runbook.md#gho-008-security-configuration-coverage) | `Settings > Security > Advanced Security > Configurations` | 全repositoryへdependency graph、Dependabot alerts、secret scanning、push protectionを適用。Public repositoryの露出判断はPSB-SOURCE-003へ委譲 | Security manager |
+| [`GHO-009`](docs/github-adoption-runbook.md#gho-009-audit-drift-and-alerts) | Audit export、daily drift evaluation、alert route | 必須categoryを独立accountへ180日以上保全、gap 0、open drift 0、30日以内alert canary | Security operations |
+| [`GHO-010`](docs/github-adoption-runbook.md#gho-010-fail-closed-assessment) | Assessment failure semantics | permission denial、partial、stale、malformed、count mismatch、source errorを`ERROR`。例外で`PASS`へ上書きしない | Security |
 
-`secure/organization-snapshot.json`はcontract例です。Production evidenceとしてコピーしてはいけません。
+## セキュリティ向上の効果はどこから生まれるか
 
-### 明示的なrepository-local activation
+効果は次のlive actionから生まれます。
 
-Repository rootで、既存directoryを上書きしないことを確認してから実行します。
+- GitHubでidentity、Member privileges、Actions、App、security configurationを実際に制限する。
+- IdPでassignment、provisioning、offboardingを実際に動かす。
+- Owner、member、team、outside collaborator、Appを定期reviewし、不要なgrantを削除する。
+- AuditをGitHub Organization Ownerから独立した場所へ保全し、driftとalert deliveryを継続確認する。
 
-```bash
-test ! -e .security/github-organization-governance
-mkdir -p .security/github-organization-governance
-cp controls/source-protection/github-organization-governance/secure/policy.json \
-  .security/github-organization-governance/policy.json
-cp controls/source-protection/github-organization-governance/scripts/verify.py \
-  .security/github-organization-governance/verify.py
-```
+`secure/policy.json`は最低値を明示する参照物、`scripts/verify.py`はnormalized evidence contractの回帰検証です。
+どちらもprovider settingを変更せず、organization adoptionを証明しません。
 
-このactivationはGitHub、Git、shell、IDEのglobal設定を変更しません。既存pathがある場合は停止し、
-merge内容をadopterがreviewします。
+## 誰が何をするcontrolなのか
 
-### Live snapshot contract
+| Role | 作業 |
+|---|---|
+| Product owner | 対象repositoryと業務上必要なaccessを決める |
+| Organization Owner | 2FA、Owner、Member privileges、App installation policyを変更する |
+| IdP administrator | SAML／SCIMまたはEMU、group assignment、offboardingを運用する |
+| Repository administrator | Teamとoutside collaboratorのexact grant、permission、expiryを管理する |
+| CI platform | Organization Actions policyを設定し、必要Actionをreviewする |
+| Security manager | App reviewと全repositoryのsecurity configuration coverageを確認する |
+| Security operations | Read-only verification、audit retention、drift、alert canaryを運用する |
 
-導入先のread-only collectorは、fixtureと同じschemaで次を正規化します。
+Development teamはOrganization全体を保守しません。必要なrepository、Action、App accessをexact scopeで申請し、
+制限によるbuild failureを担当者へ返します。
 
-1. Organizationのlogin、numeric database ID、node ID、2FA／SSO／provisioning状態;
-2. 完全なmember、Owner、team、outside collaboratorとrepository grant;
-3. Organization Member privilegesとrepository creation／private fork既定値;
-4. Organization Actions policyとexact selected repository IDs;
-5. Installed GitHub App、authorized OAuth App、owner、repository selection、permission;
-6. 全repositoryとsecurity configuration／feature state;
-7. Audit coverage、retention、export、sequence、drift、alert test;
-8. Collector health、完全pagination、observed time、exact policy file bytesのSHA-256。
+## 安全な設定と安全でない設定
 
-Collectorにwrite permissionを与えず、write APIや自動remediationをverification processへ混ぜません。
-GitHub APIを取得できない項目は推測せず`ERROR`またはorganization-owned external evidenceにします。
+| Check | 安全な状態 | 安全でない状態 |
+|---|---|---|
+| `GHO-001` | Stable Organization ID、全page、24時間以内、全source healthy | login名だけ、最初のpageだけ、last-known-goodをcurrent扱い |
+| `GHO-002` | 2FA／SSO required、SCIM／EMU healthy、unlinked 0 | Password-only、SSO optional、退職者がGitHubに残る |
+| `GHO-003` | 2〜3名の記名human Owner | shared Owner、過剰Owner、former administrator |
+| `GHO-004` | Owned team、exact repository、最小permission、期限付きcollaborator | orphaned team、organization-wide admin、無期限contractor |
+| `GHO-005` | `Base permissions: None`、member creation off、private fork off | base `read/write/admin`、memberがrepo作成可、private fork可 |
+| `GHO-006` | selected repository／Action、full SHA、token read、fork secret deny | all repository／Action、mutable tag、token write、forkへsecret |
+| `GHO-007` | selected repositories、current owner、review済み最小permission | all repositories、owner不明、`administration: write` |
+| `GHO-008` | 全repositoryにenforced baseline。Public repositoryはPSB-SOURCE-003のcurrent reviewあり | `not applied`、`failed`、`detached`、unknown repository、未reviewのpublic visibility |
+| `GHO-009` | 独立保全、gap 0、daily drift、canary成功 | 同じOwnerが削除可能、export停止、未確認alert route |
+| `GHO-010` | 収集不能は`ERROR`、findingは`FAIL` | 欠損をdefault値で補完、collector失敗をclean扱い |
 
-### Harmless positive self-test
+これらはsample JSONの見た目ではなく、live UI／API propertyと運用結果で判定します。
 
-```bash
-python3 controls/source-protection/github-organization-governance/scripts/verify.py \
-  --policy controls/source-protection/github-organization-governance/secure/policy.json \
-  --snapshot controls/source-protection/github-organization-governance/secure/organization-snapshot.json \
-  --evaluation-time 2026-08-26T12:00:00Z
-```
+## Live verification
 
-終了statusは`0`で、`PASS GHO-001`から`PASS GHO-010`と、live enforcementが
-`NOT_CHECKED`であることを表示します。
+Read-only確認コマンドと、APIでは証明できないIdP／review／retentionのmanual evidenceは
+[runbook](docs/github-adoption-runbook.md#verification-result-record)にあります。Production token、user email、
+repository名、App secretをrepositoryへcommitしません。
 
-### Harmless negative self-test
+完了記録には最低限、check ID、stable target、取得時刻、確認方法、actual value、期待値、result、
+reviewerを含めます。`PASS`はcurrent live stateへだけ使用し、未確認は`NOT_CHECKED`、収集障害は`ERROR`です。
 
-```bash
-python3 controls/source-protection/github-organization-governance/scripts/verify.py \
-  --policy controls/source-protection/github-organization-governance/secure/policy.json \
-  --snapshot controls/source-protection/github-organization-governance/insecure/organization-snapshot.json \
-  --evaluation-time 2026-08-26T12:00:00Z
-```
+## 補助的なrepository self-test
 
-終了statusは`1`です。Fixtureしか読まないため、GitHubの設定、member、repository、Appは変更しません。
-
-## 検証
-
-Canonical commandは次です。
+Maintainerはnormalized policy／snapshot contractのnegative behaviorを次で回帰検証できます。
 
 ```bash
 make verify-control CONTROL=PSB-SOURCE-006
 ```
 
+期待する終了status:
+
 | Exit | 意味 |
 |---|---|
-| `0` | Policyとsynthetic snapshot contractが成立。Live adoptionは引き続き`NOT_CHECKED` |
-| `1` | 危険なidentity、access、default、Actions、App、repository coverage、monitoring、またはweak policyを検出 |
-| `2` | Missing、stale、partial、malformed、count mismatch、secret-bearing、adapter errorで検証不能 |
+| `0` | Synthetic secure fixtureがpolicy contractを満たす。Live adoptionは`NOT_CHECKED` |
+| `1` | Insecure fixtureまたはweak policyを検出 |
+| `2` | Stale、partial、malformed、count mismatch、secret-bearing、adapter failureで評価不能 |
 
-Negative testsは、unsafe hosted settings、weak policy、local exception、stale snapshot、partial pagination、
-count mismatch、adapter error、malformed JSON、secret-bearing evidenceを区別します。Secret-bearing fixtureの値を
-error outputへ複製しません。
+このtestは意図的なunsafe fixture、redaction、fail-closedを検証するため実用的ですが、GitHub設定の確認には
+使用しません。Fixtureはproductionへ適用せず、real evidenceとして提出しません。
 
-## 導入後のCI／server-side enforcement
+## 導入完了
 
-Local verifierだけではhosted settingを強制しません。導入先は次を別途維持します。
+次をすべて満たした時だけ導入完了です。
 
-1. GitHub／Enterprise／IdP側で2FA、SSO、provisioning、Owner、Member privilegesを強制する;
-2. Organization Actions policyとsecurity configurationをserver-sideで適用する;
-3. Read-only collectorを少なくとも日次実行し、snapshotを24時間以内に保つ;
-4. Driftをblocking findingまたはaccountable alertへ送り、alert receiverを30日以内ごとに無害なcanaryで試す;
-5. AuditをGitHub Organization Ownerが削除できないsecurity accountへexportする;
-6. 例外はlocal JSONへ埋めず、`PSB-GOV-002`でexact control／check／target、owner、approver、expiryを持たせる;
-7. 特権設定の是正変更は`PSB-CICD-008`のapprovalとaudit chainを使う。
+- `GHO-001`〜`GHO-010`を一つずつcurrent live stateで判定した。
+- すべてのapplicable checkが`PASS`で、`ERROR`と`NOT_CHECKED`が残っていない。
+- Evidenceに収集元、取得時刻、stable target、権限境界、reviewerがある。
+- Access／App review、daily posture、30日alert canary、180日audit retentionの運用ownerがいる。
+- Plan制約の例外は[PSB-GOV-002](../../governance-operations/time-bound-security-exceptions/README.md)でowned、
+  approved、time-boundに管理され、underlying resultを`PASS`へ変えていない。
 
-## よくある失敗と復旧
+## 既存controlとの境界
 
-- `ERROR ... stale`: Collector schedule、queue、clock、API accessを修復し、freshな全件収集をやり直す。古い
-  snapshotをmanualで再timestampしない;
-- `ERROR ... pagination`: Rate limitとcursor処理を修復し、partial outputを破棄して最初から収集する;
-- Count mismatch: API surface間のeventual consistencyを確認し、同じobservation windowで再収集する;
-- SAML／SCIMが利用できない: SSOを無言でoptionalにせず、plan制約、manual offboarding、短いreview、owner、
-  expiryを`PSB-GOV-002`で明示する;
-- Actionsを制限してworkflowが止まった: 必要なActionのexact sourceとfull commit SHAをreviewしてallowlistへ
-  追加し、`all`へ戻さない;
-- App permission不足: 必要なoperationだけをreviewして追加し、`administration: write`や全repository grantを
-  temporary workaroundにしない;
-- Audit alertが届かない: Receiverとroutingを修復し、同じharmless canaryが届くまでmonitoringをcleanにしない。
+| Control | 所有する責務 |
+|---|---|
+| [PSB-SOURCE-003](../public-repository-exposure/README.md) | Public repositoryの必要性、内容、履歴、非code面の露出review |
+| [PSB-SOURCE-004](../source-access-credential-lifecycle/README.md) | OAuth、PAT、SSH、GitHub App credentialの発行、storage、review、revoke |
+| [PSB-SOURCE-005](../repository-destruction-recovery/README.md) | 削除・移管・重要ref破壊制限、独立backup、restore drill |
+| PSB-SOURCE-006 | Organization-wide access、既定値、Actions、App、security coverage、monitoring |
+| [PSB-CICD-001](../../cicd-security/action-sha-pinning/README.md) | Workflow内のAction revision pinning |
+| [PSB-CICD-004](../../cicd-security/actions-least-privilege/README.md) | Workflow／job単位のtoken permission |
+| [PSB-CICD-005](../../cicd-security/untrusted-pr-boundary/README.md) | Untrusted PRとcredentialのruntime boundary |
+| [PSB-CICD-008](../../cicd-security/privileged-control-plane-change/README.md) | 特権設定変更のapproval、before／after、execution、audit event |
+| [PSB-GOV-002](../../governance-operations/time-bound-security-exceptions/README.md) | Narrow、owned、approved、time-boundなsecurity exception |
 
-## Rollback
+Public repositoryの内容や露出検出はPSB-SOURCE-003が所有し、このbranchでは同packageを変更しません。
 
-Repository-local activationを戻す場合は、review後にコピーした
-`.security/github-organization-governance/`だけを削除し、CI参照を外します。この操作はGitHub hosted settingを
-戻しません。Hosted settingのrollbackは、current impactを確認し、`PSB-CICD-008`のreview済み変更として
-setting単位で行います。広いOwner、`Actions: all`、write default token、fork secret、all-repository Appを
-一括復活させてはいけません。
+## Recovery and rollback
 
-## 運用コスト
+- Identity変更でlockoutした場合は、事前確認した二人目のOwnerとprovider recovery手順を使う。
+- Actions／App制限で処理が止まった場合はexact Action、repository、permissionだけを再reviewし、`all`へ戻さない。
+- Collector失敗時はpartial outputを破棄して全件再取得し、古い結果を再timestampしない。
+- Hosted settingを戻す場合はsetting単位で影響を確認し、[PSB-CICD-008](../../cicd-security/privileged-control-plane-change/README.md)の承認を得る。
+- Repository-local referenceだけを外してもGitHubのlive settingは元に戻らない。
 
-- GitHub planとAPI surfaceごとのcollector保守、pagination、rate limit、schema change対応;
-- IdP／SCIMとGitHub stable IDのjoin、offboarding遅延の調査;
-- Owner、team、outside collaborator、Appの90日以内review;
-- Repository inventoryとsecurity configuration coverageの差分是正;
-- Audit storage、retention、alert receiver、canary、incident routingの運用;
-- Business上必要なpublic repository、admin team、App write permissionのexact exception review。
+## Frameworkと根拠
 
-## Frameworkと参考資料
+Machine-readable mappingは[`control.yaml`](control.yaml)にあります。
 
-Machine-readable mappingsは[`control.yaml`](control.yaml)にあります。
+- [GitHub security guidance mapping](../../../frameworks/github-security-guidance/README.md)
+- [OpenSSF OSPS Baseline mapping](../../../frameworks/openssf-osps-baseline/README.md)
+- [MITRE ATT&CK mapping](../../../frameworks/mitre-attack/README.md)
+- [REF-CICD-015: DS-202](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-cicd-015)
+- [REF-CICD-017: Flatt Security](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-cicd-017)
+- [REF-CICD-018: Allstar](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-cicd-018)
 
-- `github-security-guidance`はGitHub Docs commit
-  `b17436de8f10c3e7f6a185d6813bf94bc82d22f8`へpinされ、Organization Actions、SAML、SCIM、audit、
-  credential type、secure account／code pagesを参照する;
-- OpenSSF OSPS Baseline `2026.02.19`はcollaborator permissionとCI least privilegeのsupporting mapping;
-- MITRE ATT&CK `v19.1`のValid AccountsとAccount Manipulationはattack behavior mappingであり、complianceではない;
-- `REF-CICD-015` DS-202はpipeline asset inventory、separation of duties、audit、repository protectionの
-  tool-independent design inputとして使う;
-- `REF-CICD-017`のFlatt Security資料は日本語のoperational contextに限定し、current GitHub仕様やframework
-  mappingの根拠にはしない;
-- `REF-CICD-018` Allstarはorganization-scale monitoringの比較対象だが、このcontrolはinstall、authorize、
-  execute、自動remediationを行わない。
+Provider固有の設定根拠は、該当するrunbook項目の直下にGitHub公式リンクとして置いています。Mappingは
+controlとの関係を示すもので、framework complianceやOrganization全体の安全性を証明しません。
 
-これらのmappingやfixture PASSはGitHub Security、OpenSSF、MITREへのcomplianceやOrganization全体の安全性を
-証明しません。
+## 制限事項と運用コスト
 
-## 制限事項
-
-- Normalized snapshot contractはGitHub REST／GraphQL／Enterprise APIのlive collectorそのものではない;
-- GitHub planによりSAML／SCIM、full-SHA policy、security configuration、audit retentionの利用可否が異なる;
-- Provider eventの遅延とeventual consistencyにより、一時的なcount mismatchが起こり得るがcleanへfallbackしない;
-- Metadata-only evidenceは実際のauthenticator custody、IdP policy、App hosting、audit backend integrityを証明しない;
-- Public repositoryが必要な場合、visibilityだけで拒否せず`PSB-SOURCE-003`のcurrent reviewを要求する;
-- Required security featureが有効でもscanner rule、license、coverage、response processの品質までは証明しない;
-- Audit eventが0件でも不正操作がなかったことを証明しない;
-- Organization-wide posture PASSでもrepository-local code、workflow、ruleset、branch、release、buildは各controlで
-  独立検証する必要がある。
+- SAML／SCIM、security configuration、audit export／retention、一部Actions policyはGitHub planやenterprise
+  policyに依存する。利用不能を安全なdefaultとして扱わない。
+- APIだけではauthenticator custody、current employment、sponsor、business purpose、独立storage、実際の
+  offboarding時間を証明できないため、manual live evidenceが必要。
+- Internal repositoryはbase permissionが`None`でもOrganization memberに可視となり得るため、privateと同一視しない。
+- Full-length SHA policyはreusable workflowの参照を同じ強さで完全には拘束しない。Workflow単位のcontrolを残す。
+- Review、IdP連携、API変更、rate limit、audit storage、alert routingの継続運用コストがある。
+- Audit eventが0件、fixtureが`PASS`、dashboardがgreenという事実だけでは安全性を証明しない。
