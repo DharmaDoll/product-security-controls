@@ -1,176 +1,190 @@
-# PSB-SOURCE-006: GitHub Organization governance
+# PSB-SOURCE-006: GitHub Organizationの基本設定を安全にする
 
 ## このcontrolを一枚で理解する
 
 ### セキュリティ上の問題
 
-Repository単位の保護が正しくても、OrganizationのOwner、member、team、outside collaborator、既定値、
-Actions、App、security configuration、auditにdriftがあると、管理面からsource protectionを迂回できる。
+GitHub Organizationの設定が広すぎると、必要のない人やAppがソースコードへアクセスできます。
+メンバーが確認なしでリポジトリを作ったり、GitHub Actionsへ強い権限を与えたりすることもできます。
 
 ### 誰から、または何から守るか
 
-Phished Owner、侵害されたmemberやApp、退職者、放置されたcontractor、誤操作する管理者、IdP同期不良、
-不完全なAPI収集、audit／alert障害から守る。
+乗っ取られたアカウント、退職後も残っているアカウント、使われていないApp、設定ミスから守ります。
 
 ### 何が対象か
 
-一つのGitHub Organizationと、それに接続するIdP、全repository、Organization-wide Actions policy、App、
-security configuration、監査運用を対象とする。
+会社やチームで使っている一つのGitHub Organizationが対象です。メンバー、リポジトリの初期設定、
+GitHub Actions、GitHub App、監査ログを確認します。
 
 ### 何をするか
 
-GitHubとIdPの実設定を下記のminimum baselineへ変更し、各`GHO-001`〜`GHO-010`をcurrent UIまたは
-read-only APIと実運用結果で確認する。
+GitHubの管理画面で、不要なアクセスを削除し、メンバーとAppができることを必要な範囲だけに制限します。
 
 ### 成功状態
 
-全10 checkがcurrent stateで満たされ、設定者とは別のreviewer、取得時刻、対象、確認結果が記録される。
-取得不能・partial・staleは`PASS`にしない。
+必要な人とAppだけが、必要なリポジトリへアクセスできます。新しいリポジトリやGitHub Actionsにも、
+同じ安全な設定が適用されます。
 
 ### 対象外・残余リスク
 
-Documentation、policy JSON、fixture、verifierのcopyだけではGitHubは安全にならない。GitHub／IdP自体の侵害、
-repository-local workflow、credential lifecycle、backup、特権変更承認は別controlで扱う。
+この対策だけでは、ソースコードの問題、漏れた認証情報、危険なworkflow、削除されたリポジトリは守れません。
+READMEやscriptをコピーするだけでも効果はありません。GitHubの実際の設定を変更する必要があります。
+
+## このcontrolの優先度
+
+優先度の目安は「中」です。製品を直接守る対策ではなく、複数のリポジトリへ安全な初期設定を広げるための
+管理上の対策です。
+
+小さなチームが一つのprivateリポジトリだけを使い、外部メンバーやGitHub Appも使っていない場合は、
+急いで導入する必要はありません。次のどれかに当てはまるなら導入を検討してください。
+
+- リポジトリやチームが増えてきた。
+- 業務委託先や社外メンバーを招待している。
+- 複数のGitHub AppやOAuth Appを使っている。
+- Organization共通のGitHub Actions設定を使っている。
+
+認証情報の管理、workflowの権限、外部からのpull request対策、リポジトリの復旧方法を先に整える方が重要です。
 
 ## 最短の導入手順
 
-1. Organization Owner、IdP administrator、repository administrator、CI platform、Securityを決める。
-2. GitHub planとenterprise policyで利用できる設定を確認し、変更ticketと二人目のOwnerを用意する。
-3. [GitHub adoption runbook](docs/github-adoption-runbook.md)の順に、live settingを`GHO-002`〜`GHO-009`のminimumへ変更する。
-4. 同runbookのread-only APIまたはUI確認を実施し、`GHO-001`と`GHO-010`を含めて結果を記録する。
-5. 全checkにcurrent evidence、reviewer、次回review日があることをSecurityが確認する。
+1. GitHub OrganizationのOwnerと、設定を確認するSecurity担当者を決めます。
+2. 次の「まず設定する7項目」を上から順に設定します。
+3. 設定した人とは別の人が、同じ画面を開いて値を確認します。
+4. 90日ごとに、Owner、社外メンバー、Appが今も必要か見直します。
 
-最小導入にcollector、SaaS App、自動remediationは不要です。組織規模により必要になった場合の案だけを
-[automation options](docs/governance-automation-options.md)に分離しています。
+専用ツール、collector、policy JSONは必要ありません。より詳しい画面操作やAPIでの確認方法が必要な場合だけ、
+[導入runbook](docs/github-adoption-runbook.md)を使ってください。
 
-## Minimum baseline
+## まず設定する7項目
 
-詳細なUI path、read-only API、期待結果、plan制約は各checkのリンク先にあります。
+| 順序 | GitHubの場所 | 設定する内容 |
+|---|---|---|
+| 1 | People | Ownerを、本人を特定できる2〜3名に絞ります。退職者、不要なメンバー、不要な社外メンバーを削除します。 |
+| 2 | Settings > Security > Authentication security | 2要素認証を必須にします。会社のログイン基盤を使っている場合は、SAML SSOとSCIMまたはEMUも有効にします。 |
+| 3 | Settings > Access > Member privileges | Base permissionsをNoneにします。メンバーによるリポジトリ作成とprivateリポジトリのforkを無効にします。 |
+| 4 | Settings > Actions > General | 必要なリポジトリとActionだけを許可します。Actionを完全なcommit SHAで固定し、標準のGITHUB_TOKENを読み取り専用にします。forkからのworkflowへsecretを渡しません。 |
+| 5 | Settings > Third-party Access | 使っていないAppを削除します。残すAppは、必要なリポジトリと権限だけに絞ります。 |
+| 6 | Settings > Security > Advanced Security > Configurations | 全リポジトリでdependency graph、Dependabot alerts、secret scanning、push protectionを有効にします。 |
+| 7 | Settings > Archive > Logs > Audit log | メンバー、App、Actionsなどの重要な設定変更を確認します。監査ログはOrganizationのOwnerだけでは消せない場所へ保存します。 |
 
-| Check | 変更する実設定・運用 | 最小値 | 担当 |
-|---|---|---|---|
-| [`GHO-001`](docs/github-adoption-runbook.md#gho-001-target-and-evidence) | Organization targetと収集境界 | numeric ID／node IDで対象を固定し、全page、取得時刻、source health、policy digestを記録。24時間以内 | Security |
-| [`GHO-002`](docs/github-adoption-runbook.md#gho-002-authentication-and-provisioning) | `Settings > Security > Authentication security`とIdP | 2FAとSAML SSOをrequired、SCIMまたはEMUをhealthy、unlinked identity 0、offboarding 24時間以内 | Organization Owner／IdP administrator |
-| [`GHO-003`](docs/github-adoption-runbook.md#gho-003-organization-owners) | `People > Role: Owner` | 2〜3名の記名human、phishing-resistant authentication、90日以内review | Organization Owner／Security |
-| [`GHO-004`](docs/github-adoption-runbook.md#gho-004-members-teams-and-outside-collaborators) | `People`、`Teams`、outside collaborator grants | current sponsor、exact repository、最小permission。Outside collaboratorは原則`pull`／`triage`、90日以内expiry／review | Repository administrator |
-| [`GHO-005`](docs/github-adoption-runbook.md#gho-005-repository-defaults) | `Settings > Access > Member privileges` | `Base permissions: None`、member repository creation無効、private repository forking無効 | Organization Owner |
-| [`GHO-006`](docs/github-adoption-runbook.md#gho-006-github-actions) | `Settings > Actions > General` | selected repositories／selected Actions、full commit SHA、default `GITHUB_TOKEN: read`、PR approval無効、forkへのwrite token／secret無効 | CI platform |
-| [`GHO-007`](docs/github-adoption-runbook.md#gho-007-github-apps-and-oauth-apps) | `Settings > Third-party Access`とApp installation policy | 全Appにowner、purpose、selected repositories、最小permission、90日以内review。High-risk writeなし | Security／Organization Owner |
-| [`GHO-008`](docs/github-adoption-runbook.md#gho-008-security-configuration-coverage) | `Settings > Security > Advanced Security > Configurations` | 全repositoryへdependency graph、Dependabot alerts、secret scanning、push protectionを適用。Public repositoryの露出判断はPSB-SOURCE-003へ委譲 | Security manager |
-| [`GHO-009`](docs/github-adoption-runbook.md#gho-009-audit-drift-and-alerts) | Audit export、daily drift evaluation、alert route | 必須categoryを独立accountへ180日以上保全、gap 0、open drift 0、30日以内alert canary | Security operations |
-| [`GHO-010`](docs/github-adoption-runbook.md#gho-010-fail-closed-assessment) | Assessment failure semantics | permission denial、partial、stale、malformed、count mismatch、source errorを`ERROR`。例外で`PASS`へ上書きしない | Security |
+GitHubの契約プランによって表示されない設定があります。その場合は安全だったことにせず、使えない機能と
+代わりに行う確認を記録してください。
+
+## 設定できたか確認する
+
+GHO-001〜GHO-010は、作業を増やすための仕組みではありません。設定漏れを防ぐための確認表です。
+
+| Check | 確認すること |
+|---|---|
+| [GHO-001](docs/github-adoption-runbook.md#gho-001-target-and-evidence) | 正しいOrganizationを確認しているか。確認結果は24時間以内のものか。 |
+| [GHO-002](docs/github-adoption-runbook.md#gho-002-authentication-and-provisioning) | 2要素認証と会社のログインが機能し、退職者のアクセスが24時間以内に削除されるか。 |
+| [GHO-003](docs/github-adoption-runbook.md#gho-003-organization-owners) | Ownerは本人を特定できる2〜3名だけか。 |
+| [GHO-004](docs/github-adoption-runbook.md#gho-004-members-teams-and-outside-collaborators) | メンバー、チーム、社外メンバーのアクセスが必要なリポジトリだけに絞られているか。 |
+| [GHO-005](docs/github-adoption-runbook.md#gho-005-repository-defaults) | Base permissionsがNoneで、メンバーのリポジトリ作成とprivate forkが禁止されているか。 |
+| [GHO-006](docs/github-adoption-runbook.md#gho-006-github-actions) | GitHub Actions、GITHUB_TOKEN、forkへのsecret送信が制限されているか。 |
+| [GHO-007](docs/github-adoption-runbook.md#gho-007-github-apps-and-oauth-apps) | 全Appに担当者と利用目的があり、アクセス先と権限が必要な範囲だけか。 |
+| [GHO-008](docs/github-adoption-runbook.md#gho-008-security-configuration-coverage) | 全リポジトリへ共通のセキュリティ設定が適用されているか。 |
+| [GHO-009](docs/github-adoption-runbook.md#gho-009-audit-drift-and-alerts) | 重要な設定変更を監査ログで確認でき、監視の停止にも気付けるか。 |
+| [GHO-010](docs/github-adoption-runbook.md#gho-010-fail-closed-assessment) | 設定を確認できなかったときに、誤って「安全」と判断しないか。 |
+
+GitHubの管理画面で一項目ずつ確認すれば十分です。Organizationが大きくなり、手作業が負担になってから
+read-only APIによる確認を追加してください。
 
 ## セキュリティ向上の効果はどこから生まれるか
 
-効果は次のlive actionから生まれます。
+効果が生まれるのは、GitHubとログイン基盤の設定を実際に変更したときです。
 
-- GitHubでidentity、Member privileges、Actions、App、security configurationを実際に制限する。
-- IdPでassignment、provisioning、offboardingを実際に動かす。
-- Owner、member、team、outside collaborator、Appを定期reviewし、不要なgrantを削除する。
-- AuditをGitHub Organization Ownerから独立した場所へ保全し、driftとalert deliveryを継続確認する。
+- 不要なアカウントとAppを削除すると、使われていない入口が減ります。
+- リポジトリの初期権限をNoneにすると、新しいリポジトリが意図せず共有されにくくなります。
+- GitHub Actionsを制限すると、workflowが不要な書き込み権限やsecretを使いにくくなります。
+- 監査ログを確認すると、重要な設定が後から変えられたことに気付きやすくなります。
 
-`secure/policy.json`は最低値を明示する参照物、`scripts/verify.py`はnormalized evidence contractの回帰検証です。
-どちらもprovider settingを変更せず、organization adoptionを証明しません。
+secure/policy.json、sample JSON、verifierは説明と開発用テストのためのものです。これらをコピーしても、
+GitHubの設定は変わりません。
 
 ## 誰が何をするcontrolなのか
 
-| Role | 作業 |
+| 担当 | やること |
 |---|---|
-| Product owner | 対象repositoryと業務上必要なaccessを決める |
-| Organization Owner | 2FA、Owner、Member privileges、App installation policyを変更する |
-| IdP administrator | SAML／SCIMまたはEMU、group assignment、offboardingを運用する |
-| Repository administrator | Teamとoutside collaboratorのexact grant、permission、expiryを管理する |
-| CI platform | Organization Actions policyを設定し、必要Actionをreviewする |
-| Security manager | App reviewと全repositoryのsecurity configuration coverageを確認する |
-| Security operations | Read-only verification、audit retention、drift、alert canaryを運用する |
+| GitHub Organization Owner | メンバー、初期権限、Appの設定を変更します。 |
+| ログイン基盤の管理者 | SAML SSO、SCIMまたはEMUを設定し、退職者のアクセスを止めます。 |
+| CI担当 | Organization共通のGitHub Actions設定を変更します。 |
+| Security担当 | App、共通セキュリティ設定、監査ログを確認します。 |
+| 各リポジトリの管理者 | 必要なチームと社外メンバーだけにアクセスを付けます。 |
 
-Development teamはOrganization全体を保守しません。必要なrepository、Action、App accessをexact scopeで申請し、
-制限によるbuild failureを担当者へ返します。
+一般の開発者がOrganization全体を管理する必要はありません。必要なリポジトリ、Action、Appを管理者へ
+申請できれば十分です。
 
-## 安全な設定と安全でない設定
+## 安全な設定と危険な設定
 
-| Check | 安全な状態 | 安全でない状態 |
+| 項目 | 安全な設定 | 危険な設定 |
 |---|---|---|
-| `GHO-001` | Stable Organization ID、全page、24時間以内、全source healthy | login名だけ、最初のpageだけ、last-known-goodをcurrent扱い |
-| `GHO-002` | 2FA／SSO required、SCIM／EMU healthy、unlinked 0 | Password-only、SSO optional、退職者がGitHubに残る |
-| `GHO-003` | 2〜3名の記名human Owner | shared Owner、過剰Owner、former administrator |
-| `GHO-004` | Owned team、exact repository、最小permission、期限付きcollaborator | orphaned team、organization-wide admin、無期限contractor |
-| `GHO-005` | `Base permissions: None`、member creation off、private fork off | base `read/write/admin`、memberがrepo作成可、private fork可 |
-| `GHO-006` | selected repository／Action、full SHA、token read、fork secret deny | all repository／Action、mutable tag、token write、forkへsecret |
-| `GHO-007` | selected repositories、current owner、review済み最小permission | all repositories、owner不明、`administration: write` |
-| `GHO-008` | 全repositoryにenforced baseline。Public repositoryはPSB-SOURCE-003のcurrent reviewあり | `not applied`、`failed`、`detached`、unknown repository、未reviewのpublic visibility |
-| `GHO-009` | 独立保全、gap 0、daily drift、canary成功 | 同じOwnerが削除可能、export停止、未確認alert route |
-| `GHO-010` | 収集不能は`ERROR`、findingは`FAIL` | 欠損をdefault値で補完、collector失敗をclean扱い |
+| Owner | 本人を特定できる2〜3名 | 共有アカウント、退職者、多すぎるOwner |
+| メンバーの初期権限 | Base permissionsがNone | 全メンバーにRead、Write、Admin |
+| リポジトリ作成 | メンバーによる作成を無効 | 全メンバーが確認なしで作成できる |
+| Private fork | 無効 | 全メンバーがforkできる |
+| GitHub Actions | 必要なリポジトリとActionだけ。標準tokenは読み取り専用 | 全リポジトリ、全Actionを許可。標準tokenが書き込み可能 |
+| Forkからのworkflow | secretと書き込みtokenを渡さない | forkから実行されたworkflowへsecretを渡す |
+| GitHub App | 必要なリポジトリと権限だけ | 全リポジトリと管理権限を与える |
+| 共通セキュリティ設定 | 全リポジトリへ適用 | 一部のリポジトリが未適用、失敗、解除済み |
+| 監査ログ | Security担当が確認できる場所へ保存 | Organization Ownerだけが管理し、停止に気付けない |
 
-これらはsample JSONの見た目ではなく、live UI／API propertyと運用結果で判定します。
+## 導入できたと判断する条件
 
-## Live verification
+次をすべて確認できたら導入完了です。
 
-Read-only確認コマンドと、APIでは証明できないIdP／review／retentionのmanual evidenceは
-[runbook](docs/github-adoption-runbook.md#verification-result-record)にあります。Production token、user email、
-repository名、App secretをrepositoryへcommitしません。
+- 「まず設定する7項目」が設定されている。
+- 設定した人とは別の人が、現在の値を確認した。
+- Owner、社外メンバー、Appを90日以内ごとに見直す担当者がいる。
+- 監査ログを180日以上保存し、重要な設定変更を確認できる。
+- 設定や記録を確認できない場合は、確認済みとして扱わない。
 
-完了記録には最低限、check ID、stable target、取得時刻、確認方法、actual value、期待値、result、
-reviewerを含めます。`PASS`はcurrent live stateへだけ使用し、未確認は`NOT_CHECKED`、収集障害は`ERROR`です。
+確認結果には、Organization名、確認日、確認した人、確認した設定を残します。実際のユーザー名、token、
+secretをこのrepositoryへ保存しないでください。
 
-## 補助的なrepository self-test
+## 開発者向けの補助テスト
 
-Maintainerはnormalized policy／snapshot contractのnegative behaviorを次で回帰検証できます。
+次のテストは、sampleの安全な設定を合格、危険な設定を不合格として判定できるか確認します。
+GitHub Organizationの実際の設定は確認しません。
 
-```bash
+~~~bash
 make verify-control CONTROL=PSB-SOURCE-006
-```
+~~~
 
-期待する終了status:
-
-| Exit | 意味 |
+| 終了status | 意味 |
 |---|---|
-| `0` | Synthetic secure fixtureがpolicy contractを満たす。Live adoptionは`NOT_CHECKED` |
-| `1` | Insecure fixtureまたはweak policyを検出 |
-| `2` | Stale、partial、malformed、count mismatch、secret-bearing、adapter failureで評価不能 |
+| 0 | 安全なsampleを正しく合格にした。実際のGitHub設定は未確認 |
+| 1 | 危険なsampleまたは弱いpolicyを検出した |
+| 2 | sampleが古い、不完全、壊れているなどの理由で判定できなかった |
 
-このtestは意図的なunsafe fixture、redaction、fail-closedを検証するため実用的ですが、GitHub設定の確認には
-使用しません。Fixtureはproductionへ適用せず、real evidenceとして提出しません。
+## 問題が起きたとき
 
-## 導入完了
+- 2要素認証やSSOでログインできなくなった場合は、事前に決めた二人目のOwnerとGitHubの復旧手順を使います。
+- Actionsを制限してworkflowが止まった場合は、必要なActionだけを確認して許可します。allへ戻しません。
+- Appが止まった場合は、必要なリポジトリと権限だけを追加します。管理権限をまとめて与えません。
+- 設定を元へ戻す場合は、設定ごとに影響を確認し、別の人の承認を得ます。
 
-次をすべて満たした時だけ導入完了です。
+## 他のcontrolとの役割分担
 
-- `GHO-001`〜`GHO-010`を一つずつcurrent live stateで判定した。
-- すべてのapplicable checkが`PASS`で、`ERROR`と`NOT_CHECKED`が残っていない。
-- Evidenceに収集元、取得時刻、stable target、権限境界、reviewerがある。
-- Access／App review、daily posture、30日alert canary、180日audit retentionの運用ownerがいる。
-- Plan制約の例外は[PSB-GOV-002](../../governance-operations/time-bound-security-exceptions/README.md)でowned、
-  approved、time-boundに管理され、underlying resultを`PASS`へ変えていない。
-
-## 既存controlとの境界
-
-| Control | 所有する責務 |
+| Control | 担当すること |
 |---|---|
-| [PSB-SOURCE-003](../public-repository-exposure/README.md) | Public repositoryの必要性、内容、履歴、非code面の露出review |
-| [PSB-SOURCE-004](../source-access-credential-lifecycle/README.md) | OAuth、PAT、SSH、GitHub App credentialの発行、storage、review、revoke |
-| [PSB-SOURCE-005](../repository-destruction-recovery/README.md) | 削除・移管・重要ref破壊制限、独立backup、restore drill |
-| PSB-SOURCE-006 | Organization-wide access、既定値、Actions、App、security coverage、monitoring |
-| [PSB-CICD-001](../../cicd-security/action-sha-pinning/README.md) | Workflow内のAction revision pinning |
-| [PSB-CICD-004](../../cicd-security/actions-least-privilege/README.md) | Workflow／job単位のtoken permission |
-| [PSB-CICD-005](../../cicd-security/untrusted-pr-boundary/README.md) | Untrusted PRとcredentialのruntime boundary |
-| [PSB-CICD-008](../../cicd-security/privileged-control-plane-change/README.md) | 特権設定変更のapproval、before／after、execution、audit event |
-| [PSB-GOV-002](../../governance-operations/time-bound-security-exceptions/README.md) | Narrow、owned、approved、time-boundなsecurity exception |
+| [PSB-SOURCE-003](../public-repository-exposure/README.md) | Publicリポジトリから情報が公開されていないか確認する |
+| [PSB-SOURCE-004](../source-access-credential-lifecycle/README.md) | PAT、SSH key、OAuth、GitHub Appの認証情報を管理する |
+| [PSB-SOURCE-005](../repository-destruction-recovery/README.md) | リポジトリの削除を制限し、backupから復旧できるようにする |
+| PSB-SOURCE-006 | GitHub Organization全体のメンバー、初期設定、Actions、Appを管理する |
+| [PSB-CICD-001](../../cicd-security/action-sha-pinning/README.md) | Workflow内のActionをcommit SHAで固定する |
+| [PSB-CICD-004](../../cicd-security/actions-least-privilege/README.md) | WorkflowごとのGITHUB_TOKEN権限を小さくする |
+| [PSB-CICD-005](../../cicd-security/untrusted-pr-boundary/README.md) | 外部からのpull requestへsecretを渡さない |
+| [PSB-CICD-008](../../cicd-security/privileged-control-plane-change/README.md) | 重要な設定変更を申請、承認、記録する |
+| [PSB-GOV-002](../../governance-operations/time-bound-security-exceptions/README.md) | 一時的な例外に担当者と期限を付ける |
 
-Public repositoryの内容や露出検出はPSB-SOURCE-003が所有し、このbranchでは同packageを変更しません。
+Publicリポジトリの中身や公開範囲はPSB-SOURCE-003が担当します。このbranchでは同packageを変更しません。
 
-## Recovery and rollback
+## 詳しい手順と参考資料
 
-- Identity変更でlockoutした場合は、事前確認した二人目のOwnerとprovider recovery手順を使う。
-- Actions／App制限で処理が止まった場合はexact Action、repository、permissionだけを再reviewし、`all`へ戻さない。
-- Collector失敗時はpartial outputを破棄して全件再取得し、古い結果を再timestampしない。
-- Hosted settingを戻す場合はsetting単位で影響を確認し、[PSB-CICD-008](../../cicd-security/privileged-control-plane-change/README.md)の承認を得る。
-- Repository-local referenceだけを外してもGitHubのlive settingは元に戻らない。
-
-## Frameworkと根拠
-
-Machine-readable mappingは[`control.yaml`](control.yaml)にあります。
-
+- [GitHub画面とread-only APIを使った導入runbook](docs/github-adoption-runbook.md)
+- [将来、自動確認が必要になった場合の案](docs/governance-automation-options.md)
+- [Machine-readable control metadata](control.yaml)
 - [GitHub security guidance mapping](../../../frameworks/github-security-guidance/README.md)
 - [OpenSSF OSPS Baseline mapping](../../../frameworks/openssf-osps-baseline/README.md)
 - [MITRE ATT&CK mapping](../../../frameworks/mitre-attack/README.md)
@@ -178,16 +192,12 @@ Machine-readable mappingは[`control.yaml`](control.yaml)にあります。
 - [REF-CICD-017: Flatt Security](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-cicd-017)
 - [REF-CICD-018: Allstar](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-cicd-018)
 
-Provider固有の設定根拠は、該当するrunbook項目の直下にGitHub公式リンクとして置いています。Mappingは
-controlとの関係を示すもので、framework complianceやOrganization全体の安全性を証明しません。
+Frameworkとの対応は、このcontrolがどの考え方を参考にしているか示すものです。正式な準拠や、
+Organization全体が安全であることを証明するものではありません。
 
-## 制限事項と運用コスト
+## 制限事項
 
-- SAML／SCIM、security configuration、audit export／retention、一部Actions policyはGitHub planやenterprise
-  policyに依存する。利用不能を安全なdefaultとして扱わない。
-- APIだけではauthenticator custody、current employment、sponsor、business purpose、独立storage、実際の
-  offboarding時間を証明できないため、manual live evidenceが必要。
-- Internal repositoryはbase permissionが`None`でもOrganization memberに可視となり得るため、privateと同一視しない。
-- Full-length SHA policyはreusable workflowの参照を同じ強さで完全には拘束しない。Workflow単位のcontrolを残す。
-- Review、IdP連携、API変更、rate limit、audit storage、alert routingの継続運用コストがある。
-- Audit eventが0件、fixtureが`PASS`、dashboardがgreenという事実だけでは安全性を証明しない。
+- GitHubの契約プランによって、SAML、SCIM、security configuration、監査ログの保存機能を利用できない場合があります。
+- InternalリポジトリはBase permissionsがNoneでもOrganizationメンバーから見える場合があります。
+- GitHub ActionsのOrganization設定だけでは、個々のworkflowの権限や処理内容までは確認できません。
+- GitHubの管理画面が安全に見えても、実際のアカウント管理、Appの運用、監査担当者が適切とは限りません。
