@@ -2,14 +2,35 @@
 
 ## このcontrolを一枚で理解する
 
-| 項目 | 内容 |
-|---|---|
-| セキュリティ上の問題 | Repository単位の保護が正しくても、OrganizationのOwner、member、team、outside collaborator、既定値、Actions、App、security configuration、auditにdriftがあると管理面からsource protectionを迂回できる。 |
-| 誰から、または何から守るか | Phished Owner、侵害されたmemberやApp、退職者、放置されたcontractor、誤操作する管理者、IdP同期不良、不完全なAPI収集、audit／alert障害から守る。 |
-| 何が対象か | 一つのGitHub Organizationと、それに接続するIdP、全repository、Organization-wide Actions policy、App、security configuration、監査運用。 |
-| 何をするか | GitHubとIdPの実設定を下記のminimum baselineへ変更し、各`GHO-001`〜`GHO-010`をcurrent UIまたはread-only APIと実運用結果で確認する。 |
-| 成功状態 | 全10 checkがcurrent stateで満たされ、設定者とは別のreviewer、取得時刻、対象、確認結果が記録される。取得不能・partial・staleは`PASS`にしない。 |
-| 対象外・残余リスク | Documentation、policy JSON、fixture、verifierのcopyだけではGitHubは安全にならない。GitHub／IdP自体の侵害、repository-local workflow、credential lifecycle、backup、特権変更承認は別controlで扱う。 |
+### セキュリティ上の問題
+
+Repository単位の保護が正しくても、OrganizationのOwner、member、team、outside collaborator、既定値、
+Actions、App、security configuration、auditにdriftがあると、管理面からsource protectionを迂回できる。
+
+### 誰から、または何から守るか
+
+Phished Owner、侵害されたmemberやApp、退職者、放置されたcontractor、誤操作する管理者、IdP同期不良、
+不完全なAPI収集、audit／alert障害から守る。
+
+### 何が対象か
+
+一つのGitHub Organizationと、それに接続するIdP、全repository、Organization-wide Actions policy、App、
+security configuration、監査運用を対象とする。
+
+### 何をするか
+
+GitHubとIdPの実設定を下記のminimum baselineへ変更し、各`GHO-001`〜`GHO-010`をcurrent UIまたは
+read-only APIと実運用結果で確認する。
+
+### 成功状態
+
+全10 checkがcurrent stateで満たされ、設定者とは別のreviewer、取得時刻、対象、確認結果が記録される。
+取得不能・partial・staleは`PASS`にしない。
+
+### 対象外・残余リスク
+
+Documentation、policy JSON、fixture、verifierのcopyだけではGitHubは安全にならない。GitHub／IdP自体の侵害、
+repository-local workflow、credential lifecycle、backup、特権変更承認は別controlで扱う。
 
 ## 最短の導入手順
 

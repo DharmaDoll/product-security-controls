@@ -1,5 +1,7 @@
 # Security Guidance Sources
 
+[Table of contents](#table-of-contents)
+
 ## Purpose
 
 This document indexes external and user-supplied security guidance that informs
@@ -24,6 +26,74 @@ owned by the
 The OWASP AI Agent Security Cheat Sheet remains `REF-AI-002` because it is
 implementation guidance; the two sources are intentionally not merged or
 duplicated.
+
+## Table of contents
+
+- [Purpose](#purpose)
+- [Usage rules](#usage-rules)
+- [Source catalog](#source-catalog)
+  - AI and agent guidance:
+    [REF-AI-001](#ref-ai-001),
+    [REF-AI-002](#ref-ai-002),
+    [REF-AI-003](#ref-ai-003),
+    [REF-AI-004](#ref-ai-004)
+- [Relationship to other source records](#relationship-to-other-source-records)
+- [User-supplied source catalog](#user-supplied-source-catalog)
+  - User-supplied baselines:
+    [REF-USER-001](#ref-user-001),
+    [REF-USER-002](#ref-user-002),
+    [REF-USER-003](#ref-user-003),
+    [REF-USER-004](#ref-user-004),
+    [REF-USER-005](#ref-user-005)
+  - CI/CD and GitHub guidance:
+    [REF-CICD-001](#ref-cicd-001),
+    [REF-CICD-002](#ref-cicd-002),
+    [REF-CICD-003](#ref-cicd-003),
+    [REF-CICD-004](#ref-cicd-004),
+    [REF-CICD-005](#ref-cicd-005),
+    [REF-CICD-006](#ref-cicd-006),
+    [REF-CICD-007](#ref-cicd-007),
+    [REF-CICD-008](#ref-cicd-008),
+    [REF-CICD-009](#ref-cicd-009),
+    [REF-CICD-010](#ref-cicd-010),
+    [REF-CICD-011](#ref-cicd-011),
+    [REF-CICD-012](#ref-cicd-012),
+    [REF-CICD-013](#ref-cicd-013),
+    [REF-CICD-014](#ref-cicd-014),
+    [REF-CICD-015](#ref-cicd-015),
+    [REF-CICD-016](#ref-cicd-016),
+    [REF-CICD-017](#ref-cicd-017),
+    [REF-CICD-018](#ref-cicd-018),
+    [REF-CICD-019](#ref-cicd-019)
+  - Build guidance: [REF-BUILD-001](#ref-build-001)
+  - Governance and incident response:
+    [REF-GOV-001](#ref-gov-001),
+    [REF-GOV-002](#ref-gov-002),
+    [REF-GOV-003](#ref-gov-003),
+    [REF-GOV-004](#ref-gov-004),
+    [REF-GOV-005](#ref-gov-005),
+    [REF-GOV-006](#ref-gov-006)
+  - Source protection: [REF-SOURCE-001](#ref-source-001)
+  - Container security:
+    [REF-CONTAINER-001](#ref-container-001),
+    [REF-CONTAINER-002](#ref-container-002),
+    [REF-CONTAINER-003](#ref-container-003),
+    [REF-CONTAINER-004](#ref-container-004)
+  - Dependency security:
+    [REF-DEPS-001](#ref-deps-001),
+    [REF-DEPS-002](#ref-deps-002),
+    [REF-DEPS-003](#ref-deps-003),
+    [REF-DEPS-004](#ref-deps-004)
+  - Detection and verification:
+    [REF-DETECT-001](#ref-detect-001),
+    [REF-DETECT-002](#ref-detect-002),
+    [REF-DETECT-003](#ref-detect-003)
+  - Release integrity:
+    [REF-REL-001](#ref-rel-001),
+    [REF-REL-002](#ref-rel-002),
+    [REF-REL-003](#ref-rel-003)
+- [Chat-history reconciliation](#chat-history-reconciliation)
+- [Maintenance](#maintenance)
 
 ## Usage rules
 
@@ -2395,6 +2465,7 @@ roadmap, and plans rather than being misclassified as external guidance.
 
 ## Maintenance
 
+- Add every new `REF-*` anchor to the table of contents in its security domain.
 - Review live sources periodically for changes.
 - Advance a pinned source only after semantic diff review.
 - Update affected control plans, tests, limitations, and mapping rationales.
