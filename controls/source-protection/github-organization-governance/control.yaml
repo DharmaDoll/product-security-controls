@@ -1,7 +1,7 @@
 id: PSB-SOURCE-006
 title: GitHub Organizationのaccess、既定値、Actions、App、監査driftを継続管理する
 domain: source-protection
-summary: GitHub Organizationのidentity、Owner、member、team、outside collaborator、repository既定値、Actions、installed App、security configuration、auditを一つのfreshなsecret-free snapshotとして検証する。
+summary: GitHub Organizationのidentity、Owner、access、repository既定値、Actions、App、security configuration、auditを実設定と実運用で制限し、read-only current stateで検証する。
 check_context_version: "1.0"
 security_functions:
   - prevent
@@ -23,6 +23,7 @@ implementations:
   insecure:
     - insecure/organization-snapshot.json
   secure:
+    - docs/github-adoption-runbook.md
     - secure/policy.json
     - secure/organization-snapshot.json
 verification:
@@ -53,11 +54,11 @@ checks:
       why_required: every later posture decision depends on a complete current population and exact tenant and policy identity so local setting checks cannot compensate for missing inventory
     verification:
       type: hybrid
-      method: run make verify-control CONTROL=PSB-SOURCE-006 and bind a reviewed read-only GitHub collector to stable organization IDs complete pagination and source health
-      expected: exact current policy digest stable organization identity complete counts healthy sources and a 24-hour snapshot pass while partial stale or mismatched evidence is ERROR
+      method: read the current organization and every paginated inventory through the GitHub UI or read-only API, bind the result to stable organization IDs, source health, observation time, and the reviewed policy digest, then run the repository regression test only for the normalized evidence contract
+      expected: exact stable organization identity, complete counts, healthy sources, current policy digest, and evidence no older than 24 hours pass while partial, stale, unavailable, or mismatched evidence is ERROR; fixture success alone remains NOT_CHECKED for live adoption
       evidence:
-        - sanitized organization snapshot
-        - read-only collector health and pagination receipt
+        - current read-only organization identity and inventory receipt
+        - pagination source-health observation-time and policy-digest receipt
     mapping_status: reviewed
   - id: GHO-002
     title: Organization authentication and provisioning are enforced
@@ -92,7 +93,7 @@ checks:
       why_required: Owner is an organization-wide bypass boundary so bounding identity count assurance and recurring review reduces both takeover paths and unaccountable administration
     verification:
       type: hybrid
-      method: compare complete membership and IdP evidence with the policy and review each Owner disposition independently
+      method: list current Owners in People with Role Owner or GET /orgs/{org}/members?role=admin, then independently reconcile every stable identity to current IdP employment, phishing-resistant authentication, and a dated access review
       expected: exactly two to three current human Owners have phishing-resistant authentication and a review no older than 90 days
       evidence:
         - sanitized Owner inventory
@@ -113,7 +114,7 @@ checks:
       why_required: Owner minimization does not constrain ordinary organization grants so each remaining access path needs a current sponsor exact repository scope bounded permission and expiry decision
     verification:
       type: hybrid
-      method: reconcile complete GitHub member team outside-collaborator and repository inventories and verify owner permission expiry and 90-day review fields
+      method: reconcile current paginated members, teams, outside collaborators, and exact repository grants from GitHub UI or read-only API, then verify sponsor, permission, expiry, and review decisions in the approved access-review system
       expected: every grant resolves to a current actor and known repository while stale orphaned admin overlong or expired grants fail
       evidence:
         - sanitized member team and outside-collaborator inventory
@@ -132,11 +133,11 @@ checks:
       why_required: restrictive organization defaults close the creation-time interval that per-repository review and later rulesets cannot retroactively eliminate
     verification:
       type: hybrid
-      method: evaluate the normalized current Organization Member privileges and repository default settings against secure policy
-      expected: no member receives repository access creation or private-fork authority solely from organization defaults
+      method: inspect Settings > Access > Member privileges and read GET /orgs/{org} for default_repository_permission, all members_can_create_* properties, and members_can_fork_private_repositories
+      expected: Base permissions is None and every member repository-creation and private-fork property is false, so no member receives ambient repository access, creation, or private-fork authority
       evidence:
-        - current Organization Member privileges snapshot
-        - sanitized verifier output
+        - current Organization Member privileges UI or GET organization property receipt
+        - dated independent setting review
     mapping_status: reviewed
   - id: GHO-006
     title: Organization Actions policy constrains execution and token trust
@@ -152,12 +153,12 @@ checks:
       why_required: Organization-side policy is the common enforcement boundary above individual workflow files and can prevent new or overlooked repositories from silently selecting weaker execution defaults
     verification:
       type: hybrid
-      method: compare a complete current GitHub Organization Actions settings snapshot and selected repository IDs with the secure policy
+      method: inspect Settings > Actions > General and read the organization Actions permissions, selected repositories, selected actions, workflow defaults, and private-fork workflow endpoints
       expected: any all-repository all-action mutable-reference write-default PR-approval or fork-credential setting fails
       evidence:
-        - current Organization Actions policy snapshot
+        - current Organization Actions read-only endpoint receipts
         - selected repository inventory
-        - sanitized verifier output
+        - workflow-default and private-fork setting receipt
     mapping_status: reviewed
   - id: GHO-007
     title: Installed application access is complete bounded and reviewed
@@ -173,10 +174,10 @@ checks:
       why_required: application grants are independent valid identities and reviewing members alone leaves persistent non-human organization access unbounded
     verification:
       type: hybrid
-      method: reconcile complete installed GitHub App and authorized OAuth App inventories with current owners repository selections permissions and review dates
+      method: reconcile Settings > Third-party Access with paginated GET /orgs/{org}/installations and review every GitHub App and OAuth App owner, purpose, repository selection, permission, and review date
       expected: missing applications all-repository grants orphaned owners stale review and high-risk writes fail while collection failure is ERROR
       evidence:
-        - sanitized application installation inventory
+        - current GitHub App and OAuth App inventory
         - permission and repository-selection review
     mapping_status: reviewed
   - id: GHO-008
@@ -193,8 +194,8 @@ checks:
       why_required: feature enablement must reconcile to the exact repository population because strong defaults or one passing repository do not demonstrate complete organization coverage
     verification:
       type: hybrid
-      method: compare the complete repository inventory to assigned security configurations feature states and PSB-SOURCE-003 public exposure decisions
-      expected: missing target missing feature ad-hoc configuration unknown visibility or stale public review fails
+      method: compare the complete current repository inventory with the organization security configuration Repositories view and read-only code-security configuration and associated-repository endpoints
+      expected: every repository is attached to an enforced required configuration with dependency graph, Dependabot alerts, secret scanning, and push protection enabled; missing, failed, detached, or unknown targets fail
       evidence:
         - repository-to-security-configuration coverage export
         - PSB-SOURCE-003 review reference for public repositories
@@ -213,7 +214,7 @@ checks:
       why_required: a point-in-time baseline cannot detect later bypass and independently retained complete telemetry plus tested delivery is the evidence boundary for continuous operation
     verification:
       type: hybrid
-      method: inspect audit coverage retention export boundary sequence health current drift decision and harmless alert delivery receipt
+      method: inspect the current GitHub audit log or GET /orgs/{org}/audit-log, exporter health, independent storage policy, sequence status, daily drift decision, and the latest harmless alert-canary receipt
       expected: missing category short retention same-authority storage event gaps open drift and stale or failed alert tests fail while exporter unavailability is ERROR
       evidence:
         - sanitized audit export health receipt
@@ -233,9 +234,9 @@ checks:
       attack_or_failure_scenario: the verifier reports a clean organization after lowering policy thresholds or losing part of the inventory and the assessment itself creates a new secret exposure
       why_required: fail-closed policy floors and sanitized error handling preserve the meaning of every other check when collection or governance cannot establish the required state
     verification:
-      type: automated
-      method: make verify-control CONTROL=PSB-SOURCE-006
-      expected: weak policy local exception stale partial malformed count-mismatched secret-bearing and adapter-error fixtures never exit zero and evidence errors exit two
+      type: hybrid
+      method: review actual failed collection and permission-denial handling in the live assessment path, and run make verify-control CONTROL=PSB-SOURCE-006 for safe negative regression of the normalized evidence contract
+      expected: live and fixture weak-policy, local-exception, stale, partial, malformed, count-mismatched, secret-bearing, and adapter-error conditions never become clean; collection errors are ERROR and fixture evidence errors exit two
       evidence:
         - negative-test output
         - redaction test result

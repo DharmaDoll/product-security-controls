@@ -296,3 +296,23 @@ They must be:
 - independently verified with tests and security tools.
 
 CodeGuard is a preventive guidance layer. It does not replace tests, Trivy, SAST, dependency review, or human review.
+
+## Git branch and worktree safety
+
+This repository may be operated by multiple Codex sessions concurrently.
+
+- Operate only within the current worktree, branch, and assigned task.
+- Do not run `git switch`, `git checkout`, or otherwise change branches.
+- Do not create, move, remove, or modify worktrees unless explicitly requested.
+- Before editing or performing Git operations, verify:
+  - `git branch --show-current`
+  - `git status --short --branch`
+- Before commit, rebase, merge, or push, also verify:
+  - `git worktree list`
+- If the branch or repository state changes unexpectedly, stop and report it.
+- Treat unrelated changes as belonging to the user or another session.
+- Do not stage, commit, stash, restore, or discard unrelated changes.
+- Stage explicit file paths; do not use `git add .` or `git add -A`.
+- Do not use destructive Git commands such as `git reset --hard`,
+  `git clean`, or broad `git restore` unless explicitly authorized.
+- Commit or push only when explicitly requested.
