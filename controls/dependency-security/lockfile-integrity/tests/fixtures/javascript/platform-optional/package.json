@@ -1,0 +1,11 @@
+{
+  "name": "psb-lock-platform-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@psb/parent": "file:__PSB_PARENT_TARBALL__"
+  },
+  "optionalDependencies": {
+    "@psb/linux-only": "file:__PSB_LINUX_TARBALL__"
+  }
+}

@@ -31,7 +31,7 @@
       "threat_or_failure": "A resolver, registry fallback, or incomplete review substitutes a different dependency graph or package byte sequence.",
       "required_connection": "Bind the reviewed base/head graph, approved registry origin, frozen lockfile, and downloaded artifact digest.",
       "disposition": "implemented",
-      "check_refs": ["PSB-DEPS-003-LOCK-001", "PSB-DEPS-003-LOCK-002", "PSB-DEPS-003-LOCK-003", "PSB-DEPS-003-LOCK-004", "PSB-DEPS-004-DCR-001"],
+      "check_refs": ["PSB-DEPS-001-COOL-004", "PSB-DEPS-001-COOL-007", "PSB-DEPS-003-LOCK-001", "PSB-DEPS-003-LOCK-002", "PSB-DEPS-003-LOCK-003", "PSB-DEPS-003-LOCK-004", "PSB-DEPS-004-DCR-001", "PSB-DEPS-004-DCR-002", "PSB-DEPS-004-DCR-003"],
       "planned_control_ids": [],
       "gap_owner": "",
       "gap_description": "",

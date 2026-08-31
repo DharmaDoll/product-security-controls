@@ -1,0 +1,8 @@
+{
+  "name": "psb-lock-basic-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@psb/leaf": "file:__PSB_LEAF_TARBALL__"
+  }
+}
