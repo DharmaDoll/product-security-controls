@@ -1,0 +1,86 @@
+{
+  "schema": "psb-external-attack-surface-observations/v1",
+  "observation_set_id": "easm-observations@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "scope_id": "external-surface@sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "collected_at": "2026-08-31T11:45:00Z",
+  "sources": [
+    {
+      "id": "certificate-transparency",
+      "status": "HEALTHY",
+      "complete": true,
+      "collected_at": "2026-08-31T11:40:00Z",
+      "window_id": "ct-window@sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    {
+      "id": "public-dns",
+      "status": "HEALTHY",
+      "complete": true,
+      "collected_at": "2026-08-31T11:41:00Z",
+      "window_id": "dns-window@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    {
+      "id": "https-metadata",
+      "status": "HEALTHY",
+      "complete": true,
+      "collected_at": "2026-08-31T11:42:00Z",
+      "window_id": "https-window@sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ],
+  "assets": [
+    {
+      "name": "api.example.invalid",
+      "root_id": "ROOT-PRIMARY",
+      "signals": [
+        {
+          "source": "certificate-transparency",
+          "kind": "certificate-name",
+          "record_id": "ct-record@sha256:0101010101010101010101010101010101010101010101010101010101010101"
+        },
+        {
+          "source": "public-dns",
+          "kind": "dns-record",
+          "record_type": "A",
+          "target_class": "owned-infrastructure",
+          "record_id": "dns-record@sha256:0202020202020202020202020202020202020202020202020202020202020202"
+        },
+        {
+          "source": "https-metadata",
+          "kind": "https-service",
+          "protocol": "https",
+          "port": 443,
+          "tls": true,
+          "status_class": 2,
+          "record_id": "https-record@sha256:0303030303030303030303030303030303030303030303030303030303030303"
+        }
+      ]
+    },
+    {
+      "name": "login.example.invalid",
+      "root_id": "ROOT-PRIMARY",
+      "signals": [
+        {
+          "source": "certificate-transparency",
+          "kind": "certificate-name",
+          "record_id": "ct-record@sha256:0404040404040404040404040404040404040404040404040404040404040404"
+        },
+        {
+          "source": "public-dns",
+          "kind": "dns-record",
+          "record_type": "CNAME",
+          "target_class": "delegated-service",
+          "target_name": "tenant.identity.invalid",
+          "record_id": "dns-record@sha256:0505050505050505050505050505050505050505050505050505050505050505"
+        },
+        {
+          "source": "https-metadata",
+          "kind": "https-service",
+          "protocol": "https",
+          "port": 443,
+          "tls": true,
+          "status_class": 3,
+          "record_id": "https-record@sha256:0606060606060606060606060606060606060606060606060606060606060606"
+        }
+      ]
+    }
+  ]
+}

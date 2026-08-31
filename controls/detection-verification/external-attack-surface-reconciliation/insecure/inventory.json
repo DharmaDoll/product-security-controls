@@ -1,0 +1,21 @@
+{
+  "schema": "psb-external-attack-surface-inventory/v1",
+  "inventory_id": "easm-inventory@sha256:1212121212121212121212121212121212121212121212121212121212121212",
+  "scope_id": "external-surface@sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "status": "COMPLETE",
+  "collected_at": "2026-08-31T11:30:00Z",
+  "assets": [
+    {
+      "asset_id": "AST-ADMIN-001",
+      "name": "admin.example.invalid",
+      "root_id": "ROOT-PRIMARY",
+      "relationship": "owned-name",
+      "owner": "platform-operations",
+      "environment": "administration",
+      "expected_public": false,
+      "expected_services": [],
+      "reviewed_at": "2026-08-30T00:00:00Z",
+      "review_expires_at": "2026-11-28T00:00:00Z"
+    }
+  ]
+}

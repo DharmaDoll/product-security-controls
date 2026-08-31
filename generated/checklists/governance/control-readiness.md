@@ -8,11 +8,11 @@ Generated from repository control metadata. Do not edit manually.
 
 | Metric | Value | Meaning |
 |---|---:|---|
-| Catalog controls | 52 | Repository control packages; not organization adoption. |
-| Atomic checks | 462 | Assessable catalog rows generated from control metadata. |
-| Reviewed mapping checks | 408 | Checks with at least one reviewed framework relationship. |
+| Catalog controls | 53 | Repository control packages; not organization adoption. |
+| Atomic checks | 471 | Assessable catalog rows generated from control metadata. |
+| Reviewed mapping checks | 415 | Checks with at least one reviewed framework relationship. |
 | Provisional mapping checks | 0 | Checks whose framework relationship still needs review. |
-| Unmapped checks | 54 | Explicit framework mapping debt; not silently inherited. |
+| Unmapped checks | 56 | Explicit framework mapping debt; not silently inherited. |
 | Assessment adapters | 1 | Controls with a repository read-only assessment interface. |
 | Organization adoption | NOT_CHECKED | Organization-owned assessment results are not committed here. |
 | Evidence freshness | NOT_CHECKED | No current organization evidence bundle was supplied. |
@@ -57,6 +57,7 @@ Generated from repository control metadata. Do not edit manually.
 | PSB-DEPS-005 | dependency-security | prototype | E3 | 9 | 8 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-DETECT-001 | detection-verification | adopted | E3 | 8 | 8 | 0 | 0 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-DETECT-002 | detection-verification | prototype | E3 | 10 | 8 | 0 | 2 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
+| PSB-DETECT-003 | detection-verification | prototype | E3 | 9 | 7 | 0 | 2 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-GOV-001 | governance-operations | prototype | E3 | 7 | 6 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-GOV-002 | governance-operations | prototype | E3 | 8 | 5 | 0 | 3 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-GOV-003 | governance-operations | prototype | E3 | 8 | 8 | 0 | 0 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |

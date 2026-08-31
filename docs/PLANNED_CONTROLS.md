@@ -65,6 +65,8 @@ PSB-SOURCE-004 + PSB-SOURCE-005 + PSB-CICD-008 ──> PSB-SOURCE-006 Organizati
 
 PSB-GOV-001 + PSB-GOV-003 + build/release/container evidence ──> PSB-GOV-005
 
+PSB-SOURCE-003 + approved asset inventory + external observations ──> PSB-DETECT-003
+
 PSB-AI-001 ──> PSB-AI-002 ──┐
                              ├──> PSB-AI-003
 PSB-AI-004 ──────────────────┘
@@ -1430,6 +1432,66 @@ Implemented slice:
 
 Implemented by
 [`controls/governance-operations/deployed-artifact-refresh/`](../controls/governance-operations/deployed-artifact-refresh/).
+
+### PSB-DETECT-003 — External attack-surface discovery and ownership reconciliation
+
+Status: `prototype` — first provider-neutral E3 vertical slice implemented
+Domain: `detection-verification`
+
+#### Goal
+
+Observe organization-related assets from the same public DNS, Certificate
+Transparency, and bounded HTTPS metadata available to an external attacker,
+then reconcile every candidate to an approved owner and exposure decision
+without converting collection failure into no attack-surface change.
+
+#### Boundary and non-goals
+
+- `PSB-SOURCE-003` owns GitHub code, Issue, PR, Gist, and Web-index public
+  information reconnaissance and may become an optional discovery input;
+- `PSB-IAC-001` and organization asset systems are expected-inventory producers;
+- `PSB-DETECT-001` owns known-target vulnerability and configuration scanning;
+- the first slice does not perform wordlist discovery, arbitrary port scanning,
+  login attempts, credential validation, vulnerability probes, exploitation,
+  or third-party shared-infrastructure scanning;
+- Certificate Transparency and passive-source presence is a discovery signal,
+  not proof of current reachability, takeover, or exploitability.
+
+#### Implemented slice
+
+- strict owned-domain roots with stable identity, owner, ownership evidence,
+  and bounded review expiry;
+- complete fresh source windows for Certificate Transparency, public DNS, and
+  HTTPS metadata;
+- sanitized digest-bound observations that reject banners, bodies, headers,
+  credentials, personal data, snippets, and tokens;
+- complete current inventory binding hostname to asset ID, owner, environment,
+  owned or delegated relationship, public decision, expected HTTPS service,
+  and review expiry;
+- exact differentiation between owned names, delegated services, and shared
+  infrastructure so an observed CDN or SaaS address does not become scan scope;
+- distinct expected, unknown, unexpected-public, unexpected-service,
+  delegation-drift, expired-review, reappeared, and evidence-`ERROR` states;
+- a low-impact policy limited to owned-name DNS and port 443 HTTPS metadata,
+  with login, vulnerability probe, and third-party IP scanning denied;
+- stable asset IDs or hashed hostname fingerprints in output without raw
+  hostname or provider content.
+
+#### Acceptance criteria
+
+- the secure inventory and observations produce exact `PASS` evidence;
+- unknown staging, unexpected public administration, and remediated-then-
+  reappeared assets produce deterministic distinct findings;
+- stale or unhealthy sources, third-party names, scope mismatch, delegated
+  target drift, expired review, unsafe active policy, and sensitive evidence
+  are covered by negative tests;
+- `make verify-control CONTROL=PSB-DETECT-003` reaches E3 without network,
+  credentials, provider-valid domains, or external dependencies;
+- live collectors, inventory completeness, review, notification, and
+  remediation remain organization evidence and default to `NOT_CHECKED`.
+
+Implemented by
+[`controls/detection-verification/external-attack-surface-reconciliation/`](../controls/detection-verification/external-attack-surface-reconciliation/).
 
 ## P3: extended application and AI development security
 

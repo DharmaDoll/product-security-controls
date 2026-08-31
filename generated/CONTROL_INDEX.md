@@ -39,6 +39,7 @@ Generated control catalog. Do not edit manually.
 | [PSB-DEPS-005](../controls/dependency-security/ai-model-supply-chain/README.md) | dependency-security | Verify AI model and dataset supply-chain integrity | 9 | prototype | E3 |
 | [PSB-DETECT-001](../controls/detection-verification/integrity-verified-scanner/README.md) | detection-verification | Execute integrity-verified security scanning with fail-closed evidence | 8 | adopted | E3 |
 | [PSB-DETECT-002](../controls/detection-verification/ai-tevv-release-gate/README.md) | detection-verification | Bind AI TEVV and adversarial evaluation to release decisions | 10 | prototype | E3 |
+| [PSB-DETECT-003](../controls/detection-verification/external-attack-surface-reconciliation/README.md) | detection-verification | 外部attack surfaceを発見し所有inventoryへ照合する | 9 | prototype | E3 |
 | [PSB-GOV-001](../controls/governance-operations/supply-chain-incident-readiness/README.md) | governance-operations | supply-chain incidentのbuild artifactと稼働deployment影響を即時特定する | 7 | prototype | E3 |
 | [PSB-GOV-002](../controls/governance-operations/time-bound-security-exceptions/README.md) | governance-operations | Enforce exact independently approved time-bound security exceptions | 8 | prototype | E3 |
 | [PSB-GOV-003](../controls/governance-operations/exploited-vulnerability-prioritization/README.md) | governance-operations | Prioritize exploited product vulnerabilities with accountable PSIRT cases | 8 | prototype | E3 |

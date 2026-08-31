@@ -1,0 +1,5 @@
+ERROR observation source is incomplete or unhealthy
+ERROR observation source is stale
+ERROR observed asset is outside the authorized owned roots
+ERROR observations contains forbidden sensitive field at root.assets[0].signals[0].banner
+FINDING control reason=unsafe-active-validation-policy

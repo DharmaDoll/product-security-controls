@@ -533,6 +533,20 @@ PSB-DETECT-002,PSB-DETECT-002-TEV-009,security,automated,expected-results/errors
 PSB-DETECT-002,PSB-DETECT-002-TEV-009,security,automated,sanitized TEV-009 health and identity result
 PSB-DETECT-002,PSB-DETECT-002-TEV-010,security,automated,sanitized TEV-010 claim boundary
 PSB-DETECT-002,PSB-DETECT-002-TEV-010,security,automated,organization live adoption evidence request
+PSB-DETECT-003,PSB-DETECT-003-EASM-001,security,hybrid,sanitized verifier output
+PSB-DETECT-003,PSB-DETECT-003-EASM-001,security,hybrid,access-controlled domain ownership record
+PSB-DETECT-003,PSB-DETECT-003-EASM-002,security,hybrid,sanitized source-window test output
+PSB-DETECT-003,PSB-DETECT-003-EASM-002,security,hybrid,access-controlled live collector health receipts
+PSB-DETECT-003,PSB-DETECT-003-EASM-003,security,automated,sanitized positive and redaction negative-test output
+PSB-DETECT-003,PSB-DETECT-003-EASM-004,shared,automated,asset-attribution fixture output
+PSB-DETECT-003,PSB-DETECT-003-EASM-005,shared,hybrid,sanitized inventory validation output
+PSB-DETECT-003,PSB-DETECT-003-EASM-005,shared,hybrid,access-controlled live inventory export
+PSB-DETECT-003,PSB-DETECT-003-EASM-006,security,automated,secure and insecure expected-results output
+PSB-DETECT-003,PSB-DETECT-003-EASM-007,security,hybrid,recurrence negative-test output
+PSB-DETECT-003,PSB-DETECT-003-EASM-007,security,hybrid,access-controlled live state and notification receipt
+PSB-DETECT-003,PSB-DETECT-003-EASM-008,security,automated,unsafe policy negative-test output
+PSB-DETECT-003,PSB-DETECT-003-EASM-009,security,hybrid,sanitized fixture output
+PSB-DETECT-003,PSB-DETECT-003-EASM-009,security,hybrid,live evidence request with NOT_CHECKED default
 PSB-GOV-001,PSB-GOV-001-INC-001,incident-response,automated,sanitized impact report
 PSB-GOV-001,PSB-GOV-001-INC-002,build-platform,automated,sanitized verifier output
 PSB-GOV-001,PSB-GOV-001-INC-003,incident-response,automated,generated dry-run response plan
@@ -820,8 +834,8 @@ PSB-SOURCE-005,PSB-SOURCE-005-RDR-001,shared,manual,reviewed critical-repository
 PSB-SOURCE-005,PSB-SOURCE-005-RDR-002,repository-admin,manual,current GitHub organization setting and ruleset review record
 PSB-SOURCE-005,PSB-SOURCE-005-RDR-003,shared,external-evidence,backup job result storage access-policy review and retention-lock configuration from the actual backup service
 PSB-SOURCE-005,PSB-SOURCE-005-RDR-006,shared,hybrid,dated restore-drill record containing scope elapsed time ref comparison LFS result settings result and build or patch outcome
-PSB-SOURCE-006,PSB-SOURCE-006-GHO-001,security,hybrid,sanitized organization snapshot
-PSB-SOURCE-006,PSB-SOURCE-006-GHO-001,security,hybrid,read-only collector health and pagination receipt
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-001,security,hybrid,current read-only organization identity and inventory receipt
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-001,security,hybrid,pagination source-health observation-time and policy-digest receipt
 PSB-SOURCE-006,PSB-SOURCE-006-GHO-002,shared,external-evidence,current GitHub authentication settings
 PSB-SOURCE-006,PSB-SOURCE-006-GHO-002,shared,external-evidence,sanitized IdP and provisioning health evidence
 PSB-SOURCE-006,PSB-SOURCE-006-GHO-002,shared,external-evidence,offboarding timing result
@@ -830,17 +844,17 @@ PSB-SOURCE-006,PSB-SOURCE-006-GHO-003,security,hybrid,authentication assurance e
 PSB-SOURCE-006,PSB-SOURCE-006-GHO-003,security,hybrid,dated independent Owner review
 PSB-SOURCE-006,PSB-SOURCE-006-GHO-004,repository-admin,hybrid,sanitized member team and outside-collaborator inventory
 PSB-SOURCE-006,PSB-SOURCE-006-GHO-004,repository-admin,hybrid,sponsor and access-review decisions
-PSB-SOURCE-006,PSB-SOURCE-006-GHO-005,repository-admin,hybrid,current Organization Member privileges snapshot
-PSB-SOURCE-006,PSB-SOURCE-006-GHO-005,repository-admin,hybrid,sanitized verifier output
-PSB-SOURCE-006,PSB-SOURCE-006-GHO-006,ci-platform,hybrid,current Organization Actions policy snapshot
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-005,repository-admin,hybrid,current Organization Member privileges UI or GET organization property receipt
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-005,repository-admin,hybrid,dated independent setting review
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-006,ci-platform,hybrid,current Organization Actions read-only endpoint receipts
 PSB-SOURCE-006,PSB-SOURCE-006-GHO-006,ci-platform,hybrid,selected repository inventory
-PSB-SOURCE-006,PSB-SOURCE-006-GHO-006,ci-platform,hybrid,sanitized verifier output
-PSB-SOURCE-006,PSB-SOURCE-006-GHO-007,security,hybrid,sanitized application installation inventory
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-006,ci-platform,hybrid,workflow-default and private-fork setting receipt
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-007,security,hybrid,current GitHub App and OAuth App inventory
 PSB-SOURCE-006,PSB-SOURCE-006-GHO-007,security,hybrid,permission and repository-selection review
 PSB-SOURCE-006,PSB-SOURCE-006-GHO-008,security,hybrid,repository-to-security-configuration coverage export
 PSB-SOURCE-006,PSB-SOURCE-006-GHO-008,security,hybrid,PSB-SOURCE-003 review reference for public repositories
 PSB-SOURCE-006,PSB-SOURCE-006-GHO-009,security,hybrid,sanitized audit export health receipt
 PSB-SOURCE-006,PSB-SOURCE-006-GHO-009,security,hybrid,posture drift result
 PSB-SOURCE-006,PSB-SOURCE-006-GHO-009,security,hybrid,alert delivery test receipt
-PSB-SOURCE-006,PSB-SOURCE-006-GHO-010,security,automated,negative-test output
-PSB-SOURCE-006,PSB-SOURCE-006-GHO-010,security,automated,redaction test result
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-010,security,hybrid,negative-test output
+PSB-SOURCE-006,PSB-SOURCE-006-GHO-010,security,hybrid,redaction test result

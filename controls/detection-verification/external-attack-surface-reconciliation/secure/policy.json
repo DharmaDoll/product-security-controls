@@ -1,0 +1,65 @@
+{
+  "schema": "psb-external-attack-surface-policy/v1",
+  "policy_id": "easm-policy@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "as_of": "2026-08-31T12:00:00Z",
+  "inventory_max_age_seconds": 86400,
+  "observation_max_age_seconds": 86400,
+  "root_review_max_days": 365,
+  "asset_review_max_days": 90,
+  "required_sources": [
+    "certificate-transparency",
+    "public-dns",
+    "https-metadata"
+  ],
+  "required_relationships": [
+    "owned-name",
+    "delegated-service"
+  ],
+  "owned_roots": [
+    {
+      "id": "ROOT-PRIMARY",
+      "kind": "domain",
+      "value": "example.invalid",
+      "owner": "product-security",
+      "ownership_evidence": "dns-ownership@sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "reviewed_at": "2026-08-30T00:00:00Z",
+      "review_expires_at": "2027-08-30T00:00:00Z"
+    }
+  ],
+  "active_validation": {
+    "allowed_protocols": [
+      "dns",
+      "https-metadata"
+    ],
+    "allowed_ports": [
+      443
+    ],
+    "allow_login_attempts": false,
+    "allow_vulnerability_probes": false,
+    "allow_third_party_ip_scanning": false
+  },
+  "state": {
+    "require_reappearance_detection": true,
+    "require_external_reobservation_for_closure": true
+  },
+  "output": {
+    "allowed_fields": [
+      "state",
+      "asset_id",
+      "fingerprint",
+      "reason"
+    ],
+    "forbidden_fields": [
+      "authorization",
+      "banner",
+      "body",
+      "credential",
+      "email",
+      "header",
+      "password",
+      "secret",
+      "snippet",
+      "token"
+    ]
+  }
+}

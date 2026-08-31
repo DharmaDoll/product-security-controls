@@ -1,0 +1,17 @@
+{
+  "schema": "psb-external-attack-surface-state/v1",
+  "scope_id": "external-surface@sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "updated_at": "2026-08-31T11:35:00Z",
+  "entries": [
+    {
+      "fingerprint": "3970e1d5597dc88bfa9a331117e816ff9fa9f5b2c10b92699abe7d8daaa3219d",
+      "status": "remediated",
+      "first_seen_at": "2026-08-01T00:00:00Z",
+      "last_seen_at": "2026-08-15T00:00:00Z",
+      "owner": "platform-operations",
+      "reason_class": "unapproved-administration-surface",
+      "closed_at": "2026-08-16T00:00:00Z",
+      "closure_evidence_id": "external-reobservation@sha256:2424242424242424242424242424242424242424242424242424242424242424"
+    }
+  ]
+}

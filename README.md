@@ -29,7 +29,7 @@
 | Container / Cloud / IaC | Trivy, digest pinning, non-root, IAM, policy-as-code |
 | Release Integrity | SBOM, signing, attestation, checksum verification |
 | AI Development Security | AGENTS.md, CodeGuard, Skills, MCP, prompt injection |
-| Detection / Verification | Trivy, SAST, secret scan, OSV, Scorecard |
+| Detection / Verification | Trivy, SAST, secret scan, external attack-surface discovery, OSV, Scorecard |
 | Governance / Operations | Exceptions, metrics, ownership, vulnerability response |
 
 ## Control package

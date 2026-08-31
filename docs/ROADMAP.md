@@ -77,6 +77,10 @@ Add:
   and stale-image lifecycle;
 - container host and daemon hardening;
 - post-admission container runtime threat detection with fail-closed telemetry.
+- outside-in external attack-surface discovery that reconciles verified owned
+  domains, Certificate Transparency, public DNS, and HTTPS metadata with a
+  current owned inventory while keeping shared infrastructure and intrusive
+  scanning outside the boundary — implemented as `PSB-DETECT-003`.
 
 Build credential, privilege, sandbox, egress, and telemetry containment is
 implemented as `PSB-BUILD-001`.
@@ -560,6 +564,14 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
     remediation priority without treating source failure as low risk —
     implemented at E3 with listed, not-listed, not-applicable, risk-accepted,
     governance-failure, and evidence-`ERROR` fixtures.
+15. `PSB-DETECT-003` — external attack-surface discovery and ownership
+    reconciliation — implemented at E3 with verified domain roots, complete
+    fresh Certificate Transparency／public DNS／HTTPS metadata observations,
+    owned-name／delegated-service／shared-infrastructure attribution, exact
+    owner and exposure decisions, unknown／unexpected／expired／reappeared
+    findings, sanitized evidence, and fail-closed source health. Live provider
+    collectors, arbitrary IP／port discovery, credential validation, intrusive
+    probes, and organization adoption remain external evidence.
 
 ### P3 — Extended application and AI development security
 

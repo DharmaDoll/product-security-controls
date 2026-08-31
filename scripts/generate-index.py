@@ -61,7 +61,7 @@ DOMAIN_CATALOG = (
     (
         "detection-verification",
         "Detection / Verification",
-        "脆弱性、secret、container、IaCなどを検出・検証する共通基盤。",
+        "脆弱性、secret、external attack surface、container、IaCなどを検出・検証する共通基盤。",
     ),
     (
         "governance-operations",

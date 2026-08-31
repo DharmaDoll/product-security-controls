@@ -105,6 +105,35 @@ perform remediation, replace credential lifecycle in `PSB-SOURCE-004`, replace
 destruction recovery in `PSB-SOURCE-005`, or replace privileged-change
 correlation in `PSB-CICD-008`.
 
+### External attack surface discovery threats
+
+- an attacker discovering an unregistered subdomain, staging service,
+  administration surface, delegated SaaS endpoint, or retired service before
+  the owning organization attributes it;
+- Certificate Transparency, passive DNS, public DNS, or HTTPS metadata exposing
+  a hostname or service that is absent from the approved inventory;
+- an approved private asset becoming publicly resolvable or reachable, or an
+  approved public asset exposing an unexpected service or changed delegation;
+- shared CDN, SaaS, or hosting addresses being incorrectly claimed as
+  organization-owned and expanded into unauthorized third-party scanning;
+- a remediated external asset reappearing without durable fingerprint state;
+- partial, stale, malformed, unavailable, or scope-mismatched observation and
+  inventory evidence being interpreted as no external attack surface change;
+- raw banners, headers, bodies, credentials, personal data, or provider output
+  being copied into broadly accessible monitoring evidence.
+
+`PSB-DETECT-003` owns the provider-neutral outside-in discovery and ownership
+reconciliation boundary. It starts from verified domain roots, requires
+complete fresh Certificate Transparency, public DNS, and HTTPS metadata source
+windows, distinguishes owned names from delegated services and shared
+infrastructure, compares candidates with exact owner and exposure decisions,
+and preserves unknown, unexpected, expired, reappeared, and evidence-error
+states. Its E3 fixtures do not query live providers, prove complete internet
+coverage, validate credentials, scan third-party addresses, test application
+authorization, or establish vulnerability exploitability. Public code and
+collaboration-content reconnaissance remains `PSB-SOURCE-003`; known-target
+vulnerability and configuration scanning remains `PSB-DETECT-001`.
+
 ### Developer endpoint threats
 
 - stolen or unattended developer devices exposing source code, tokens, SSH

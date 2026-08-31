@@ -5,7 +5,7 @@
 このページは、実装済みcontrolを目的別に探すための入口です。
 `control.yaml`を正本として`make generate-index`で生成されます。
 
-現在、**52 controls / 462 atomic checks**を収録しています。
+現在、**53 controls / 471 atomic checks**を収録しています。
 
 ## 使い方
 
@@ -30,7 +30,7 @@
 | [Container / Cloud / IaC Security](#domain-container-cloud-iac-security) | IaC Golden Path、container admission、runtime、cloud control planeの保護。 | 5 | 49 |
 | [Release Integrity](#domain-release-integrity) | 署名、provenance、SBOM、supplier artifact、配布時の完全性。 | 5 | 35 |
 | [AI Development Security](#domain-ai-development-security) | AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。 | 11 | 123 |
-| [Detection / Verification](#domain-detection-verification) | 脆弱性、secret、container、IaCなどを検出・検証する共通基盤。 | 2 | 18 |
+| [Detection / Verification](#domain-detection-verification) | 脆弱性、secret、external attack surface、container、IaCなどを検出・検証する共通基盤。 | 3 | 27 |
 | [Governance / Operations](#domain-governance-operations) | 例外、ownership、証跡、影響調査、継続運用とincident readiness。 | 5 | 40 |
 
 <a id="domain-secure-design"></a>
@@ -64,7 +64,7 @@
 | [PSB-SOURCE-003](source-protection/public-repository-exposure/README.md) | 自社domainをanchorにGitHubのpublic code、Issue、PR、Gistを攻撃者視点で定期検索し、state branchとの差分から新規・再出現候補を検出してreviewへ渡す。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `detect`, `verify`, `respond` | 6 | `prototype` / `E3` |
 | [PSB-SOURCE-004](source-protection/source-access-credential-lifecycle/README.md) | OAuthトークン、PAT、SSH鍵、ソース管理基盤とGitHub MCPの認証情報について、権限、存続期間、保管、process delivery、悪用可能性を制限する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify`, `respond`, `govern` | 17 | `prototype` / `E3` |
 | [PSB-SOURCE-005](source-protection/repository-destruction-recovery/README.md) | GitHubでcritical repositoryと重要refの破壊権限を狭め、GitHub管理者が削除できないbackupから実際に復元できる状態を作る。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [sitf](../generated/mappings/sitf.md) | `prevent`, `respond` | 4 | `reference` / `E1` |
-| [PSB-SOURCE-006](source-protection/github-organization-governance/README.md) | GitHub Organizationのidentity、Owner、member、team、outside collaborator、repository既定値、Actions、installed App、security configuration、auditを一つのfreshなsecret-free snapshotとして検証する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify`, `govern` | 10 | `prototype` / `E3` |
+| [PSB-SOURCE-006](source-protection/github-organization-governance/README.md) | GitHub Organizationのidentity、Owner、access、repository既定値、Actions、App、security configuration、auditを実設定と実運用で制限し、read-only current stateで検証する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify`, `govern` | 10 | `prototype` / `E3` |
 
 <a id="domain-dependency-security"></a>
 
@@ -162,12 +162,13 @@ AI coding agent、Skill、MCP、plugin、prompt、実行権限の保護。
 
 ## Detection / Verification
 
-脆弱性、secret、container、IaCなどを検出・検証する共通基盤。
+脆弱性、secret、external attack surface、container、IaCなどを検出・検証する共通基盤。
 
 | Control | 達成する状態 | マッピング先 | Security functions | Checks | Maturity / Evidence |
 |---|---|---|---|---:|---|
 | [PSB-DETECT-001](detection-verification/integrity-verified-scanner/README.md) | スキャナーのリリースとデータIDを固定して脆弱性、設定不備、シークレット、SBOMの問題を検出し、任意のDockSec修正支援をAI判定に依存しないフェイルクローズ方式のゲートへ制限する。 | [NIST SP 800-190](../generated/mappings/nist-sp-800-190.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `detect`, `verify` | 8 | `adopted` / `E3` |
 | [PSB-DETECT-002](detection-verification/ai-tevv-release-gate/README.md) | AI release candidate、上流control、評価器、scenario suite、oracle、反復metric、threshold、証跡をexact identityへ結び、FAIL／INCOMPLETE／ERRORをrelease許可と分離する。 | [MITRE ATLAS](../generated/mappings/mitre-atlas.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OWASP AISVS](../generated/mappings/owasp-aisvs.md) / [OWASP Agentic Top 10](../generated/mappings/owasp-agentic-top10.md) | `detect`, `verify`, `prevent`, `govern` | 10 | `prototype` / `E3` |
+| [PSB-DETECT-003](detection-verification/external-attack-surface-reconciliation/README.md) | 所有domainから得たDNS、Certificate Transparency、HTTPS metadataの外部観測を完全でfreshな資産inventoryへ照合し、未知・想定外・再出現した公開資産を安全なOSINT境界で検出する。 | [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) | `detect`, `verify`, `govern` | 9 | `prototype` / `E3` |
 
 <a id="domain-governance-operations"></a>
 

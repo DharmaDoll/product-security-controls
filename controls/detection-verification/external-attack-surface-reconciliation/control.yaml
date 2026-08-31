@@ -1,0 +1,276 @@
+id: PSB-DETECT-003
+title: 外部attack surfaceを発見し所有inventoryへ照合する
+domain: detection-verification
+summary: 所有domainから得たDNS、Certificate Transparency、HTTPS metadataの外部観測を完全でfreshな資産inventoryへ照合し、未知・想定外・再出現した公開資産を安全なOSINT境界で検出する。
+check_context_version: "1.0"
+security_functions:
+  - detect
+  - verify
+  - govern
+threats:
+  - id: EXTERNAL-UNKNOWN-ASSET
+    description: 外部攻撃者が公開DNS、証明書、service metadataから、組織inventoryにないsubdomain、staging、管理用surface、委託serviceを先に発見する。
+  - id: EXTERNAL-EXPOSURE-DRIFT
+    description: 既知assetの公開可否、service、delegation target、owner reviewが変更または期限切れになっても内部inventoryだけでは外部状態との差を検出できない。
+  - id: EXTERNAL-REAPPEARANCE
+    description: Remediationした公開assetが同じhostnameで再出現してもdurable stateがなければ新規または既知として正しくescalateされない。
+  - id: EXTERNAL-FALSE-CLEAN
+    description: Passive source、DNS、HTTPS metadata、inventory、stateの欠落やstalenessが0 assetsまたは変化なしへ変換される。
+  - id: EXTERNAL-RECON-SCOPE-ESCAPE
+    description: EASM実行者がshared CDN、delegated service、第三者IPまでtargetと誤認し、偵察を無許可scan、login試行、脆弱性probeへ拡張する。
+implementations:
+  insecure:
+    - insecure/inventory.json
+    - insecure/observations.json
+    - insecure/state.json
+  secure:
+    - secure/policy.json
+    - secure/inventory.json
+    - secure/observations.json
+    - secure/state.json
+    - scripts/verify.py
+verification:
+  commands:
+    - make verify-control CONTROL=PSB-DETECT-003
+  expected:
+    - Verified owned-domain roots and complete fresh inventory bind the exact assessment scope
+    - Complete healthy CT DNS and HTTPS metadata sources produce sanitized immutable observations
+    - Known public assets match owner review relationship delegation and expected service policy
+    - Unknown unexpected expired and remediated-then-reappeared assets remain distinct findings
+    - Third-party targets sensitive evidence stale data unhealthy sources and scope mismatch fail closed
+    - Active validation remains limited to owned-name DNS and HTTPS metadata without login vulnerability probes or shared-IP scanning
+checks:
+  - id: EASM-001
+    title: Discovery starts from verified owned roots
+    required_state: every assessment scope starts from normalized domain roots with stable IDs owner evidence and bounded review expiry
+    responsible_role: security
+    applies_to:
+      - owned-domain
+      - external-assessment-scope
+    context:
+      threat_actor: 外部攻撃者が組織domainから探索を開始する一方、誤設定したassessment operatorが第三者domainや重複scopeをtargetへ混入させる。
+      attack_or_failure_scenario: 所有根拠とsuffix boundaryがないseedからcandidateを展開すると、自社assetを取りこぼすか第三者assetを無断評価する。
+      why_required: Stable root ID、ownership evidence、owner、review期限を最初に固定することが、外部inventoryの帰属と許可scopeを決める唯一の起点になる。
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-DETECT-003 and inspect current domain ownership evidence
+      expected: normalized non-overlapping owned roots pass while wildcard URL IP email third-party and expired ownership inputs do not enter scope
+      evidence:
+        - sanitized verifier output
+        - access-controlled domain ownership record
+    mapping_status: reviewed
+  - id: EASM-002
+    title: Required external observation sources are complete healthy and fresh
+    required_state: Certificate Transparency public DNS and HTTPS metadata each provide a complete healthy immutable observation window no older than policy
+    responsible_role: security
+    applies_to:
+      - certificate-transparency
+      - public-dns
+      - https-metadata
+    context:
+      threat_actor: 一つのOSINT sourceにだけ現れる資産を利用する外部攻撃者、およびtimeout、rate limit、partial export、stale cacheを0件へ変換するcollector failure
+      attack_or_failure_scenario: CT、DNS、HTTPSの一部が欠けたrunをcompleteと扱うと、未観測surfaceが存在しても差分なしとして報告される。
+      why_required: Sourceごとのhealth、completeness、freshness、window identityを独立検証しなければ、asset countとcollection failureを区別できない。
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-DETECT-003 and inspect adopted collector health receipts
+      expected: all three source windows are exact complete healthy and fresh while missing stale partial or failed collection returns ERROR
+      evidence:
+        - sanitized source-window test output
+        - access-controlled live collector health receipts
+    mapping_status: reviewed
+  - id: EASM-003
+    title: External observations are provenance-bound and sanitized
+    required_state: every candidate has an owned-root binding and immutable passive provenance while raw addresses banners bodies headers credentials snippets and personal data are absent
+    responsible_role: security
+    applies_to:
+      - external-asset-observation
+      - sanitized-evidence
+    context:
+      threat_actor: Malformed OSINT responseや悪意あるservice banner、および調査証跡へcredential、header、response body、個人情報をコピーするcollector
+      attack_or_failure_scenario: Raw provider contentをstateやCI outputへ保存すると、偵察control自体が機密情報の二次漏洩面になり、後続parserへのuntrusted inputも増える。
+      why_required: Hostname、root、signal kind、digest identity、最小service metadataだけに正規化すれば、帰属判断を維持しながら危険なcontentを永続化せずに済む。
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DETECT-003
+      expected: allow-listed digest-bound metadata passes and sensitive unknown duplicate or malformed fields return ERROR without echoing values
+      evidence:
+        - sanitized positive and redaction negative-test output
+    mapping_status: reviewed
+  - id: EASM-004
+    title: Owned names delegated services and shared infrastructure stay distinct
+    required_state: every known asset is classified as owned-name or delegated-service and shared addresses never expand into an authorized third-party scan target
+    responsible_role: shared
+    applies_to:
+      - asset-attribution
+      - delegated-service
+      - shared-infrastructure
+    context:
+      threat_actor: Shared CDNやSaaSのaddressから他tenantへ探索を拡張するassessment process、および委託先CNAME driftを利用して自社hostnameの信頼を奪う外部者
+      attack_or_failure_scenario: DNSが返したIPをすべて自社所有とみなすと第三者を無断scanし、逆にdelegation targetを記録しなければ委託先変更や乗っ取り候補を見逃す。
+      why_required: Name ownership、delegation、underlying infrastructure ownershipを別fieldにすると、外部観測の帰属を保ちながらactive validationのtargetをowned nameへ限定できる。
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DETECT-003
+      expected: exact delegation and redacted or shared address classification pass while root mismatch and delegated target drift fail or find
+      evidence:
+        - asset-attribution fixture output
+    mapping_status: reviewed
+  - id: EASM-005
+    title: Every approved asset has a current owner and exposure decision
+    required_state: the complete inventory binds each hostname to stable asset ID owner environment relationship expected public state service set and review expiry
+    responsible_role: shared
+    applies_to:
+      - approved-external-asset-inventory
+      - asset-owner
+      - exposure-review
+    context:
+      threat_actor: 所有者不明のshadow IT、退役後も残るservice、または期限切れの公開判断を利用する外部攻撃者と、inventory更新を忘れる開発・運用team
+      attack_or_failure_scenario: Hostnameだけの一覧では誰が調査・停止・例外判断を行うか決まらず、意図的公開と放置資産を区別できない。
+      why_required: Asset ID、owner、environment、公開可否、service、期限を一つのrecordへ結ぶことで、観測差分を具体的な対応責任へroutingできる。
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-DETECT-003 and inspect the adopted complete inventory export
+      expected: complete current owned records pass while unknown owner stale inventory expired review duplicate asset and unsupported service become FINDING or ERROR
+      evidence:
+        - sanitized inventory validation output
+        - access-controlled live inventory export
+    mapping_status: reviewed
+  - id: EASM-006
+    title: Unknown and unexpected public assets remain findings
+    required_state: externally observed assets absent from inventory and known assets exposing unapproved services or private surfaces never become a clean result
+    responsible_role: security
+    applies_to:
+      - shadow-asset
+      - unexpected-public-service
+      - exposure-policy-drift
+    context:
+      threat_actor: Inventory外subdomain、public staging、管理surface、想定外portを先に発見して標的選定する外部攻撃者
+      attack_or_failure_scenario: Scannerが到達可能hostnameを列挙してもinventoryとexpected serviceを比較しなければ、最も重要なunknown assetとpolicy driftが単なる件数になる。
+      why_required: Candidateをexact inventory decisionへ照合し、未知、private想定、service差分を別reasonにすることで、発見をactionableなsecurity findingへ変換できる。
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DETECT-003
+      expected: known expected HTTPS assets pass while unknown private and unexpected-service fixtures return distinct findings
+      evidence:
+        - secure and insecure expected-results output
+    mapping_status: reviewed
+  - id: EASM-007
+    title: Remediated assets are detected when they reappear
+    required_state: durable scoped state retains only hashed candidate identity and bounded remediation evidence so a later external observation emits REAPPEARED
+    responsible_role: security
+    applies_to:
+      - external-asset-state
+      - remediation-reobservation
+      - recurrence-notification
+    context:
+      threat_actor: 同じhostnameやdelegationを再作成する変更、退役処理を部分的に戻すautomation、および過去findingを忘れるstate loss
+      attack_or_failure_scenario: 前回のfinding identityとclosureを保持しないと、再出現した管理surfaceを新規または既知として扱い、再発として優先できない。
+      why_required: Scope-bound fingerprintとremediated stateを次の観測へ比較することで、raw hostnameを通知へ出さず再発を区別できる。
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-DETECT-003 and inspect adopted state plus notification handoff
+      expected: a previously remediated fingerprint emits REAPPEARED while malformed future or unscoped state returns ERROR
+      evidence:
+        - recurrence negative-test output
+        - access-controlled live state and notification receipt
+    mapping_status: reviewed
+  - id: EASM-008
+    title: Validation stays low impact and inside authorized targets
+    required_state: active validation is limited to DNS and HTTPS metadata on port 443 for owned names with no login vulnerability probe or third-party IP scanning
+    responsible_role: security
+    applies_to:
+      - reconnaissance-safety-policy
+      - active-validation-boundary
+    context:
+      threat_actor: Broad scanner設定、operator mistake、または外部tool recommendationがOSINTをcredential試行、exploit、wordlist scan、shared-host probingへ拡張する。
+      attack_or_failure_scenario: 発見と脆弱性攻撃の境界をpolicyで固定しないと、EASM jobが第三者や本番serviceへ予期しない負荷と法的・運用riskを与える。
+      why_required: 許可protocol、port、禁止action、第三者infrastructure境界をmachine-readableに固定すると、初期sliceを非侵入的なmetadata確認へ限定できる。
+    verification:
+      type: automated
+      method: make verify-control CONTROL=PSB-DETECT-003
+      expected: exact low-impact policy passes while login vulnerability-probe extra-port and third-party-IP permissions return a policy FINDING
+      evidence:
+        - unsafe policy negative-test output
+    mapping_status: unmapped
+  - id: EASM-009
+    title: Fixture success never overclaims live attack-surface coverage
+    required_state: live collectors inventory freshness notification review and remediation remain organization evidence and no configured finding means only this exact complete observation set matched policy
+    responsible_role: security
+    applies_to:
+      - live-easm-adoption
+      - assessment-claim-boundary
+      - collector-failure-state
+    context:
+      threat_actor: Dashboard利用者、assurance reviewer、またはautomationがsynthetic fixture PASSや一回の0 findingをinternet attack surface不存在の証明として再利用する。
+      attack_or_failure_scenario: Offline contract testをlive adoptionへ昇格すると、実collector停止、未登録root、provider coverage gap、review backlogが隠れたまま安全と報告される。
+      why_required: E3 fixtureとlive evidenceを分離し、missing stale malformed sourceをERRORにすれば、reference implementationの品質と組織の現在状態を混同しない。
+    verification:
+      type: hybrid
+      method: make verify-control CONTROL=PSB-DETECT-003 and inspect organization collector inventory review and remediation evidence
+      expected: fixture contract passes but live adoption remains NOT_CHECKED until all organization evidence is supplied and healthy
+      evidence:
+        - sanitized fixture output
+        - live evidence request with NOT_CHECKED default
+    mapping_status: unmapped
+mappings:
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1590.001
+    relationship: detects
+    confidence: high
+    rationale: Verified domain roots and externally reconciled domain assets mirror the Domain Properties reconnaissance an attacker performs, detecting organization-related properties without claiming to prevent collection or enumerate every property.
+    reviewer: product-security
+    review_date: "2026-08-31"
+    applies_to:
+      - EASM-001
+      - EASM-004
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1590.002
+    relationship: detects
+    confidence: high
+    rationale: Complete public DNS observations and exact root attribution identify DNS information visible to an attacker while keeping shared infrastructure outside owned scan authority.
+    reviewer: product-security
+    review_date: "2026-08-31"
+    applies_to:
+      - EASM-002
+      - EASM-003
+      - EASM-004
+  - framework: mitre-attack
+    version: "v19.1"
+    id: T1596.003
+    relationship: detects
+    confidence: high
+    rationale: Certificate Transparency name observations are identity-bound and reconciled to inventory to find externally discoverable assets, without treating historical certificate presence as current exploitability.
+    reviewer: product-security
+    review_date: "2026-08-31"
+    applies_to:
+      - EASM-002
+      - EASM-003
+  - framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: RV.1.1
+    relationship: supports
+    confidence: medium
+    rationale: Repeatable outside-in observation, ownership reconciliation, exposure-policy findings, recurrence tracking, and fail-closed evidence support gathering information to identify and confirm product security issues, but do not prove full SSDF implementation or complete internet coverage.
+    reviewer: product-security
+    review_date: "2026-08-31"
+    applies_to:
+      - EASM-002
+      - EASM-005
+      - EASM-006
+      - EASM-007
+limitations:
+  - Offline fixtures validate the evidence and reconciliation contract but do not query live DNS Certificate Transparency HTTPS services search engines or commercial EASM providers.
+  - Certificate Transparency and external DNS coverage is historical or provider-dependent and incomplete; absence from either source is not proof that an asset never existed.
+  - HTTPS metadata confirms only a bounded externally observable service shape and does not prove authentication authorization vulnerability or exploit resistance.
+  - The first slice supports domain-rooted assets only and does not discover mobile applications autonomous systems arbitrary owned IP ranges cloud tenants object stores email infrastructure or third-party SaaS without owned DNS names.
+  - DNS addresses behind CDNs SaaS and shared hosting are not treated as organization-owned scan targets.
+  - Dangling CNAME or takeover signals are candidates requiring provider-specific confirmation; this control does not claim exploitability or attempt registration.
+  - Wordlist discovery port scanning login attempts credential validation vulnerability probes and exploitation are outside this control.
+  - PSB-SOURCE-003 public repository reconnaissance is a separate optional discovery input and is not duplicated by this package.
+  - A zero-finding complete fixture means only that exact observations match the supplied inventory and policy; it is not proof that the organization has no external attack surface.
+status: prototype
+owner: product-security
+evidence_level: E3

@@ -1,0 +1,6 @@
+{
+  "schema": "psb-external-attack-surface-state/v1",
+  "scope_id": "external-surface@sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "updated_at": "2026-08-31T11:50:00Z",
+  "entries": []
+}

@@ -1,0 +1,4 @@
+FINDING asset=AST-ADMIN-001 reason=unexpected-public-exposure
+REAPPEARED fingerprint=3970e1d5597dc88bfa9a331117e816ff9fa9f5b2c10b92699abe7d8daaa3219d reason=previously-remediated-asset-observed
+NEW_UNATTRIBUTED fingerprint=8836b1dd93519ab3ca64103b5cf18feae0f093b8a109fd362ded4c465f62fc75 reason=asset-not-in-approved-inventory
+REJECTED findings=3 known=0 observed=3

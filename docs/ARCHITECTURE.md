@@ -88,6 +88,8 @@ The following are external or semi-trusted inputs:
 
 - package registries;
 - container registries;
+- public DNS, Certificate Transparency, HTTPS metadata, and external asset
+  inventory observations;
 - GitHub Actions;
 - scanner databases;
 - Security Skills;
