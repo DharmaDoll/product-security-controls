@@ -14,14 +14,19 @@ implementations:
     - insecure/workflow.yml
   secure:
     - secure/workflow.yml
+    - secure/local-gate.yml
+    - scripts/verify.py
+    - scripts/self-test.sh
 verification:
   commands:
     - make verify-control CONTROL=PSB-CICD-002
   expected:
     - direct GitHub Actions expressions in run scalars are rejected
     - expressions passed through env are accepted
+    - inert shell metacharacters remain data in the quoted environment-variable pattern
     - expressions in non-executable concurrency fields are not treated as shell injection
     - policy violations and verifier execution errors have distinct exit codes
+    - the copyable read-only local gate is accepted
 checks:
   - id: INJ-001
     title: Runner scripts do not directly interpolate Actions expressions
@@ -51,11 +56,12 @@ checks:
       attack_or_failure_scenario: attacker-controlled text crosses into shell execution without a data boundary or safe quoting
       why_required: environment variables preserve the value as data and allow shell-specific quoting at the consumption point
     verification:
-      type: automated
-      method: make verify-control CONTROL=PSB-CICD-002
-      expected: the reviewed environment-variable pattern is accepted
+      type: hybrid
+      method: run the control self-test and review shell-specific quoting at each consumption point
+      expected: the environment-variable pattern is accepted and an inert metacharacter payload remains data
       evidence:
-        - sanitized verifier output
+        - sanitized self-test output
+        - workflow code review
     mapping_status: reviewed
   - id: INJ-003
     title: Non-executable expression fields are not reported as shell injection
@@ -130,6 +136,8 @@ limitations:
   - Indirect taint through generated files repository scripts Actions outputs or third-party Actions requires separate analysis.
   - Composite Actions and invoked scripts are outside this workflow-only verifier scope.
   - Unsupported YAML forms fail as verifier errors rather than clean results.
+  - A repository-local verifier can be weakened in the same pull request unless its workflow and code are protected by required review or replaced by a trusted central gate.
+  - The central-gate document is a non-production proof of concept and does not prove live organization rollout ruleset enforcement or reusable-workflow access.
 status: prototype
 owner: product-security
 evidence_level: E3

@@ -1,0 +1,5 @@
+PASS safe environment boundary and allowlist accepted
+PASS direct expression rejected
+PASS inert shell metacharacters remained data
+PASS verifier output omitted environment values
+PASS missing input reported as verification error
