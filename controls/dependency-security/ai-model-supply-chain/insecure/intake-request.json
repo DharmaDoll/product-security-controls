@@ -1,0 +1,19 @@
+{
+  "schema": "psb-ai-model-intake-request/v1.0",
+  "request_id": "intake-unsafe-model-001",
+  "requested_by_role": "model-owner",
+  "purpose": "inert negative self-test",
+  "model": {
+    "id": "example/tiny-classifier",
+    "version": "latest",
+    "source_url": "http://models.example.invalid/example/tiny-classifier",
+    "source_revision": "main"
+  },
+  "dataset": {
+    "id": "example/synthetic-training",
+    "version": "latest",
+    "source_url": "http://datasets.example.invalid/example/synthetic-training",
+    "source_revision": "main"
+  },
+  "target_environment": "production"
+}

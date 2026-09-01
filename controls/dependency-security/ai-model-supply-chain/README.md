@@ -26,6 +26,78 @@ Model codeを一度もimport／deserializeせず全9 checkが通り、exact stag
 
 Live modelの精度・bias・privacy・backdoor不存在、dataset consent実在、production HSM／registry／scanner、RAG index、AI TEVV、runtime sandboxは証明しない。
 
+## まず理解する基本的な対応作業（案1）
+
+中央serviceの有無にかかわらず、このcontrolの本質は次の作業です。案1として各teamが
+手作業やrepository-local jobで始める場合も、この順序を省略しません。
+
+1. Product ownerとdata ownerが、model／datasetの用途、owner、license、data利用許可を決める。
+2. Model名や`latest`ではなく、HTTPS source、version、full revisionを取得要求へ固定する。
+3. 取得物をtraining／evaluation／servingから分離したquarantineへ置き、まだloadしない。
+4. Quarantine内の実byteからSHA-256を計算し、取得manifestと照合する。
+5. Pickle、custom loader、`trust_remote_code=true`を拒否し、pinned Safetensors loaderだけを許可する。
+6. Modelをimport／deserializeせず、size、header、dtype、shape、offsetをbounded parserで検査する。
+7. Model、dataset、loader、利用applicationのexact relationshipをCycloneDX ML-BOMへ記録する。
+8. 検査材料と結果をorganization-owned signerで署名し、signerのscope、expiry、revocationを確認する。
+9. 全checkが通ったexact digestだけをtrusted staging namespaceへ昇格し、consumerがdigestを再照合する。
+10. Findingは`QUARANTINE`、検証基盤障害は`ERROR`として停止し、どちらもcleanとして扱わない。
+
+案1は最初のmodelを安全に扱う理解と緊急導入には有効です。一方、teamごとにdownload
+credential、policy、scanner、signer、昇格手順を持つと、更新漏れと直接downloadによる
+bypassが増えます。そのため本実装は、この同じ10作業を一か所で強制する案3を基本形に
+します。
+
+## 基本実装: 中央Model Intake Control Plane（案3）
+
+セキュリティ向上は、このdirectoryをcopyした事実ではなく、実環境で次を変更することから
+生まれます。
+
+- Training／evaluation／servingから外部model registryへの直接取得権限とegressを外す。
+- 中央intake serviceだけに外部取得とquarantine書込を許可する。
+- `quarantine`と`trusted`を別namespace・別権限にし、consumerは`trusted@sha256`だけをreadする。
+- Request、manifest、artifact、dataset、ML-BOM、attestation、handoffをquarantineへsnapshotし、
+  verifierが`ACCEPTED_FOR_STAGING`を返したexact bytesだけを昇格してdigestをreadbackする。
+- `QUARANTINE`または`ERROR`ではtrusted namespaceを変更しない。
+
+[中央intake worker](scripts/intake_worker.py)はこの状態遷移をone-shotで実行し、
+[service policy](secure/service-policy.json)はconsumer-owned policyとverifierをSHA-256で
+pinします。[安全な要求例](secure/intake-request.json)と
+[危険な要求例](insecure/intake-request.json)は同じinterfaceを使います。Local実装は
+filesystem namespaceを使う安全なreference adapterであり、live OCI registry、IAM、KMS、
+network isolationの設定済みを証明しません。
+
+担当は次のように分けます。
+
+- Product owner: modelの用途、対象environment、acceptance boundaryを承認する。
+- Data owner: datasetのlicense、purpose、personal-data／consent evidenceを承認する。
+- Platform／SRE: 中央service、network、quarantine／trusted namespace、runtime read権限を構築する。
+- Security: policy、scanner、signer scope、例外、実環境negative testをreviewする。
+- Development team: 外部から直接loadせず、trusted digestだけをstagingでconsumeする。
+- Organization owner: IAMとKMS key policyを承認し、開発者によるtrusted直接pushを禁止する。
+
+具体的なcopy対象、Amazon ECRを使う最小設定例、IAM matrix、live verification、rollback、
+framework／guide一覧は
+[中央Model Intake Control Plane導入ガイド](docs/CENTRAL_INTAKE_ADOPTION.md)にまとめています。
+
+## 最短のlocal導入と自己テスト
+
+PrerequisiteはPython 3.10以上、OpenSSL、Bashです。Modelやdatasetのcodeは実行せず、外部
+networkにも接続しません。
+
+```bash
+make verify-control CONTROL=PSB-DEPS-005
+```
+
+中央状態遷移だけを直接確認する場合:
+
+```bash
+bash controls/dependency-security/ai-model-supply-chain/tests/test-central-intake.sh
+```
+
+成功時はexit `0`で`RESULT PROMOTED sha256:...`、危険な要求はexit `1`で
+`RESULT QUARANTINE`、OpenSSL等の検証基盤障害はexit `2`で`RESULT ERROR`になります。
+どちらのnegative pathもtrusted artifactを書きません。
+
 ## Goal
 
 AI modelは通常のlibrary dependencyと同じく外部から取得するartifactですが、追加の
@@ -227,8 +299,12 @@ publisherが評価時刻を上書きできないようにします。
 ## References
 
 - [CycloneDX 1.7 ML-BOM capabilities](https://www.cyclonedx.org/capabilities/mlbom/)
-- [CycloneDX 1.7 JSON reference](https://cyclonedx.org/docs/1.7/json/)
+- [CycloneDX 1.7 specification at the reviewed commit](https://github.com/CycloneDX/specification/tree/4b3f59453366e27c8073fd24e98bf21ef8892c8e)
 - [Safetensors 0.8.0 format and security rationale](https://github.com/safetensors/safetensors/tree/a406ca3e7a90598be0cd05a50069cb9bf5ef6ba6)
 - [PyTorch serialization security and `weights_only`](https://docs.pytorch.org/docs/stable/notes/serialization.html)
-- [MITRE ATLAS](https://atlas.mitre.org/)
+- [NIST SSDF 1.1 / SP 800-218](https://csrc.nist.gov/pubs/sp/800/218/final)
+- [MITRE ATLAS 2026.05 reviewed data release](https://github.com/mitre-atlas/atlas-data/blob/da9ebf9b66e6902ad97c267e2a20af0bd996a60f/dist/v6/ATLAS-2026.05.yaml)
+- [OWASP AISVS 1.0 model lifecycle requirements](https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C03-Model-Lifecycle-Management.md)
+- [OWASP AISVS 1.0 infrastructure requirements](https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C04-Infrastructure.md)
+- [OWASP AISVS 1.0 supply-chain requirements](https://github.com/OWASP/AISVS/blob/78775233666a2022dcfb82037e5e029116955c00/1.0/en/0x10-C06-Supply-Chain.md)
 - [`REF-DEPS-003`: AI model artifact and ML-BOM safety guidance](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-deps-003)

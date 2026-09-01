@@ -1,0 +1,3 @@
+QUARANTINE AMS-001 model source revision is mutable
+STATE QUARANTINE trusted namespace unchanged
+RESULT QUARANTINE

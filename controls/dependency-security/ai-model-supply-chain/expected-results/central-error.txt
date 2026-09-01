@@ -1,0 +1,6 @@
+STATE RECEIVED request identity accepted
+STATE QUARANTINED exact bundle stored before verification
+STATE VERIFYING model and loader code remain unexecuted
+ERROR AMS-008 verification unavailable: cannot execute OpenSSL
+RESULT ERROR
+STATE ERROR trusted namespace unchanged

@@ -1,0 +1,19 @@
+{
+  "schema": "psb-ai-model-intake-request/v1.0",
+  "request_id": "intake-tiny-classifier-001",
+  "requested_by_role": "model-owner",
+  "purpose": "synthetic staging self-test",
+  "model": {
+    "id": "example/tiny-classifier",
+    "version": "1.0.0",
+    "source_url": "https://models.example.invalid/example/tiny-classifier",
+    "source_revision": "1111111111111111111111111111111111111111"
+  },
+  "dataset": {
+    "id": "example/synthetic-training",
+    "version": "2026.08.01",
+    "source_url": "https://datasets.example.invalid/example/synthetic-training",
+    "source_revision": "2222222222222222222222222222222222222222"
+  },
+  "target_environment": "staging"
+}

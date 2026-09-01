@@ -136,6 +136,8 @@ if rg -n "BEGIN (RSA |EC |OPENSSH |)PRIVATE KEY" "$control_dir" >/dev/null; then
   exit 1
 fi
 
+bash "$control_dir/tests/test-central-intake.sh"
+
 echo "PASS safe model bundle accepted without executing model code"
 echo "PASS mutable pickle remote-code dataset and signed finding bundle quarantined"
 echo "PASS tampering malformed input and sensitive evidence fail closed"

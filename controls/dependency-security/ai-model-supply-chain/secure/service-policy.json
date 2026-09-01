@@ -1,0 +1,38 @@
+{
+  "schema": "psb-ai-model-intake-service-policy/v1.0",
+  "trusted_inputs": {
+    "model_intake_policy": "policy.json",
+    "model_intake_policy_sha256": "0c407a39069305a9e7568ef4bc26af4128f6fe425d8ab0d065f2d995b1616320",
+    "signer_status": "signer-status.json",
+    "verifier": "../scripts/verify.py",
+    "verifier_sha256": "f434bfe66eb9266afb7c53cbf733c7158fde0d36af8bf4016b2a8b12ff85162f"
+  },
+  "acquisition": {
+    "allowed_source_origins": [
+      "https://models.example.invalid",
+      "https://datasets.example.invalid"
+    ],
+    "maximum_artifact_bytes": 1048576,
+    "require_full_revision": true
+  },
+  "storage": {
+    "digest_algorithm": "sha256",
+    "quarantine_namespace": "quarantine",
+    "trusted_namespace": "trusted",
+    "immutable_promotion": true
+  },
+  "promotion": {
+    "required_verifier_result": "ACCEPTED_FOR_STAGING",
+    "allowed_target_environments": [
+      "staging"
+    ],
+    "require_digest_readback": true
+  },
+  "evidence": {
+    "include_model_bytes": false,
+    "include_dataset_rows": false,
+    "include_signature": false,
+    "include_key_material": false,
+    "include_source_credentials": false
+  }
+}

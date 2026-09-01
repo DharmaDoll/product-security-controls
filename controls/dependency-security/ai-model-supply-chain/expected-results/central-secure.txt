@@ -1,0 +1,16 @@
+STATE RECEIVED request identity accepted
+STATE QUARANTINED exact bundle stored before verification
+STATE VERIFYING model and loader code remain unexecuted
+PASS AMS-001 immutable source and exact model artifact identity verified
+PASS AMS-002 CycloneDX 1.7 ML-BOM relationships verified
+PASS AMS-003 non-executable serialization and pinned loader verified
+PASS AMS-004 bounded safetensors structure verified without model execution
+PASS AMS-005 signed inspection and current signer lifecycle verified
+PASS AMS-006 dataset provenance license and use authorization verified
+PASS AMS-007 accepted deployment handoff identity verified
+PASS AMS-008 verification dependencies available and current
+PASS AMS-009 evidence policy remains metadata-only
+RESULT ACCEPTED_FOR_STAGING
+STATE ACCEPTED_FOR_STAGING exact signed bundle accepted
+STATE PROMOTED immutable digest readback verified
+RESULT PROMOTED sha256:df0c00870b43005f873ec026757af59db1956218773b4ee401df32a9536c1aed
