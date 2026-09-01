@@ -59,6 +59,12 @@ security function、atomic check数、成熟度、証跡レベルも一覧でき
 担当、確認方法、証跡、framework mappingを含む行単位の導入判断には、後述する
 生成チェックリストを使用してください。
 
+Software supply-chain attackを、開発端末、source、dependency、CI/CD、build、release、
+deployment、production、incident responseの攻撃段階から辿る場合は、
+[`Software supply-chain attack control list`](docs/SUPPLY_CHAIN_ATTACK_CONTROL_LIST.md)を
+参照してください。主な脅威と既存controlへのリンク、代表的なattack path、横断的な
+coverage／gapビューを一か所にまとめています。
+
 Software supply-chain controlの関係は
 [`docs/SUPPLY_CHAIN_PRINCIPLES.md`](docs/SUPPLY_CHAIN_PRINCIPLES.md)を参照してください。
 既存controlがpipeline全体で同じidentityを受け渡せているかは、NIST SP 800-204Dを
