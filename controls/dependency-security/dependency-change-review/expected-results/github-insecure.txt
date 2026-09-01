@@ -1,0 +1,17 @@
+BLOCK DCR-009 reason=workflow-trigger-is-not-pull-request-only
+BLOCK DCR-009 reason=workflow-top-permissions-are-not-deny-all
+BLOCK DCR-009 reason=reference-runner-is-not-reviewed-hosted-runner
+BLOCK DCR-009 reason=job-permissions-are-not-contents-read-only
+BLOCK DCR-009 reason=workflow-actions-do-not-match-reviewed-identities
+BLOCK DCR-009 reason=dependency-review-input-set-is-not-exact
+BLOCK DCR-004 reason=vulnerability-check-is-disabled
+BLOCK DCR-005 reason=license-check-is-disabled
+BLOCK DCR-004 reason=vulnerability-threshold-is-not-high
+BLOCK DCR-004 reason=dependency-scopes-are-incomplete
+BLOCK DCR-005 reason=reference-license-allowlist-is-not-exact
+BLOCK DCR-004 reason=warn-only-prevents-blocking
+BLOCK DCR-009 reason=snapshot-warning-retry-is-disabled
+BLOCK DCR-009 reason=snapshot-warning-timeout-is-not-bounded
+BLOCK DCR-009 reason=unowned-scorecard-signal-is-enabled
+BLOCK DCR-009 reason=pull-request-write-path-is-enabled
+RESULT BLOCKED 16 workflow finding(s)

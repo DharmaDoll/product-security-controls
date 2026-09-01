@@ -1,12 +1,8 @@
 {
   "schema": "psb-dependency-review-policy/1.0",
   "policy_bundle_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-  "allowed_registries": ["https://packages.example.invalid"],
-  "allowed_repository_prefixes": ["https://code.example.invalid/"],
-  "denied_licenses": ["AGPL-3.0-only", "GPL-3.0-only", "UNKNOWN"],
+  "allowed_licenses": ["Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "MIT"],
   "vulnerability_threshold": "high",
-  "require_verified_provenance": true,
   "minimum_non_author_approvals": 1,
-  "maximum_advisory_age_seconds": 86400,
-  "maximum_exception_age_seconds": 259200
+  "maximum_advisory_age_seconds": 86400
 }

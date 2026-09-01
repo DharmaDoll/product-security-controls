@@ -1,7 +1,7 @@
 id: PSB-DEPS-004
 title: Review dependency graph changes before merge
 domain: dependency-security
-summary: baseからheadまでの正確な依存関係差分を、最新の脆弱性アドバイザリ、ライセンス、取得元、来歴情報、承認、期限付き例外の証跡へ結び付ける。
+summary: pull requestのbase-to-head dependency差分を既知脆弱性、license policy、required check、non-author reviewへ結び付け、評価不能をmerge許可にしない。
 check_context_version: "1.0"
 security_functions:
   - prevent
@@ -9,194 +9,152 @@ security_functions:
   - verify
 threats:
   - id: DEPENDENCY-CHANGE-RISK-HIDDEN
-    description: A direct or transitive dependency package version source or edge change introduces malicious vulnerable or incompatible content without focused review.
+    description: A direct or transitive dependency change introduces vulnerable malicious or incompatible content without focused review.
   - id: DEPENDENCY-RISK-EVIDENCE-FAIL-OPEN
-    description: Stale partial malformed or unavailable advisory and policy evidence is interpreted as no dependency risk.
+    description: Missing partial unsupported or unavailable dependency graph and advisory evidence is interpreted as no dependency risk.
   - id: DEPENDENCY-REVIEW-BYPASS
-    description: Self approval incomplete change inventory or broad permanent exception permits a dependency change outside reviewed policy.
+    description: A non-required workflow self approval stale approval or broad inline exception permits a dependency change outside reviewed policy.
 implementations:
   insecure:
+    - insecure/github/dependency-review.yml
     - insecure/proposed-lock.json
     - insecure/advisories.json
     - insecure/review.json
   secure:
+    - secure/github/dependency-review.yml
+    - docs/github-adoption.md
+    - docs/manual-review-fallback.md
     - secure/policy.json
     - secure/base-lock.json
     - secure/proposed-lock.json
     - secure/advisories.json
     - secure/review.json
+    - scripts/verify_github_workflow.py
     - scripts/verify.py
 verification:
   commands:
     - make verify-control CONTROL=PSB-DEPS-004
   expected:
-    - only exact base-to-head direct transitive package version source and edge changes are reviewed
-    - fresh complete advisory license and provenance evidence is evaluated for changed dependencies
-    - exact computed delta receives one non-author dependency reviewer approval
-    - broad self-approved expired exceptions are rejected
-    - incomplete stale malformed or unavailable evidence returns ERROR rather than approval
+    - the copyable GitHub workflow uses pull_request a pinned Dependency Review Action contents read and blocking vulnerability and license policy
+    - the exact supported base-to-head direct and transitive dependency delta is reviewable before merge
+    - high or critical vulnerabilities in runtime development and unknown scopes block the required check
+    - the SPDX allowlist is explicit and unknown licenses require non-author manual review
+    - the latest dependency change requires one non-author approval through an active ruleset
+    - missing unsupported partial or unavailable graph workflow and provider evidence never produces approval
 checks:
   - id: DCR-001
-    title: Review decision binds exact base head graph and policy identities
-    required_state: full base and head commit SHAs graph digests policy bundle digest and advisory snapshot digest exactly match review evidence
+    title: Required dependency review binds the exact pull request base and head
+    required_state: a stable required Dependency Review check evaluates the current pull request base and latest head revision before merge
     responsible_role: repository-admin
     applies_to:
       - dependency-change
       - pull-request
     context:
-      threat_actor: contributor review bot race condition or operator reusing evidence from another change
-      attack_or_failure_scenario: a valid review decision is attached to a different commit graph or policy
-      why_required: dependency risk evidence has meaning only when bound to the exact graph transition being merged
+      threat_actor: contributor stale workflow result race condition or administrator attaching a check from another revision
+      attack_or_failure_scenario: a dependency decision for an older or different graph is accepted after the pull request head or base changes
+      why_required: vulnerability and license evidence is meaningful only when the required check is attached to the exact revision pair being merged
     verification:
-      type: automated
-      method: make verify-control CONTROL=PSB-DEPS-004
-      expected: mismatched base head graph policy or advisory snapshot identity returns ERROR
+      type: hybrid
+      method: verify the stable workflow identity locally then confirm the active GitHub ruleset and latest pull request check in a sandbox repository
+      expected: missing stale neutral or differently sourced dependency review cannot satisfy the merge rule
       evidence:
-        - sanitized graph binding result
+        - sanitized workflow verification output
+        - live required-check setting and test pull-request receipt
     mapping_status: reviewed
   - id: DCR-002
-    title: Direct transitive package and edge delta is complete
-    required_state: added removed version source and dependency edge changes retain direct transitive and scope context
+    title: Supported direct and transitive dependency delta is complete
+    required_state: every supported added removed or updated dependency retains direct transitive scope manifest and dependency-path context
     responsible_role: developer
     applies_to:
       - dependency-graph
       - transitive-dependency
     context:
-      threat_actor: malicious package update incomplete lockfile adapter or reviewer focusing only on manifest roots
-      attack_or_failure_scenario: a risky transitive package or newly introduced edge is hidden behind an approved direct dependency
-      why_required: reviewing only direct package names misses code that is installed through changed transitive graph relationships
+      threat_actor: malicious dependency incomplete provider graph unsupported manifest or reviewer focusing only on direct manifest entries
+      attack_or_failure_scenario: a risky transitive package or newly introduced dependency path is omitted from the review summary
+      why_required: reviewing only manifest roots misses code brought into the product through changed transitive graph relationships
     verification:
-      type: automated
-      method: compute a normalized graph delta and compare it with approved change IDs
-      expected: every direct transitive and edge change appears exactly once and duplicate approval IDs are rejected
+      type: hybrid
+      method: confirm the manifest is in the current supported ecosystem list and compare provider summary with a harmless base-to-head lockfile change
+      expected: direct and transitive changes are shown or the unsupported or incomplete target remains NOT_CHECKED and blocked
       evidence:
-        - sanitized dependency delta result
-    mapping_status: reviewed
-  - id: DCR-003
-    title: Changed dependency uses exact version and approved immutable source
-    required_state: exact PURL approved registry source repository and full source commit
-    responsible_role: developer
-    applies_to:
-      - dependency-source
-      - dependency-version
-    context:
-      threat_actor: dependency confusion publisher takeover mutable source reference or unapproved registry
-      attack_or_failure_scenario: a reviewed name resolves to attacker-controlled or later-changing source content
-      why_required: vulnerability and license results for one version do not authorize content from another source or mutable revision
-    verification:
-      type: automated
-      method: compare every impacted package source identity with repository-owned policy
-      expected: unapproved registry and mutable source commit are blocked
-      evidence:
-        - sanitized source decision
+        - supported-ecosystem decision
+        - sanitized dependency review summary receipt
     mapping_status: reviewed
   - id: DCR-004
-    title: Fresh complete advisory evidence blocks threshold vulnerabilities
-    required_state: complete digest-bound advisory snapshot within freshness limit and no changed PURL at or above threshold
+    title: High or critical vulnerabilities in changed dependencies are blocked
+    required_state: vulnerability checking is enabled for runtime development and unknown scopes with a high threshold and warn-only disabled
     responsible_role: security
     applies_to:
       - dependency-advisory
       - vulnerability-gate
     context:
-      threat_actor: vulnerable dependency advisory provider outage partial pagination or stale cache
-      attack_or_failure_scenario: a known vulnerable change is merged or unavailable advisory data is presented as zero findings
-      why_required: a clean vulnerability decision requires both no matching record and proof that the advisory query completed
+      threat_actor: vulnerable dependency compromised update account advisory provider failure or maintainer weakening workflow inputs
+      attack_or_failure_scenario: a pull request introduces a known high-severity dependency vulnerability but the workflow only warns or excludes its scope
+      why_required: visible findings do not prevent vulnerable code from merging unless the policy check returns a required non-success result
     verification:
       type: automated
-      method: validate snapshot identity freshness completeness and exact PURL severity matches
-      expected: threshold matches block and stale partial malformed evidence returns ERROR
+      method: run the local workflow verifier and an inert known-vulnerable lockfile-only pull request in a sandbox repository
+      expected: high and critical findings fail the required Dependency Review check without installing dependency code
       evidence:
-        - sanitized advisory decision
+        - sanitized workflow policy result
+        - live inert negative-test receipt
     mapping_status: reviewed
   - id: DCR-005
-    title: Changed dependency license satisfies documented policy
-    required_state: normalized license identifier is not denied or unknown under repository policy
-    responsible_role: repository-admin
+    title: Changed dependency licenses follow an explicit SPDX policy
+    required_state: license checking and a reviewed SPDX allowlist are enabled while unknown licenses require non-author review rather than automatic approval
+    responsible_role: security
     applies_to:
       - dependency-license
       - distribution-policy
     context:
-      threat_actor: dependency update with incompatible unknown or incorrectly normalized license terms
-      attack_or_failure_scenario: a package creates distribution obligations or restrictions not accepted by the product
-      why_required: vulnerability-free code can still create material legal and distribution risk requiring an independent policy check
-    verification:
-      type: automated
-      method: compare changed package license identifiers with the reviewed deny policy
-      expected: denied and unknown licenses block the change
-      evidence:
-        - sanitized license decision
-    mapping_status: reviewed
-  - id: DCR-006
-    title: Changed dependency has verified subject-bound provenance
-    required_state: verified provenance statement identity names the exact changed package PURL
-    responsible_role: security
-    applies_to:
-      - dependency-provenance
-      - dependency-source
-    context:
-      threat_actor: forged package publisher registry substitution or unrelated provenance reuse
-      attack_or_failure_scenario: review trusts origin evidence that was not verified or belongs to another package version
-      why_required: registry and version identity do not establish how or by whom dependency content was produced
+      threat_actor: dependency update with incompatible missing or incorrectly normalized license metadata
+      attack_or_failure_scenario: a vulnerability-free package introduces distribution terms that the product has not accepted or an unknown license is treated as approved
+      why_required: vulnerability policy does not address legal and distribution restrictions and the provider does not always fail on unknown license metadata
     verification:
       type: hybrid
-      method: require adapter-verified provenance status exact subject PURL and statement digest
-      expected: missing unverified mismatched or unidentified provenance is blocked
+      method: verify the reference allowlist locally then exercise allowed incompatible and unknown license changes in a sandbox repository
+      expected: licenses outside the reviewed list fail where provider metadata is available and unknown licenses remain pending manual review
       evidence:
-        - sanitized provenance binding result
+        - sanitized license-policy verification output
+        - live allowed denied and unknown-license review receipts
     mapping_status: reviewed
   - id: DCR-007
-    title: One non-author dependency reviewer approves the exact computed delta
-    required_state: approved change IDs exactly equal computed changes and reviewer is distinct from author with dependency-reviewer role
+    title: One non-author reviewer approves the latest dependency change
+    required_state: an active ruleset requires at least one approval and stale or latest-push settings ensure the author cannot reuse approval for changed dependency content
     responsible_role: repository-admin
     applies_to:
       - pull-request-review
       - dependency-change
     context:
-      threat_actor: malicious contributor compromised update bot or incomplete automated review summary
-      attack_or_failure_scenario: an author self-approves or reviewers approve a partial list that hides a transitive or source change
-      why_required: independent approval over the computed set creates accountability and prevents summary-to-actual-diff mismatch
+      threat_actor: malicious contributor compromised update bot self approver or contributor adding content after review
+      attack_or_failure_scenario: dependency changes merge with author-only approval or with an approval that predates the latest head revision
+      why_required: automated policy cannot judge all dependency context and independent approval prevents a passing summary from replacing accountability for the actual latest diff
     verification:
-      type: automated
-      method: compare computed change IDs with review evidence and reviewer identity
-      expected: self approval role mismatch or incomplete delta blocks or errors
+      type: manual
+      method: inspect the active ruleset and test author-only approval plus a post-approval push in a sandbox pull request
+      expected: author-only and stale approval cannot satisfy the default-branch merge rule
       evidence:
-        - sanitized approval result
-    mapping_status: reviewed
-  - id: DCR-008
-    title: Dependency exceptions are exact owned independently approved and short-lived
-    required_state: exact finding key owner separate approver meaningful justification and expiry within policy maximum
-    responsible_role: security
-    applies_to:
-      - dependency-exception
-      - risk-acceptance
-    context:
-      threat_actor: contributor or reviewer using broad permanent or self-approved suppression
-      attack_or_failure_scenario: one accepted risk silently exempts unrelated future dependencies advisories or licenses
-      why_required: exact expiry-bound exceptions limit accepted risk to one reviewed finding and force timely reassessment
-    verification:
-      type: automated
-      method: validate exact finding key ownership independent approval creation and expiry
-      expected: wildcard self-approved expired and excessive-duration exceptions are blocked
-      evidence:
-        - sanitized exception decision
+        - live ruleset identity and review-setting receipt
+        - sanitized negative merge-attempt result
     mapping_status: reviewed
   - id: DCR-009
     title: Dependency review evaluation failure is never an approval
-    required_state: missing malformed stale partial unreadable or unsupported evidence returns ERROR
+    required_state: missing unsupported partial unreadable cancelled timed-out or unavailable dependency review returns ERROR or NOT_CHECKED and cannot satisfy the merge rule
     responsible_role: ci-platform
     applies_to:
       - dependency-review-gate
-      - advisory-provider
+      - dependency-provider
     context:
-      threat_actor: provider outage parser defect missing fixture policy engine failure or malformed pull-request data
-      attack_or_failure_scenario: review cannot complete but CI reports no dependency findings and permits merge
-      why_required: availability failure and verified absence of risk are different states and must produce different merge decisions
+      threat_actor: provider outage runner incompatibility parser defect unsupported manifest partial graph or administrator removing a required check
+      attack_or_failure_scenario: dependency review cannot complete but an empty diff warning missing job or neutral result permits merge
+      why_required: absence of evaluated findings and verified absence of risk are different states and must produce different merge decisions
     verification:
-      type: automated
-      method: exercise incomplete stale malformed and missing evidence fixtures
-      expected: every evaluation failure exits 2 with RESULT ERROR
+      type: hybrid
+      method: exercise missing malformed and unsafe local workflow fixtures then confirm graph runner API and missing-check failure behavior in a sandbox repository
+      expected: every evaluation or coverage failure remains non-mergeable and is never reported as a clean dependency review
       evidence:
-        - fail-closed negative-test output
+        - fail-closed local negative-test output
+        - live provider-error and unsupported-manifest receipt
     mapping_status: reviewed
 mappings:
   - framework: openssf-osps-baseline
@@ -204,83 +162,75 @@ mappings:
     id: OSPS-VM-05.01
     relationship: supports
     confidence: high
-    rationale: The repository-owned policy defines vulnerability and license thresholds plus exact exception requirements for dependency change decisions.
+    rationale: The reference workflow exposes an explicit vulnerability threshold and SPDX license policy while the adoption guide assigns policy ownership and unknown-license review.
     reviewer: product-security
-    review_date: "2026-07-31"
+    review_date: "2026-09-01"
     applies_to:
       - DCR-004
       - DCR-005
-      - DCR-008
   - framework: openssf-osps-baseline
     version: "2026.02.19"
     id: OSPS-VM-05.02
     relationship: supports
-    confidence: medium
-    rationale: The blocking dependency review supplies pre-merge evidence for addressing SCA violations but does not by itself prove every release gate uses the result.
+    confidence: high
+    rationale: Required dependency review and non-author approval provide a pre-merge path for resolving applicable SCA violations before release without claiming that every release is covered.
     reviewer: product-security
-    review_date: "2026-07-31"
+    review_date: "2026-09-01"
     applies_to:
       - DCR-004
       - DCR-005
       - DCR-007
-      - DCR-008
+      - DCR-009
   - framework: openssf-osps-baseline
     version: "2026.02.19"
     id: OSPS-VM-05.03
-    relationship: verifies
-    confidence: high
-    rationale: Every exact dependency graph change is automatically evaluated against vulnerability source provenance approval and exception policy while unavailable evidence fails closed.
+    relationship: supports
+    confidence: medium
+    rationale: The required pull-request workflow automatically blocks documented vulnerability-policy violations for supported dependency graphs but cannot prove absence of malicious unadvised packages or complete provider coverage.
     reviewer: product-security
-    review_date: "2026-07-31"
+    review_date: "2026-09-01"
     applies_to:
       - DCR-001
       - DCR-002
-      - DCR-003
       - DCR-004
-      - DCR-006
       - DCR-007
-      - DCR-008
       - DCR-009
   - framework: nist-ssdf
     version: "1.1 (SP 800-218, 2022)"
     id: PW.4.1
     relationship: supports
     confidence: high
-    rationale: Exact dependency change source advisory license provenance approval and exception evidence supports controlled acquisition and maintenance of third-party components.
+    rationale: Exact dependency change inventory vulnerability license and independent review evidence supports controlled acquisition and maintenance of third-party components.
     reviewer: product-security
-    review_date: "2026-07-31"
+    review_date: "2026-09-01"
     applies_to:
       - DCR-001
       - DCR-002
-      - DCR-003
       - DCR-004
       - DCR-005
-      - DCR-006
       - DCR-007
-      - DCR-008
   - framework: mitre-attack
     version: "v19.1"
     id: T1195.001
     relationship: mitigates
     confidence: medium
-    rationale: Focused review of new direct and transitive sources vulnerabilities provenance and approvals reduces but cannot eliminate compromise through malicious software dependencies.
+    rationale: Focused required review of new direct and transitive dependencies and known vulnerabilities reduces but cannot eliminate compromise through malicious software dependencies.
     reviewer: product-security
-    review_date: "2026-07-31"
+    review_date: "2026-09-01"
     applies_to:
       - DCR-001
       - DCR-002
-      - DCR-003
       - DCR-004
-      - DCR-006
       - DCR-007
 limitations:
-  - Normalized lock graph fixtures require package-manager-specific read-only adapters for production use.
-  - Fixture graph digests and provenance statuses are synthetic identities and do not perform actual artifact or statement signature verification.
-  - Advisory version-range evaluation is delegated to an adapter that produces exact PURL records.
-  - License compatibility requires product distribution context and legal review beyond identifier deny policy.
+  - GitHub-native enforcement requires a supported repository plan dependency graph manifest ecosystem active ruleset and live required review.
+  - Ecosystem support for transitive relationships and license metadata varies and unsupported coverage remains NOT_CHECKED.
+  - Dependency Review Action v5 reports unknown licenses but does not guarantee that every unknown license fails the job.
+  - Snapshot warning retry and a successful fixture do not prove complete current provider data or organization adoption.
+  - The offline normalized graph fixture is not a package-manager lockfile parser or live GitHub evidence collector.
+  - Artifact integrity registry routing install-time execution provenance and exception lifecycle belong to their owning controls.
   - Unknown vulnerabilities malicious-but-not-advised code maintainer intent and runtime behavior remain residual risk.
-  - The repository does not install or execute GitHub Dependency Review Action or contact advisory providers in normal tests.
   - Framework mappings show relevant evidence relationships and do not claim complete OSPS SSDF or MITRE coverage.
-status: adopted
+status: reference
 owner: product-security
 evidence_level: E3

@@ -1,0 +1,5 @@
+PASS DCR-001 stable dependency review check identity configured
+PASS DCR-004 high severity vulnerability policy covers all scopes
+PASS DCR-005 explicit SPDX license allowlist configured
+PASS DCR-009 pinned read-only pull-request blocking policy configured
+RESULT ACCEPTED GitHub dependency review reference workflow passed

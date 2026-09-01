@@ -3,6 +3,7 @@ set -euo pipefail
 
 control="controls/dependency-security/dependency-change-review"
 verify="$control/scripts/verify.py"
+verify_github="$control/scripts/verify_github_workflow.py"
 temporary_directory="$(mktemp -d)"
 trap 'rm -rf "$temporary_directory"' EXIT
 
@@ -29,6 +30,38 @@ insecure_status=$?
 set -e
 test "$insecure_status" -eq 1
 diff -u "$control/expected-results/insecure.txt" "$temporary_directory/insecure.txt"
+
+python3 "$verify_github" \
+  "$control/secure/github/dependency-review.yml" \
+  >"$temporary_directory/github-secure.txt"
+diff -u \
+  "$control/expected-results/github-secure.txt" \
+  "$temporary_directory/github-secure.txt"
+
+python3 controls/cicd-security/action-sha-pinning/scripts/verify.py \
+  "$control/secure/github/dependency-review.yml" \
+  >"$temporary_directory/github-action-pins.txt"
+
+set +e
+python3 "$verify_github" \
+  "$control/insecure/github/dependency-review.yml" \
+  >"$temporary_directory/github-insecure.txt"
+github_insecure_status=$?
+set -e
+test "$github_insecure_status" -eq 1
+diff -u \
+  "$control/expected-results/github-insecure.txt" \
+  "$temporary_directory/github-insecure.txt"
+
+set +e
+python3 "$verify_github" \
+  "$temporary_directory/missing-workflow.yml" \
+  >"$temporary_directory/github-missing.txt"
+github_missing_status=$?
+set -e
+test "$github_missing_status" -eq 2
+rg -F "RESULT ERROR; reference workflow was not evaluated" \
+  "$temporary_directory/github-missing.txt" >/dev/null
 
 set +e
 python3 "$verify" "${common[@]}" \
@@ -92,5 +125,7 @@ rg -F "ERROR DCR-009 dependency review unavailable: cannot load proposed lock" \
   "$temporary_directory/malformed.txt" >/dev/null
 
 echo "PASS exact direct and transitive dependency delta reviewed"
-echo "PASS source vulnerability license provenance approval and exception findings blocked"
+echo "PASS vulnerability license approval and local-exception findings blocked"
 echo "PASS mismatched duplicate incomplete stale and malformed evidence remained ERROR"
+echo "PASS GitHub reference workflow uses immutable read-only blocking policy"
+echo "PASS insecure GitHub workflow is blocked and missing workflow remains ERROR"

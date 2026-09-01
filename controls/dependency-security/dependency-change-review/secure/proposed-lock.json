@@ -10,17 +10,7 @@
       "scope": "runtime",
       "direct": true,
       "license": "Apache-2.0",
-      "dependencies": ["utility-lib", "parser-lib"],
-      "source": {
-        "registry": "https://packages.example.invalid",
-        "repository": "https://code.example.invalid/core-lib",
-        "commit": "cccccccccccccccccccccccccccccccccccccccc"
-      },
-      "provenance": {
-        "status": "verified",
-        "subject_purl": "pkg:generic/core-lib@1.1.0",
-        "statement_sha256": "3333333333333333333333333333333333333333333333333333333333333333"
-      }
+      "dependencies": ["utility-lib", "parser-lib"]
     },
     {
       "name": "utility-lib",
@@ -29,17 +19,7 @@
       "scope": "runtime",
       "direct": false,
       "license": "MIT",
-      "dependencies": [],
-      "source": {
-        "registry": "https://packages.example.invalid",
-        "repository": "https://code.example.invalid/utility-lib",
-        "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-      },
-      "provenance": {
-        "status": "verified",
-        "subject_purl": "pkg:generic/utility-lib@1.0.0",
-        "statement_sha256": "2222222222222222222222222222222222222222222222222222222222222222"
-      }
+      "dependencies": []
     },
     {
       "name": "parser-lib",
@@ -48,17 +28,7 @@
       "scope": "runtime",
       "direct": false,
       "license": "BSD-3-Clause",
-      "dependencies": [],
-      "source": {
-        "registry": "https://packages.example.invalid",
-        "repository": "https://code.example.invalid/parser-lib",
-        "commit": "dddddddddddddddddddddddddddddddddddddddd"
-      },
-      "provenance": {
-        "status": "verified",
-        "subject_purl": "pkg:generic/parser-lib@2.0.0",
-        "statement_sha256": "4444444444444444444444444444444444444444444444444444444444444444"
-      }
+      "dependencies": []
     }
   ]
 }

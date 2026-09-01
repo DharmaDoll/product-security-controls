@@ -67,31 +67,17 @@ def validate_policy(policy: dict[str, Any]) -> None:
     threshold = policy.get("vulnerability_threshold")
     if threshold not in SEVERITY or threshold == "unknown":
         raise ReviewError("policy vulnerability threshold is invalid")
-    for field in (
-        "allowed_registries",
-        "allowed_repository_prefixes",
-        "denied_licenses",
-    ):
+    for field in ("allowed_licenses",):
         values = policy.get(field)
         if not isinstance(values, list) or not values or not all(
             isinstance(item, str) and item for item in values
         ):
             raise ReviewError(f"policy.{field} must be a non-empty string list")
-    if policy.get("require_verified_provenance") is not True:
-        raise ReviewError("policy must require verified provenance", "DCR-006")
     if policy.get("minimum_non_author_approvals") != 1:
         raise ReviewError("policy must require one non-author approval", "DCR-007")
     maximum_age = policy.get("maximum_advisory_age_seconds")
-    exception_age = policy.get("maximum_exception_age_seconds")
-    if (
-        not isinstance(maximum_age, int)
-        or isinstance(maximum_age, bool)
-        or maximum_age <= 0
-        or not isinstance(exception_age, int)
-        or isinstance(exception_age, bool)
-        or exception_age <= 0
-    ):
-        raise ReviewError("policy age limits must be positive integers")
+    if not isinstance(maximum_age, int) or isinstance(maximum_age, bool) or maximum_age <= 0:
+        raise ReviewError("policy advisory age limit must be a positive integer")
 
 
 def validate_lock(lock: dict[str, Any], label: str) -> dict[str, dict[str, Any]]:
@@ -116,7 +102,7 @@ def validate_lock(lock: dict[str, Any], label: str) -> dict[str, dict[str, Any]]
         if purl != f"pkg:generic/{name}@{version}":
             raise ReviewError(
                 f"{package_label}.purl does not match name and exact version",
-                "DCR-003",
+                "DCR-001",
             )
         if name in by_name or purl in purls:
             raise ReviewError(f"{label} contains duplicate package identity", "DCR-001")
@@ -129,12 +115,6 @@ def validate_lock(lock: dict[str, Any], label: str) -> dict[str, dict[str, Any]]
             isinstance(item, str) and item for item in dependencies
         ):
             raise ReviewError(f"{package_label}.dependencies must be a string list", "DCR-002")
-        source = package.get("source")
-        provenance = package.get("provenance")
-        if not isinstance(source, dict) or not isinstance(provenance, dict):
-            raise ReviewError(f"{package_label} source and provenance are required")
-        for key in ("registry", "repository", "commit"):
-            require_text(source, key, f"{package_label}.source")
         require_text(package, "license", package_label)
         by_name[name] = package
         purls.add(purl)
@@ -145,11 +125,6 @@ def validate_lock(lock: dict[str, Any], label: str) -> dict[str, dict[str, Any]]
                 f"{label} dependency edge references missing package", "DCR-002"
             )
     return by_name
-
-
-def source_identity(package: dict[str, Any]) -> tuple[str, str, str]:
-    source = package["source"]
-    return source["registry"], source["repository"], source["commit"]
 
 
 def change_ids(
@@ -173,14 +148,8 @@ def change_ids(
                 f"version:{name}:{before['version']}->{after['version']}"
             )
             impacted.add(name)
-        elif any(
-            before[field] != after[field]
-            for field in ("scope", "direct", "license", "provenance")
-        ):
+        elif any(before[field] != after[field] for field in ("scope", "direct", "license")):
             changes.append(f"metadata:{name}:{after['purl']}")
-            impacted.add(name)
-        if source_identity(before) != source_identity(after):
-            changes.append(f"source:{name}:{after['purl']}")
             impacted.add(name)
     base_edges = {
         (name, dependency) for name, package in base.items() for dependency in package["dependencies"]
@@ -229,49 +198,6 @@ def validate_advisories(
 
 def finding(check: str, target: str, reason: str) -> tuple[str, str, str, str]:
     return check, f"{check}:{target}", target, reason
-
-
-def validate_exceptions(
-    review: dict[str, Any], policy: dict[str, Any], as_of: datetime
-) -> tuple[set[str], list[tuple[str, str, str, str]]]:
-    exceptions = review.get("exceptions")
-    if not isinstance(exceptions, list):
-        raise ReviewError("review.exceptions must be a list", "DCR-008")
-    accepted: set[str] = set()
-    findings: list[tuple[str, str, str, str]] = []
-    for index, exception in enumerate(exceptions):
-        target = f"exception-{index + 1}"
-        if not isinstance(exception, dict):
-            findings.append(finding("DCR-008", target, "malformed-exception"))
-            continue
-        finding_key = exception.get("finding_key")
-        owner = exception.get("owner")
-        approver = exception.get("approver")
-        justification = exception.get("justification")
-        try:
-            created = parse_time(exception.get("created_at"), "exception.created_at", "DCR-008")
-            expires = parse_time(exception.get("expires_at"), "exception.expires_at", "DCR-008")
-        except ReviewError:
-            findings.append(finding("DCR-008", target, "invalid-exception-time"))
-            continue
-        if (
-            not isinstance(finding_key, str)
-            or "*" in finding_key
-            or not isinstance(owner, str)
-            or not owner
-            or not isinstance(approver, str)
-            or not approver
-            or approver == owner
-            or not isinstance(justification, str)
-            or len(justification) < 20
-            or created > as_of
-            or expires <= as_of
-            or expires - created > timedelta(seconds=policy["maximum_exception_age_seconds"])
-        ):
-            findings.append(finding("DCR-008", target, "broad-unowned-or-expired"))
-            continue
-        accepted.add(finding_key)
-    return accepted, findings
 
 
 def main() -> int:
@@ -332,25 +258,8 @@ def main() -> int:
         for name in sorted(impacted):
             package = proposed[name]
             purl = package["purl"]
-            registry, repository, commit = source_identity(package)
-            if (
-                registry not in policy["allowed_registries"]
-                or not any(
-                    repository.startswith(prefix)
-                    for prefix in policy["allowed_repository_prefixes"]
-                )
-                or not REVISION_RE.fullmatch(commit)
-            ):
-                findings.append(finding("DCR-003", purl, "unapproved-or-mutable-source"))
-            if package["license"] in policy["denied_licenses"]:
-                findings.append(finding("DCR-005", purl, "denied-license"))
-            provenance = package["provenance"]
-            if (
-                provenance.get("status") != "verified"
-                or provenance.get("subject_purl") != purl
-                or not SHA256_RE.fullmatch(str(provenance.get("statement_sha256", "")))
-            ):
-                findings.append(finding("DCR-006", purl, "provenance-gap"))
+            if package["license"] not in policy["allowed_licenses"]:
+                findings.append(finding("DCR-005", purl, "unapproved-or-unknown-license"))
             for advisory in advisories:
                 if (
                     advisory["purl"] == purl
@@ -361,12 +270,11 @@ def main() -> int:
                         finding("DCR-004", purl, f"advisory-{advisory['id']}")
                     )
 
-        accepted_exceptions, exception_findings = validate_exceptions(review, policy, as_of)
-        findings.extend(exception_findings)
-        finding_keys = {item[1] for item in findings}
-        for unused in sorted(accepted_exceptions - finding_keys):
-            findings.append(finding("DCR-008", unused, "exception-target-not-present"))
-        remaining = [item for item in findings if item[1] not in accepted_exceptions]
+        if review.get("exceptions") not in (None, []):
+            findings.append(
+                finding("DCR-009", "review", "local-exception-format-is-unsupported")
+            )
+        remaining = findings
     except ReviewError as error:
         print(f"ERROR {error.check_id} dependency review unavailable: {error}")
         print("RESULT ERROR; dependency change is not approved")
@@ -380,12 +288,9 @@ def main() -> int:
 
     print(f"PASS DCR-001 exact base and head graph delta contains {len(changes)} change(s)")
     print("PASS DCR-002 direct transitive and edge context preserved")
-    print("PASS DCR-003 exact version and approved immutable source verified")
     print("PASS DCR-004 fresh complete advisory snapshot has no threshold finding")
-    print("PASS DCR-005 changed dependency licenses satisfy policy")
-    print("PASS DCR-006 changed dependency provenance is verified and subject-bound")
+    print("PASS DCR-005 changed dependency licenses satisfy the explicit allowlist")
     print("PASS DCR-007 exact delta has one non-author dependency reviewer approval")
-    print("PASS DCR-008 no invalid or unexpired dependency exception remains")
     print("PASS DCR-009 policy and advisory evaluation completed")
     print("RESULT ACCEPTED dependency change review passed")
     return 0

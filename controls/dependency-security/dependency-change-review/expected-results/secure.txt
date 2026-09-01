@@ -1,10 +1,7 @@
-PASS DCR-001 exact base and head graph delta contains 4 change(s)
+PASS DCR-001 exact base and head graph delta contains 3 change(s)
 PASS DCR-002 direct transitive and edge context preserved
-PASS DCR-003 exact version and approved immutable source verified
 PASS DCR-004 fresh complete advisory snapshot has no threshold finding
-PASS DCR-005 changed dependency licenses satisfy policy
-PASS DCR-006 changed dependency provenance is verified and subject-bound
+PASS DCR-005 changed dependency licenses satisfy the explicit allowlist
 PASS DCR-007 exact delta has one non-author dependency reviewer approval
-PASS DCR-008 no invalid or unexpired dependency exception remains
 PASS DCR-009 policy and advisory evaluation completed
 RESULT ACCEPTED dependency change review passed

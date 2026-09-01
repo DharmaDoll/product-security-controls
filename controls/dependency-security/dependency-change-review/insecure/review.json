@@ -14,7 +14,6 @@
     "edge:add:pkg:generic/core-lib@9.9.9->pkg:generic/malicious-helper@1.0.0",
     "edge:remove:pkg:generic/core-lib@1.0.0->pkg:generic/utility-lib@1.0.0",
     "package:add:pkg:generic/malicious-helper@1.0.0",
-    "source:core-lib:pkg:generic/core-lib@9.9.9",
     "version:core-lib:1.0.0->9.9.9"
   ],
   "exceptions": [

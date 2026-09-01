@@ -13,7 +13,6 @@
   "approved_change_ids": [
     "edge:add:pkg:generic/core-lib@1.1.0->pkg:generic/parser-lib@2.0.0",
     "package:add:pkg:generic/parser-lib@2.0.0",
-    "source:core-lib:pkg:generic/core-lib@1.1.0",
     "version:core-lib:1.0.0->1.1.0"
   ],
   "exceptions": []
