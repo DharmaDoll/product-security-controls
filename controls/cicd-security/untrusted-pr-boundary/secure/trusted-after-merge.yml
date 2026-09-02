@@ -1,0 +1,18 @@
+name: Trusted post-merge reporting
+
+on:
+  push:
+    branches:
+      - main
+
+permissions: {}
+
+jobs:
+  report:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Start processing from the reviewed main-branch revision
+        run: echo "trusted push boundary reached"

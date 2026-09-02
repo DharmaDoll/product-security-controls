@@ -238,6 +238,24 @@ secrets and unnecessary host identifiers, and is written below the ignored
 remain separate: a passing secure fixture is not evidence that a live endpoint
 meets the requirement.
 
+## Control verification modes
+
+Top-level `verification.type` may be `automated`, `hybrid`, `manual`, or
+`external-evidence`. It defaults to `automated` for existing controls.
+
+`automated` and `hybrid` controls require `tests/test.sh`. `manual` and
+`external-evidence` controls do not: adding a no-op test, checking README text,
+or accepting a self-asserted fixture would create false assurance. The
+canonical `make verify-control` command reports these controls as
+`NOT_CHECKED` and points to their README procedure; it does not promote the
+absence of an automated test into a clean security result.
+
+Manual verification must identify the live setting or operation, responsible
+role, safe procedure, expected observable state, evidence authority, and the
+conditions that remain `NOT_CHECKED` or `ERROR`. A copyable configuration may
+still be an `E1` implementation even when its security effect can only be
+confirmed in the provider environment.
+
 ## Catalog governance views
 
 `generated/checklists/governance/` summarizes repository-owned metadata per

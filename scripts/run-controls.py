@@ -33,9 +33,23 @@ def main() -> int:
             return 2
         controls = [selected]
 
+    automated_count = 0
+    not_checked_count = 0
     for control in sorted(controls, key=lambda item: item["id"]):
-        test_script = control["_directory"] / "tests" / "test.sh"
         print(f"==> {control['id']}: {control['title']}", flush=True)
+        verification_type = control["verification"].get("type", "automated")
+        if verification_type in {"manual", "external-evidence"}:
+            readme = (control["_directory"] / "README.md").relative_to(
+                REPOSITORY_ROOT
+            )
+            print(
+                f"NOT_CHECKED {control['id']} uses {verification_type} verification; "
+                f"follow {readme}"
+            )
+            not_checked_count += 1
+            continue
+
+        test_script = control["_directory"] / "tests" / "test.sh"
         result = subprocess.run(
             ["bash", str(test_script)],
             cwd=REPOSITORY_ROOT,
@@ -44,8 +58,12 @@ def main() -> int:
         if result.returncode != 0:
             print(f"{control['id']} verification failed with exit {result.returncode}")
             return 1
+        automated_count += 1
 
-    print(f"verified {len(controls)} control(s)")
+    print(
+        f"verified {automated_count} automated/hybrid control(s); "
+        f"{not_checked_count} manual/external control(s) NOT_CHECKED"
+    )
     return 0
 
 

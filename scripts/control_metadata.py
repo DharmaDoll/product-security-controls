@@ -293,10 +293,19 @@ def validate_controls(controls: list[dict[str, Any]]) -> list[str]:
                     if not isinstance(relative, str) or not (directory / relative).is_file():
                         errors.append(f"{label}: missing implementation file {relative!r}")
 
+        verification_type = "automated"
         verification = control.get("verification")
         if not isinstance(verification, dict):
             errors.append(f"{label}: verification must be a mapping")
         else:
+            raw_verification_type = verification.get("type", "automated")
+            if raw_verification_type not in VERIFICATION_TYPES:
+                errors.append(
+                    f"{label}: unsupported verification type "
+                    f"{raw_verification_type!r}"
+                )
+            else:
+                verification_type = raw_verification_type
             for field in ("commands", "expected"):
                 if not isinstance(verification.get(field), list) or not verification[field]:
                     errors.append(f"{label}: verification.{field} must be a non-empty list")
@@ -476,7 +485,10 @@ def validate_controls(controls: list[dict[str, Any]]) -> list[str]:
                 f"{label}: unsupported evidence_level {control.get('evidence_level')!r}"
             )
 
-        for required in ("README.md", "tests/test.sh"):
+        required_files = ["README.md"]
+        if verification_type in {"automated", "hybrid"}:
+            required_files.append("tests/test.sh")
+        for required in required_files:
             if not (directory / required).is_file():
                 errors.append(f"{label}: missing required file {required}")
         readme_path = directory / "README.md"

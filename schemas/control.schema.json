@@ -90,6 +90,9 @@
       "type": "object",
       "required": ["commands", "expected"],
       "properties": {
+        "type": {
+          "enum": ["automated", "manual", "external-evidence", "hybrid"]
+        },
         "commands": {
           "type": "array",
           "minItems": 1,

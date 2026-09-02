@@ -58,6 +58,20 @@ class ControlMetadataValidationTest(unittest.TestCase):
         errors = validate_controls([control])
         self.assertTrue(any("unsupported relationship" in error for error in errors))
 
+    def test_invalid_control_verification_type_is_rejected(self) -> None:
+        control = copy.deepcopy(self.controls[0])
+        control["verification"]["type"] = "synthetic-pass"
+        errors = validate_controls([control])
+        self.assertTrue(any("unsupported verification type" in error for error in errors))
+
+    def test_manual_control_does_not_require_no_op_test_script(self) -> None:
+        control = next(
+            item for item in self.controls if item["id"] == "PSB-CICD-005"
+        )
+        self.assertEqual(control["verification"]["type"], "manual")
+        self.assertFalse((control["_directory"] / "tests" / "test.sh").exists())
+        self.assertEqual(validate_controls([control]), [])
+
     def test_unknown_mapping_check_is_rejected(self) -> None:
         control = copy.deepcopy(self.controls[0])
         control["mappings"][0]["applies_to"] = ["UNKNOWN-CHECK"]
