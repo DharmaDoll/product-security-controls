@@ -48,6 +48,7 @@ CHECK_ROLES = {
     "shared",
 }
 VERIFICATION_TYPES = {"automated", "manual", "external-evidence", "hybrid"}
+EXECUTABLE_VERIFICATION_TYPES = {"automated", "hybrid"}
 MAPPING_STATUSES = {"reviewed", "provisional", "unmapped"}
 ASSESSMENT_PLATFORMS = {"linux", "macos", "windows"}
 ASSESSMENT_FORMATS = {"json", "csv"}
@@ -297,9 +298,34 @@ def validate_controls(controls: list[dict[str, Any]]) -> list[str]:
         if not isinstance(verification, dict):
             errors.append(f"{label}: verification must be a mapping")
         else:
-            for field in ("commands", "expected"):
-                if not isinstance(verification.get(field), list) or not verification[field]:
-                    errors.append(f"{label}: verification.{field} must be a non-empty list")
+            verification_type = verification.get("type", "automated")
+            if verification_type not in VERIFICATION_TYPES:
+                errors.append(
+                    f"{label}: unsupported verification type {verification_type!r}"
+                )
+            expected = verification.get("expected")
+            if not isinstance(expected, list) or not expected:
+                errors.append(
+                    f"{label}: verification.expected must be a non-empty list"
+                )
+            if verification_type in EXECUTABLE_VERIFICATION_TYPES:
+                commands = verification.get("commands")
+                if not isinstance(commands, list) or not commands:
+                    errors.append(
+                        f"{label}: verification.commands must be a non-empty list"
+                    )
+            else:
+                procedure = verification.get("procedure")
+                if not isinstance(procedure, str) or not procedure.strip():
+                    errors.append(
+                        f"{label}: verification.procedure must be a non-empty string"
+                    )
+                else:
+                    procedure_path = procedure.split("#", 1)[0]
+                    if not procedure_path or not (directory / procedure_path).is_file():
+                        errors.append(
+                            f"{label}: missing verification procedure {procedure!r}"
+                        )
 
         assessment = control.get("assessment")
         if assessment is not None:
@@ -476,7 +502,14 @@ def validate_controls(controls: list[dict[str, Any]]) -> list[str]:
                 f"{label}: unsupported evidence_level {control.get('evidence_level')!r}"
             )
 
-        for required in ("README.md", "tests/test.sh"):
+        required_files = ["README.md"]
+        if (
+            isinstance(verification, dict)
+            and verification.get("type", "automated")
+            in EXECUTABLE_VERIFICATION_TYPES
+        ):
+            required_files.append("tests/test.sh")
+        for required in required_files:
             if not (directory / required).is_file():
                 errors.append(f"{label}: missing required file {required}")
         readme_path = directory / "README.md"

@@ -2,154 +2,143 @@
 
 ## このcontrolを一枚で理解する
 
-### セキュリティ上の問題
+| 観点 | 内容 |
+|---|---|
+| セキュリティ上の問題 | 長寿命または共有runnerでは、先行jobが残したprocess、workspace、credential、改変が後続jobへ残り、cloud metadata、host socket、management networkへの足場にもなり得る。 |
+| 誰から、または何から守るか | 悪意あるcontributor、侵害されたdependency／Action、runner imageへのimplant、広すぎるrunner group、provision・log転送・teardownの失敗から守る。 |
+| 何が対象か | GitHub Actionsのrunner選択、managed runner契約、self-hosted runner group、JIT registration、runner image、compute、ephemeral storage、host境界、外部log。 |
+| 何をするか | 原則としてjobごとにfreshなGitHub-hostedまたはmanaged ephemeral VMを使う。self-hostedが必要なtrusted jobだけを、限定group・JIT one-job・fresh compute・host遮断・外部log・破棄のlifecycleへ載せる。 |
+| 成功状態 | 二つの連続jobが別generationで動き、先行jobのmarkerを読めない。self-hostedでは許可済みrepository／workflowだけがgroupを使え、job後にrunner、compute、storageが消え、対応するlogが外部に残る。 |
+| 対象外・残余リスク | GitHubまたはmanaged provider内部のtenant isolationを本PJだけで証明しない。cache、artifact、token、job内privilege／egress、runtime threat detection、CI control-plane侵害は関連controlまたはprovider assuranceの対象である。 |
 
-長寿命または共有runnerは、以前のjobが残したprocess、workspace、credentialや改変されたimageを次のjobへ引き継ぎ、cloud metadata、host socket、management networkへの到達点にもなり得る。
+## セキュリティ向上の効果はどこから生まれるか
 
-### 誰から、または何から守るか
+効果はrepository内のJSONやtestからではなく、次の実設定と運用から生まれます。
 
-悪意あるcontributor、侵害されたdependency／workflow、runner imageへのimplant、運用者の設定誤り、teardown／evidence collectorの失敗から守る。
+- jobをfreshなVMへ割り当て、job後にそのVMを再利用しないrunner service;
+- self-hostedの場合の限定runner group、JIT one-job registration、fresh compute provisioner;
+- cloud metadata、management network、internal service、host runtime socketを遮断する境界;
+- job完了後のderegistration、compute／storage破棄、外部log保全;
+- 失敗時にrunnerを再利用せず、`ERROR`または`NOT_CHECKED`として扱う運用。
 
-### 何が対象か
+このdocumentationやworkflowをcopyしただけではrunner fleetは安全になりません。copyしたworkflowをlive環境で
+有効化し、[導入・確認runbook](docs/ADOPTION.md)に従ってprovider設定と実際のjob lifecycleを確認して初めて
+security stateが変わります。
 
-GitHub-hosted runnerの選択、self-hosted runner fleet、runner group、provisioning image、registration authority、startup state、network境界、job終了後のderegistration・破棄・log。
+## 誰が何をするcontrolなのか
 
-### 何をするか
+| 担当 | 作業 |
+|---|---|
+| Product owner | self-hosted固有要件とmanaged serviceの費用・data boundaryを承認する。 |
+| Developer | 承認されたworkflowの`runs-on`を使い、MacBookや常用workstationをrunner登録しない。 |
+| Repository administrator | 対象workflow、branch protection、runner groupから実行できるworkflowを限定する。 |
+| Organization owner | runner groupを`Selected repositories`／`Selected workflows`へ限定し、GitHub App権限をreviewする。 |
+| Platform／SRE | self-hosted時のimmutable image、JIT provision、network deny、external log、compute／storage destructionを実装する。 |
+| Security | provider assurance、group設定、live negative test、例外、evidence freshnessをreviewする。 |
+| Incident response | 外部logへaccessし、不審なrunner generationを再利用せずcontainmentへ接続する。 |
 
-未信頼jobをreview済みhosted profileへroutingし、self-hostedはtrusted scopeだけのJIT one-job instanceに限定する。digest検証済みimageからcleanに起動し、host資産を遮断し、外部logを残して期限内に破棄する。
+## 最短の導入手順
 
-### 成功状態
+まずprofileを一つ選びます。self-hosted固有要件がなければProfile Aが推奨です。
 
-全dispatchがexact profileへ一致し、self-hostedは1 jobだけ処理する。prior stateとhost credentialがなく、metadata／management／host socketへ到達せず、jobとrunner generationに紐づくteardown receiptと外部logがfreshかつ完全である。collector欠落やstale evidenceは`ERROR`になる。
+| Profile | 選ぶ条件 | copyするfile | 主な運用主体 |
+|---|---|---|---|
+| A. GitHub-hosted | 通常のLinux build／test。最小の導入負担を優先する。 | [secure/github-hosted.yml](secure/github-hosted.yml) | Repository administrator |
+| B. Takumi Runner | 1 job 1 VMに加えてprocess／network／file traceをmanaged serviceで得たい。GitHub.com／GHEC、Linux x86_64が対象。 | [secure/takumi-runner.yml](secure/takumi-runner.yml) | Organization owner + Security |
+| C. Organization JIT | private network、特殊hardware、独自image等によりorganization-owned computeが不可欠。 | [secure/self-hosted-jit.yml](secure/self-hosted-jit.yml) | Organization owner + Platform／SRE |
 
-### 対象外・残余リスク
+最短手順は共通して次のとおりです。
 
-Providerのcontrol plane、GitHub-hosted VMの実破棄、job内部のapplication egress、workflow token、build sandboxをこのfixtureだけでは証明しない。live provider／provisioner adapterとnetwork probeが別途必要である。
+1. 選んだfileを`.github/workflows/runner-isolation-self-test.yml`へcopyする。既存fileを自動上書きしない。
+2. Profile BはTakumi setup、Profile Cは限定runner groupとJIT provisionerを先に有効化する。
+3. `workflow_dispatch`からself-testを二回実行する。両方が`PASS clean runner generation`、exit `0`であることを確認する。
+4. Profile BはTakumiの`Runner > Jobs`で二回分のtraceを確認する。Profile Cは別runner generation、外部log到着、GitHubからのderegistration、compute／storage destructionを確認する。
+5. Profile Cでは、未許可repository／workflowがgroupを選べないことと、runner namespaceからhost資産への無害なprobeが拒否されることを確認する。
 
-## Security problem
+前提条件、画面項目、positive／negative test、復旧、rollbackは[導入・確認runbook](docs/ADOPTION.md)にあります。
 
-CI jobはsourceだけでなくdependency install、build script、test、Actionも実行します。
-runnerを再利用すると、先行jobのworkspace、process、credential file、tool cacheや
-implantが後続jobへ残ります。self-hosted runnerがcloud VMやcontainer hostと同じ
-network／identity boundaryにいる場合、metadata endpoint、runtime socket、管理用
-serviceを経由してCIの権限を越える可能性もあります。
+## Secure／insecure example
 
-tokenをread-onlyにしても、host上のSSH key、cloud identity、internal service、
-runner registration authorityは消えません。そのためrunner lifecycle自体をjob単位の
-security boundaryとして設計し、起動前・実行時・終了後を同じjob identityで検証します。
+- [GitHub-hosted workflow](secure/github-hosted.yml): versioned hosted imageで無害なmarker testを行う最小例。
+- [Takumi Runner workflow](secure/takumi-runner.yml): `runs-on: takumi-runner`へ切り替える最小例。
+- [Self-hosted JIT workflow](secure/self-hosted-jit.yml): exact runner groupとlabelを指定する最小例。
+- [Persistent self-hosted anti-pattern](insecure/README.md): generic `self-hosted` labelと長寿命hostの危険を示す、trigger無効の非deploy例。
 
-## Threat, target, and control boundary
-
-想定する攻撃者は、未信頼PRを送る外部contributor、侵害されたdependency／Action、
-runner imageやprovisionerを改変するsupply-chain attackerです。対象はrunnerの選択、
-image、registration、workspace／process、host credential、network、teardownとlogです。
-
-責務の重複を避けるため、次の境界を固定します。
-
-- `PSB-CICD-005`: 未信頼PRをself-hosted runnerへ載せないworkflow trust boundary;
-- `PSB-BUILD-001`: job開始後のcredential、privilege、build egress、sandbox、telemetry;
-- `PSB-CICD-007`: runnerのimage、startup、group／registration、one-job lifecycle、
-  host／metadata／management isolation、deregistration、破棄とlog export;
-- providerのCI control planeとGitHub-hosted VM破棄の実装: external assurance boundary。
-
-Hostedとself-hostedを同じ証跡でPASSにしません。hosted profileはproviderが公開する
-job image／lifecycle contractを正規化し、organization側でuntrusted routingとinternal
-network不許可を確認します。self-hosted profileはorganization-owned provisionerが
-runner generation、network probe、deregistration、compute／storage破棄をreceiptとして
-発行します。
-
-## Secure and insecure examples
-
-`secure/runner-policy.json`は、未信頼jobをreview済みmanaged-hosted profileへ限定し、
-self-hosted release runnerをexact repository、workflow commit、event、runner groupに
-限定します。self-hosted runnerはJIT、ephemeral、one job、underlying host非再利用で、
-imageはdigestとprovenance evidenceを持ちます。
-
-`secure/fleet-snapshot.json`、`image-evidence.json`、`teardown-receipts.json`は、
-clean startup、IPv4／IPv6 metadataとmanagement networkの遮断、registration TTL、
-job終了後のderegistration・破棄、外部log correlationを示すsynthetic evidenceです。
-実環境の適合を主張するものではありません。
-
-`insecure/`は、未信頼PRをpersistent self-hosted runnerへroutingし、mutable image、
-prior-job state、host credential、metadata、management network、runtime socket、SSH、
-再利用、local-only logを意図的に含む非deploy fixtureです。
+workflow例はrunner lifecycleの入口です。provider内部のVM破棄やorganization-owned provisionerの成功を、YAMLだけで
+証明するものではありません。
 
 ## Verification
+
+本controlの本質はlive provider設定と実computeのlifecycleなので、synthetic evidenceを検査する
+`tests/test.sh`は置きません。canonical commandは手順への入口として残します。
 
 ```bash
 make verify-control CONTROL=PSB-CICD-007
 ```
 
-直接実行する場合:
-
-```bash
-python3 controls/cicd-security/runner-hardening/scripts/verify.py \
-  --policy controls/cicd-security/runner-hardening/secure/runner-policy.json \
-  --fleet-snapshot controls/cicd-security/runner-hardening/secure/fleet-snapshot.json \
-  --image-evidence controls/cicd-security/runner-hardening/secure/image-evidence.json \
-  --teardown-receipts controls/cicd-security/runner-hardening/secure/teardown-receipts.json \
-  --evidence-health controls/cicd-security/runner-hardening/secure/evidence-health.json \
-  --evaluation-time 2026-08-11T03:10:00Z
-```
-
-終了codeは`0=accepted`、`1=runner hardening finding`、
-`2=input／collector／freshness error`です。scanner／collector failureをcleanと
-解釈しません。
-
-Expected output:
+live evidenceがcommandへ渡されていないため、expected resultは成功ではなくexit `2`です。
 
 ```text
-PASS RNR-001 trust-class routing and exact runner scope
-...
-PASS RNR-009 complete fresh fail-closed evidence
-ACCEPT PSB-CICD-007 runner fleet evidence satisfies the reference policy
+NOT_CHECKED PSB-CICD-007 requires external-evidence verification
+See: controls/cicd-security/runner-hardening/docs/ADOPTION.md#live-verification
 ```
 
-## Integration guidance
+正式な判定は[Live verification](docs/ADOPTION.md#live-verification)で行います。
 
-1. `PSB-CICD-005`でuntrustedを分類し、review済みGitHub-hosted profileだけへroutingする。
-2. self-hosted runner groupをexact repositoryへ限定し、workflow commitとeventを
-   provisioner requestへ含める。
-3. JIT registrationをjob直前に一度だけ発行し、短いTTLにして保存しない。
-4. signed／provenance-verified imageをdigestで起動し、runner binary更新はmutable hostへ
-   任せずimage replacementとして行う。
-5. startup probeでprevious job、foreign process、workspace、host／cloud credential、
-   SSH keyがないことを確認する。
-6. runner namespaceからmetadataのIPv4／IPv6、management CIDR、host runtime socketを
-   denyし、control-plane originだけを許可する。
-7. job完了後に外部logをexportし、runnerをderegisterしてcompute、workspace、
-   ephemeral storage keyを期限内に破棄する。
-8. dispatch、runner generation、image digest、teardown、logを同じjob IDで相関する。
-9. fleet snapshot、network probe、image pipeline、teardown、log exporterのhealthを
-   一緒に評価し、欠落・stale・parse errorを`ERROR`にする。
+- `PASS`: 対象、取得元、取得時刻、権限境界が明確なcurrent settingと実job結果が全項目を満たす。
+- `FAIL`: broad group、host再利用、marker残留、host資産への到達、log欠落、teardown不成立のいずれかが確認された。
+- `NOT_CHECKED`: live環境または必要な権限がなく確認していない。
+- `ERROR`: API、provider、collector、pagination、job実行、log query等が失敗し、安全性を判断できない。
 
-GitHubはself-hosted runnerのautoscalingにephemeral runnerを推奨し、ephemeral runnerは
-1 jobだけを受け取った後に自動deregisterされると説明しています。ただしunderlying
-machineのwipeとlog転送は利用組織のautomation責務です。JIT runnerを使っても同じ
-hardwareを再利用すればclean environmentは保証されないため、このcontrolはcomputeと
-storage keyの破棄まで要求します。
+workflow self-testのPASSはmarker isolationだけを示し、organization adoption全体のPASSではありません。
 
-## Operational notes and limitations
+## 既存controlとの分担
 
-- GitHub-hosted imageとlifecycleはprovider-ownedです。reference fixtureはprovider contractを
-  正規化した例であり、provider内部のVM破棄を独立attestationしていません。
-- Self-hosted runnerの起動時間とimage build／patch運用costが増えます。pre-warmed poolを
-  使う場合もjob assignment前にidentityを確定し、job後はinstanceをpoolへ戻しません。
-- External logにはcommand output由来のsecretが含まれ得ます。metadata-only receipt、
-  masking、access control、retentionを別途適用します。
-- GitHub runner serviceのavailability、control-plane侵害、provider内部のtenant isolationは
-  対象外です。
-- `runner_version_supported`はlive adapterがGitHubのsupport window／critical updateを
-  判定して投入するnormalized resultです。このoffline verifierはInternetへ問い合わせません。
-- Job内部のpublic egress、credential mount、non-root／read-only sandboxは
-  `PSB-BUILD-001`で検証します。
+| 境界 | Owning control |
+|---|---|
+| 未信頼fork／PRの分類とcredential-free routing | [PSB-CICD-005](../untrusted-pr-boundary/README.md) |
+| job内credential、privilege、egress、sandbox、runtime telemetry／threat detection | [PSB-BUILD-001](../../build-security/build-containment/README.md) |
+| `GITHUB_TOKEN`のleast privilege | [PSB-CICD-004](../actions-least-privilege/README.md) |
+| cloud OIDC trust policy | [PSB-CICD-006](../audience-bound-oidc-federation/README.md) |
+| runner group等の管理面変更に対するhuman identityとaudit | [PSB-CICD-008](../privileged-control-plane-change/README.md) |
+| provisioner用GitHub App／tokenのlifecycle | [PSB-SOURCE-004](../../source-protection/source-access-credential-lifecycle/README.md) |
+| time-bound exception | [PSB-GOV-002](../../governance-operations/time-bound-security-exceptions/README.md) |
 
-## References
+Takumi Runnerのtrace／threat notificationやStepSecurity Harden-Runnerは有用な補完です。しかし、検知機能は
+runner破棄そのものではありません。PSB-CICD-007では外部logが残ることまでを扱い、検知rule、egress baseline、
+alert triageは[PSB-BUILD-001](../../build-security/build-containment/README.md)側へ置きます。
 
-- [GitHub self-hosted runners reference](https://docs.github.com/en/actions/reference/runners/self-hosted-runners)
+## 運用上の制約とrollback
+
+- GitHub-hostedのVM lifecycleとtenant isolationはprovider-owned assuranceです。`ubuntu-slim`は共有VM上のcontainerなので、本controlの既定例には使いません。
+- Takumi Runnerは契約、GitHub App、vendor data processing、Linux x86_64／GitHub.com系の制約をreviewします。traceは全攻撃の検知やreal-time preventionを保証しません。
+- Organization JITは最も自由ですが、image patch、capacity、network、log、destruction、on-callの負担を組織が所有します。runnerの自動deregistrationだけではVM wipeの証明になりません。
+- 問題時は対象workflowをGitHub-hosted profileへ戻し、managed／self-hosted groupへの新規dispatchを停止します。既存runnerのscopeを広げたりpersistent runnerへ戻したりしません。
+- cacheやartifact経由のcross-job state、provider control-plane、runtime compromise、secret masking、retentionは残余リスクです。
+
+詳細は[障害時の復旧](docs/ADOPTION.md#common-failure-recovery)と[Rollback](docs/ADOPTION.md#rollback)を参照してください。
+
+## 関連するframework／guide一覧
+
+`control.yaml`のmappingは関連性を示すものであり、formal complianceや完全coverageを主張しません。
+
+| Framework／guide | Version／項目 | このcontrolとの関係 |
+|---|---|---|
+| [GitHub Security Guidance](../../../frameworks/github-security-guidance/README.md) | `GHAS-CONCEPT-COMPROMISED-RUNNERS`, `GHAS-REF-SECURE-USE` | self-hosted runnerのpersistent compromiseを減らす。 |
+| [NIST SSDF](../../../frameworks/nist-ssdf/README.md) | SP 800-218 v1.1, `PW.6.1` | build toolchainをreview済み・隔離済み環境で実行することをsupportsする。 |
+| [OpenSSF OSPS Baseline](../../../frameworks/openssf-osps-baseline/README.md) | `2026.02.19`, `OSPS-BR-01.03` | untrusted codeとprivileged CI assetの分離をsupportsする。 |
+| [MITRE ATT&CK](../../../frameworks/mitre-attack/README.md) | v19.1, [`T1552.005`](https://attack.mitre.org/techniques/T1552/005/), [`T1133`](https://attack.mitre.org/techniques/T1133/) | cloud metadata credential取得とexternal remote service経路をmitigatesする。 |
+
+実装・理解のための一次資料:
+
+- [GitHub-hosted runners](https://docs.github.com/en/actions/concepts/runners/github-hosted-runners)
 - [GitHub secure use reference](https://docs.github.com/en/actions/reference/security/secure-use)
-- [GitHub monitoring and troubleshooting self-hosted runners](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/monitor-and-troubleshoot)
-- [GitHub self-hosted runner access](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/manage-access)
-- [Pinned GitHub guidance registry](../../../frameworks/github-security-guidance/README.md)
-- [CI/CD threat-matrix reconciliation](../../../docs/CICD_THREAT_MATRIX_RECONCILIATION.md)
-- [Source adoption record](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-cicd-014)
+- [GitHub self-hosted runners reference](https://docs.github.com/en/actions/reference/runners/self-hosted-runners)
+- [GitHub runner group access](https://docs.github.com/en/enterprise-cloud@latest/actions/how-tos/manage-runners/self-hosted-runners/manage-access)
+- [GitHub self-hosted runner REST API／JIT configuration](https://docs.github.com/en/rest/actions/self-hosted-runners)
+- [Takumi Runner quickstart](https://shisho.dev/docs/t/runner/quickstart/)
+- [Takumi Runner ephemeral VM architecture](https://shisho.dev/docs/t/runner/architecture/ephemeral/)
+- [Takumi Runner limitations](https://shisho.dev/docs/t/runner/limitation/)
+- [StepSecurity Harden-Runner detections](https://docs.stepsecurity.io/harden-runner/detections)
+- [Repository CI/CD threat-matrix reconciliation](../../../docs/CICD_THREAT_MATRIX_RECONCILIATION.md)
+- [Repository security-guidance source record](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-cicd-014)
