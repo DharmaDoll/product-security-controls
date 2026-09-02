@@ -48,6 +48,7 @@ CHECK_ROLES = {
     "shared",
 }
 VERIFICATION_TYPES = {"automated", "manual", "external-evidence", "hybrid"}
+NON_AUTOMATED_VERIFICATION_TYPES = {"manual", "external-evidence"}
 MAPPING_STATUSES = {"reviewed", "provisional", "unmapped"}
 ASSESSMENT_PLATFORMS = {"linux", "macos", "windows"}
 ASSESSMENT_FORMATS = {"json", "csv"}
@@ -180,6 +181,22 @@ def _require_text(data: dict[str, Any], field: str, errors: list[str], label: st
         errors.append(f"{label}: {field} must be a non-empty string")
 
 
+def control_verification_type(control: dict[str, Any]) -> str:
+    """Return the top-level verification type with legacy automation default."""
+
+    verification = control.get("verification")
+    if not isinstance(verification, dict):
+        return "automated"
+    value = verification.get("type", "automated")
+    return value if isinstance(value, str) else "automated"
+
+
+def control_requires_test(control: dict[str, Any]) -> bool:
+    """Whether repository-owned executable regression tests are required."""
+
+    return control_verification_type(control) not in NON_AUTOMATED_VERIFICATION_TYPES
+
+
 def validate_readme_overview(readme: str, label: str) -> list[str]:
     """Validate the mandatory first-page human-readable control summary."""
 
@@ -297,9 +314,42 @@ def validate_controls(controls: list[dict[str, Any]]) -> list[str]:
         if not isinstance(verification, dict):
             errors.append(f"{label}: verification must be a mapping")
         else:
-            for field in ("commands", "expected"):
-                if not isinstance(verification.get(field), list) or not verification[field]:
-                    errors.append(f"{label}: verification.{field} must be a non-empty list")
+            raw_verification_type = verification.get("type", "automated")
+            if (
+                not isinstance(raw_verification_type, str)
+                or raw_verification_type not in VERIFICATION_TYPES
+            ):
+                errors.append(
+                    f"{label}: unsupported top-level verification type "
+                    f"{raw_verification_type!r}"
+                )
+                verification_type = "automated"
+            else:
+                verification_type = raw_verification_type
+            expected = verification.get("expected")
+            if not isinstance(expected, list) or not expected:
+                errors.append(
+                    f"{label}: verification.expected must be a non-empty list"
+                )
+            if verification_type in NON_AUTOMATED_VERIFICATION_TYPES:
+                _require_text(verification, "procedure", errors, f"{label}: verification")
+                procedure = verification.get("procedure")
+                if isinstance(procedure, str) and not re.fullmatch(
+                    r"README\.md#[a-z0-9-]+", procedure
+                ):
+                    errors.append(
+                        f"{label}: verification.procedure must be a README.md anchor"
+                    )
+                if "commands" in verification:
+                    errors.append(
+                        f"{label}: non-automated verification must not declare commands"
+                    )
+            else:
+                commands = verification.get("commands")
+                if not isinstance(commands, list) or not commands:
+                    errors.append(
+                        f"{label}: verification.commands must be a non-empty list"
+                    )
 
         assessment = control.get("assessment")
         if assessment is not None:
@@ -476,9 +526,18 @@ def validate_controls(controls: list[dict[str, Any]]) -> list[str]:
                 f"{label}: unsupported evidence_level {control.get('evidence_level')!r}"
             )
 
-        for required in ("README.md", "tests/test.sh"):
-            if not (directory / required).is_file():
-                errors.append(f"{label}: missing required file {required}")
+        if not (directory / "README.md").is_file():
+            errors.append(f"{label}: missing required file README.md")
+        test_script = directory / "tests/test.sh"
+        if control_requires_test(control) and not test_script.is_file():
+            errors.append(
+                f"{label}: automated or hybrid verification requires tests/test.sh"
+            )
+        if not control_requires_test(control) and test_script.is_file():
+            errors.append(
+                f"{label}: manual or external-evidence verification must not "
+                "ship tests/test.sh"
+            )
         readme_path = directory / "README.md"
         if readme_path.is_file():
             try:

@@ -13,6 +13,8 @@ sys.path.insert(0, str(REPOSITORY_ROOT / "scripts"))
 from control_metadata import (  # noqa: E402
     README_OVERVIEW_HEADING,
     README_OVERVIEW_ROWS,
+    control_requires_test,
+    control_verification_type,
     discover_controls,
     validate_controls,
     validate_readme_overview,
@@ -51,6 +53,56 @@ class ControlMetadataValidationTest(unittest.TestCase):
         control["implementations"]["secure"] = ["secure/does-not-exist"]
         errors = validate_controls([control])
         self.assertTrue(any("missing implementation file" in error for error in errors))
+
+    def test_legacy_command_verification_defaults_to_automated(self) -> None:
+        control = {"verification": {"commands": ["make verify"], "expected": ["pass"]}}
+        self.assertEqual(control_verification_type(control), "automated")
+        self.assertTrue(control_requires_test(control))
+
+    def test_manual_verification_does_not_require_control_test(self) -> None:
+        control = {
+            "verification": {
+                "type": "manual",
+                "procedure": "README.md#verification",
+                "expected": ["live state reviewed"],
+            }
+        }
+        self.assertEqual(control_verification_type(control), "manual")
+        self.assertFalse(control_requires_test(control))
+
+    def test_manual_verification_requires_readme_anchor(self) -> None:
+        control = copy.deepcopy(self.controls[0])
+        control["verification"] = {
+            "type": "manual",
+            "procedure": "docs/checklist.md",
+            "expected": ["live state reviewed"],
+        }
+        errors = validate_controls([control])
+        self.assertTrue(any("must be a README.md anchor" in error for error in errors))
+
+    def test_manual_verification_rejects_commands(self) -> None:
+        control = copy.deepcopy(self.controls[0])
+        control["verification"] = {
+            "type": "manual",
+            "procedure": "README.md#verification",
+            "commands": ["true"],
+            "expected": ["live state reviewed"],
+        }
+        errors = validate_controls([control])
+        self.assertTrue(
+            any("must not declare commands" in error for error in errors)
+        )
+        self.assertTrue(
+            any("must not ship tests/test.sh" in error for error in errors)
+        )
+
+    def test_invalid_top_level_verification_type_is_rejected(self) -> None:
+        control = copy.deepcopy(self.controls[0])
+        control["verification"]["type"] = ["manual"]
+        errors = validate_controls([control])
+        self.assertTrue(
+            any("unsupported top-level verification type" in error for error in errors)
+        )
 
     def test_invalid_mapping_relationship_is_rejected(self) -> None:
         control = copy.deepcopy(self.controls[0])
