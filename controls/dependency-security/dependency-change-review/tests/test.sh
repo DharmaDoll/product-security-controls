@@ -21,9 +21,11 @@ check_reference_workflow() {
     "permissions: {}" \
     "      contents: read" \
     "          vulnerability-check: true" \
+    "          license-check: false" \
     "          fail-on-severity: high" \
     "          fail-on-scopes: runtime, development, unknown" \
-    "          warn-only: false"; do
+    "          warn-only: false" \
+    "          show-openssf-scorecard: false"; do
     if ! rg -Fqx -- "$expected" "$workflow"; then
       echo "BLOCK missing required setting: $expected"
       findings=1

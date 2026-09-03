@@ -1,7 +1,7 @@
 id: PSB-DEPS-004
 title: Review dependency graph changes before merge
 domain: dependency-security
-summary: pull requestで追加・更新されるdirect／transitive dependencyを表示し、既知のhigh以上の脆弱性と評価失敗をrequired merge checkで止める。
+summary: pull requestでbuildやruntimeへ入るdirect／transitive dependency変更を表示し、既知high以上のaffected versionと評価失敗をrequired merge checkで止める。
 check_context_version: "1.0"
 security_functions:
   - prevent
@@ -9,9 +9,9 @@ security_functions:
   - verify
 threats:
   - id: DEPENDENCY-CHANGE-RISK-HIDDEN
-    description: A pull request introduces a vulnerable direct or transitive dependency without showing the dependency-specific change before merge.
+    description: A pull request selects a known-vulnerable direct or transitive dependency that is installed packaged or executed but the dependency-specific change is not shown before merge.
   - id: DEPENDENCY-REVIEW-NONBLOCKING
-    description: A dependency finding failed job provider error or missing check is visible but does not prevent merge.
+    description: A known vulnerability failed job provider error or missing check does not prevent merge so an unevaluated affected component reaches build or runtime use.
 implementations:
   insecure:
     - insecure/github/dependency-review.yml
@@ -28,15 +28,15 @@ verification:
 checks:
   - id: DCR-001
     title: Pull request shows the changed dependency graph
-    required_state: the current pull request base-to-head diff shows every supported added or updated direct and transitive dependency with its scope and path
+    required_state: the current pull request base-to-head diff shows every supported added or updated direct and transitive dependency with its version scope and manifest or lockfile context
     responsible_role: ci-platform
     applies_to:
       - dependency-change
       - pull-request
     context:
       threat_actor: malicious contributor compromised update account incomplete provider graph or reviewer focused only on manifest roots
-      attack_or_failure_scenario: a risky transitive dependency is added or updated without appearing in the dependency-specific pull-request review
-      why_required: reviewers cannot evaluate newly imported external code when the exact direct and transitive change is not visible before merge
+      attack_or_failure_scenario: a transitive dependency used by the build or product changes to an affected version without appearing in the dependency-specific pull-request review
+      why_required: reviewers cannot investigate reachability advisory impact or remediation when the exact external code entering build or runtime use is not visible before merge
     verification:
       type: hybrid
       method: confirm the manifest is supported then create a harmless lockfile-only update and inspect the live base-to-head dependency review
@@ -54,8 +54,8 @@ checks:
       - vulnerability-gate
     context:
       threat_actor: vulnerable dependency compromised maintainer or configuration change that weakens the severity or scope gate
-      attack_or_failure_scenario: a pull request adds a dependency version with a known high-severity vulnerability but the check passes or only warns
-      why_required: displaying a known dangerous change does not reduce merge risk unless the dependency-specific job returns a blocking failure
+      attack_or_failure_scenario: a pull request selects a known high-severity affected version whose vulnerable function is later exposed to attacker input or executed by a valuable CI job but the check passes or only warns
+      why_required: actual impact depends on use and reachability but merge must pause before the affected component enters a production artifact developer install or privileged build
     verification:
       type: hybrid
       method: inspect the reference workflow and open an inert lockfile-only pull request containing a fixed known-high affected version without installing it
@@ -73,8 +73,8 @@ checks:
       - default-branch-ruleset
     context:
       threat_actor: provider outage runner failure administrator bypass or contributor relying on an absent or cancelled job
-      attack_or_failure_scenario: dependency risk was not successfully evaluated but the pull request merges because the workflow is optional or missing
-      why_required: no finding and no completed evaluation are different states and only a required merge rule preserves that distinction
+      attack_or_failure_scenario: dependency risk was not successfully evaluated but the pull request merges and the unresolved component is installed built or deployed because the workflow is optional or missing
+      why_required: no finding and no completed evaluation are different states and only a required merge rule prevents unavailable evidence from becoming implicit approval
     verification:
       type: manual
       method: inspect the active ruleset then attempt merge with a failed job and with a cancelled or missing required check in a sandbox repository
@@ -144,7 +144,8 @@ mappings:
 limitations:
   - A separate control is unnecessary when an existing required pull-request SCA check already provides dependency diff risk failure and merge enforcement.
   - GitHub-native enforcement requires a supported repository plan dependency graph manifest ecosystem and active ruleset.
-  - Provider and ecosystem coverage for transitive dependency paths varies and incomplete coverage remains NOT_CHECKED.
+  - Provider and ecosystem coverage for transitive dependency relationships varies and incomplete coverage remains NOT_CHECKED.
+  - A provider high-severity label does not prove product-specific reachability exploitability or business impact and requires contextual triage after blocking.
   - Static repository tests cannot prove live dependency graph data provider availability or merge enforcement.
   - Unknown vulnerabilities malicious-but-unadvised packages registry substitution install-time execution and provenance remain outside this control.
   - Framework mappings are supporting relationships and do not claim complete OSPS SSDF or MITRE coverage.

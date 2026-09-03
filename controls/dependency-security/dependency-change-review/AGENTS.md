@@ -6,8 +6,11 @@
 
 ## Control essence
 
-Dependency変更はcode変更である。このcontrolが所有する成果は、pull requestで新しく追加・更新される
-direct／transitive dependencyをmerge前に可視化し、既知の重大な脆弱性をrequired checkで止めることだけである。
+Dependency変更は外部codeを取り込む変更である。ただし変更だけで被害になるのではない。選択されたaffected versionが
+build／test／runtimeへ入り、脆弱な機能へ攻撃入力または価値あるCI assetから到達でき、findingや評価失敗を止めずに
+mergeしたとき、advisoryに記載されたcode execution、情報漏えい、認証回避、DoS等が現実化し得る。このcontrolが
+所有する成果は、pull requestで新しく追加・更新されるdirect／transitive dependencyをmerge前に可視化し、既知の
+重大な脆弱性をrequired checkで止めることだけである。Reachabilityとimpactの最終判断は別途必要である。
 
 次の3つを一読で確認できる状態を保つ。
 
@@ -51,8 +54,9 @@ Referenceは[`secure/github/dependency-review.yml`](secure/github/dependency-rev
 - Dependency Review Actionをreview済みfull commit SHAへ固定する。
 - `vulnerability-check: true`、`fail-on-severity: high`、`warn-only: false`を明示する。
 - Runtime、development、unknown scopeを除外しない。
+- このbasic profileで判定しない`license-check`と`show-openssf-scorecard`は明示的に無効化する。
 - Snapshot warningをbounded retryする。
-- Checkout、PR comment、write permission、scorecard、broad allow、package exclusionを追加しない。
+- Checkout、PR comment、write permission、broad allow、package exclusionを追加しない。
 
 Pinned Action:
 
