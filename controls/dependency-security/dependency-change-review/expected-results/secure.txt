@@ -1,7 +1,0 @@
-PASS DCR-001 exact base and head graph delta contains 3 change(s)
-PASS DCR-002 direct transitive and edge context preserved
-PASS DCR-004 fresh complete advisory snapshot has no threshold finding
-PASS DCR-005 changed dependency licenses satisfy the explicit allowlist
-PASS DCR-007 exact delta has one non-author dependency reviewer approval
-PASS DCR-009 policy and advisory evaluation completed
-RESULT ACCEPTED dependency change review passed

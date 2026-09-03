@@ -1,30 +1,22 @@
 # TEST FIXTURE ONLY. DO NOT COPY OR DEPLOY.
-name: Insecure Dependency Review
+name: Non-blocking Dependency Review
 
 on:
-  pull_request_target:
+  pull_request:
 
-permissions: write-all
+permissions: {}
 
 jobs:
   dependency-review:
     name: Dependency Review
-    runs-on: self-hosted
+    runs-on: ubuntu-24.04
     permissions:
-      contents: write
+      contents: read
     steps:
-      - name: Checkout untrusted head
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-
-      - name: Dependency review that cannot block
+      - name: Review dependency changes without blocking
         uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
         with:
-          vulnerability-check: false
-          license-check: false
-          fail-on-severity: critical
-          fail-on-scopes: runtime
-          allow-ghsas: "*"
+          vulnerability-check: true
+          fail-on-severity: high
+          fail-on-scopes: runtime, development, unknown
           warn-only: true
-          comment-summary-in-pr: always

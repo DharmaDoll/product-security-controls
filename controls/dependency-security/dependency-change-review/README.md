@@ -4,74 +4,70 @@
 
 ### セキュリティ上の問題
 
-Pull requestでdirect／transitive dependency、version、scope、licenseが変わっても、通常のcode reviewだけでは
-base-to-headの変更範囲や既知脆弱性を見落とし、未reviewのcomponentをmergeしやすい。
+Dependency更新は外部codeを製品へ取り込む変更だが、通常のcode reviewでは新しいdirect／transitive
+dependencyや既知脆弱性を見落としやすい。
 
 ### 誰から、または何から守るか
 
-侵害されたmaintainer／registry、malicious dependency、dependency confusion、既知脆弱性、license不適合、
-不完全なdependency graph、review bot／provider障害、authorによる自己承認から守る。
+侵害されたmaintainer／update account、既知の脆弱なversion、意図せず追加されたtransitive dependency、
+dependency review serviceの失敗から守る。
 
 ### 何が対象か
 
-Default branchをbaseとするpull request、supported manifest／lockfile、direct／transitive dependency差分、
-GitHub dependency graph、Dependency Review Action、required check、non-author approval、license policy。
+Default branchへmergeするpull requestのsupported manifest／lockfileと、そのbase-to-head dependency差分。
 
 ### 何をするか
 
-GitHub Dependency Review Actionでbase-to-head dependency差分を取得し、high以上の既知脆弱性と明示的な
-SPDX license policyを評価する。そのworkflowとauthor以外のreviewをactive rulesetのmerge条件にする。
+Dependency変更をPR上で表示し、changed dependencyにhigh以上の既知脆弱性があればrequired checkを失敗させる。
 
 ### 成功状態
 
-Supported graphの変更がPRに表示され、policy違反、Action／graph error、missing required check、最新差分の
-non-author approval欠落がmergeを止める。Unsupportedまたはlive未確認は`NOT_CHECKED`として残る。
+Dependency差分が表示され、known-high finding、job error、cancelled job、missing checkのいずれでもmergeできない。
 
 ### 対象外・残余リスク
 
-Clean resultはdependencyが無害であることを保証しない。未知脆弱性、advisory未登録のmalicious code、
-artifact hash、registry origin、install script、provenance、runtime behaviorは別controlの対象である。
+未知脆弱性、advisory未登録のmalicious package、registry origin、artifact hash、install script、provenance、
+merge後に発見された脆弱性は別controlの対象である。
 
-## セキュリティ向上の効果はどこから生まれるか
+## そもそもこのcontrolは必要か
 
-このcontrolはGitHub-nativeなhybrid implementationです。Security効果は次の実設定から生まれます。
+必要性は、現在のPR gateで次の3点を満たしているかだけで判断します。
 
-1. GitHub dependency graphが実repositoryのsupported manifest／lockfileを解析する。
-2. Pull requestでDependency Review Actionがbase-to-head差分を評価する。
-3. Active rulesetが`Dependency Review`をrequired workflow／status checkにする。
-4. RulesetとCODEOWNERSが最新差分へのnon-author approvalを要求する。
-5. Failure、error、missing check、unsupported coverageをmerge許可へ変換しない。
-
-[`secure/github/dependency-review.yml`](secure/github/dependency-review.yml)、このREADME、fixtureをcopyしただけでは
-enforcementになりません。Live repositoryでdependency graph、ruleset、required check、review ruleを有効にし、
-positive／negative self-testを実行してください。
-
-## 誰が何をするcontrolなのか
-
-| Role | Action | Completion state |
+| Question | Yes | No |
 |---|---|---|
-| Developer／update bot | Manifestとlockfileを同じdependency-only PRで変更する | Base-to-head diffが生成可能 |
-| Dependency reviewer | Direct／transitive path、scope、advisory、license unknownを確認する | Author以外が最新差分を承認 |
-| Repository administrator | Graph、workflow、ruleset、required check、CODEOWNERSを設定する | Failure／missing reviewではmerge不可 |
-| Security／Legal | Severity threshold、SPDX allowlist、例外をreviewする | Policy ownerと根拠が明確 |
-| Platform／SRE | Organization required workflow、runner、provider outageを管理する | Outage時もrequired checkを外さない |
+| Dependency変更PRでdirect／transitive差分が表示されるか | 既存結果を利用 | このcontrolが必要 |
+| 基準以上の既知脆弱性でcheckが失敗するか | 既存結果を利用 | このcontrolが必要 |
+| Failed／error／missing checkでmergeできないか | 別workflowは不要 | Ruleset設定が必要 |
+
+既存SCAが3点すべてを満たすなら、このworkflowを追加しません。既存check名、対象branch、negative test結果を
+このcontrolのadoption evidenceとして記録します。Merge後または定期実行だけのSCAは代替になりません。
+
+## 重要なのは3点だけ
+
+| Check | 確認すること | 導入完了の判断 |
+|---|---|---|
+| `DCR-001` Dependency diff | PRで追加・更新されたdirect／transitive dependencyが表示される | Safe updateの実差分を確認 |
+| `DCR-004` Risk gate | Changed dependencyのhigh／critical known vulnerabilityでjobが失敗する | Inert negative PRがfailure |
+| `DCR-009` Merge enforcement | Failure、error、cancel、missing checkをmerge許可にしない | Rulesetによる拒否を確認 |
+
+Workflow fileの存在やlocal testの`PASS`だけでは導入完了ではありません。
 
 ## 最短の導入手順
 
 ### Prerequisites
 
-- GitHub.com public repository、またはdependency reviewを利用できるprivate repository
-- Repository administrator権限
+- GitHub dependency reviewを利用できるrepository plan
 - GitHub dependency graphが有効
-- 対象fileが
+- 対象manifest／lockfileが
   [supported package ecosystems](https://docs.github.com/en/code-security/reference/supply-chain-security/dependency-graph-supported-package-ecosystems)
   に含まれる
-- GitHub-hosted runner
-- Product固有のreview済みvulnerability／license policy
+- GitHub-hosted runnerとrepository administrator権限
+
+Unsupported manifestまたはtransitive dependencyを取得できないecosystemでは、このprofileを導入済みとしません。
 
 ### 1. Workflowをcopyする
 
-Adopter repository rootから実行します。既存workflowを上書きしません。
+Adopter repository rootから実行します。既存workflowは上書きしません。
 
 ```bash
 test ! -e .github/workflows/dependency-review.yml
@@ -80,111 +76,58 @@ cp controls/dependency-security/dependency-change-review/secure/github/dependenc
   .github/workflows/dependency-review.yml
 ```
 
-Workflowは次を明示します。
+Referenceは`high`以上をblockします。基準変更はSecurity ownerが明示的にreviewしてください。
 
-- `pull_request`
-- Workflow-level `permissions: {}`
-- Job-level `contents: read`
-- Full SHA-pinned Dependency Review Action
-- `high`以上、`runtime, development, unknown`
-- Vulnerability／license check有効
-- `warn-only: false`
-- PRへのwrite permissionなし
+### 2. Required checkにする
 
-Referenceの`allow-licenses`は導入例です。[SPDX License List](https://spdx.org/licenses/)を使い、製品license、
-link方式、配布形態、契約に合わせてSecurity／Legalがactivation前にreviewしてください。
+1. Workflowをdefault branchへ通常PRで追加する。
+2. Dependency-only PRを1回作り、job名`Dependency Review`を確定する。
+3. `Settings` → `Rules` → `Rulesets`でdefault branch向けbranch rulesetを作る。
+4. `Enforcement status`を`Active`にする。
+5. `Require status checks to pass`または`Require workflows to pass before merging`で
+   `Dependency Review`を必須にする。
+6. Bypass主体を必要最小限にする。
 
-### 2. Rulesetを有効にする
+Organization-wide設定は
+[Enforcing dependency review across an organization](https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/configure-specific-tools/enforce-dependency-review)、
+ruleset項目は
+[Available rules for rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets)
+を参照します。
 
-1. Harmlessなdependency-only PRを作り、`Dependency Review` jobを1回実行する。
-2. `Settings` → `Rules` → `Rulesets`でdefault branch向けbranch rulesetを作る。
-3. `Enforcement status`を`Active`にする。
-4. Pull requestと最低1名のapprovalを必須にする。
-5. Stale approval dismissalまたはlatest pushへのnon-author approvalを有効にする。
-6. `Dependency Review` workflow／status checkをrequiredにする。
-7. Dependency manifest／lockfileを既存CODEOWNERSへ割り当てる。
-8. Bypass主体を必要最小限にする。
+## 具体的に何を試すか
 
-GitHub Organizationへ一括適用する場合は
-[Enforcing dependency review across an organization](https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/configure-specific-tools/enforce-dependency-review)
-を使います。詳細なcopy、設定、evidence、rollbackは
-[`docs/github-adoption.md`](docs/github-adoption.md)にあります。
+Sandbox repositoryまたは削除予定test branchで、次の順番どおり確認します。
 
-## Safe self-test
+| Test | 操作 | Expected result |
+|---|---|---|
+| 1. Safe diff | 承認済みdependencyをlockfile-onlyで更新 | Direct／transitive差分が表示されjob成功 |
+| 2. Known vulnerable | 修正済みのknown-high versionをinstallせずlockfileへ記録 | Job failure |
+| 3. Failed merge | Test 2のfailureを残してmergeを試す | Rulesetが拒否 |
+| 4. Missing/error | Jobをcancel、またはrequired checkが未生成の状態にする | Rulesetが拒否 |
 
-### Positive
-
-Disposable branchで、既に承認済みでcurrent advisory findingがないdependencyのexact versionだけを更新します。
-Manifestとlockfileを同じPRへ含め、dependency codeは実行しません。
-
-期待結果:
-
-- `Dependency Review`が`success`
-- Base-to-head dependency差分がsummaryへ表示される
-- Author以外のrequired approvalがない間はmergeできない
-
-### Inert negative
-
-Disposable test repositoryまたは削除予定test branchで、
-[GitHub Advisory Database](https://github.com/advisories)にある修正済みのknown-vulnerable versionを
-manifest／lockfileへ記録します。Packageをinstall、import、executeしません。npmのlockfile-only例は次です。
+Negative testでは[GitHub Advisory Database](https://github.com/advisories)から対象ecosystemの修正済みversionを選び、
+dependency codeをinstall、import、executeしません。npmの例:
 
 ```bash
 npm install --package-lock-only --ignore-scripts --save-exact PACKAGE@AFFECTED_VERSION
 ```
 
-`high`以上ならjobがfailureとなり、required checkがmergeを止めることが期待結果です。実在malware、credential、
-production repositoryをtestに使いません。
+Test用PRとbranchは結果を記録した後に削除します。実在malware、credential、production dependencyを使いません。
 
-### Error and coverage
-
-- Missing、cancelled、timed out、action-required checkでmergeできない。
-- Graph／API／runner failureをsuccessへ変換しない。
-- Unsupported manifestのempty diffをcontrol successとして記録しない。
-- Snapshot warningがretry後も残る場合はAction conclusionを確認する。
-- License unknownはmanual reviewへ送り、自動license approvalとして記録しない。
-
-Dependency Review Actionはlicenseを判定できないdependencyを通知しますが、公式仕様上は必ずしもjobをfailさせません。
-[Action configuration](https://github.com/actions/dependency-review-action#configuration-options)の境界を保持し、
-unknown licenseを自動block済みと主張しません。
-
-## Expected status and recovery
+## 判定
 
 | State | Meaning | Merge |
 |---|---|---|
-| `PASS` | Supported graphを評価し、threshold／license findingなし | Required review後の候補 |
-| `FAIL` | Vulnerability、license、review policy違反 | Block |
-| `ERROR` | Action、API、runner、graph、workflow評価失敗 | Block |
-| `NOT_CHECKED` | Unsupported ecosystem、live setting未確認、evidenceなし | Blockまたはmanual fallback |
+| `PASS` | Supported diffを評価しthreshold findingなし | 他の条件を満たせば候補 |
+| `FAIL` | Threshold以上のknown vulnerability | Block |
+| `ERROR` | Action、API、runner、graphの実行失敗 | Block |
+| `NOT_CHECKED` | Unsupported ecosystem、empty coverage、live未確認 | 導入済みとしない |
 
-Recoveryはgraph、repository plan、runner、API、manifest coverage、policyを修復して再実行します。Threshold低下、
-`warn-only`、required check解除、broad allowで通しません。
+Snapshot warningがretry後も残る場合は、successを完全な評価と推測しません。Action conclusionと表示された差分を確認し、
+完全性を判断できなければ`NOT_CHECKED`とします。Recoveryはgraph、plan、runner、API、manifest coverageを修復して
+再実行します。`warn-only`やrequired check解除で通しません。
 
-## Rollback
-
-1. [`manual review fallback`](docs/manual-review-fallback.md)とownerを先に有効化する。
-2. Required workflow／status check entryだけをrulesetからreview付きで外す。
-3. Copyした`.github/workflows/dependency-review.yml`だけを通常PRで削除する。
-4. Dependency graph、branch protection、他security workflowを一括無効化しない。
-5. Adoption stateを`NOT_CHECKED`へ戻し、manual reviewと移行期限を記録する。
-
-## Guidance-first fallback
-
-GitHub機能、plan、supported ecosystemを利用できない場合は
-[`docs/manual-review-fallback.md`](docs/manual-review-fallback.md)を正式fallbackとします。
-
-- Dependency-only PR
-- Manifestとlockfileの同時提出
-- Package manager／provider標準出力によるbase-to-head diff
-- Exact version、direct／transitive path、scope、advisory、licenseのreview
-- Author以外の最新差分承認
-- Protected branch
-- 判定不能時のmerge拒否
-
-ChecklistやPR本文をautomation evidenceにしません。GitLab、自前CI、unsupported package manager向けの
-provider-neutral adapterは、具体要件とharmless testが揃うまで追加しません。
-
-## Repository verification
+## Local regression test
 
 Repository rootから実行します。
 
@@ -192,90 +135,72 @@ Repository rootから実行します。
 make verify-control CONTROL=PSB-DEPS-004
 ```
 
-直接実行する場合:
+このtestは[`secure/github/dependency-review.yml`](secure/github/dependency-review.yml)について次を確認します。
 
-```bash
-python3 controls/dependency-security/dependency-change-review/scripts/verify_github_workflow.py \
-  controls/dependency-security/dependency-change-review/secure/github/dependency-review.yml
+- `pull_request`、read-only permission、full SHA-pinned Action
+- Vulnerability check、high threshold、runtime／development／unknown scope、blocking mode
+- [`insecure fixture`](insecure/github/dependency-review.yml)の`warn-only: true`を拒否
+- Missing workflowをclean resultにしない
+
+Local testはGitHub dependency graph、ruleset、provider health、実PRのmerge拒否を証明しません。
+
+Expected outputと終了状態:
+
+```text
+PASS pull-request dependency review is SHA-pinned and read-only
+PASS high-severity changed dependencies use blocking mode across all scopes
+PASS warn-only configuration is rejected and missing workflow remains ERROR
+NOT_CHECKED live dependency diff and required-ruleset merge rejection
 ```
 
-Local verifierは`0=accepted`、`1=policy finding`、`2=input／parse／tool error`を返します。
+このreferenceが保たれていればexit `0`、workflow policy違反はnon-zero、input unavailableはtest内部で
+`ERROR`として区別されます。`NOT_CHECKED`はlocal testの失敗ではなく、live verificationが別途必要という境界です。
 
-Automated testは次を確認します。
+## 誰が何をするか
 
-- Secure workflowのevent、permission、Action identity、threshold、scope、license policy
-- Insecure workflowのprivileged trigger、broad permission、disabled checks、`warn-only`
-- Missing workflowが`ERROR`
-- 既存offline contractのdirect／transitive delta、advisory freshness、non-author approval、malformed input
+- Developer: Manifestとlockfileを同じdependency-only PRへ含める。
+- Repository administrator: Dependency graph、workflow、active ruleset、required checkを設定する。
+- Security: Severity threshold、negative test結果、unsupported coverageをreviewする。
+- Platform／SRE: Runnerとprovider outageを復旧し、障害時にrequired checkを外さない。
 
-既存[`scripts/verify.py`](scripts/verify.py)とnormalized JSONはprovider-neutralなoffline decision contractです。
-実lockfileをparseせず、GitHub settingやorganization adoptionを証明しません。
+## 他controlとの分担
 
-## 6つのatomic check
+- [`PSB-DEPS-001`](../release-cooldown/README.md): Registry routeとrelease cooldown
+- [`PSB-DEPS-002`](../install-script-execution/README.md): Install時のcode execution
+- [`PSB-DEPS-003`](../lockfile-integrity/README.md): Exact version、frozen graph、artifact hash
+- [`PSB-DETECT-001`](../../detection-verification/integrity-verified-scanner/README.md): Repository／artifact全体の継続SCA
+- [`PSB-CICD-001`](../../cicd-security/action-sha-pinning/README.md): Action SHA pin
+- [`PSB-CICD-004`](../../cicd-security/actions-least-privilege/README.md): Workflow permission
+- [`PSB-CICD-005`](../../cicd-security/untrusted-pr-boundary/README.md): Untrusted PR境界
+- [`PSB-REL-001`](../../release-integrity/signature-provenance-verification/README.md): Provenance verification
+- [`PSB-GOV-002`](../../governance-operations/time-bound-security-exceptions/README.md): Exception lifecycle
 
-| Check | Required outcome | Verification boundary |
-|---|---|---|
-| `DCR-001` | Required checkがexact PR base／headとstable identityへ結び付く | Static＋live |
-| `DCR-002` | Supported direct／transitive graph差分が完全に表示される | Hybrid |
-| `DCR-004` | High以上のknown vulnerabilityをblockする | Automated＋live |
-| `DCR-005` | SPDX allowlistを適用し、unknownをmanual reviewする | Hybrid |
-| `DCR-007` | Author以外が最新差分を承認する | Live ruleset |
-| `DCR-009` | Action／graph／provider failureをapprovalにしない | Automated＋live |
+License policy、non-author approval、provider-neutral lockfile parserをこの基本profileへ含めません。
 
-Source、provenance、exception lifecycleはこの一覧へ重複させず、owning controlをcomposeします。
+## Evidence and rollback
 
-## 既存controlとの分担
+導入証跡にはrepository、default branch、取得時刻、supported manifest、workflow SHA、active ruleset、required check、
+4つのlive test結果を残します。Token、private package名、source code、raw logは公開証跡へ保存しません。
 
-| Control | Responsibility |
-|---|---|
-| [`PSB-DEPS-001`](../release-cooldown/README.md) | Managed registry routeとrelease cooldown |
-| [`PSB-DEPS-002`](../install-script-execution/README.md) | Install-time code executionのdefault deny |
-| [`PSB-DEPS-003`](../lockfile-integrity/README.md) | Frozen graph、registry origin、artifact hash |
-| `PSB-DEPS-004` | Base-to-head dependency risk reviewとmerge gate |
-| [`PSB-CICD-001`](../../cicd-security/action-sha-pinning/README.md) | External Actionのimmutable SHA |
-| [`PSB-CICD-004`](../../cicd-security/actions-least-privilege/README.md) | Workflow token permission |
-| [`PSB-CICD-005`](../../cicd-security/untrusted-pr-boundary/README.md) | Fork／untrusted PR boundary |
-| [`PSB-DETECT-001`](../../detection-verification/integrity-verified-scanner/README.md) | Repository／artifact全体のSCA |
-| [`PSB-REL-001`](../../release-integrity/signature-provenance-verification/README.md) | Signature／provenance expectation |
-| [`PSB-GOV-002`](../../governance-operations/time-bound-security-exceptions/README.md) | Exact、owned、time-bound exception lifecycle |
-
-## Evidence boundary
-
-Live adoption evidenceはstable repository identity、取得時刻、dependency graph setting、supported manifest、
-workflow path／Action SHA、active ruleset、required check、review rule、positive／negative／error runを含む
-organization-owned sanitized recordです。
-
-Fixtureの`PASS`、手書きJSON、workflow fileの存在、framework mapping、catalog statusをlive adoptionへ変換しません。
-Token、private package名、source code、raw provider response、license legal adviceをpublic evidenceへ保存しません。
+Rollback時は代替のPR dependency gateを先に有効化し、rulesetの該当required checkとcopyしたworkflowだけを
+review付きで外します。Dependency graph、branch protection、他のsecurity workflowは無効化しません。
 
 ## Limitations
 
-- GitHubのsupported ecosystem、plan、dependency graph data qualityへ依存する。
-- Ecosystemによってtransitive relationshipやlicense metadataのcoverageが異なる。
-- Action v5はunknown licenseを必ずしもfailさせないため、manual reviewが必要である。
-- Snapshot warning retryはprovider dataの完全性を自動的に証明しない。
-- Known advisoryがないmalicious package、未知脆弱性、maintainer intentは検出できない。
-- Required rulesetとCODEOWNERSのlive enforcementはrepository fixtureで証明できない。
-- Offline normalized graphは実package-manager parserではない。
-- Framework mappingはsupporting relationshipであり、formal complianceやcomplete coverageではない。
+- GitHub plan、dependency graph、supported ecosystem、advisory dataへ依存する。
+- Clean resultは未知脆弱性やmalicious packageがないことを保証しない。
+- Snapshot warningのretryはprovider dataの完全性を証明しない。
+- Static repository testはlive merge enforcementを証明しない。
+- Mappingはformal complianceやcomplete supply-chain coverageを意味しない。
 
-## Frameworks
+## Frameworks and guides
 
-- [OpenSSF OSPS Baseline 2026.02.19 — OSPS-VM-05.01／05.02／05.03](https://baseline.openssf.org/versions/2026-02-19#osps-vm-05)
+- [OpenSSF OSPS Baseline 2026.02.19 — OSPS-VM-05](https://baseline.openssf.org/versions/2026-02-19#osps-vm-05)
 - [NIST SP 800-218 SSDF 1.1](https://csrc.nist.gov/pubs/sp/800/218/final)
 - [MITRE ATT&CK T1195.001](https://attack.mitre.org/techniques/T1195/001/)
-- [SPDX License List](https://spdx.org/licenses/)
-
-Mappingsは[`control.yaml`](control.yaml)のcheck-specific relationshipがcanonical sourceです。
-
-## Implementation guides
-
 - [GitHub dependency review](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependency-review)
 - [Configure the dependency review action](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/configure-dependency-review-action)
 - [Dependency Review Action](https://github.com/actions/dependency-review-action)
 - [GitHub dependency graph](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependency-graph)
-- [Supported package ecosystems](https://docs.github.com/en/code-security/reference/supply-chain-security/dependency-graph-supported-package-ecosystems)
-- [GitHub ruleset rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets)
 - [GitHub Actions secure use](https://docs.github.com/en/actions/reference/security/secure-use)
 - [`REF-DEPS-002` source record](../../../docs/SECURITY_GUIDANCE_SOURCES.md#ref-deps-002)
-- [Software supply-chain implementation principles](../../../docs/SUPPLY_CHAIN_PRINCIPLES.md)

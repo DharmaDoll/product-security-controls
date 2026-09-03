@@ -1,7 +1,0 @@
-BLOCK DCR-007 target=review reason=non-author-approval-missing
-BLOCK DCR-005 target=pkg:generic/core-lib@9.9.9 reason=unapproved-or-unknown-license
-BLOCK DCR-004 target=pkg:generic/core-lib@9.9.9 reason=advisory-GHSA-1111-2222-3333
-BLOCK DCR-005 target=pkg:generic/malicious-helper@1.0.0 reason=unapproved-or-unknown-license
-BLOCK DCR-004 target=pkg:generic/malicious-helper@1.0.0 reason=advisory-GHSA-4444-5555-6666
-BLOCK DCR-009 target=review reason=local-exception-format-is-unsupported
-RESULT BLOCKED 6 finding(s)

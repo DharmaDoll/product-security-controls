@@ -1,8 +1,0 @@
-{
-  "schema": "psb-dependency-review-policy/1.0",
-  "policy_bundle_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-  "allowed_licenses": ["Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "MIT"],
-  "vulnerability_threshold": "high",
-  "minimum_non_author_approvals": 1,
-  "maximum_advisory_age_seconds": 86400
-}
