@@ -88,12 +88,19 @@
     },
     "verification": {
       "type": "object",
-      "required": ["commands", "expected"],
+      "required": ["expected"],
       "properties": {
+        "type": {
+          "enum": ["automated", "manual", "external-evidence", "hybrid"]
+        },
         "commands": {
           "type": "array",
           "minItems": 1,
           "items": {"type": "string", "minLength": 1}
+        },
+        "procedure": {
+          "type": "string",
+          "pattern": "^README\\.md#[a-z0-9-]+$"
         },
         "expected": {
           "type": "array",
@@ -101,6 +108,23 @@
           "items": {"type": "string", "minLength": 1}
         }
       },
+      "allOf": [
+        {
+          "if": {
+            "required": ["type"],
+            "properties": {
+              "type": {"enum": ["manual", "external-evidence"]}
+            }
+          },
+          "then": {
+            "required": ["procedure"],
+            "not": {"required": ["commands"]}
+          },
+          "else": {
+            "required": ["commands"]
+          }
+        }
+      ],
       "additionalProperties": false
     },
     "assessment": {

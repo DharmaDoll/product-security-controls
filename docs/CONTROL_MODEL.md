@@ -115,6 +115,30 @@ the same generic control summary across every check.
 Context is reviewed control metadata, not generated filler. Do not copy one
 generic paragraph across rows merely to satisfy validation.
 
+## Top-level verification modes
+
+The top-level `verification` object describes how the reference control itself
+can be checked. Existing controls without an explicit `type` remain
+`automated` for backward compatibility.
+
+- `automated` and `hybrid` controls declare executable `commands` and ship
+  `tests/test.sh`.
+- `manual` and `external-evidence` controls declare a `procedure` link such as
+  `README.md#verification` and do not add a test merely to satisfy the runner.
+- A manual or external-evidence control is reported as `NOT_CHECKED`, never as
+  verified, until an adopter performs the linked procedure with live evidence.
+- `make verify` may skip non-automated controls while reporting their count.
+  Selecting one directly with `make verify-control CONTROL=<id>` returns exit
+  `2` together with its procedure link so automation cannot mistake it for a
+  passing test.
+
+Use `manual` only when the security outcome depends on semantic review,
+provider configuration, or organization operation that a repository fixture
+cannot prove. A copyable secure configuration is still an implementation; its
+presence is not evidence that an organization activated it. If a meaningful
+read-only check or safe end-to-end test becomes available, change the mode to
+`hybrid` or `automated` and add the corresponding negative and failure tests.
+
 ## Imported application assessment profiles
 
 An organization-owned application vulnerability assessment is a source profile,

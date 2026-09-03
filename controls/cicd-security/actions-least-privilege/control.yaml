@@ -1,7 +1,7 @@
 id: PSB-CICD-004
 title: Enforce explicit least-privilege GitHub Actions permissions
 domain: cicd-security
-summary: 暗黙のGITHUB_TOKEN権限を拒否し、各ジョブをレビュー済みの権限セット、信頼するGit参照の条件、必要な保護環境へ厳密に結び付ける。
+summary: GitHub Actionsの暗黙権限をdeny-allに置き換え、各jobのGITHUB_TOKENとOIDC発行権限を実際の目的へ限定する。
 check_context_version: "1.0"
 security_functions:
   - prevent
@@ -10,25 +10,21 @@ threats:
   - id: CICD-IMPLICIT-TOKEN-PERMISSIONS
     description: Workflow or reusable-workflow caller inherits a repository default that grants more GITHUB_TOKEN access than reviewers can see in the job.
   - id: CICD-OVERPRIVILEGED-JOB
-    description: Malicious or compromised job code uses unnecessary write or OIDC permissions to modify source, packages, deployments, attestations, or cloud resources.
+    description: Malicious or compromised job code uses unnecessary write or OIDC permissions to modify source packages deployments attestations or cloud resources.
 implementations:
   insecure:
     - insecure/workflow.yml
-    - insecure/policy.json
   secure:
     - secure/workflow.yml
-    - secure/policy.json
-    - secure/repository-policy.json
 verification:
-  commands:
-    - make verify-control CONTROL=PSB-CICD-004
+  type: manual
+  procedure: README.md#verification
   expected:
-    - workflow permissions default to explicit deny-all and every job declares an exact permission set
-    - test report release and deploy jobs stay within purpose-specific permission ceilings
-    - write-capable jobs use reviewed ref conditions and release or deploy jobs use protected environments
-    - id-token write is limited to exact release or deploy jobs that require token federation
-    - reusable-workflow callers cannot inherit implicit or broader permissions
-    - unsupported syntax policy gaps and parser failures remain distinct from clean results
+    - every workflow uses top-level deny-all and every job declares only the permissions required by its reviewed operations
+    - write and OIDC jobs are limited to reviewed refs and release or deploy jobs use live protected environments
+    - organization and repository defaults required checks and environment protection are confirmed from current GitHub settings
+    - PSB-CICD-003 reports obvious excessive permissions and scanner failure remains distinct from a clean result
+    - missing partial stale or unavailable live evidence remains NOT_CHECKED or ERROR rather than PASS
 checks:
   - id: PERM-001
     title: Workflows deny token permissions by default and jobs opt in explicitly
@@ -40,18 +36,19 @@ checks:
     context:
       threat_actor: repository administrator misconfiguration or contributor relying on a permissive inherited default
       attack_or_failure_scenario: a job without visible permissions receives organization or repository default token access
-      why_required: explicit top-level deny-all and job opt-in make the effective token boundary reviewable in the workflow change
+      why_required: workflow deny-all and job opt-in make the intended token boundary visible even when provider defaults change
     verification:
-      type: automated
-      method: make verify-control CONTROL=PSB-CICD-004
-      expected: absent permissions read-all write-all and non-deny top-level defaults are rejected
+      type: hybrid
+      method: Review every workflow and use the PSB-CICD-003 excessive-permissions gate then confirm the live default workflow permission
+      expected: no workflow or job inherits an implicit broad permission and the provider default is restricted
       evidence:
-        - sanitized verifier output
-        - reviewed permissions policy
+        - exact workflow revision
+        - sanitized PSB-CICD-003 result
+        - current default workflow permission setting
     mapping_status: reviewed
   - id: PERM-002
-    title: Job permissions exactly match the reviewed job purpose
-    required_state: exact policy-approved permission set within the test report release or deploy ceiling
+    title: Job permissions match the reviewed job purpose
+    required_state: each permission is necessary for one documented operation performed by that job
     responsible_role: repository-admin
     applies_to:
       - github-actions-job
@@ -59,18 +56,18 @@ checks:
     context:
       threat_actor: compromised Action dependency malicious build step or maintainer granting convenience permissions
       attack_or_failure_scenario: job code receives write access unrelated to its test reporting release or deployment activity
-      why_required: purpose-bound exact sets reduce the impact of code execution inside one job and prevent unused privilege accumulation
+      why_required: semantic operation-to-permission review removes authority that syntax-only scanners cannot prove unnecessary
     verification:
-      type: automated
-      method: make verify-control CONTROL=PSB-CICD-004
-      expected: purpose mismatches and permissions outside the reviewed exact set are rejected
+      type: manual
+      method: Compare each job operation with the current GitHub permission reference during workflow review
+      expected: every granted scope and access level has one necessary operation and unused scopes are absent
       evidence:
-        - sanitized verifier output
-        - job-purpose sidecar policy
+        - reviewed workflow diff
+        - operation to permission review record
     mapping_status: reviewed
   - id: PERM-003
     title: OIDC token issuance is limited to the exact federation job
-    required_state: id-token write appears only in reviewed release or deploy jobs
+    required_state: id-token write appears only in a job that performs a reviewed token exchange
     responsible_role: ci-platform
     applies_to:
       - github-actions-job
@@ -78,18 +75,18 @@ checks:
     context:
       threat_actor: malicious step or dependency requesting a GitHub OIDC token from an unrelated job
       attack_or_failure_scenario: a test or reporting job exchanges an OIDC token against a cloud trust policy and gains workload access
-      why_required: id-token write enables token issuance even though it does not directly grant repository writes and must be scoped independently
+      why_required: id-token write enables token issuance even though it does not directly grant repository writes and must be reviewed separately
     verification:
-      type: automated
-      method: make verify-control CONTROL=PSB-CICD-004
-      expected: id-token write outside an approved release or deploy purpose is rejected
+      type: manual
+      method: Find every id-token write grant and trace it to the exact token exchange step and PSB-CICD-006 trust policy
+      expected: only reviewed federation jobs can request an OIDC token
       evidence:
-        - negative-test output
-        - reviewed permissions policy
+        - workflow revision
+        - token exchange design review
     mapping_status: reviewed
   - id: PERM-004
     title: Write-capable jobs are restricted to reviewed refs and environments
-    required_state: exact trusted-ref condition plus protected environment for release and deploy
+    required_state: exact trusted-ref condition plus live protected environment for release and deploy
     responsible_role: repository-admin
     applies_to:
       - privileged-ci-job
@@ -97,18 +94,19 @@ checks:
     context:
       threat_actor: untrusted branch contributor compromised maintainer or accidental trigger
       attack_or_failure_scenario: a job with publication deployment or token-issuance capability runs for an unreviewed ref without environment approval
-      why_required: permission minimization limits capability while ref and environment gates limit when that remaining capability can be exercised
+      why_required: permission minimization limits capability while ref and environment gates limit when the remaining capability can be exercised
     verification:
-      type: hybrid
-      method: make verify-control CONTROL=PSB-CICD-004 and review GitHub Environment protection settings
-      expected: write jobs lack neither the reviewed condition nor the required protected environment
+      type: external-evidence
+      method: Inspect the current workflow condition GitHub Environment protection deployment ref policy required reviewer and bypass setting
+      expected: privileged jobs cannot start for an unapproved ref or before required environment protection passes
       evidence:
-        - sanitized verifier output
-        - GitHub Environment protection evidence
+        - exact workflow revision
+        - current GitHub Environment setting
+        - harmless protected-job drill result
     mapping_status: reviewed
   - id: PERM-005
     title: Reusable-workflow callers pass explicit non-escalating permissions
-    required_state: caller job permission set is explicit and bounded by its reviewed purpose
+    required_state: caller job permission set is explicit and limited to the reviewed reusable task
     responsible_role: repository-admin
     applies_to:
       - reusable-workflow-caller
@@ -116,41 +114,44 @@ checks:
     context:
       threat_actor: compromised reusable workflow or caller maintainer omitting the token boundary
       attack_or_failure_scenario: called workflow receives an implicit repository default or a caller grants broader permissions than the reusable task needs
-      why_required: GitHub prevents called workflows from elevating caller permissions but cannot minimize an already broad or implicit caller token
+      why_required: a called workflow cannot elevate caller permissions but it also cannot minimize an already broad or implicit caller token on the callers behalf
     verification:
-      type: automated
-      method: make verify-control CONTROL=PSB-CICD-004
-      expected: omitted and purpose-exceeding caller permissions are rejected
+      type: hybrid
+      method: Review every reusable workflow caller and run the PSB-CICD-003 excessive-permissions gate
+      expected: each caller declares a purpose-bound permission set and no caller depends on an implicit default
       evidence:
-        - negative-test output
-        - reviewed caller policy
+        - reusable workflow caller inventory
+        - reviewed workflow revision
+        - sanitized PSB-CICD-003 result
     mapping_status: reviewed
   - id: PERM-006
-    title: Permission verification fails closed
-    required_state: missing policy unreviewed workflow unsupported YAML and parse failure return an error
+    title: Permission verification failures remain non-clean
+    required_state: scanner failure incomplete workflow inventory and unavailable live settings are not reported as PASS
     responsible_role: ci-platform
     applies_to:
-      - ci-permission-verifier
+      - ci-permission-verification
     context:
-      threat_actor: unsupported YAML construct stale policy malformed input or verifier execution failure
-      attack_or_failure_scenario: one or more jobs cannot be evaluated but the repository is reported as least privilege
-      why_required: a distinct error state prevents incomplete permission coverage from becoming clean evidence
+      threat_actor: scanner failure partial inventory stale provider evidence or operator confusing unavailable verification with a clean result
+      attack_or_failure_scenario: one or more workflows or live settings cannot be evaluated but the repository is reported as least privilege
+      why_required: explicit NOT_CHECKED and ERROR states prevent incomplete static or live evidence from becoming an adoption claim
     verification:
-      type: automated
-      method: make verify-control CONTROL=PSB-CICD-004
-      expected: evaluation failures use exit 2 and cannot be interpreted as pass
+      type: external-evidence
+      method: Inspect required scanner status workflow inventory completeness evidence freshness and provider query health
+      expected: only complete current review can be PASS while missing evidence is NOT_CHECKED and execution failure is ERROR
       evidence:
-        - negative-test output
+        - required scanner run result
+        - complete workflow inventory
+        - live setting review record
     mapping_status: unmapped
 mappings:
   - framework: github-security-guidance
     version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
     id: GHAS-CONCEPT-GITHUB-TOKEN
-    relationship: verifies
+    relationship: addresses
     confidence: high
-    rationale: The control directly verifies that each job-visible GITHUB_TOKEN capability is explicit and purpose-bound while separately constraining OIDC issuance and reusable-workflow callers.
+    rationale: The secure configuration and review procedure directly establish explicit job-visible GITHUB_TOKEN boundaries while keeping live adoption separate.
     reviewer: product-security
-    review_date: "2026-07-30"
+    review_date: "2026-09-02"
     applies_to:
       - PERM-001
       - PERM-002
@@ -160,11 +161,11 @@ mappings:
   - framework: github-security-guidance
     version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
     id: GHAS-REF-SECURE-USE
-    relationship: verifies
+    relationship: supports
     confidence: high
-    rationale: The control verifies GitHub's least-privilege guidance by making the GITHUB_TOKEN default deny-all and reviewing exact job-level grants, while environment administration remains external evidence.
+    rationale: Workflow deny-all purpose-bound job grants and live setting review implement GitHub least-privilege guidance without treating fixture configuration as adoption evidence.
     reviewer: product-security
-    review_date: "2026-07-30"
+    review_date: "2026-09-02"
     applies_to:
       - PERM-001
       - PERM-002
@@ -176,9 +177,9 @@ mappings:
     id: GH-ADMIN-ACTIONS-REPOSITORY
     relationship: related-to
     confidence: medium
-    rationale: Repository Actions settings define hosted defaults and allowed execution policy that compose with explicit job permissions, while this static control does not claim to collect the live repository setting.
+    rationale: Repository Actions settings define the live default workflow permission and required administration evidence that compose with explicit job permissions.
     reviewer: product-security
-    review_date: "2026-08-14"
+    review_date: "2026-09-02"
     applies_to:
       - PERM-001
       - PERM-004
@@ -187,9 +188,9 @@ mappings:
     id: GH-ADMIN-ACTIONS-ORGANIZATION
     relationship: related-to
     confidence: medium
-    rationale: Organization Actions policy can override or constrain repository execution and token defaults, so adopters need separate live evidence in addition to this workflow-local least-privilege verifier.
+    rationale: Organization Actions policy can override or constrain repository defaults and therefore requires separate live review.
     reviewer: product-security
-    review_date: "2026-08-14"
+    review_date: "2026-09-02"
     applies_to:
       - PERM-001
       - PERM-004
@@ -198,32 +199,32 @@ mappings:
     id: OSPS-AC-04.01
     relationship: supports
     confidence: high
-    rationale: Explicit workflow deny-all and mandatory job permission maps avoid a task silently receiving a more permissive pipeline or repository default.
+    rationale: Explicit workflow deny-all and mandatory job opt-in avoid a task silently receiving a more permissive pipeline or repository default.
     reviewer: product-security
-    review_date: "2026-07-30"
+    review_date: "2026-09-02"
     applies_to:
       - PERM-001
       - PERM-005
   - framework: openssf-osps-baseline
     version: "2026.02.19"
     id: OSPS-AC-04.02
-    relationship: verifies
-    confidence: high
-    rationale: Exact job-purpose policies and negative fixtures directly verify that assigned CI/CD permissions stay within the minimum reviewed privileges for the corresponding activity.
+    relationship: addresses
+    confidence: medium
+    rationale: The implementation requires each job operation to be reviewed against its exact permissions but live organization adoption remains manual evidence.
     reviewer: product-security
-    review_date: "2026-07-30"
+    review_date: "2026-09-02"
     applies_to:
       - PERM-002
       - PERM-003
       - PERM-004
       - PERM-005
 limitations:
-  - The sidecar job purpose and exact permission set require semantic human review and can encode a bad decision if approved carelessly.
-  - Static ref-condition matching does not prove branch protection tag protection or GitHub Environment approval rules are enabled.
-  - GITHUB_TOKEN restrictions do not reduce permissions of separately supplied PATs GitHub App tokens cloud credentials or other secrets.
-  - Actions and shell steps in one job share that job token so different trust boundaries should use separate jobs.
-  - Fork safety and pull_request_target behavior are delegated to PSB-CICD-005 and cloud OIDC trust conditions to PSB-CICD-006.
-  - Unknown GitHub permission scopes or unsupported YAML constructs fail closed until the verifier is reviewed and updated.
-status: prototype
+  - A reviewer can approve an unnecessary permission because job intent cannot be derived mechanically from YAML alone.
+  - Static analysis detects obvious excessive permissions but does not prove semantic minimum privilege or live GitHub settings.
+  - GITHUB_TOKEN restrictions do not reduce separately supplied PAT GitHub App cloud or other credentials.
+  - GitHub Environment features and required reviewer availability depend on repository visibility and provider plan.
+  - Actions and shell steps in one job share that job token so different trust boundaries require separate jobs.
+  - Fork safety remains PSB-CICD-005 and cloud OIDC claim trust remains PSB-CICD-006.
+status: reference
 owner: product-security
-evidence_level: E3
+evidence_level: E1
