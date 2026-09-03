@@ -1,1 +1,1 @@
-PASS install execution policy: 4 ecosystem profiles verified, 1 approved script
+PASS install execution guardrails: npm pnpm Bun and pip profiles verified

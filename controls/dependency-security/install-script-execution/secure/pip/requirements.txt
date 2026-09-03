@@ -1,5 +1,3 @@
 --only-binary=:all:
---require-hashes
 
-fixture-wheel==1.2.3 \
-    --hash=sha256:0000000000000000000000000000000000000000000000000000000000000000
+fixture-wheel==1.2.3

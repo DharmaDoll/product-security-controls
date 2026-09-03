@@ -1,7 +1,7 @@
 id: PSB-DEPS-002
 title: install時の任意コード実行をdefault denyにする
 domain: dependency-security
-summary: 依存パッケージ導入時のライフサイクルスクリプトとソースビルドを既定で拒否し、必要な実行だけを範囲を限定して承認する。
+summary: Package managerのnative default denyを維持し、dependency lifecycle script、native build、Python source buildの未承認実行を防ぐ。
 check_context_version: "1.0"
 security_functions:
   - prevent
@@ -10,16 +10,15 @@ threats:
   - id: DEPENDENCY-INSTALL-SCRIPT-EXECUTION
     description: 侵害または偽装されたdependencyのinstall scriptやsource build backendが開発端末またはCI権限で任意コードを実行する。
   - id: DEPENDENCY-BUILD-ALLOWLIST-BYPASS
-    description: fail-open設定、broad allowlist、期限切れ例外、またはsdist fallbackによってinstall-time code executionの拒否が迂回される。
+    description: 古いmajor、dangerous全許可、broad native approval、explicit trust、またはsdist fallbackによってinstall-time code executionの拒否が迂回される。
 implementations:
   insecure:
-    - insecure/install-execution-policy.json
     - insecure/npm/.npmrc
     - insecure/pnpm/pnpm-workspace.yaml
     - insecure/bun/bunfig.toml
+    - insecure/bun/package.json
     - insecure/pip/requirements.txt
   secure:
-    - secure/install-execution-policy.json
     - secure/npm/.npmrc
     - secure/pnpm/pnpm-workspace.yaml
     - secure/bun/bunfig.toml
@@ -28,91 +27,92 @@ verification:
   commands:
     - make verify-control CONTROL=PSB-DEPS-002
   expected:
-    - npmとBunのrepository-owned設定がinstall scriptを全停止する
-    - pnpm 11が未review buildをerrorにしexact versionの時限承認だけを許可する
-    - pipがsource distributionを拒否しexact pinとSHA-256 hashを要求する
-    - broadまたは期限切れの承認とfail-open設定が拒否される
+    - npmのunreviewed scriptがerrorになりdangerous全許可が拒否される
+    - pnpm 11および12が未review buildをerrorにしbroad positive approvalを拒否する
+    - Bun strict profileがtrusted dependencyを含むinstall scriptを停止する
+    - pipがsource distributionへのfallbackを拒否する
     - 設定欠落またはparse失敗がcleanな結果と区別される
 checks:
   - id: INS-001
-    title: npm and Bun dependency install scripts are disabled
-    required_state: repository-owned configuration denies lifecycle scripts
+    title: npm and Bun do not run unreviewed dependency scripts
+    required_state: npm unreviewed scripts fail and the Bun strict profile blocks install scripts
     responsible_role: developer
     applies_to:
       - dependency-install
     context:
-      threat_actor: malicious npm or Bun package publishing lifecycle scripts
-      attack_or_failure_scenario: install automatically executes dependency-controlled code with developer or CI privileges
-      why_required: repository-owned default deny removes the most common implicit execution path before package use
+      threat_actor: malicious npm or Bun package publisher or a maintainer adding an unsafe trust override
+      attack_or_failure_scenario: version drift or explicit trust causes a dependency lifecycle hook to run with developer or CI privileges
+      why_required: explicit repository guardrails preserve the intended denial across npm migration behavior and Bun trusted-dependency paths
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-002
-      expected: npm and Bun profiles that permit install scripts are rejected
+      expected: dangerous npm all-allow and Bun trusted execution outside the strict profile are rejected
       evidence:
         - sanitized verifier output
     mapping_status: reviewed
   - id: INS-002
-    title: pnpm permits only reviewed time-bound builds
-    required_state: unreviewed builds fail and exact approvals expire
+    title: pnpm uses native default deny for dependency builds
+    required_state: unreviewed builds fail and positive allowBuilds entries pin exact versions
     responsible_role: developer
     applies_to:
       - dependency-install
     context:
       threat_actor: compromised pnpm dependency requesting a native or lifecycle build
-      attack_or_failure_scenario: broad or permanent build approval lets unreviewed package versions execute during install
-      why_required: exact time-bound approval limits execution to the reviewed package need and forces reevaluation
+      attack_or_failure_scenario: dangerous all-allow or a broad positive selector lets current and future package versions execute during install
+      why_required: pnpm native strict mode and exact selectors keep the default deny visible without a separate policy engine
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-002
-      expected: broad expired or non-exact build approvals are rejected
+      expected: fail-open settings and non-exact positive build approvals are rejected
       evidence:
         - sanitized verifier output
-        - approved build exception
+        - reviewed native approval diff when an approval exists
     mapping_status: reviewed
   - id: INS-003
-    title: pip rejects source builds and verifies exact artifacts
-    required_state: binary-only exact pins with SHA-256 hashes
+    title: pip rejects source builds
+    required_state: binary-only installation with no source-distribution fallback
     responsible_role: developer
     applies_to:
       - dependency-install
     context:
       threat_actor: malicious Python source distribution or compromised build backend
       attack_or_failure_scenario: pip falls back to source build and executes backend code not represented by the expected wheel
-      why_required: binary-only exact hashes bind installation to reviewed artifacts and avoid source-build execution
+      why_required: binary-only installation removes the PEP 517 backend execution path while artifact integrity remains owned by PSB-DEPS-003
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-002
-      expected: source distributions ranges and missing hashes are rejected
+      expected: missing binary-only policy and explicit source-distribution enablement are rejected
       evidence:
         - sanitized verifier output
     mapping_status: reviewed
   - id: INS-004
-    title: Install execution exceptions are narrow and fail closed
-    required_state: exact reviewed unexpired exceptions only
+    title: Native install-script approvals are narrow and independently reviewed
+    required_state: exact package-version approval with independent review and shared exception evidence when required
     responsible_role: security
     applies_to:
       - dependency-policy
     context:
-      threat_actor: maintainer creating an overly broad exception to resolve installation friction
-      attack_or_failure_scenario: wildcard package approval or expired justification becomes a permanent arbitrary-code path
-      why_required: narrow owned expiring exceptions preserve default deny while allowing explicitly reviewed necessity
+      threat_actor: maintainer using bulk approval or a name-only trust entry to resolve installation friction
+      attack_or_failure_scenario: one approval authorizes unreviewed current and future dependency versions to execute during install
+      why_required: native exact approval plus independent review limits execution without duplicating the PSB-GOV-002 exception lifecycle
     verification:
-      type: automated
-      method: make verify-control CONTROL=PSB-DEPS-002
-      expected: broad expired and fail-open exceptions are rejected
+      type: hybrid
+      method: Native config verifier plus exact approval review and PSB-GOV-002 decision when applicable
+      expected: no bulk or name-only positive approval and any exception is active and exactly scoped
       evidence:
         - negative-test output
-        - exception approval
+        - reviewed native approval diff
+        - active PSB-GOV-002 decision when an exception is required
     mapping_status: reviewed
   - id: INS-005
-    title: Install-policy parsing failures are not clean results
+    title: Install-guardrail parsing failures are not clean results
     required_state: missing or malformed configuration produces an error
     responsible_role: developer
     applies_to:
       - dependency-verifier
     context:
       threat_actor: missing malformed or unsupported package-manager configuration
-      attack_or_failure_scenario: install execution policy cannot be evaluated but is reported as safely disabled
+      attack_or_failure_scenario: native install guardrails cannot be evaluated but are reported as safely disabled
       why_required: a distinct error prevents configuration absence from becoming silent permission to execute
     verification:
       type: automated
@@ -140,7 +140,7 @@ mappings:
     id: PW.4.1
     relationship: supports
     confidence: high
-    rationale: third-party component取得時の実行policy、version固定、integrity、例外reviewを検証し、controlled acquisitionとmaintenanceを支援する。
+    rationale: third-party component取得時のnative実行policy、source-build拒否、narrow approval reviewを検証し、controlled acquisitionとmaintenanceを支援する。
     reviewer: product-security
     review_date: "2026-07-27"
     applies_to:
@@ -151,8 +151,9 @@ mappings:
 limitations:
   - Install-time executionを止めてもimport、test、compiler plugin、application runtimeでの悪性code実行は防止しない。
   - Wheel-only installationはsource buildを止めるがwheel内のruntime codeが安全であることは保証しない。
-  - Native buildが必要なdependencyにはcredentialとnetworkを制限した隔離buildおよび期限付き例外が必要になる。
-  - このreferenceのpnpm profileはpnpm 11.xを対象とし、pnpm 10以前の設定を検証しない。
+  - Native buildが必要なdependencyにはcredentialとnetworkを制限した隔離buildおよびPSB-GOV-002の例外判断が必要になる場合がある。
+  - npm 12、npm 11.16+ migration、pnpm 11／12、Bunのdefaultと設定はmajor更新時に再確認する必要がある。
+  - Bunにはdefault trusted dependencyがあり、strict profileを採用しない場合は別途trust inventoryをreviewする必要がある。
   - Package manager、registry、lockfile、binary artifact自体の完全性は別途検証する必要がある。
   - 検証器または設定parseの失敗をcleanな結果として扱ってはいけない。
 status: prototype
