@@ -19,9 +19,7 @@ implementations:
     - secure/trusted-after-merge.yml
 verification:
   type: manual
-  commands:
-    - make verify-control CONTROL=PSB-CICD-005
-    - follow the live verification table in controls/cicd-security/untrusted-pr-boundary/README.md
+  procedure: README.md#verification
   expected:
     - the canonical command reports NOT_CHECKED instead of claiming that repository files prove live adoption
     - every pull-request-related workflow identifies which code and executable state the pull-request author controls

@@ -282,7 +282,7 @@ GitHubは`actions/checkout`にunsafe PR checkoutを防ぐ保護を追加して�
 
 同じPR作成者またはworkflowだけに、trust分類、権限付与、evidence生成、最終判断を完結させない。
 
-## 導入後のmanual verification
+## Verification
 
 このcontrolはcustom parserやsynthetic PASSをsecurity evidenceにしない。対象repositoryで次を確認する。
 
@@ -306,7 +306,7 @@ Statusは次のように記録する。
 make verify-control CONTROL=PSB-CICD-005
 ```
 
-このcommandはlocal testを捏造せず`NOT_CHECKED`とREADME手順を表示し、command自体はexit `0`となる。Exit `0`はmanual controlを正しく案内できたという意味であり、対象repositoryが安全という意味ではない。
+このcommandはlocal testを捏造せず`NOT_CHECKED`とこの手順へのlinkを表示し、exit `2`を返す。Automationが「commandを実行できた」ことを対象repositoryの`PASS`と誤認しないためである。Live確認は上表に従って別途実施する。
 
 ## Recoveryとrollback
 

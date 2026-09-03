@@ -8,6 +8,7 @@ import subprocess
 
 from control_metadata import (
     REPOSITORY_ROOT,
+    control_verification_type,
     controls_by_id,
     discover_controls,
     validate_controls,
@@ -33,23 +34,21 @@ def main() -> int:
             return 2
         controls = [selected]
 
-    automated_count = 0
+    verified_count = 0
     not_checked_count = 0
     for control in sorted(controls, key=lambda item: item["id"]):
-        print(f"==> {control['id']}: {control['title']}", flush=True)
-        verification_type = control["verification"].get("type", "automated")
+        verification_type = control_verification_type(control)
         if verification_type in {"manual", "external-evidence"}:
-            readme = (control["_directory"] / "README.md").relative_to(
-                REPOSITORY_ROOT
-            )
+            procedure = control["verification"]["procedure"]
+            print(f"==> {control['id']}: {control['title']}", flush=True)
             print(
-                f"NOT_CHECKED {control['id']} uses {verification_type} verification; "
-                f"follow {readme}"
+                f"NOT_CHECKED {control['id']}: {verification_type} verification; "
+                f"follow {control['_directory'].relative_to(REPOSITORY_ROOT) / procedure}"
             )
             not_checked_count += 1
             continue
-
         test_script = control["_directory"] / "tests" / "test.sh"
+        print(f"==> {control['id']}: {control['title']}", flush=True)
         result = subprocess.run(
             ["bash", str(test_script)],
             cwd=REPOSITORY_ROOT,
@@ -58,12 +57,14 @@ def main() -> int:
         if result.returncode != 0:
             print(f"{control['id']} verification failed with exit {result.returncode}")
             return 1
-        automated_count += 1
+        verified_count += 1
 
     print(
-        f"verified {automated_count} automated/hybrid control(s); "
-        f"{not_checked_count} manual/external control(s) NOT_CHECKED"
+        f"verified {verified_count} control(s); "
+        f"{not_checked_count} control(s) NOT_CHECKED"
     )
+    if args.control and not_checked_count:
+        return 2
     return 0
 
 

@@ -67,7 +67,7 @@ artifact promotion は、control全体で禁止しないが、このcopy可能�
   README 文字列 test、no-op test を追加しない。
 - Provider setting を変更する automation は、誤設定時の影響と provider／plan 差が大きいため、
   baseline に含めない。Read-only API check は、安全性と完全性を示せる場合だけ追加できる。
-- `make verify-control CONTROL=PSB-CICD-005` は manual control として `NOT_CHECKED` を返す。
+- `make verify-control CONTROL=PSB-CICD-005` は manual control として `NOT_CHECKED` と exit `2` を返す。
   これを live repository の PASS と表現しない。
 
 ## Security invariants and reference profile
@@ -182,6 +182,6 @@ make validate-controls
 python3 -m unittest tests.test_control_metadata
 ```
 
-最初の command の期待結果は `NOT_CHECKED` である。README の live manual verification が完了するまで、
+最初の command の期待結果は `NOT_CHECKED` と exit `2` である。README の live manual verification が完了するまで、
 導入済みまたは PASS と主張しない。Generated index／mapping は user が明示的に求めた場合だけ更新し、
 手書き source と同じ変更へ混ぜない。
