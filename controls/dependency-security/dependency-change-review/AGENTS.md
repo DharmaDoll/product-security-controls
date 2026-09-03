@@ -18,7 +18,7 @@ mergeしたとき、advisoryに記載されたcode execution、情報漏えい�
 2. `Risk gate`: changed dependencyにhigh以上の既知脆弱性があればjobが失敗する。
 3. `Merge enforcement`: failed、error、cancelled、missing checkではmergeできない。
 
-Workflow fileやREADMEをcopyしただけではsecurity効果は発生しない。実repositoryでdependency graphと
+Workflow fileやREADMEをcopyしただけではsecurity効果は発生しない。実repositoryでGitHub Dependency graphと
 active rulesetを有効にし、live pull requestで3つの成果を確認して初めて導入済みとする。
 
 ## When this control is needed
@@ -45,9 +45,18 @@ active rulesetを有効にし、live pull requestで3つの成果を確認して
 License policy、CODEOWNER approval、provider-neutral lockfile normalization、synthetic evidenceを基本profileへ
 追加しない。具体的なadopter要件がある場合だけ、別profileとして責任者とlive testを定義する。
 
+Trivyの通常のfilesystem／repository全体scanも基本profileへ重複追加しない。それは変更されていない既存dependencyと
+merge後のadvisoryを含む継続SCAとして`PSB-DETECT-001`が所有する。GitHub Dependency Reviewを利用できない環境で
+Trivy等を代替PR gateにする場合は、base-to-headでchanged dependencyを特定する方法、scanner／DB errorのfail-closed、
+required check、tool／databaseのintegrityを別profileで明示する。
+
 ## Reference implementation
 
 Referenceは[`secure/github/dependency-review.yml`](secure/github/dependency-review.yml)だけである。
+
+これはGitHub固有のReference profileであり、controlの本質そのものをGitHub製品へ固定するものではない。実装説明では
+GitHub Dependency graphをdata source、dependency review／REST APIをbase-to-head diff、Dependency Review Actionをpolicy
+decision、active rulesetをmerge enforcementとして区別する。Action単体のsuccessをcontrol導入完了と表現しない。
 
 - Triggerは`pull_request`だけにする。
 - Workflow-levelは`permissions: {}`、job-levelは`contents: read`だけにする。
