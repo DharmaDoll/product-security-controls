@@ -19,8 +19,13 @@ GitHub Environment。
 
 ### 何をするか
 
-Workflowをdeny-allにし、各jobへ必要なpermissionだけを明示する。Write／OIDC jobはtrusted refへ限定し、
-release／deployはprotected Environmentへ結び付ける。
+Workflow全体を原則無権限（deny-all）にし、各jobへ必要なpermissionだけを付ける。リポジトリを書き換えるjobや
+クラウド認証を行うjobは、レビュー済みの`main`やrelease tagなど、決めたrefからだけ起動できるようにする。
+release／deploy jobは承認者が必要なGitHub Environmentへ結び付け、承認されるまで処理を進めない。
+
+ここでいう「trusted ref」は、branch protectionやrulesetで変更を制限したbranch、または発行手順を決めたtagを指す。
+「protected Environment」はrequired reviewerやdeployment branch／tag ruleを設定したGitHub Environmentを指す。
+どちらもworkflow fileを置くだけでは有効にならず、GitHub側の設定が必要である。
 
 ### 成功状態
 
@@ -243,18 +248,17 @@ API仕様は[GitHub Actions permissions REST API](https://docs.github.com/en/res
 Expected stateは`PASS`、不適切なpermissionは`FAIL`、未確認は`NOT_CHECKED`、API／scanner／inventory failureは`ERROR`とする。
 `make verify-control CONTROL=PSB-CICD-004`はlive reviewなしでは`NOT_CHECKED`を表示してexit `2`となる。
 
-## Evidenceと導入完了
+## 導入完了の判定
 
-導入完了には次のcurrent evidenceを必要とする。
+次の4点を、対象repository・revision・確認日時・reviewer付きで記録できれば導入完了とする。
 
-- 対象repositoryとexact revisionに結び付いたworkflow inventory;
-- permissionとjob operationのreview記録;
-- current restricted defaultのUIまたはread-only API result;
-- Environment protectionとrequired checkのcurrent setting;
-- harmless positive／negative確認のrun ID、時刻、reviewer、結果。
+1. 全workflow／jobのpermissionと、それぞれが行うoperationの対応表。
+2. GitHub Actionsのrestricted default、required check、Environment protectionの現在値。
+3. read-only jobの成功と、未許可refまたは未承認Environmentでprivileged jobが進まない確認。
+4. 未確認項目、例外、次回review日。
 
-Secret、token、private payloadをevidenceへ保存しない。Repository fixtureの結果をorganization adoptionとして保存しない。
-Evidenceを用意できない項目は`NOT_CHECKED`であり、READMEやworkflowが存在するだけでは`PASS`にしない。
+これは採用組織のlive設定を示すための記録であり、fixtureやREADMEの存在を証明にしてはいけない。Secret、token、
+private payloadは保存しない。live確認ができない項目は`NOT_CHECKED`とする。
 
 ## Failure recovery
 
