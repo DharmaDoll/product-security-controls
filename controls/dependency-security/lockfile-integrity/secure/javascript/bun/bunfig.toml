@@ -1,0 +1,5 @@
+[install]
+auto = "disable"
+frozenLockfile = true
+ignoreScripts = true
+saveTextLockfile = true

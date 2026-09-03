@@ -1,120 +1,133 @@
 id: PSB-DEPS-003
-title: lockfileと取得artifactの完全性を強制する
+title: native lockfileと取得artifactの完全性を強制する
 domain: dependency-security
-summary: 固定された依存関係グラフとマニフェスト、管理対象プロキシの取得元、正確なバージョン、成果物の完全性が一致することを検証する。
+summary: Native package managerのimmutable installを使い、review済みmanifestとdirect／transitive lock graphの鮮度、lockfile不変性、取得artifact integrityを検証する。
 check_context_version: "1.0"
 security_functions:
   - prevent
   - verify
 threats:
   - id: DEPENDENCY-LOCKFILE-INTEGRITY-BYPASS
-    description: Lockfile書換え、未承認registry、version range、またはartifact差替えによりreview済みdependency graphが迂回される。
+    description: Manifest drift、暗黙の再解決またはlockfile更新、cache／mirror／registry上のartifact差替えにより、review済みdependency graphとbuild inputが乖離する。
 implementations:
   insecure:
-    - insecure/policy.json
-    - insecure/manifest.json
-    - insecure/lockfile.json
-    - insecure/artifacts/floating-lib-9.9.9.pkg
+    - insecure/javascript/npm/install-mutable.sh
+    - insecure/python/uv/install-frozen-without-freshness.sh
   secure:
-    - secure/policy.json
-    - secure/manifest.json
-    - secure/lockfile.json
-    - secure/artifacts/stable-lib-1.4.0.pkg
+    - secure/javascript/npm/install-locked.sh
+    - secure/javascript/npm/verify-package-lock.mjs
+    - secure/javascript/pnpm/install-locked.sh
+    - secure/javascript/pnpm/PNPM_VERSION
+    - secure/javascript/pnpm/RUNTIME.md
+    - secure/javascript/yarn/.yarnrc.yml
+    - secure/javascript/yarn/README.md
+    - secure/javascript/bun/bunfig.toml
+    - secure/javascript/bun/README.md
+    - secure/python/pip/install-locked.sh
+    - secure/python/uv/install-locked.sh
+    - secure/python/uv/install-locked-wheel-only.sh
+    - secure/python/uv/sync-hashed-requirements.sh
+    - secure/python/uv/UV_VERSION
+    - secure/python/uv/RUNTIME.md
 verification:
   commands:
     - make verify-control CONTROL=PSB-DEPS-003
   expected:
-    - frozen lockfileとmanifestのdependency集合およびversionが一致する
-    - registryがcredentialなしHTTPS allowlistに限定される
-    - artifact SHA-256がlockfileと一致する
-    - version range、lockfile書換え、artifact改ざんが拒否される
-    - 入力欠落またはparse失敗がcleanな結果と区別される
-    - lockfileのregistry originがmanaged security proxyへ固定され、direct fallbackとclean-on-outageが拒否される
+    - npm、pip、uvのnative immutable installがdirect／transitive fixtureで成功する
+    - digest検証済みpnpm 11.25.0 runtimeを指定した場合にnative frozen installが成功する
+    - manifest driftがlockfileを書き換えずに拒否される
+    - transitive artifactをvalidだがbyte-differentなpackageへ差し替えると拒否される
+    - hash欠落、lockfile欠落、runtime欠落がclean resultと区別される
+    - uv --lockedがstale manifestを拒否し、--frozenだけでは同じ鮮度を保証しないことが実証される
 checks:
   - id: LOCK-001
-    title: Manifest and frozen lockfile dependency graphs match
-    required_state: identical dependency names and exact versions
+    title: Manifest and lockfile freshness is enforced
+    required_state: immutable install rejects a manifest that requires lockfile regeneration
     responsible_role: developer
     applies_to:
-      - dependency-graph
+      - dependency-manifest
+      - native-lockfile
     context:
-      threat_actor: contributor or tooling changing dependencies without regenerating reviewed lock state
-      attack_or_failure_scenario: manifest intent and installed exact graph diverge so reviewers assess different dependencies than builds use
-      why_required: graph equality makes the lockfile a faithful executable representation of the reviewed manifest
+      threat_actor: contributor or dependency update automation changing a manifest without a reviewed lockfile update
+      attack_or_failure_scenario: build proceeds from a stale or implicitly regenerated lockfile so the reviewed manifest and installed resolution do not correspond
+      why_required: explicit freshness validation makes the manifest-to-lock transition visible in the same reviewed change
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-003
-      expected: graph drift and implicit lockfile rewrites are rejected
+      expected: npm ci, pnpm frozen install, and uv --locked reject manifest drift; pip hash mode rejects non-exact requirements
       evidence:
-        - sanitized verifier output
+        - sanitized native installer output
     mapping_status: reviewed
   - id: LOCK-002
-    title: Dependency origin is bound to the managed security proxy
-    required_state: approved credential-free HTTPS proxy only with no direct fallback and ERROR on outage
-    responsible_role: repository-admin
+    title: Direct and transitive dependency records are locked
+    required_state: the native lock or hashed requirements file records the complete install graph supported by the selected profile
+    responsible_role: developer
     applies_to:
-      - dependency-registry
+      - direct-dependency
+      - transitive-dependency
     context:
-      threat_actor: dependency-confusion publisher network attacker or credential-bearing registry misconfiguration
-      attack_or_failure_scenario: packages resolve from an unapproved origin direct fallback bypasses inspection or registry access leaks credentials
-      why_required: binding lockfile origin to a credential-free HTTPS managed proxy constrains source transport and the enforced inspection path
+      threat_actor: compromised upstream metadata or later resolver output selecting a different transitive dependency
+      attack_or_failure_scenario: a direct version remains unchanged while a transitive package changes during a later resolution
+      why_required: preserving the resolver's complete reviewed graph prevents ordinary builds from silently selecting a new transitive package
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-003
-      expected: unapproved origins direct fallback clean-on-outage and embedded credentials are rejected
+      expected: native installers reproduce direct and transitive fixture records without regenerating the lock
       evidence:
-        - sanitized verifier output
+        - sanitized direct and transitive fixture output
     mapping_status: reviewed
   - id: LOCK-003
-    title: Downloaded artifact digest matches the lockfile
-    required_state: verified SHA-256 for every artifact
+    title: Downloaded artifact integrity matches the lock record
+    required_state: every supported external artifact has strong integrity metadata and byte verification succeeds
     responsible_role: developer
     applies_to:
       - dependency-artifact
+      - package-cache
     context:
-      threat_actor: registry compromise cache poisoning or artifact substitution in transit
-      attack_or_failure_scenario: the resolved package name and version are correct but downloaded bytes differ from reviewed content
-      why_required: artifact digest verification protects the content boundary that version pinning alone cannot
+      threat_actor: registry, mirror, or cache attacker substituting package bytes after dependency resolution
+      attack_or_failure_scenario: the selected package name and version match review but the bytes consumed by the build differ from the locked artifact
+      why_required: content integrity closes the gap left by name and version pinning alone
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-003
-      expected: modified artifacts and missing integrity values are rejected
+      expected: missing transitive integrity and valid but byte-different tarballs or wheels are rejected
       evidence:
-        - sanitized verifier output
+        - sanitized native integrity failure output
     mapping_status: reviewed
   - id: LOCK-004
-    title: Floating versions and dependency graph changes are rejected
-    required_state: exact versions and frozen reviewed lockfile
-    responsible_role: developer
+    title: Normal install cannot rewrite the reviewed lockfile
+    required_state: the build uses the native immutable command and the lockfile digest is unchanged
+    responsible_role: repository-admin
     applies_to:
-      - dependency-graph
+      - build-install-step
+      - native-lockfile
     context:
-      threat_actor: contributor introducing ranges floating selectors or implicit lockfile updates
-      attack_or_failure_scenario: future resolution changes the dependency graph without a corresponding reviewed repository diff
-      why_required: exact frozen resolution makes dependency changes explicit and reproducible
+      threat_actor: CI configuration or developer command invoking a mutable install during an ordinary build
+      attack_or_failure_scenario: the package manager repairs or rewrites the lockfile before installing and hides an unreviewed graph change in ephemeral build state
+      why_required: a separate immutable install path ensures dependency changes occur only in an explicit reviewable update workflow
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-003
-      expected: version ranges lockfile changes and substitutions fail validation
+      expected: successful native installs leave package-lock.json, pnpm-lock.yaml, and uv.lock unchanged
       evidence:
-        - negative-test output
+        - before and after lockfile digests from the self-test
     mapping_status: reviewed
   - id: LOCK-005
-    title: Lockfile verification failures are not clean results
-    required_state: missing unreadable or malformed input produces an error
-    responsible_role: developer
+    title: Unavailable lock verification is an error
+    required_state: missing input, unsupported schema, or unavailable runtime returns a non-zero error rather than a clean result
+    responsible_role: repository-admin
     applies_to:
-      - dependency-verifier
+      - dependency-install-verifier
     context:
-      threat_actor: unreadable malformed or missing manifest lockfile metadata or artifact
-      attack_or_failure_scenario: integrity comparison cannot complete yet reports a clean dependency graph
-      why_required: ERROR state preserves the difference between verified equality and unavailable evidence
+      threat_actor: broken CI environment, missing package manager, or malformed lock input suppressing verification
+      attack_or_failure_scenario: integrity comparison never runs but downstream automation treats tool absence or parser failure as a verified graph
+      why_required: fail-closed error handling preserves the distinction between successful verification and unavailable evidence
     verification:
       type: automated
       method: make verify-control CONTROL=PSB-DEPS-003
-      expected: verifier errors use a distinct non-zero result
+      expected: missing runtimes and inputs use a non-zero error path and pnpm absence is explicitly reported as NOT_CHECKED
       evidence:
-        - negative-test output
+        - sanitized missing-runtime and malformed-input output
     mapping_status: unmapped
 mappings:
   - framework: mitre-attack
@@ -122,9 +135,9 @@ mappings:
     id: T1195.001
     relationship: mitigates
     confidence: high
-    rationale: Software dependencyの解決結果と取得artifactを固定・検証し、dependency compromiseや取得経路改ざんによる差替えを抑制する。
+    rationale: Reviewed dependency graphと取得artifact bytesをnative lockへ固定して通常buildで再検証し、software dependency差替えの機会を狭める。
     reviewer: product-security
-    review_date: "2026-07-27"
+    review_date: "2026-08-31"
     applies_to:
       - LOCK-001
       - LOCK-002
@@ -135,20 +148,35 @@ mappings:
     id: PW.4.1
     relationship: supports
     confidence: high
-    rationale: Third-party componentの取得元、version、dependency graph、integrityを機械検証しcontrolled acquisitionを支援する。
+    rationale: Third-party componentの完全graph、version、artifact integrityをreview可能なnative lockで維持し、controlled component acquisitionを支援する。
     reviewer: product-security
-    review_date: "2026-07-27"
+    review_date: "2026-08-31"
     applies_to:
       - LOCK-001
       - LOCK-002
       - LOCK-003
       - LOCK-004
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-BR-05.01
+    relationship: supports
+    confidence: medium
+    rationale: npm、pnpm、pip、uvというstandardized dependency management toolingのnative immutable modeをcopy可能なbuild手順として提供する。
+    reviewer: product-security
+    review_date: "2026-08-31"
+    applies_to:
+      - LOCK-001
+      - LOCK-002
+      - LOCK-004
 limitations:
-  - 正しいhashはartifactの安全性を証明しない。
-  - 実package manager固有lockfileには個別adapterが必要である。
-  - Registry、package manager、review済みlockfile自体の侵害は別controlが必要である。
-  - 検証器または入力読取失敗をcleanな結果として扱ってはいけない。
-  - Local fixtureはendpointの実network egress制御またはmanaged proxyの可用性を証明しない。
+  - Lockfileはresolverが選択した推移的dependencyを固定するが、そのdependencyが安全、脆弱性なし、または組織policyに適合することは証明しない。
+  - Review済みlockfile自体へ悪意ある変更が入った場合は、CODEOWNER reviewやdependency change reviewが別途必要である。
+  - npm preflightが許可するdeclared workspace以外のlocal directory、mutable VCS、hash無しsourceは別profileまたは期限付き例外が必要である。
+  - Platform-specific、optional、native、source-build dependencyは採用projectの実platform matrixでも確認が必要である。
+  - Registry origin、dependency confusion、network egress、credential injectionはこのcontrolのboundary外である。
+  - Lifecycle scriptはwrapperで無効にするが、scriptを必要とするpackageの承認と隔離はinstall-script controlが必要である。
+  - YarnとBunの設定はreference-onlyであり、このrepositoryのnative tamper testを通したimplementationではない。
+  - Local fixtureは採用組織のlive registry、branch protection、runtime provenance、またはorganization adoptionを証明しない。
 status: prototype
 owner: product-security
 evidence_level: E3
