@@ -1,5 +1,8 @@
 name: Trusted post-merge reporting
 
+# This is a boundary marker, not a production deployment workflow.
+# It starts a new run from reviewed main-branch state and deliberately consumes
+# no artifact, cache, output, or workspace from the pull-request run.
 on:
   push:
     branches:
@@ -15,4 +18,6 @@ jobs:
       contents: read
     steps:
       - name: Start processing from the reviewed main-branch revision
+        # Replace this echo with the trusted task and grant only its exact
+        # permissions. Do not reintroduce executable state from the PR run.
         run: echo "trusted push boundary reached"

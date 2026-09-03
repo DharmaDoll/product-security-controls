@@ -15,13 +15,17 @@
 
 - Control ID は `PSB-CICD-005`、domain は `cicd-security` である。
 - PR 作成者は PR 内の code、test、build script、dependency、workflow 変更を制御できる。
-- 未信頼 PR code を実行する job から secret、write token、OIDC、protected
-  Environment、organization-controlled runner を除く。
-- 権限を必要とする処理は、review と merge を終えた protected branch の revision から、
-  PR run とは別の trusted run として開始する。
+- 本質は event 名の禁止ではなく、attacker-controlled code／executable state と privileged authority を
+  同じ job、runner、または cross-run data flow に置かないことである。
+- 未信頼 code を実行する場所から secret、write token、OIDC、protected Environment、persistent
+  runner、internal network、trusted consumer が信用する state を除く。
+- 権限を必要とする処理へ移る前に trust boundary を再確立し、未信頼runの実行可能stateを持ち込まない。
 - PR の承認、workflow run の承認、actor、label、author association は、code を trusted にしない。
 - Security 効果は、実際に有効な workflow、repository／organization setting、ruleset、runner
   routing から生まれる。documentation を copy しただけでは導入済みにならない。
+- 「PRを作ればsecretやrepositoryを奪取できる」と無条件に記述しない。各attack pathについて、
+  attacker-controlled処理が実行される条件、jobから実際に利用できるauthority、そのauthorityを使う
+  API／network／consumer経路、条件が成立しない場合を示す。
 
 ## Supported profile and prerequisites
 
@@ -44,8 +48,8 @@ credential を PR に渡さない。公開 dependency、credential-free emulator
 trusted test へ分離する。
 
 GitHub Enterprise Server、GitHub 以外の CI、metadata-only の `pull_request_target`、安全な一方向
-artifact promotion は、この reference profile の対象外である。必要なら event semantics、実行される
-byte、authority、data flow、live verification を先に設計する。
+artifact promotion は、control全体で禁止しないが、このcopy可能なreference profileには含めない。
+必要なら event semantics、実行されるbyte、authority、data flow、live verificationを先に設計する。
 
 ## Implementation style
 
@@ -54,6 +58,8 @@ byte、authority、data flow、live verification を先に設計する。
 - Copy 可能な実装は
   [`secure/pr-validation.yml`](secure/pr-validation.yml) と
   [`secure/trusted-after-merge.yml`](secure/trusted-after-merge.yml) の二つに保つ。
+- README はcopy commandより前に、controlの不変条件、適用判断、各fileの起動条件と非機能、copyで
+  変わらないprovider state、副作用を説明する。最短手順を単なるfile操作にしない。
 - GitHub 管理画面の設定、ruleset、実際の fork run は README の manual verification で確認する。
 - Workflow の static analysis が必要な場合は
   [`PSB-CICD-003`](../actions-static-analysis/README.md) と組み合わせる。
@@ -64,18 +70,39 @@ byte、authority、data flow、live verification を先に設計する。
 - `make verify-control CONTROL=PSB-CICD-005` は manual control として `NOT_CHECKED` を返す。
   これを live repository の PASS と表現しない。
 
-## Minimum secure outcome
+## Security invariants and reference profile
 
-- PR validation は `pull_request`、top-level `permissions: {}`、job-level `contents: read` 以下で動く。
-- PR job は secret、`id-token: write`、write token、protected Environment を持たない。
-- PR job は reviewed GitHub-hosted runner を使い、self-hosted runner や internal network に入らない。
-- `actions/checkout` は immutable full commit SHA、`persist-credentials: false` を使い、event が選んだ
-  merge revision を PR head の任意 ref／repository で上書きしない。
-- `pull_request_target`、`workflow_run`、`issue_comment`、reusable workflow、cache、artifact を使って、
-  untrusted PR の code や data を privileged context へ自動昇格させない。
-- Privileged reporting、release、deploy は protected branch の reviewed revision から別 run で始める。
+- 未信頼codeまたはexecutable stateを実行するcontextには、奪われて困るcredential、write authority、
+  persistent compute、internal reachabilityを置かない。
+- Privileged contextはPR head、artifact、cache、dependency、outputを無条件にcodeとして実行しない。
+- Metadata-onlyのprivileged workflowは、PR codeをloadせず、PR由来文字列をshell／code expressionへ
+  直接展開せず、目的に必要なexact permissionだけを持つ場合に限り個別designできる。
 - Workflow 自体を PR で変更できるため、required check、review、CODEOWNER 等の server-side enforcement を
   維持する。PR 内の self-check だけで bypass を防げると主張しない。
+
+Copy可能なreference profileは、さらに次へ限定する。
+
+- PR validationは`pull_request`、top-level `permissions: {}`、job-level `contents: read`以下で動く。
+- PR jobはsecret、`id-token: write`、write token、protected Environmentを持たない。
+- PR jobはreviewed GitHub-hosted runnerを使う。Self-hostedが必要なら[`PSB-CICD-007`](../runner-hardening/README.md)
+  でephemeral、one-job、network-isolatedなprofileを先に設計する。
+- `actions/checkout`はimmutable full commit SHA、`persist-credentials: false`を使い、eventが選んだmerge
+  revisionを維持する。
+- Privileged reporting、release、deployはprotected branchのreview済みrevisionから別runで始める。
+- Referenceのtrusted workflowはboundary markerだけであり、copy直後にdeployやwrite操作を行わない。
+
+READMEで資産別riskを説明するときは、次の条件を省略しない。
+
+- `GITHUB_TOKEN`: event、repository／organization default、workflow／job `permissions`、rulesetから決まる
+  effective scope
+- Secret: workflow／Actionが参照し、provider policyとEnvironment protectionを通ってjobへ配送されること
+- OIDC: `id-token: write`に加え、cloud側trust policyがissuer、audience、subject等を受理すること
+- Environment: jobが参照し、required reviewerやbranch rule等を通過して初めてsecretが利用可能になること
+- Runner: persistent filesystem、host credential、daemon socket、internal network等の実在する到達先
+- Cache／artifact: privileged consumerが未信頼内容をcode／dependency／unsafe inputとして利用するdata flow
+
+最大impactだけでなく、fork `pull_request`のread-only token・secret非配送、credential-free hosted runner、
+privileged consumerなし等、attack pathが成立しない状態も併記する。
 
 ## `pull_request_target` documentation contract
 
@@ -89,14 +116,16 @@ byte、authority、data flow、live verification を先に設計する。
 4. 実例は、一次資料へ link し、確認できる事実と類似 attack path を分ける。
 5. Ultralytics incident は cache／cross-run trust の実例として扱い、純粋な
    `pull_request_target` incident だったとは主張しない。
+6. `pull_request_target`自体を全面禁止と表現しない。Metadata-onlyで成立する条件と、reference profileが
+   採用しない理由を分ける。
 
 各種参照、関連 control、framework、guide は Markdown link にする。Mapping は formal compliance の
 主張ではなく、relationship、version、confidence、rationale を `control.yaml` に記録する。
 
 ## Roles
 
-- Development team: 二つの workflow を review して copy／merge し、credential-free test command だけを
-  project 固有の値へ変える。
+- Development team: PR処理を先に分類し、credential-freeなtestとtrusted phaseへ分けた後で二つの
+  workflowをcopy／mergeする。
 - Repository administrator: Actions default permission、fork policy、required review／check、ruleset、
   Environment access を設定する。
 - CI platform／organization owner: approved runner と organization-level deny-oriented setting を提供し、
@@ -113,10 +142,10 @@ byte、authority、data flow、live verification を先に設計する。
 変えたり不要に renumber したりしない。
 
 - `PRB-001`: PR validation に write token、secret、OIDC、protected Environment を与えない。
-- `PRB-002`: 未信頼 code を approved GitHub-hosted runner だけで実行する。
-- `PRB-003`: Checkout credential を残さず、event の merge revision を使う。
+- `PRB-002`: 未信頼codeをpersistent assetやinternal networkへ到達できないrunnerで実行する。
+- `PRB-003`: Checkout／code-loadingが宣言したtrust境界と一致し、credentialを残さない。
 - `PRB-004`: Privileged event、cache、artifact、reusable workflow による automatic elevation を防ぐ。
-- `PRB-005`: Privileged work を reviewed protected branch の別 run として開始する。
+- `PRB-005`: Privileged workを未信頼runと分離し、review済みtrust contextから開始する。
 - `PRB-006`: Workflow inventory と provider evidence が不完全なら `NOT_CHECKED`／`ERROR` とし、
   clean と扱わない。
 

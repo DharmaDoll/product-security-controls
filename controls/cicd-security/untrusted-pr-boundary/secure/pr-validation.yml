@@ -1,5 +1,7 @@
 name: Fork-safe pull-request validation
 
+# Copying this file creates a pull-request job that executes PR-controlled code.
+# Keep the job credential-free; replace only the runner label and test command.
 on:
   pull_request:
 
@@ -16,4 +18,6 @@ jobs:
         with:
           persist-credentials: false
       - name: Run validation without privileged credentials
+        # This command can be changed by the PR author through repository files.
+        # It must not need secrets, a write token, or access to an internal network.
         run: make test

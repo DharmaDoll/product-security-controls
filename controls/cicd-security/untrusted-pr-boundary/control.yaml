@@ -1,16 +1,16 @@
 id: PSB-CICD-005
 title: Isolate fork and untrusted pull-request workflows from privileged CI
 domain: cicd-security
-summary: 攻撃者が制御できるPRコードを認証情報のないホステッドジョブへ隔離し、権限を伴う処理はreview済みrevisionの別runとして開始させる。
+summary: PR作成者が変更できるcodeや実行可能stateとprivileged authorityを分離し、権限処理へ移る前にreview可能なtrust boundaryを再確立する。
 check_context_version: "1.0"
 security_functions:
   - prevent
   - verify
 threats:
   - id: CICD-UNTRUSTED-PR-PRIVILEGE
-    description: A fork contributor changes code workflow inputs tests or dependencies that execute with secrets writable tokens protected environments or organization-controlled runner access.
+    description: A contributor-controlled command test or dependency executes in a job where token scope referenced secrets OIDC approved Environment runner state or network reachability is actually available and usable.
   - id: CICD-UNTRUSTED-RUN-ELEVATION
-    description: A privileged event or later run checks out attacker content or promotes attacker-controlled cache artifact output or dependency across the trust boundary.
+    description: A privileged event or later run checks out attacker content or consumes an attacker-controlled cache artifact output or dependency as executable or otherwise unsafe input.
 implementations:
   insecure:
     - insecure/workflow.yml
@@ -24,14 +24,15 @@ verification:
     - follow the live verification table in controls/cicd-security/untrusted-pr-boundary/README.md
   expected:
     - the canonical command reports NOT_CHECKED instead of claiming that repository files prove live adoption
-    - a harmless fork pull request runs only the credential-free GitHub-hosted validation job
-    - the live run has no write token secret OIDC protected Environment or organization-controlled runner access
-    - privileged processing begins in a separate run for the reviewed protected-branch revision
+    - every pull-request-related workflow identifies which code and executable state the pull-request author controls
+    - the live untrusted run has no write token secret OIDC protected Environment persistent runner asset or internal network authority
+    - privileged processing does not execute untrusted code or inherit unverified executable state from the pull-request run
+    - the reference profile begins privileged processing in a separate run for the reviewed protected-branch revision
     - missing workflow inventory provider settings or run evidence remains NOT_CHECKED or ERROR rather than PASS
 checks:
   - id: PRB-001
-    title: Pull-request validation remains explicitly unprivileged
-    required_state: an actual untrusted pull-request run has read-only repository access and no secret OIDC or protected Environment access
+    title: Pull-request-controlled execution remains explicitly unprivileged
+    required_state: any job executing pull-request-controlled code or executable state has no secret write authority OIDC or protected Environment access
     responsible_role: repository-admin
     applies_to:
       - github-actions-pr-job
@@ -39,50 +40,50 @@ checks:
       - github-environment
     context:
       threat_actor: fork contributor or compromised contributor account controlling pull-request code workflow changes tests or dependencies
-      attack_or_failure_scenario: attacker-controlled execution reads a secret mints an OIDC token uses a write token or enters a protected deployment environment
-      why_required: removing privileged credentials and assets prevents ordinary contribution access from becoming repository cloud or deployment authority
+      attack_or_failure_scenario: attacker-controlled execution uses a write token or a delivered secret or requests OIDC accepted by the cloud trust policy or runs after Environment protection passes
+      why_required: removing effective privileged authority from the untrusted job prevents contribution access from becoming repository cloud or deployment authority even when arbitrary test commands run
     verification:
       type: external-evidence
-      method: inspect the effective permissions and secret Environment and OIDC availability of a harmless fork pull-request run
-      expected: the run is read-only and cannot access secrets OIDC protected Environments or write APIs
+      method: inventory jobs that execute pull-request-controlled state and inspect effective permissions secret Environment and OIDC availability in a harmless live run
+      expected: every untrusted execution context is read-only and cannot access secrets OIDC protected Environments or write APIs
       evidence:
         - sanitized GitHub Actions run URL with repository commit event and effective permission details
         - current Actions token and fork-workflow settings with target and capture time
     mapping_status: reviewed
   - id: PRB-002
-    title: Untrusted code runs only on an approved GitHub-hosted runner
-    required_state: the actual untrusted pull-request job uses an approved GitHub-hosted label and cannot route to a self-hosted runner group or internal service
+    title: Untrusted code runs without persistent runner or internal network authority
+    required_state: the actual untrusted job uses the reference GitHub-hosted profile or a separately verified ephemeral isolated runner with no privileged local asset or internal route
     responsible_role: ci-platform
     applies_to:
       - github-actions-runner
       - github-actions-pr-job
     context:
       threat_actor: fork contributor executing persistence discovery credential theft or network-probing code on a reusable organization-controlled runner
-      attack_or_failure_scenario: untrusted pull-request code compromises a self-hosted runner and reaches later jobs local credentials or internal network services
-      why_required: token restrictions do not remove credential files network position persistence or daemon authority already present on an organization-controlled runner
+      attack_or_failure_scenario: untrusted pull-request code runs on a reused or privileged self-hosted runner that exposes later jobs local credentials daemon authority or internal network services
+      why_required: token restrictions do not remove credential files network position persistence or daemon authority when those assets are actually present on an organization-controlled runner
     verification:
       type: external-evidence
-      method: inspect the live job runner label and organization runner-group access for the target repository
-      expected: the pull-request job uses the approved GitHub-hosted profile and no eligible self-hosted group is exposed to it
+      method: inspect live job runner identity lifecycle network reachability and organization runner-group access for the target repository
+      expected: the reference uses the approved GitHub-hosted profile and any alternative runner has separately verified one-job isolation and no privileged reachability
       evidence:
-        - sanitized job metadata identifying the GitHub-hosted runner profile
-        - current runner-group repository access record with target and capture time
+        - sanitized job metadata identifying the hosted or separately approved isolated runner profile
+        - current runner lifecycle network and runner-group access record with target and capture time
     mapping_status: reviewed
   - id: PRB-003
-    title: Pull-request checkout cannot inject an alternate head revision or credential
-    required_state: the pull-request workflow uses the event-selected merge revision with checkout credentials disabled and no attacker-selected ref repository or unsafe override
+    title: Checkout and code loading preserve the declared trust boundary
+    required_state: every checkout and indirect code-loading path matches the job trust classification retains no credential and never loads untrusted executable state into a privileged context
     responsible_role: repository-admin
     applies_to:
       - actions-checkout-step
       - pull-request-revision
     context:
       threat_actor: pull-request author supplying a malicious head SHA branch repository checkout input or indirect code-loading path
-      attack_or_failure_scenario: a workflow with greater authority executes attacker-selected content or retains a usable repository token in Git configuration
-      why_required: event separation is ineffective when a step overrides the intended revision boundary or leaves a credential available to subsequent attacker-controlled commands
+      attack_or_failure_scenario: a privileged workflow executes attacker-selected content or any untrusted workflow leaves a usable repository token in Git configuration
+      why_required: event separation is ineffective when code loading crosses the declared trust boundary or leaves a credential available to attacker-controlled commands
     verification:
       type: manual
-      method: review every pull-request checkout and code-loading step then compare the live run SHA with the event-selected merge revision
-      expected: checkout is SHA-pinned uses persist-credentials false and has no unsafe ref repository or alternate code-loading path
+      method: review every pull-request checkout and indirect code-loading step then compare the actual revision authority and credential state with the declared job trust
+      expected: the reference uses a SHA-pinned checkout with persist-credentials false and no privileged context loads pull-request-controlled executable state
       evidence:
         - reviewed workflow revision and reviewer record
         - sanitized live run event and checked-out revision details
@@ -109,8 +110,8 @@ checks:
         - review record for each cross-run data path or an explicit record that none exist
     mapping_status: reviewed
   - id: PRB-005
-    title: Privileged work starts as a separate trusted run
-    required_state: privileged processing begins from the reviewed protected-branch revision in a new run and does not depend on the original pull-request run
+    title: Privileged work starts only after a new trust decision
+    required_state: privileged processing begins in a context that does not execute pull-request-controlled code or inherit unverified executable state from the original pull-request run
     responsible_role: repository-admin
     applies_to:
       - privileged-ci-job
@@ -118,12 +119,12 @@ checks:
       - protected-branch-ruleset
     context:
       threat_actor: pull-request author manipulating actor label author association approval state job output artifact or other attacker-influenced elevation input
-      attack_or_failure_scenario: the original pull-request run gains reporting release or deployment authority before attacker-controlled changes become a reviewed trusted-branch revision
-      why_required: a new post-merge run rebuilds authority from reviewed source instead of trying to sanitize all state inherited from an attacker-controlled run
+      attack_or_failure_scenario: the original pull-request run gains authority or a later privileged workflow treats attacker-controlled code artifact cache output actor or label as trusted
+      why_required: a distinct trust decision prevents privileged processing from depending on attacker-controlled execution state while the reference uses a new post-merge run as the simplest boundary
     verification:
       type: external-evidence
-      method: merge a harmless reviewed change and compare the required ruleset merge revision trusted-run event SHA and run identity
-      expected: required review and checks protect the branch and a new push run starts from the merged revision without a dependency on the pull-request run
+      method: trace the trust decision and every input to privileged processing then for the reference compare the ruleset merge revision trusted-run event SHA and run identity
+      expected: privileged processing loads no unverified executable state and the reference starts a new protected-branch push run without a dependency on the pull-request run
       evidence:
         - current protected-branch ruleset with target and capture time
         - sanitized pull-request merge and separate trusted-run records linked by reviewed commit SHA
@@ -156,7 +157,7 @@ mappings:
     confidence: high
     rationale: The copyable workflows and live verification procedure implement credential-free untrusted checkout on a hosted runner and a separate trusted post-merge run while provider settings remain adoption evidence.
     reviewer: product-security
-    review_date: "2026-09-02"
+    review_date: "2026-09-03"
     applies_to:
       - PRB-001
       - PRB-002
@@ -168,9 +169,9 @@ mappings:
     id: GHAS-REF-PULL-REQUEST-TARGET
     relationship: mitigates
     confidence: high
-    rationale: The conservative profile excludes pull_request_target and other privileged paths that load pull-request head content or attacker-controlled cross-run state.
+    rationale: The control permits metadata-only automation only when it never executes pull-request-controlled state while the conservative reference avoids pull_request_target to make the initial boundary easier to review.
     reviewer: product-security
-    review_date: "2026-09-02"
+    review_date: "2026-09-03"
     applies_to:
       - PRB-003
       - PRB-004
@@ -180,9 +181,9 @@ mappings:
     id: GHAS-CONCEPT-COMPROMISED-RUNNERS
     relationship: mitigates
     confidence: medium
-    rationale: Routing untrusted pull-request jobs only to the approved GitHub-hosted profile reduces exposure of persistent organization-controlled runners while provider runtime security remains outside this control.
+    rationale: The reference routes untrusted jobs to GitHub-hosted runners while alternative self-hosted execution requires separately verified ephemeral lifecycle network and local-asset isolation.
     reviewer: product-security
-    review_date: "2026-09-02"
+    review_date: "2026-09-03"
     applies_to:
       - PRB-002
   - framework: github-security-guidance
@@ -192,7 +193,7 @@ mappings:
     confidence: medium
     rationale: Repository token fork approval runner and ruleset settings determine the live boundary and must be inspected in the target repository rather than inferred from copied files.
     reviewer: product-security
-    review_date: "2026-09-02"
+    review_date: "2026-09-03"
     applies_to:
       - PRB-001
       - PRB-002
@@ -203,9 +204,9 @@ mappings:
     id: OSPS-BR-01.03
     relationship: addresses
     confidence: high
-    rationale: The profile separates untrusted change validation from privileged post-merge processing and requires live evidence that CI credentials runners environments and cross-run state are not exposed to the untrusted snapshot.
+    rationale: The control separates untrusted change execution from privileged processing and requires live evidence that credentials runner authority environments and executable cross-run state do not cross that boundary.
     reviewer: product-security
-    review_date: "2026-09-02"
+    review_date: "2026-09-03"
     applies_to:
       - PRB-001
       - PRB-002
@@ -214,10 +215,12 @@ mappings:
       - PRB-005
 limitations:
   - Repository files cannot prove current fork approval token branch Environment or runner-group settings and cannot prove which permissions an actual run received.
-  - This baseline conservatively excludes pull_request_target workflow_run shared pull-request caches and privileged reusable-workflow paths even when a separately designed metadata-only or data-only use could be safe.
+  - The presence of a token secret OIDC Environment cache artifact or self-hosted label alone does not establish compromise and each finding requires a traced path from attacker-controlled execution to usable authority or a privileged consumer.
+  - The copyable reference conservatively excludes pull_request_target workflow_run shared pull-request caches and privileged reusable-workflow paths even when a separately designed metadata-only or data-only use could be safe.
   - GitHub-hosted execution does not prevent malicious tests from contacting public endpoints but the pull-request job must contain no privileged credential or internal network authority worth exfiltrating.
   - Workflow static analysis is delegated to PSB-CICD-003 and may not model every dynamic expression third-party action dependency or provider-specific behavior.
   - Exact token purpose remains PSB-CICD-004 runner lifecycle remains PSB-CICD-007 cache provenance remains PSB-CICD-009 and build sandboxing remains PSB-BUILD-001.
+  - Strong isolation can reduce pre-merge coverage increase CI cost delay external contributors and require mocks mirrors merge queues or post-merge rollback capability.
   - GitHub protections and event behavior can change and GitHub Enterprise Server can differ so adopters must recheck official documentation and live behavior for their deployed version.
 status: prototype
 owner: product-security
