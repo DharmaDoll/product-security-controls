@@ -225,7 +225,7 @@ server-side enforcementが有効になる。
 | Exit `2`: unsupported `run` | Alias、flow style、multiline quoted scalar | `run: |`または通常のsingle-line scalarへ書き換える |
 | Exit `2`: no run steps | 対象pathが誤り、またはcontrol非該当 | 対象pathを直す。非該当なら人が`N/A`を判断し、PASSを捏造しない |
 | Exit `2`: Python unavailable | Python 3.10+がない | Approved developer／CI runtimeを復旧する |
-| Required checkが出ない | Workflow未起動、caller削除、GitHub設定不備 | Workflow runとrulesetを確認し、required checkを外して回避しない |
+| Required checkが出ない | Workflow未起動、gate workflow削除、GitHub設定不備 | Workflow runとrulesetを確認し、required checkを外して回避しない |
 
 ### Rollback
 
@@ -366,38 +366,55 @@ deterministicに検査するrestricted parserである。
 Unsupported formをcleanと推測しない。Full YAML parserや追加dependencyは、具体的にsupportすべきsyntaxと
 negative fixtureが確認された場合だけ検討する。
 
-## 案2: PSB-CICD-003と組み合わせる
+## 補足: PSB-CICD-003による詳しいstatic analysis
+
+これは第二の導入案ではない。本controlの導入手順とstrict invariantは変えず、すでにworkflow scannerを運用する組織が
+より広いfindingを得るための補完関係である。
 
 [`PSB-CICD-003`](../actions-static-analysis/README.md)はpinned `zizmor`、unprivileged pull-request gate、
-trusted SARIF reportingを所有する。本controlはscanner platformを複製せず、expression-to-shell boundaryの
-単純なinvariantと最小local verifierを所有する。
+trusted SARIF reportingを所有する。Zizmorの
+[`template-injection` audit](https://docs.zizmor.sh/audits/#template-injection)はsourceとsinkを考慮した関連findingを出し、
+ほかのGitHub Actions riskも同じscanner lifecycleで確認できる。
 
-| PSB-CICD-002 | PSB-CICD-003 |
+一方、このcontrolのrepository-local verifierは、sourceが現在trustedかを判定せず、全`run:` direct expressionを
+一律拒否する小さなpolicy checkである。目的は次のように異なる。
+
+| 本controlのlocal verifier | PSB-CICD-003のzizmor |
 |---|---|
-| 全`run:` direct expressionを一律拒否 | 複数種類のworkflow security findingを検出 |
-| Python standard-library verifier | Version／digest固定のzizmor |
-| 修正patternとlocal self-test | PR gateとSARIF lifecycle |
-| Restricted syntaxはexit `2` | Scanner／SARIF failureを別状態で処理 |
+| `run:`のcode生成境界を単純なinvariantで固定 | Taint-awareなtemplate injectionを含む複数auditを実行 |
+| Python standard libraryだけでcopy可能 | Scanner version／digest、SARIF、更新運用が必要 |
+| Restricted syntaxをexit `2`でfail closed | Scanner／SARIF failureをclean resultと分離 |
 
-zizmorの[`template-injection` audit](https://docs.zizmor.sh/audits/#template-injection)は関連する防御層である。
-ただしtaint判定を行うscanner ruleと、本controlの一律禁止ruleが常に同じfinding集合になるとは主張しない。
-Zizmorを既に採用していても、本controlのstrict invariantを置き換える場合は同じnegative fixtureで差を確認する。
+Zizmorを導入済みなら、その結果を本controlのtriageへ利用できる。ただし両者のfinding集合は同一ではないため、local
+verifierを外す場合は、safe、direct expression、scanner failureの各fixtureが組織のscanner gateで同じsecurity propertyを
+満たすことを確認する。Scannerを追加するために本controlのcopy手順を複雑にする必要はない。
 
-## 案3: Central trusted gate PoC
+## 任意の運用拡張: 多数repositoryへのcentral distribution
 
-多数repositoryへ配布する場合は、repository-local verifierの改変リスクと更新負担を減らすため、中央security
-repositoryのreusable workflowへ移行できる。思想、copyable skeleton、manual PoCは
-[`docs/CENTRAL_GATE_POC.md`](docs/CENTRAL_GATE_POC.md)に示す。
+これは新しい検出方式ではない。同じ[`scripts/verify.py`](scripts/verify.py)をsecurity-owned repositoryの小さな
+composite Actionとして置き、各consumer workflowからexact commit SHAで呼ぶ配布方式である。
 
-このPoCは次を証明しない。
+```text
+Local（本controlの推奨default）
+  consumer repository -> local workflow -> local verify.py
 
-- Organization-wide rolloutが完了していること;
-- Private reusable workflowへのaccessが正しいこと;
-- Ruleset、required check source、CODEOWNERSがliveで有効なこと;
-- Callerやstatus checkのspoofを完全に防止できること;
-- GitHub plan固有機能が利用可能なこと。
+Central distribution（多数repository向けの任意PoC）
+  consumer workflow -> central composite Action @ exact SHA -> same verify.py
+```
 
-Central repository、exact commit SHA、consumer、rulesetを実環境で確認して初めてadoption evidenceになる。
+Central化で変わるのはverifier sourceとreview責任であり、command injectionの防御原理ではない。Immutable SHAを使うため、
+新versionのrolloutには各consumerで参照SHAを更新するpull requestが依然として必要である。1個または少数のrepositoryでは、
+3 fileをcopyするlocal pathの方が依存先と運用負担が少ない。次の条件がすべてある場合だけ検討する。
+
+- 多数repositoryでverifier sourceの重複を減らす明確な必要がある;
+- Central repositoryと更新reviewを継続所有するPlatform／Security teamがいる;
+- Consumer workflow、required check、CODEOWNERSをlive rulesetで保護できる;
+- Central Actionの取得失敗をcleanではなくblocking errorとして扱える。
+
+Central repositoryへ置いただけでは、consumer workflowの削除、古いSHAの放置、required checkの未設定を防げない。
+むしろcentral repositoryの侵害や停止が全consumerへ広がる新しい依存関係も生じる。何を中央化し、何が残るか、最小
+skeleton、sandboxでの確認方法は
+[`Optional central distribution PoC`](docs/CENTRAL_GATE_POC.md)に示す。上記条件がなければ読まず、local pathを使えばよい。
 
 ## Roles
 
@@ -406,7 +423,7 @@ Central repository、exact commit SHA、consumer、rulesetを実環境で確認�
 - Repository administrator: 対象eventとactorの到達性、effective token permission、secret／OIDC／Environment、
   trusted handoffをinventoryし、verifier、required check、CODEOWNERS、rulesetを設定する。
 - Platform／SRE: Self-hosted runnerやinternal networkがある場合に実到達性を確認する。多数repositoryへ展開する場合だけ
-  central gateのavailability、pin、更新、support pathを管理する。
+  optional central distributionのavailability、pin、更新、support pathを管理する。
 - Security: Findingをsource、reachability、job authority、data flowでtriageし、invariant、negative fixture、verifier変更、
   例外、live required checkをreviewする。
 

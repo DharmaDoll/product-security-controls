@@ -136,8 +136,9 @@ limitations:
   - Indirect taint through generated files repository scripts Actions outputs or third-party Actions requires separate analysis.
   - Composite Actions and invoked scripts are outside this workflow-only verifier scope.
   - Unsupported YAML forms fail as verifier errors rather than clean results.
-  - A repository-local verifier can be weakened in the same pull request unless its workflow and code are protected by required review or replaced by a trusted central gate.
-  - The central-gate document is a non-production proof of concept and does not prove live organization rollout ruleset enforcement or reusable-workflow access.
+  - A repository-local verifier can be weakened in the same pull request unless its workflow and code are protected by required review.
+  - Optional central distribution reduces duplicated verifier source but consumers must still update the pinned SHA and protect their workflow and required check.
+  - The central-distribution document is a non-production proof of concept and does not prove live organization rollout ruleset enforcement or central-Action access.
 status: prototype
 owner: product-security
 evidence_level: E3

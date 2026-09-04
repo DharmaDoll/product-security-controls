@@ -1,73 +1,69 @@
-# Central trusted gate PoC
+# Optional central distribution PoC
 
-この文書は、多数repositoryで`PSB-CICD-002`を運用するときのcentral distributionを理解するための
-非本番PoCである。GitHub Organizationへ自動導入せず、live setting、required check、private repository
-access、status sourceを確認していない状態をadoptedと扱わない。
+## これは何か
 
-## このPoCが解決すること
-
-Repository-local gateは導入が簡単だが、candidate pull requestがverifierやworkflowも変更できる。
-CODEOWNERSとrequired reviewで変更を保護できるものの、repository数が増えるとverifier更新とpolicy reviewが
-各repositoryへ分散する。
-
-Central gateは、review済みverifierとworkflowをsecurity-owned repositoryのexact commitに固定し、consumer
-repositoryでは小さなcallerだけを持つ。
+このPoCは、`PSB-CICD-002`の別実装や新しいscannerではない。各repositoryへcopyしている
+[`verify.py`](../scripts/verify.py)をsecurity-owned repositoryのcomposite Actionとして一度だけ置き、consumer workflowから
+full commit SHAで呼ぶ配布例である。
 
 ```text
-Consumer repository
-  └─ SHA-pinned caller
-          |
-          v
-Central security repository
-  ├─ reusable workflow
-  ├─ composite wrapper
-  └─ verify.py
-          |
-          v
-Candidate .github/workflowsをdataとしてscan
-          |
-          v
-Required status check
+consumerのcandidate workflows
+  -> consumerのread-only workflow
+  -> central composite Action @ exact SHA
+  -> 同じverify.pyでscan
+  -> consumerのrequired status check
 ```
 
-Central化しても、candidate sourceをcheckoutするrunner、GitHub Actions service、central repository owner、
-ruleset administratorはtrust boundaryに残る。
+防御原理はlocal方式と同じで、`${{ ... }}`を`run:`へ直接挿入させないことである。Central化で増えるのは検出能力ではなく、
+verifier sourceとそのreview ownerを一か所へ置けることだけである。
 
-## Prerequisites
+## Defaultにしない理由
 
-- Security teamが管理するdedicated repositoryがある。
-- Consumer repositoryからcentral reusable workflowを参照できる。
-- Central commitと内部Actionをfull commit SHAで固定できる。
-- Consumer jobはGitHub-hosted runner、`contents: read`、secretなしで実行できる。
-- Repository administratorがrequired status checkとCODEOWNERSを設定できる。
-- GitHub planとrepository visibilityが必要なreusable workflow accessをsupportする。
+- 1個または少数のrepositoryなら、READMEの3-file local pathの方が依存先も障害点も少ない。
+- Immutable SHAで参照するため、新versionのrolloutには各consumerでSHA更新pull requestが必要である。
+- Consumer workflowの削除、古いSHAの放置、required checkの未設定はcentral repositoryから防げない。
+- Central Actionのaccess failureや侵害が、多数consumerへ同時に影響する。
 
-GitHubはreusable workflowの参照にcommit SHAを使う方法を、stabilityとsecurityのための最も安全なoptionとして
-説明している。詳細は[Reuse workflows](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows)を
-参照する。
+したがって、これはorganization-wide enforcementでも、自動更新platformでもない。多数repositoryでverifier codeのcopyを
+減らしたい具体的な需要と、継続所有するPlatform／Security teamがある場合だけ検討する。
 
-## PoC repository layout
+## 最小PoC
 
-Central repositoryで次の最小layoutをreviewする。
+Central repositoryに必要なのは2 fileだけである。
 
 ```text
 security-workflows/
-├── .github/workflows/actions-command-injection.yml
 └── actions/actions-command-injection/
     ├── action.yml
     └── verify.py
 ```
 
-`verify.py`はこのcontrolの[`scripts/verify.py`](../scripts/verify.py)と同じreview済み内容を使う。Dynamic plugin、
-package install、network downloadを追加しない。
+### Central Action
 
-## Consumer caller skeleton
-
-次は説明用skeletonであり、`example-security`と`<REVIEWED_40_CHARACTER_COMMIT_SHA>`を実際のreview済み値へ
-置換するまでdeployしない。
+`verify.py`にはこのcontrolの[`scripts/verify.py`](../scripts/verify.py)をreviewしてcopyする。`action.yml`は固定pathでそれを
+呼ぶだけにする。
 
 ```yaml
-name: Central actions command injection gate
+name: Verify Actions command injection
+description: Reject direct GitHub expressions in run scripts
+
+runs:
+  using: composite
+  steps:
+    - name: Scan workflow files
+      shell: bash
+      run: python3 "$GITHUB_ACTION_PATH/verify.py" .github/workflows
+```
+
+Package install、network download、dynamic plugin、consumerからのcommand inputは追加しない。Composite Action自身の
+`runs.steps[*].run`を一般検査するscope expansionでもない。
+
+### Consumer workflow
+
+Sandbox consumerの`.github/workflows/actions-command-injection.yml`に次を置く。
+
+```yaml
+name: Actions command injection gate
 
 on:
   pull_request:
@@ -76,28 +72,6 @@ permissions: {}
 
 jobs:
   actions-command-injection:
-    permissions:
-      contents: read
-    uses: example-security/security-workflows/.github/workflows/actions-command-injection.yml@<REVIEWED_40_CHARACTER_COMMIT_SHA>
-```
-
-Callerからsecretを渡さない。`secrets: inherit`、write permission、environment、self-hosted runner選択を追加しない。
-
-## Central reusable workflow skeleton
-
-Central workflowはcandidate repositoryをcheckoutするが、そのbuild、test、script、dependencyを実行しない。
-Workflow fileをdataとしてverifierへ渡す。
-
-```yaml
-name: Actions command injection
-
-on:
-  workflow_call:
-
-permissions: {}
-
-jobs:
-  scan:
     name: Reject direct expressions in run
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -112,86 +86,49 @@ jobs:
         uses: example-security/security-workflows/actions/actions-command-injection@<REVIEWED_40_CHARACTER_COMMIT_SHA>
 ```
 
-Central wrapperは入力をcommand stringとして受け取らず、固定pathだけを検査する。
+`example-security`とplaceholderは実ownerとreview済みfull commit SHAへ置換する。Tag、branch、短縮SHA、secret、write permission、
+OIDC、Environment、self-hosted runnerをPoCへ追加しない。Private Actionの利用条件は
+[Sharing actions and workflows](https://docs.github.com/en/actions/how-tos/reuse-automations/share-across-private-repositories)を
+参照する。Shared private repositoryはrunnerへdownload tokenを渡すため、central repositoryにはsecretやconsumerへ
+配布できない資料を置かず、Action codeをconsumer contributorから完全に秘匿できるとは想定しない。
 
-```yaml
-name: Verify Actions command injection
-description: Reject direct GitHub expressions in run scripts
+## Harmless verification
 
-runs:
-  using: composite
-  steps:
-    - name: Scan workflow files
-      shell: bash
-      run: python3 "$GITHUB_ACTION_PATH/verify.py" .github/workflows
-```
+Production repository、real secret、deployment authorityを使わず、sandbox consumerで確認する。
 
-Composite wrapperはcentral distributionのためだけに使う。Composite Action自身の
-`runs.steps[*].run`を一般検査するscope expansionではない。
+1. Centralの2 fileをreviewしてcommitし、full commit SHAをconsumerへ設定する。
+2. Consumer workflowを実行し、生成されたcheckをrulesetのrequired status checkにする。
+3. `env:`とquoted variableを使うsafe pull requestがexit `0`で通ることを確認する。
+4. `run: printf '%s\n' "${{ github.event.pull_request.title }}"`を含むinert fixtureがexit `1`でblockされることを確認する。
+5. Unsupported `run` aliasのfixtureがexit `2`となり、cleanへ変換されないことを確認する。
+6. Consumer workflowを削除またはcentral SHAを差し替えるpull requestが、required reviewまたはmissing required checkで
+   mergeできないことを確認する。
 
-## Trust decisions to review
+Safe、finding、errorが区別され、Action取得失敗もmergeをblockし、consumerのgate変更がreview対象ならPoC成功である。
+Live rulesetや実runを確認していなければ`NOT_CHECKED`とする。
 
-| Decision | Minimum PoC state | Fail-closed condition |
-|---|---|---|
-| Central code identity | Callerとwrapperがreview済みfull SHAを参照 | Tag、branch、短縮SHA、unknown commit |
-| Candidate handling | Workflow filesをdataとしてscan | Candidate script／dependencyを実行 |
-| Token authority | `contents: read`のみ、secretなし | Write scope、OIDC、inherited secret |
-| Runner | GitHub-hosted Ubuntu | Unreviewed self-hosted runner |
-| Scanner result | `0=accepted`、`1=finding`、`2=error` | Errorをzero findingsへ変換 |
-| Merge enforcement | Expected checkがrulesetでrequired | Missing／skipped checkでmerge可能 |
-| Change ownership | Caller、central workflow、verifierにreview owner | Candidate authorが単独でweakening可能 |
+## 何を中央化できないか
 
-## Harmless PoC procedure
+- Consumer workflow、CODEOWNERS、required status check、ruleset;
+- 各consumerが使用するSHAの更新とinventory;
+- GitHub plan／visibilityに依存するprivate Action access;
+- Shared private repositoryのcontentとdownload tokenに関するaccess boundary;
+- Shell全体、Composite Action、called script、job authorityの検証;
+- Organization全体への強制rolloutとlive adoption evidence。
 
-Production repository、credential、deployment workflowを使わず、sandbox consumer repositoryで行う。
+これらまで中央強制したい場合、この2-file PoCを拡張するのではなく、利用中のGitHub planでorganization rulesetやrequired
+workflow相当のprovider機能を別途評価する。
 
-1. Central repositoryへwrapper、verifier、reusable workflowをreviewしてcommitし、exact SHAを記録する。
-2. Sandbox consumerへSHA-pinned callerを追加する。
-3. Callerを一度実行し、実際に生成されたcheckをrulesetのrequired status checkへ登録する。
-4. `env:`とquoted variableを使うsafe pull requestがpassすることを確認する。
-5. 次のinert findingを`.github/workflows`へ置いたpull requestがfailすることを確認する。
+## Rollback
 
-   ```yaml
-   run: printf '%s\n' "${{ github.event.pull_request.title }}"
-   ```
-
-6. Unsupported `run:` alias等でverifier exit `2`を発生させ、mergeがblockされることを確認する。
-7. Callerを削除またはskipするpull requestでrequired checkが欠落し、mergeできないことを確認する。
-8. Callerと同名のjobを追加してcheck sourceをspoofできないかreviewする。GitHub UIでexpected sourceを限定できる
-   場合は限定し、できない場合はCODEOWNERSとruleset limitationとして記録する。
-9. Safe patternへ修正し、同じrevisionのcheckがpassしたことを確認する。
-
-PoCでreal secret、provider-valid token、malware、production branch、deployment authorityを使用しない。
-
-## Evidence and completion boundary
-
-PoC完了時に保存してよいevidenceは次に限定する。
-
-- Central repositoryとexact commit SHA;
-- Consumer repositoryとtested revision;
-- Reusable workflow accessのcurrent setting;
-- Required check／rulesetのcurrent read-only screenshotまたはAPI response;
-- Safe、finding、error、missing-checkのsanitized run URLとresult;
-- Acquisition time、reviewer、authority boundary。
-
-このrepositoryに架空のevidence JSONを追加しない。上記live stateを取得していない場合は`NOT_CHECKED`である。
-
-## Limitations
-
-- Callerが存在するだけではrequired checkは有効にならない。
-- Private central repository access、GitHub plan、organization policyにより利用方法が変わる。
-- Status check nameだけに依存するとspoofやambiguous sourceのreviewが必要になる。
-- Central repository compromiseは全consumerへ影響するため、owner、branch protection、release reviewが必要である。
-- Central outage、GitHub Actions outage、access denialはcleanではなくblocking errorになる。
-- このPoCはOrganization-wide rollout、fleet inventory、automatic remediation、live policy collectorを実装しない。
+ConsumerをREADMEのlocal 3-file gateまたは同等のprovider enforcementへ先に移し、同じnegative testがblockされることを
+確認する。その後、central Action参照とrequired checkをreviewして削除する。
 
 ## References
 
-- [GitHub: Reuse workflows](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows)
+- [GitHub: Sharing actions and workflows](https://docs.github.com/en/actions/how-tos/reuse-automations/share-across-private-repositories)
 - [GitHub: Secure use reference](https://docs.github.com/en/actions/reference/security/secure-use)
 - [GitHub: Available rules for rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets)
 - [GitHub: About CODEOWNERS](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)
-- [GitHub: Managing Actions settings for a repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository)
 - [`PSB-CICD-003` workflow static analysis](../../actions-static-analysis/README.md)
-- [`PSB-CICD-004` least-privilege permissions](../../actions-least-privilege/README.md)
 - [`PSB-CICD-005` untrusted PR boundary](../../untrusted-pr-boundary/README.md)
