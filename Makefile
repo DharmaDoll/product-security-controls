@@ -1,4 +1,4 @@
-.PHONY: bootstrap lint verify verify-control verify-sitf-coverage assess-control import-application-checklist collect-github-control-plane-audit collect-github-runner-group-state collect-github-ruleset-state collect-github-organization-ruleset-state collect-github-fork-network-state collect-github-branch-protection-state normalize-github-control-plane-evidence normalize-github-ruleset-control-plane-evidence normalize-github-branch-protection-evidence normalize-aws-control-plane-evidence normalize-aws-ecr-control-plane-evidence normalize-aws-kms-control-plane-evidence collect-github-action-advisories verify-github-action-advisories collect-github-actions-build-platform collect-github-releases-evidence collect-slsa-consumer-evidence collect-slsa-security-review-evidence build-slsa-build-l2-evidence assess-slsa-build-l2 assess-slsa-build-l2-bundles test generate generate-index generate-mappings generate-checklists validate-controls clean
+.PHONY: bootstrap lint verify verify-control verify-sitf-coverage assess-control import-application-checklist collect-github-control-plane-audit collect-github-runner-group-state collect-github-ruleset-state collect-github-organization-ruleset-state collect-github-fork-network-state collect-github-branch-protection-state normalize-github-control-plane-evidence normalize-github-ruleset-control-plane-evidence normalize-github-branch-protection-evidence normalize-aws-control-plane-evidence normalize-aws-ecr-control-plane-evidence normalize-aws-kms-control-plane-evidence collect-github-actions-build-platform collect-github-releases-evidence collect-slsa-consumer-evidence collect-slsa-security-review-evidence build-slsa-build-l2-evidence assess-slsa-build-l2 assess-slsa-build-l2-bundles test generate generate-index generate-mappings generate-checklists validate-controls clean
 
 bootstrap:
 	@echo "No external bootstrap required."
@@ -179,19 +179,6 @@ normalize-aws-kms-control-plane-evidence:
 		--change-register "$(AWS_KMS_CHANGE_REGISTER)" \
 		--keys "$(AWS_KMS_KEYS)" \
 		--output "$(CONTROL_PLANE_EVIDENCE_OUTPUT)"
-
-collect-github-action-advisories:
-	@python3 controls/cicd-security/action-sha-pinning/scripts/collect-advisories.py \
-		--output "$(or $(ADVISORY_SNAPSHOT),generated/advisories/github-actions.json)"
-
-verify-github-action-advisories:
-	@test -n "$(ACTION_INVENTORY)" || (echo "ACTION_INVENTORY is required" >&2; exit 2)
-	@test -n "$(ADVISORY_SNAPSHOT)" || (echo "ADVISORY_SNAPSHOT is required" >&2; exit 2)
-	@test -n "$(AS_OF)" || (echo "AS_OF is required" >&2; exit 2)
-	@python3 controls/cicd-security/action-sha-pinning/scripts/verify-advisories.py \
-		--inventory "$(ACTION_INVENTORY)" \
-		--snapshot "$(ADVISORY_SNAPSHOT)" \
-		--as-of "$(AS_OF)"
 
 collect-github-actions-build-platform:
 	@test -n "$(COLLECTOR_POLICY)" || (echo "COLLECTOR_POLICY is required" >&2; exit 2)
