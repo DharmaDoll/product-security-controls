@@ -13,9 +13,9 @@ provider response、private log本文をrepositoryへcommitしないでくださ
 - self-test用workflowを追加でき、`workflow_dispatch`を二回実行できる。
 - live evidenceを確認するRepository administratorまたはOrganization ownerがいる。
 
-Profile固有前提:
+構成ごとの追加前提:
 
-| Profile | 追加の前提 |
+| 構成 | 追加の前提 |
 |---|---|
 | GitHub-hosted | GitHub standard hosted runnerを利用できる。provider-owned lifecycleを受容する。 |
 | Takumi Runner | Shisho Cloud organization、有効なsubscription、GitHub Organization admin、Takumi Manager／API Integration Manager、GitHub Appとtrace dataのvendor review。 |
@@ -23,7 +23,7 @@ Profile固有前提:
 
 このcontrolのためにlocal Docker daemon、global Git setting、developer workstationへのrunner登録は不要です。
 
-## Profile A: GitHub-hosted runner
+## GitHub-hosted runnerを使う場合
 
 GitHubはstandard hosted runnerについて、single-CPUの`ubuntu-slim`を除きjobごとにnew VMを提供すると説明しています。
 通常のbuild／testではこれを最短baselineにします。
@@ -46,7 +46,7 @@ GitHubはstandard hosted runnerについて、single-CPUの`ubuntu-slim`を除�
 このtestが確認するのはjob-visibleなhome stateの分離とfail branchです。GitHub内部のhypervisor、disk wipe、
 tenant isolationを独立にattestしません。provider assuranceは[GitHub-hosted runners](https://docs.github.com/en/actions/concepts/runners/github-hosted-runners)と契約条件でreviewします。
 
-## Profile B: Takumi Runner
+## Takumi Runnerを使う場合
 
 Takumi RunnerはGitHub Actions self-hosted runnerとして連携し、vendor documentation上はjobごとにdedicated ephemeral
 VMを作成・破棄します。process、network、file traceを取得できます。導入は軽量ですが、GitHub App権限、契約、
@@ -76,9 +76,9 @@ trust decisionと費用上限を先にreviewしてください。
 
 Takumi traceの存在は全攻撃の検知を保証しません。制約は[Takumi Runner limitations](https://shisho.dev/docs/t/runner/limitation/)をreviewしてください。Threat notificationを使う場合、そのruleとtriageは[PSB-BUILD-001](../../../build-security/build-containment/README.md)のruntime detectionとして管理します。
 
-## Profile C: organization-owned JIT runner
+## Organization-owned JIT runnerを使う場合
 
-このprofileはprivate network、特殊hardware、独自image等でmanaged runnerを使えないtrusted job向けです。
+この構成はprivate network、特殊hardware、独自image等でmanaged runnerを使えないtrusted job向けです。
 GitHub runnerの`ephemeral`／JIT登録と、underlying computeのfresh provision／destructionは別のpropertyです。
 両方を実装してください。
 
@@ -114,7 +114,7 @@ Securityまたはcontrol ownerは次を一つのreviewとして実施します�
 
 | Check | Live確認 | 必要なactual evidence | PASS condition |
 |---|---|---|---|
-| `RNR-001` | workflowの`runs-on`とcurrent runner groupをread-only確認する。 | workflow revision、group visibility、selected repositories／workflows、public access setting | 全jobが承認profileへ一致し、self-hosted scopeにwildcardや未信頼workflowがない。 |
+| `RNR-001` | workflowの`runs-on`とcurrent runner groupをread-only確認する。 | workflow revision、group visibility、selected repositories／workflows、public access setting | 全jobが承認済みrunner構成へ一致し、self-hosted scopeにwildcardや未信頼workflowがない。 |
 | `RNR-002` | 連続二jobのdispatch、runner generation、compute IDを相関する。 | GitHub job IDs、runner IDs、provider provision／destroy events | self-hosted／managed ephemeralは1 job 1 fresh computeで再利用されない。 |
 | `RNR-003` | managed providerのcurrent image contract、またはself-hosted image digestとrunner versionを確認する。 | provider documentation／release、image digest、provenance verification、version decision | mutable imageやunsupported runner versionを使用しない。 |
 | `RNR-004` | 二回のpositive marker testとstartup stateを確認する。 | workflow run links、sanitized startup observation | prior marker、foreign process、host／cloud／SSH credentialがない。 |
@@ -124,7 +124,7 @@ Securityまたはcontrol ownerは次を一つのreviewとして実施します�
 | `RNR-008` | destruction前後にexternal backendをqueryする。 | job ID／runner generation付きlog query result | investigationに必要なrunner logがlocal disk外へ残る。 |
 | `RNR-009` | API permission denial、partial result、provider／log outage時の運用を確認する。 | error result、runbook／alert、assignment停止記録 | 判断不能を`PASS`にせず`ERROR`または`NOT_CHECKED`とし、unsafe generationを再利用しない。 |
 
-Evidence recordには、control ID、対象organization／repository／workflow、profile、取得元、取得時刻、collectorの
+Evidence recordには、control ID、対象organization／repository／workflow、runner構成、取得元、取得時刻、collectorの
 権限境界、job ID、runner generation、判定、reviewerを含めます。provider responseの必要fieldだけを保存し、token、
 encoded JIT config、authorization header、secret-bearing command line、private log本文をcontrol repositoryへcommitしません。
 
@@ -132,7 +132,7 @@ encoded JIT config、authorization header、secret-bearing command line、privat
 
 - `PASS`: 全適用checkにcurrentかつcompleteなlive evidenceがある。
 - `FAIL`: 一つ以上のsecurity propertyが成立しない。
-- `NOT_CHECKED`: live環境、権限、対象profileがなく確認していない。未導入と同義ではなく、未確認です。
+- `NOT_CHECKED`: live環境、権限、対象runner構成がなく確認していない。未導入と同義ではなく、未確認です。
 - `ERROR`: collector、API、pagination、provider、workflow、log query等が失敗した。clean resultではありません。
 
 `make verify-control CONTROL=PSB-CICD-007`はlive credentialを受け取らず、exit `2`と手順linkを返します。
@@ -141,7 +141,7 @@ encoded JIT config、authorization header、secret-bearing command line、privat
 
 導入完了は次をすべて満たす状態です。
 
-- 対象jobとprofile、runner group、責任者が記録されている。
+- 対象jobとrunner構成、runner group、責任者が記録されている。
 - copyしたworkflowのpositive二回、negative一回がexpected exit statusになった。
 - 適用する`RNR-001`から`RNR-009`のlive evidenceをreviewし、未適用項目には理由がある。
 - log、image update、capacity、failure recovery、periodic review、incident accessのownerが割り当てられている。
@@ -161,7 +161,7 @@ encoded JIT config、authorization header、secret-bearing command line、privat
 ## Rollback
 
 1. 問題のあるmanaged／self-hosted groupへの新規dispatchを停止する。
-2. 対象workflowの`runs-on`をreviewの上で[GitHub-hosted profile](../secure/github-hosted.yml)へ戻す。job要件が満たせなければworkflowを一時停止する。
+2. 対象workflowの`runs-on`をreviewの上で[GitHub-hosted runner構成](../secure/github-hosted.yml)へ戻す。job要件が満たせなければworkflowを一時停止する。
 3. active runnerをderegisterし、provider側compute／storageをdestroyする。log保全が必要ならIncident responseの指示に従う。
 4. Takumiを撤去する場合はworkflow labelを戻し、GitHub App install scope、subscription、data retentionをvendor runbookに従ってreviewする。
 5. self-test workflowが不要になった場合だけrepositoryから削除する。global developer settingは変更していないためlocal rollbackは不要です。

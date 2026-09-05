@@ -27,7 +27,7 @@ verification:
   type: external-evidence
   procedure: docs/ADOPTION.md#live-verification
   expected:
-    - every job routes to an approved exact runner profile and self-hosted scope excludes untrusted repositories and workflows
+    - every job routes to an approved exact runner configuration and self-hosted scope excludes untrusted repositories and workflows
     - two consecutive jobs use clean separate runner generations and a forced inert marker produces the documented negative result
     - managed or self-hosted ephemeral jobs use one fresh compute instance per job without returning it to a reusable pool
     - self-hosted runners cannot reach host credentials metadata management networks internal services or host runtime sockets
@@ -35,8 +35,8 @@ verification:
     - unavailable incomplete stale or failed live verification is ERROR or NOT_CHECKED and never PASS
 checks:
   - id: RNR-001
-    title: Trust class routes to an exact runner profile
-    required_state: untrusted jobs use reviewed hosted runners and self-hosted profiles use exact trusted repository and workflow scope
+    title: Trust class routes to an exact runner configuration
+    required_state: untrusted jobs use reviewed hosted runners and self-hosted configurations use exact trusted repository and workflow scope
     responsible_role: ci-platform
     applies_to:
       - ci-job-dispatch
@@ -49,7 +49,7 @@ checks:
     verification:
       type: external-evidence
       method: compare the current workflow revision and live dispatch with provider runner-group repository and workflow settings
-      expected: every dispatch matches one approved profile and no untrusted job uses organization-controlled self-hosted infrastructure
+      expected: every dispatch matches one approved runner configuration and no untrusted job uses organization-controlled self-hosted infrastructure
       evidence:
         - workflow revision and run link
         - current runner-group access export or read-only view
@@ -114,7 +114,7 @@ checks:
       expected: both positive runs are clean and no prior job marker foreign process or host credential is present
       evidence:
         - two workflow run links and sanitized marker results
-        - sanitized startup observation for self-hosted profiles
+        - sanitized startup observation for self-hosted configurations
     mapping_status: reviewed
   - id: RNR-005
     title: Runner cannot reach host or management identities

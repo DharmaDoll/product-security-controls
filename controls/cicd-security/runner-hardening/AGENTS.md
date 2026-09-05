@@ -8,7 +8,7 @@
 - 本質はCI jobを長寿命または共有hostへ残さず、jobごとにcleanなrunnerへ割り当て、job終了後に
   underlying computeとephemeral storageを再利用せず破棄すること。
 - 最短baselineはGitHub-hosted runner。process／network／file traceをmanaged serviceで得たい場合の
-  optional profileとしてTakumi Runnerを扱う。
+  optional構成としてTakumi Runnerを扱う。
 - Organization-owned self-hosted runnerは、trusted jobに必要な場合だけ、限定runner group、JIT one-job
   registration、fresh compute、host境界遮断、external log、compute／storage destructionを一つのlifecycleで実装する。
 - security効果はlive runner service、GitHub setting、provisioner、network、log backend、teardownから生まれる。
@@ -16,11 +16,11 @@
 - このcontrolをworkflow trust classifier、job sandbox、cloud IAM verifier、runtime detection product、
   container platform、fleet orchestration frameworkへ拡張しない。
 
-## Supported profiles
+## Supported runner configurations
 
 1. `GitHub-hosted`: 通常のLinux build／testの推奨default。single-CPU container型labelではなく、jobごとに
    new VMを提供するversioned standard labelを例にする。
-2. `Takumi Runner`: GitHub.com／GitHub Enterprise Cloud、Linux x86_64向けmanaged one-job VM profile。
+2. `Takumi Runner`: GitHub.com／GitHub Enterprise Cloud、Linux x86_64向けmanaged one-job VM構成。
    GitHub App、runner group scope、契約、vendor data boundary、trace limitationを明示する。
 3. `Organization JIT`: private network、特殊hardware、独自image等が必要なtrusted workflow向け。
    cloud／ARC／on-premisesを推測で一つに固定しない。
@@ -72,7 +72,7 @@ baseline、alert triageを重複実装しない。
 
 `control.yaml`がcanonical metadataである。既存IDを不要にrenumberしない。
 
-- `RNR-001`: exact runner profileとself-hosted group／repository／workflow scope。
+- `RNR-001`: exact runner構成とself-hosted group／repository／workflow scope。
 - `RNR-002`: JIT runnerとunderlying fresh computeが一jobだけで再利用されないこと。
 - `RNR-003`: managed providerのcurrent image contract、またはimmutable self-hosted imageとsupported runner version。
 - `RNR-004`: assignment時にprior stateとhost credentialがないこと。
@@ -123,7 +123,7 @@ Primary verificationは`docs/ADOPTION.md#live-verification`にあるlive setting
 
 変更後、adopterが次を一読で判断できる状態にする。
 
-- どのprofileで何をliveに設定するか。
+- どのrunner構成で何をliveに設定するか。
 - 誰がGitHub、managed provider、self-hosted infrastructureを設定するか。
 - one-job fresh compute、host isolation、destructionがなぜ安全性を上げるか。
 - どのpositive／negative job、deny probe、log、destruction eventを実際に確認するか。
