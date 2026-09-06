@@ -23,12 +23,14 @@ jobs:
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
           HEAD_REF: ${{ github.head_ref }}
+        shell: bash
         run: |
           printf 'Reviewing: %s\n' "$PR_TITLE"
           printf 'Head: %s\n' "$HEAD_REF"
       - name: Validate before selecting a build target
         env:
           REQUESTED_TARGET: ${{ inputs.target }}
+        shell: bash
         run: |
           case "$REQUESTED_TARGET" in
             lint|test|verify)

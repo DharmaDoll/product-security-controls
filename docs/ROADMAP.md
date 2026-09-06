@@ -433,9 +433,10 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
    read-only toolsets, and explicit AI-002/004 ownership with live endpoint
    adoption left `NOT_CHECKED`.
 3. `PSB-CICD-004` — explicit least-privilege workflow and job permissions,
-   rejecting broad write scopes — implemented with workflow deny-all,
-   purpose-bound exact job policies, OIDC scoping, trusted-ref conditions,
-   protected-environment requirements, and repository-wide verification.
+   rejecting broad write scopes — implemented as a configuration-first
+   reference with workflow deny-all, job-operation permission review, OIDC
+   scoping, trusted-ref conditions, protected-environment requirements, shared
+   `PSB-CICD-003` static analysis, and formal live manual verification.
 4. `PSB-CICD-005` — fork-safe and untrusted-PR-safe workflows with no privileged
    credential exposure or execution through `pull_request_target` — implemented
    with credential-free hosted PR jobs, safe checkout, conservative cache and

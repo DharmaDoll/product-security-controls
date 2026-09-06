@@ -1,0 +1,9 @@
+{
+  "name": "psb-lock-transitive-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@psb/parent": "file:__PSB_PARENT_TARBALL__",
+    "@psb/unlocked": "file:__PSB_LEAF_TARBALL__"
+  }
+}

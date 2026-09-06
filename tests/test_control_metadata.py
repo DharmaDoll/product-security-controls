@@ -14,6 +14,8 @@ sys.path.insert(0, str(REPOSITORY_ROOT / "scripts"))
 from control_metadata import (  # noqa: E402
     README_OVERVIEW_HEADING,
     README_OVERVIEW_ROWS,
+    control_requires_test,
+    control_verification_type,
     discover_controls,
     validate_controls,
     validate_readme_overview,
@@ -65,7 +67,57 @@ class ControlMetadataValidationTest(unittest.TestCase):
         control["verification"].pop("procedure")
         errors = validate_controls([control])
         self.assertTrue(
-            any("verification.procedure must be" in error for error in errors)
+            any("procedure must be a non-empty string" in error for error in errors)
+        )
+
+    def test_legacy_command_verification_defaults_to_automated(self) -> None:
+        control = {"verification": {"commands": ["make verify"], "expected": ["pass"]}}
+        self.assertEqual(control_verification_type(control), "automated")
+        self.assertTrue(control_requires_test(control))
+
+    def test_manual_verification_does_not_require_control_test(self) -> None:
+        control = {
+            "verification": {
+                "type": "manual",
+                "procedure": "README.md#verification",
+                "expected": ["live state reviewed"],
+            }
+        }
+        self.assertEqual(control_verification_type(control), "manual")
+        self.assertFalse(control_requires_test(control))
+
+    def test_manual_verification_requires_readme_anchor(self) -> None:
+        control = copy.deepcopy(self.controls[0])
+        control["verification"] = {
+            "type": "manual",
+            "procedure": "docs/checklist.md",
+            "expected": ["live state reviewed"],
+        }
+        errors = validate_controls([control])
+        self.assertTrue(any("must be a README.md anchor" in error for error in errors))
+
+    def test_manual_verification_rejects_commands(self) -> None:
+        control = copy.deepcopy(self.controls[0])
+        control["verification"] = {
+            "type": "manual",
+            "procedure": "README.md#verification",
+            "commands": ["true"],
+            "expected": ["live state reviewed"],
+        }
+        errors = validate_controls([control])
+        self.assertTrue(
+            any("must not declare commands" in error for error in errors)
+        )
+        self.assertTrue(
+            any("must not ship tests/test.sh" in error for error in errors)
+        )
+
+    def test_invalid_top_level_verification_type_is_rejected(self) -> None:
+        control = copy.deepcopy(self.controls[0])
+        control["verification"]["type"] = ["manual"]
+        errors = validate_controls([control])
+        self.assertTrue(
+            any("unsupported top-level verification type" in error for error in errors)
         )
 
     def test_external_evidence_control_is_not_reported_as_verified(self) -> None:
@@ -83,7 +135,7 @@ class ControlMetadataValidationTest(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 2)
         self.assertIn("NOT_CHECKED PSB-CICD-007", result.stdout)
-        self.assertIn("docs/ADOPTION.md#live-verification", result.stdout)
+        self.assertIn("README.md#verification", result.stdout)
         self.assertNotIn("verified 1 control(s)", result.stdout)
 
     def test_invalid_mapping_relationship_is_rejected(self) -> None:
@@ -91,6 +143,14 @@ class ControlMetadataValidationTest(unittest.TestCase):
         control["mappings"][0]["relationship"] = "complies-with"
         errors = validate_controls([control])
         self.assertTrue(any("unsupported relationship" in error for error in errors))
+
+    def test_manual_control_does_not_require_no_op_test_script(self) -> None:
+        control = next(
+            item for item in self.controls if item["id"] == "PSB-CICD-005"
+        )
+        self.assertEqual(control["verification"]["type"], "manual")
+        self.assertFalse((control["_directory"] / "tests" / "test.sh").exists())
+        self.assertEqual(validate_controls([control]), [])
 
     def test_unknown_mapping_check_is_rejected(self) -> None:
         control = copy.deepcopy(self.controls[0])

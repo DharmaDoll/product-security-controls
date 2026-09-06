@@ -1,2 +1,0 @@
-PASS workflow.yml jobs=5 explicit least-privilege permissions
-ACCEPTED 1 workflow(s) and 5 job(s) with reviewed least-privilege permissions

@@ -56,9 +56,15 @@ supported path and state:
 
 ## Verification
 
-- Ship a self-test beside the copied implementation when feasible.
-- Test one safe input, one inert finding, redaction, and fail-closed tool
-  unavailability.
+- Ship a self-test beside the copied implementation when it verifies a real
+  security property or the behavior of a necessary evaluator.
+- Do not add `tests/test.sh` for a `manual` or `external-evidence` control.
+  Link its formal README procedure from `control.yaml`; the canonical runner
+  must report it as `NOT_CHECKED`, not verified.
+- For `automated` and `hybrid` controls, test one safe input, one inert finding,
+  redaction, and fail-closed tool unavailability.
+- A test that only compares a configuration with a second self-authored
+  declaration, searches README text, or always succeeds is not verification.
 - Keep local fixture success separate from live organization adoption.
 - Preserve the canonical `make verify-control CONTROL=<id>` interface.
 

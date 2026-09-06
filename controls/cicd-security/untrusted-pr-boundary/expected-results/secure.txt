@@ -1,2 +1,0 @@
-PASS workflow.yml jobs=2 fork-safe trust boundaries
-ACCEPTED 1 workflow(s) and 2 job(s) with fork-safe trust boundaries

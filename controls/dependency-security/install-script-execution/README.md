@@ -4,154 +4,264 @@
 
 ### セキュリティ上の問題
 
-Package install時のlifecycle scriptやsource buildは、dependencyを利用する前にdeveloper端末やCIの権限で任意codeを実行できる。
+Dependency installはfile展開だけではなく、lifecycle hook、native build、Python build backendを
+developer端末やCIの権限で起動し得る。
 
 ### 誰から、または何から守るか
 
-侵害・偽装されたpackage、悪意あるmaintainer、typosquatting、source distribution fallback、広すぎるまたは期限切れ例外から守る。
+侵害・偽装されたpackage、悪意あるmaintainer、typosquatting、transitive dependency、
+source distribution fallback、危険な全許可overrideから守る。
 
 ### 何が対象か
 
-npm・pnpm・Bun・pip等のdependency install、lifecycle script、build backend、source distribution、repository-owned policy、例外。
+npm 12／11.16+、pnpm 11／12、Bun、pipによるdeveloper端末、pull request CI、build環境での
+dependency installを対象とする。
 
 ### 何をするか
 
-Install-time executionをdefault denyにし、必要なpackage・script・versionだけをowner・理由・期限付きで承認し、hash固定wheel等の非実行経路を優先する。
+Package managerのnative default denyと明示approvalを利用し、危険なoverrideを拒否する。
+pipはbinary-onlyにしてsource buildを止める。
 
 ### 成功状態
 
-未承認scriptとsource buildが実行されず、例外はexactかつ有効期限内で、missing・malformed policyやverifier failureはfail closedとなる。
+未reviewのdependency scriptまたはsource buildが実行されず、危険な全許可と設定破損が
+`FAIL`または`ERROR`としてCIを停止する。
 
 ### 対象外・残余リスク
 
-Install後のimport、test、compiler plugin、application runtimeでの悪性code実行や、承認済みscript自体の安全性は保証しない。
+Install後のimport、test、compiler plugin、application runtime、承認済みscript、wheel内codeの安全性は
+保証しない。
 
-## セキュリティ上の問題
+## 最短の導入手順
 
-依存パッケージのinstallは、単なるファイル展開とは限りません。Node.js系の
-`preinstall`、`install`、`postinstall`や、Python source distributionのbuild backendは、
-開発者端末またはCI runnerの権限でコードを実行できます。侵害されたpackage、
-typosquatting、dependency confusionなどを取得した場合、installしただけでcredentialや
-source codeの窃取、外部通信、build outputの改ざんにつながります。
+### 前提
 
-このcontrolは、依存packageのinstall-time code executionをdefault denyにし、必要な
-例外だけをexact package version、owner、別のapprover、理由、期限で管理します。
+- 対象package managerとmajor versionを固定または記録できる。
+- Repository-owned configをreviewし、CIでも同じconfigを使える。
+- Python 3.11+でreference verifierを実行できる。
+- 既存configがある場合は上書きせず、該当keyをmerge reviewする。
 
-## 対象と前提
+### Copyまたはmergeするfile
 
-- 対象domain: `dependency-security`
-- control ID: `PSB-DEPS-002`
-- 対象: 開発端末、pull request CI、build環境
-- fixtureはsyntheticであり、packageのdownloadやscript実行は行わない
-- package managerとlockfileは別途immutable versionに固定する
-- repository-owned設定を使い、global user設定には依存しない
+利用するecosystemの行だけを採用する。
 
-## 脅威と失敗シナリオ
+| Ecosystem | 対象file | 実際に変わる状態 |
+| --- | --- | --- |
+| npm 12／11.16+ | [`secure/npm/.npmrc`](secure/npm/.npmrc) | unreviewed install scriptをnon-zeroで停止し、全許可を禁止 |
+| pnpm 11／12 | [`secure/pnpm/pnpm-workspace.yaml`](secure/pnpm/pnpm-workspace.yaml) | unreviewed buildを停止し、native approvalを明示 |
+| Bun | [`secure/bun/bunfig.toml`](secure/bun/bunfig.toml) | projectとtrusted dependencyを含む全install scriptを停止 |
+| pip | [`secure/pip/requirements.txt`](secure/pip/requirements.txt) | source distributionを選択せず、build backend起動を防止 |
 
-主な失敗シナリオは`DEPENDENCY-INSTALL-SCRIPT-EXECUTION`です。
+Greenfield repositoryでは対象fileが存在しないことを確認してからcopyする。既存projectではsnippetを
+該当fileへmergeし、project固有のworkspaceやdependency情報を保持する。
 
-1. 攻撃者がdependencyまたはそのpublish accountを侵害する
-2. lifecycle scriptやsource build backendにpayloadを追加する
-3. 開発者またはCIが通常のinstall commandを実行する
-4. install処理がcredentialを持つprocessとしてpayloadを実行する
+### Activation
 
-失敗しやすい運用は、warningだけで継続する、package名だけを無期限に許可する、
-`--trust-all`相当を使う、wheelがない場合に自動でsdistへfallbackすることです。
+1. 対象configをrepository rootのpackage managerが読む位置へ置く。
+2. pipでは`--only-binary=:all:`を実際に使用するprotected requirements inputへ含める。
+3. Local self-testを実行する。
 
-## 安全な実装
+```bash
+python3 controls/dependency-security/install-script-execution/scripts/verify.py \
+  --profile-dir controls/dependency-security/install-script-execution/secure
+```
 
-`secure/`は4つのprofileを検証します。
-
-| Ecosystem | Repository-owned enforcement |
-| --- | --- |
-| npm | `.npmrc`の`ignore-scripts=true`で全dependency lifecycle scriptを停止 |
-| pnpm 11 | `strictDepBuilds: true`、`dangerouslyAllowAllBuilds: false`、exact versionの`allowBuilds` |
-| Bun | `bunfig.toml`の`install.ignoreScripts=true`でprojectとdependencyのscriptを停止 |
-| pip | `--only-binary=:all:`、`--require-hashes`、exact pin、SHA-256 hash |
-
-pnpmの`native-fixture@1.2.3`は、native buildが不可欠なdependencyを想定したsynthetic
-例です。`install-execution-policy.json`の時限承認と一致する場合だけ許可されます。
-拒否entryは明示できますが、許可entry以外はdefault denyです。
-承認期間のreference上限は30日（720時間）です。安全性を保証する期間ではなく、
-承認の棚卸しを強制する運用baselineであり、version変更時は期間内でも再reviewします。
-
-npmやBunでscriptが本当に必要な場合は、全停止を弱める前に次を行います。
-
-1. lifecycle scriptと配布artifactをsemantic reviewする
-2. exact resolved versionとintegrityを固定する
-3. credentialと外向きnetworkを持たない隔離build jobで実行する
-4. outputだけを後段へ渡し、通常の開発shellやdeploy jobでは実行しない
-5. owner・別承認者・理由・期限付きの例外としてreviewする
-
-package manager固有allowlistを採用する場合も、name-only、range、wildcard、一括承認を
-禁止し、同じ例外台帳との照合を追加してください。
-
-## 安全でない実装
-
-`insecure/`は次を含みます。
-
-- npm lifecycle scriptを有効化
-- pnpmのfail-open設定とversion rangeによる許可
-- Bunのscript実行許可
-- pipのsdist fallback、未固定version、hashなし
-- ownerとapproverが同一で期限切れの例外
-
-実際の悪性scriptや実在packageは含みません。
-
-## 検証方法
+4. 同じ判定をCI required checkにする。
 
 ```bash
 make verify-control CONTROL=PSB-DEPS-002
 ```
 
-直接実行する場合:
+Expected result:
 
-```bash
-python3 controls/dependency-security/install-script-execution/scripts/verify.py \
-  --policy controls/dependency-security/install-script-execution/secure/install-execution-policy.json \
-  --profile-dir controls/dependency-security/install-script-execution/secure \
-  --as-of 2026-07-27T00:00:00Z
+```text
+PASS install execution guardrails: npm pnpm Bun and pip profiles verified
 ```
 
-| 終了コード | 意味 |
+| Exit | 意味 |
 | --- | --- |
-| `0` | 4 profileと例外台帳がbaselineを満たす |
-| `1` | script許可、sdist fallback、broad／expired例外などのpolicy違反 |
-| `2` | 設定欠落、JSON／TOML破損、読取失敗などで検証不能 |
+| `0` | Reference configはこのcontrolのbaselineを満たす |
+| `1` | 全許可、broad approval、source fallback等のsecurity finding |
+| `2` | File欠落、parse失敗、unsupported structure等で判定不能 |
 
-検証器や設定parseの失敗をcleanな結果として扱いません。
+`1`と`2`をどちらもCIでblockする。Fixtureの`PASS`はadopter repositoryで設定が有効になったことを
+証明しない。
 
-## 開発端末での推奨運用
+### Recoveryとrollback
 
-- global設定を自動変更せず、repository-owned設定をcommitする
-- package managerのversionを固定し、lockfileのfrozen modeを使う
-- dependency update PRでこのcontrolと`PSB-DEPS-001`を実行する
-- install processへcloud credential、npm publish token、SSH agentを渡さない
-- install中の外向き通信をregistryなど必要最小限に制限し、telemetryを残す
-- 許可したbuild scriptはversion更新ごとに再reviewする
-- Git hookは補助とし、CI／build側でも同じpolicyを強制する
+- Failure時はpackage manager version、config path、key、precedence、native approvalを確認して再実行する。
+- 復旧のためにdangerous all-allowやsource fallbackを追加しない。
+- Rollbackは、この導入でmergeしたrepository-local keyとCI wiringだけをreviewの上で戻す。
+- Global package-manager、Git、shell、IDE、OS設定はこのcontrolから変更しない。
 
-## 制限事項と残余risk
+## 動作原理
 
-- wheelにも悪性のruntime codeは含められるため、wheel-onlyはpackageを安全にしない
-- lifecycle scriptを止めても、import、test、compiler plugin、application起動時の実行は残る
-- npmやBunの全停止ではnative moduleなどが動かず、隔離buildまたは例外設計が必要になる
-- pnpm 10と11では設定名が異なる。このreferenceはpnpm 11の`allowBuilds`を対象にする
-- package manager自体、registry、lockfile、binary artifactの侵害は別controlが必要である
-- build isolation、network egress、provenance、signature、SBOM、SCAを併用する必要がある
+Package managerはdependency graphを解決してartifactを取得した後、利用可能な形へ準備する。この準備段階に
+package-controlled code execution pointがある。
 
-## 参照した公式仕様
+```text
+package publish／account compromise
+              ↓
+directまたはtransitive dependencyとして解決
+              ↓
+lifecycle hook／native build／PEP 517 backend
+              ↓
+developer shellまたはCI runnerの権限で実行
+              ↓
+credential・source・build output・network authorityへ到達
+```
 
-- [npm CLI 11.18.0: npm-install-scripts](https://docs.npmjs.com/cli/v11/commands/npm-install-scripts/):
-  install script approvalとversion pin
-- [pnpm 11.x settings](https://pnpm.io/settings):
-  `strictDepBuilds`、`allowBuilds`、`dangerouslyAllowAllBuilds`
-- [Bun lifecycle scripts](https://bun.com/docs/guides/install/trusted)と
-  [bunfig.toml](https://bun.com/docs/runtime/bunfig):
-  `trustedDependencies`、`install.ignoreScripts`
-- [pip secure installs](https://pip.pypa.io/en/stable/topics/secure-installs/)と
-  [requirements file format](https://pip.pypa.io/en/stable/reference/requirements-file-format/):
-  wheel-only、hash checking mode
+Node.js系では`preinstall`、`install`、`postinstall`が代表的である。Git、file、link dependencyでは
+`prepare`もinstall中の実行経路になる。明示scriptがなくても`binding.gyp`から`node-gyp rebuild`が
+暗黙に起動される場合がある。
 
-仕様は更新されるため、package manager major version更新時に設定名とdefaultを
-再確認してください。
+pipがsource distributionを選ぶと、isolated build environmentを作り、build requirementを取得し、
+PEP 517 backendを使ってmetadataとwheelを生成する。Build isolationはdependencyを分離する仕組みであり、
+backend codeを実行しない仕組みではない。
+
+## 現在のdefaultとversion境界
+
+| Manager | Native behavior | このreferenceの選択 |
+| --- | --- | --- |
+| [npm 12](https://github.blog/changelog/2026-06-09-upcoming-breaking-changes-for-npm-v12/) | 未登録dependency scriptはdefault deny | `strict-allow-scripts=true`でskipだけでなくCI failureにする |
+| [npm 11.16+](https://docs.npmjs.com/cli/v11/commands/npm-install-scripts/) | allow policyを導入した移行期で、versionによりunlisted behaviorが異なる | 同じstrict settingをmigration guardとして使う |
+| [pnpm 11／12](https://pnpm.io/settings/build) | `strictDepBuilds=true`、unlisted build denyがdefault | defaultをrepositoryに明示し、dangerous overrideを禁止 |
+| [Bun](https://bun.com/docs/pm/cli/install) | untrusted dependency scriptは実行しない。default trusted listと明示trustは別 | script不要project向けに`ignoreScripts=true`で全面停止 |
+| [pip](https://pip.pypa.io/en/stable/reference/build-system/) | wheelがなければsdistのbuild backendを利用し得る | `--only-binary=:all:`でsource buildを拒否 |
+
+安全なdefaultが存在しても、古いmajor、command-line override、user／global config、明示trustにより実効状態は
+変わる。Adoption時はpackage manager versionとeffective configを確認する。
+
+## 悪用手法
+
+このsectionは攻撃経路をreviewできる粒度で説明する。実行可能なmalwareや外部callbackは提供しない。
+
+| 手法 | 何が起きるか | Review point |
+| --- | --- | --- |
+| Malicious lifecycle hook | packageのinstall hookがshell／runtime commandを起動する | direct／transitiveを問わず未review hookを止める |
+| Implicit native build | `binding.gyp`等から明示されていないbuildが起動する | 表示されたscriptだけでなくnative build要求を見る |
+| Git dependency prepare | registry tarball以外のsource取得後に`prepare`が動く | exact commit、source type、prepare permissionを確認 |
+| Transitive insertion | direct dependency更新が新しいscript-bearing packageを導入する | lockfile diffとpending script一覧をreview |
+| pip sdist fallback | wheel不在時にbuild requirementとbackend codeが動く | binary-only failureをsource fallbackで回避しない |
+| Blanket approval | 現在と将来のdependency scriptを一括許可する | dangerous flag、trust-all、name-only approvalを拒否 |
+| Config precedence | repository policyがCLI、environment、user configで弱められる | supported versionのeffective configをlive確認 |
+| Authority amplification | install processがCI token、SSH agent、cloud credentialを継承する | install jobから不要なcredentialとegressを外す |
+
+Inertな理解用の例は次のようなmarker生成までに留める。
+
+```json
+{
+  "scripts": {
+    "postinstall": "node write-temporary-marker.js"
+  }
+}
+```
+
+このfixtureを実際にinstallする必要はない。重要なのは、`postinstall`の内容がpackage publisherにより
+変更でき、install processのauthorityで起動する点である。
+
+## Native approvalが必要な場合
+
+Scriptを必要としないprojectではapprovalを作らない。必要な場合は次を確認する。
+
+- Exact package、resolved version、artifact identity。
+- 実行するscript／native buildと生成物。
+- Dependency ownerとindependent reviewer。
+- Version更新時の再review。
+- Credentialなし、必要最小限egressのisolated buildが必要か。
+- Shared exceptionが必要なら
+  [PSB-GOV-002](../../governance-operations/time-bound-security-exceptions/README.md)のactive exact decision。
+
+Native操作:
+
+- npm: [`npm install-scripts ls／approve／deny`](https://docs.npmjs.com/cli/v11/commands/npm-install-scripts/)
+- pnpm: [`pnpm approve-builds`](https://pnpm.io/cli/approve-builds)
+- Bun: [`bun pm untrusted／trust／default-trusted`](https://bun.com/docs/pm/cli/pm)
+
+`approve --all`、`dangerously-allow-all-scripts`、`dangerouslyAllowAllBuilds`、Bunのtrust-allを通常手順に
+しない。Valid approvalがあってもpackageの安全性を意味しない。
+
+## 安全な実装と安全でない実装
+
+`secure/`はcopy可能なstrict baselineである。
+
+- npmはunreviewed scriptをerrorにし、全許可overrideを無効化する。
+- pnpmはnative default denyを明示し、allowlistをemptyから開始する。
+- Bunはdefault denyより強い全install-script停止profileを提供する。
+- pipはsource distributionを禁止する。
+
+`insecure/`は次のinertな設定退行を示す。
+
+- npm／pnpmのdangerous all-allow。
+- pnpmのversion wildcard approval。
+- Bunのstrict mode解除とsynthetic trusted dependency。
+- pipの`--prefer-binary`によるsdist fallback。
+
+## Verification
+
+[Verifier](scripts/verify.py)はrepository fixtureのstatic propertyだけを確認する。
+
+```bash
+bash controls/dependency-security/install-script-execution/tests/test.sh
+```
+
+Testは次を区別する。
+
+1. Secure profile: exit `0`。
+2. Dangerous override／source fallback: exit `1`。
+3. Missing／malformed config: exit `2`。
+
+Network、real package、install script、build backend、provider-valid credentialは使用しない。Verifierは
+effective user／global config、CI required-check設定、実際のscript blockingを証明しない。
+
+## 誰が何をするか
+
+- Developer: manager versionを確認し、対象configをmergeし、pending native approvalをreviewする。
+- Repository administrator: verifierをrequired checkにし、policyとCI wiringの同時弱体化をreview対象にする。
+- Platform／SRE: scriptが不可欠ならcredential-free、least-egressのisolated buildを提供する。
+- Security: dangerous override、broad approval、例外、effective config、version更新をreviewする。
+
+## 関連control
+
+- [PSB-DEPS-001: release cooldownとregistry route](../release-cooldown/README.md)
+- [PSB-DEPS-003: lockfileとartifact integrity](../lockfile-integrity/README.md)
+- [PSB-DEPS-004: dependency change review](../dependency-change-review/README.md)
+- [PSB-BUILD-001: build containment](../../build-security/build-containment/README.md)
+- [PSB-DETECT-001: integrity-verified scanner](../../detection-verification/integrity-verified-scanner/README.md)
+- [PSB-GOV-002: time-bound security exceptions](../../governance-operations/time-bound-security-exceptions/README.md)
+
+## Framework mappings
+
+これらはreview済みの関係であり、formal complianceまたはsoftware supply chain全体のcoverageを意味しない。
+
+- [MITRE ATT&CK v19.1 T1195.001: Compromise Software Dependencies and Development Tools](https://attack.mitre.org/techniques/T1195/001/)
+- [NIST SSDF 1.1 PW.4.1: Acquire and Maintain Well-Secured Software Components](https://csrc.nist.gov/pubs/sp/800/218/final)
+
+関連するframework候補。Direct mappingを追加する場合はcheck-specific rationaleを別途reviewする。
+
+- [OpenSSF OSPS Baseline 2026.02.19 OSPS-BR-05.01: Use Standardized Dependency Management Tools](https://baseline.openssf.org/versions/2026-02-19#osps-br-0501)
+
+## 実装・運用guide
+
+- [npm 12 security default changes](https://github.blog/changelog/2026-06-09-upcoming-breaking-changes-for-npm-v12/)
+- [npm install-script approvals](https://docs.npmjs.com/cli/v11/commands/npm-install-scripts/)
+- [npm lifecycle scripts](https://docs.npmjs.com/cli/using-npm/scripts/)
+- [pnpm Build Settings](https://pnpm.io/settings/build)
+- [pnpm approve-builds](https://pnpm.io/cli/approve-builds)
+- [pnpm supply-chain security](https://pnpm.io/supply-chain-security)
+- [Bun install and lifecycle scripts](https://bun.com/docs/pm/cli/install)
+- [Bun trusted dependencies](https://bun.com/guides/install/trusted)
+- [Bun bunfig.toml](https://bun.com/docs/runtime/bunfig)
+- [pip Secure Installs](https://pip.pypa.io/en/stable/topics/secure-installs/)
+- [pip Build System Interface](https://pip.pypa.io/en/stable/reference/build-system/)
+- [OWASP NPM Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/NPM_Security_Cheat_Sheet.html)
+- [OWASP Software Supply Chain Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Software_Supply_Chain_Security_Cheat_Sheet.html)
+- [CISA Securing the Software Supply Chain: Recommended Practices for Developers](https://www.cisa.gov/sites/default/files/2023-12/ESF_SECURING_THE_SOFTWARE_SUPPLY_CHAIN_DEVELOPERS.pdf)
+
+## 制限事項
+
+- npm 12、pnpm、Bunのdefault denyはpackage manager majorやconfig precedenceが変われば再確認が必要である。
+- Bun strict profileはlegitimate native dependencyも停止する。
+- Wheel-onlyはbuild backend executionを止めるがwheel内runtime codeを安全にしない。
+- Install processのcredential／network isolationは別controlとadopter environmentが必要である。
+- Fixture successはlive developer endpoint、CI、organization adoptionのevidenceではない。

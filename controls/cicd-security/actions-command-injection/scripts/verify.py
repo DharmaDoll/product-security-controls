@@ -15,7 +15,7 @@ WORKFLOW_SUFFIXES = {".yml", ".yaml"}
 RUN_RE = re.compile(
     r"""^(?P<indent> *)(?:-\s+)?(?:"run"|'run'|run)\s*:\s*(?P<value>.*?)\s*$"""
 )
-RUN_KEY_RE = re.compile(r"""(?:"run"|'run'|run)\s*:""")
+RUN_KEY_RE = re.compile(r"""(?:^|[\s{,])(?:"run"|'run'|run)\s*:""")
 BLOCK_SCALAR_RE = re.compile(r"^[|>][+-]?\d?$|^[|>]\d[+-]?$")
 EXPRESSION_RE = re.compile(r"\${{.*?}}", re.DOTALL)
 
@@ -158,6 +158,11 @@ def verify_file(path: Path) -> tuple[int, int]:
     violations = 0
     for scalar in scalars:
         matches = list(EXPRESSION_RE.finditer(scalar.content))
+        expression_starts = scalar.content.count("${{")
+        if len(matches) != expression_starts:
+            raise ValueError(
+                f"{path}:{scalar.key_line}: malformed or nested expression in run script"
+            )
         for match in matches:
             line_number = expression_line(scalar, match.start())
             expression = " ".join(match.group(0).split())

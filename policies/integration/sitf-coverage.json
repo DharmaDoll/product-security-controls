@@ -386,7 +386,7 @@
     {
       "technique_id": "T-R004",
       "disposition": "gap",
-      "check_refs": ["PSB-DEPS-001-COOL-004", "PSB-DEPS-004-DCR-003", "PSB-DEPS-004-DCR-006"],
+      "check_refs": ["PSB-DEPS-001-COOL-004", "PSB-DEPS-003-LOCK-002", "PSB-REL-001-REL-003"],
       "remaining_work": "Add publisher-side package release authorization, signer and namespace ownership, provenance, rollback, and malicious-publication response evidence.",
       "rationale": "Consumer acquisition and review checks reduce adoption of a malicious package but do not prevent an attacker from publishing it."
     },
@@ -426,7 +426,7 @@
     {
       "technique_id": "T-R010",
       "disposition": "implemented",
-      "check_refs": ["PSB-DEPS-001-COOL-001", "PSB-DEPS-001-COOL-004", "PSB-DEPS-004-DCR-003"],
+      "check_refs": ["PSB-DEPS-001-COOL-001", "PSB-DEPS-001-COOL-004", "PSB-DEPS-003-LOCK-002", "PSB-DEPS-003-LOCK-004"],
       "rationale": "Approved registry origin, exact package identity, focused review, and release cooldown directly reduce typosquatting adoption."
     },
     {
@@ -444,7 +444,7 @@
     {
       "technique_id": "T-R013",
       "disposition": "implemented",
-      "check_refs": ["PSB-DEPS-004-DCR-003", "PSB-DEPS-003-LOCK-003", "PSB-REL-001-REL-001"],
+      "check_refs": ["PSB-DEPS-003-LOCK-002", "PSB-DEPS-003-LOCK-003", "PSB-DEPS-003-LOCK-004", "PSB-REL-001-REL-001"],
       "rationale": "Exact versions are resolved to immutable sources and artifact digests, so a display version cannot substitute different bytes."
     },
     {

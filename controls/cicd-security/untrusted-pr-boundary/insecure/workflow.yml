@@ -1,3 +1,4 @@
+# INSECURE FIXTURE: DO NOT COPY, ENABLE, OR DEPLOY.
 name: Privileged untrusted pull request
 
 on:

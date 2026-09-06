@@ -144,8 +144,8 @@ make verify-control CONTROL=PSB-CICD-007
 このcommandはlive環境へ接続しないため、安全だと判定せずexit `2`を返します。
 
 ```text
-NOT_CHECKED PSB-CICD-007 requires external-evidence verification
-See: controls/cicd-security/runner-hardening/docs/ADOPTION.md#live-verification
+NOT_CHECKED PSB-CICD-007: external-evidence verification; follow controls/cicd-security/runner-hardening/README.md#verification
+verified 0 control(s); 1 control(s) NOT_CHECKED
 ```
 
 正式な判定は[Live verification](docs/ADOPTION.md#live-verification)で行います。

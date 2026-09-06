@@ -25,7 +25,7 @@ implementations:
     - docs/ADOPTION.md
 verification:
   type: external-evidence
-  procedure: docs/ADOPTION.md#live-verification
+  procedure: README.md#verification
   expected:
     - every job routes to an approved exact runner configuration and self-hosted scope excludes untrusted repositories and workflows
     - two consecutive jobs use clean separate runner generations and a forced inert marker produces the documented negative result

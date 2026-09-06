@@ -98,7 +98,10 @@
           "minItems": 1,
           "items": {"type": "string", "minLength": 1}
         },
-        "procedure": {"type": "string", "minLength": 1},
+        "procedure": {
+          "type": "string",
+          "pattern": "^README\\.md#[a-z0-9-]+$"
+        },
         "expected": {
           "type": "array",
           "minItems": 1,
@@ -113,8 +116,13 @@
               "type": {"enum": ["manual", "external-evidence"]}
             }
           },
-          "then": {"required": ["procedure"]},
-          "else": {"required": ["commands"]}
+          "then": {
+            "required": ["procedure"],
+            "not": {"required": ["commands"]}
+          },
+          "else": {
+            "required": ["commands"]
+          }
         }
       ],
       "additionalProperties": false

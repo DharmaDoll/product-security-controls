@@ -1,0 +1,7 @@
+{
+  "name": "inert-install-script-example",
+  "private": true,
+  "trustedDependencies": [
+    "native-fixture"
+  ]
+}

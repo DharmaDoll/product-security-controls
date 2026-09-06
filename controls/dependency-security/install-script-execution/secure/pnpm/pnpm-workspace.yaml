@@ -1,5 +1,3 @@
 strictDepBuilds: true
 dangerouslyAllowAllBuilds: false
-allowBuilds:
-  native-fixture@1.2.3: true
-  telemetry-fixture: false
+allowBuilds: {}

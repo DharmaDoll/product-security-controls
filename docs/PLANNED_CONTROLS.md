@@ -246,7 +246,7 @@ organization-owned live policies and evidence; until that input yields
 
 ### PSB-CICD-004 — Explicit least-privilege workflow permissions
 
-Status: `prototype` — first E3 vertical slice implemented
+Status: `reference` — configuration-first guidance and live verification implemented
 Domain: `cicd-security`
 
 #### Goal
@@ -263,24 +263,25 @@ their task.
 
 #### Implementation plan
 
-1. Parse workflow-level and job-level `permissions`.
-2. Reject absent implicit permissions, `write-all`, and broad write grants.
-3. Model allowed permission sets per job purpose: test, report, release, and
-   deploy.
-4. Require privileged jobs to use protected environments and trusted refs.
-5. Add negative fixtures for inheritance, reusable-workflow permission
-   escalation, and unnecessary `id-token: write`.
-6. Verify repository workflows without modifying them.
+1. Set workflow-level `permissions: {}` and explicit job-level permissions.
+2. Review each granted scope against one necessary job operation.
+3. Restrict write and OIDC jobs to trusted refs and protected environments.
+4. Reuse `PSB-CICD-003` for structural excessive-permission findings.
+5. Verify repository and organization defaults, required checks, and
+   environment protection from current GitHub settings.
+6. Preserve `NOT_CHECKED` and `ERROR` when live evidence is absent or
+   unavailable.
 
 Implemented slice:
 
-- top-level `permissions: {}` and explicit permissions for every job;
-- exact sidecar policy sets for test, report, release, and deploy purposes;
-- trusted-ref conditions for every write-capable job;
-- protected environments for release and deploy;
-- `id-token: write` restricted to release and deploy purposes;
-- explicit reusable-workflow caller permissions;
-- repository-wide workflow coverage and fail-closed unsupported syntax.
+- copyable secure and isolated insecure workflow examples;
+- top-level deny-all and operation-specific job permission guidance;
+- trusted-ref, protected-environment, OIDC, and reusable-caller review;
+- shared pinned scanner integration through `PSB-CICD-003` rather than a
+  duplicate control-local YAML parser;
+- exact UI and optional read-only API verification for live GitHub defaults;
+- harmless positive, negative, and environment-gating drills;
+- no synthetic policy result presented as organization adoption evidence.
 
 #### Acceptance criteria
 
@@ -288,7 +289,10 @@ Implemented slice:
 - read-only jobs cannot write contents, packages, security events, or
   attestations;
 - `id-token: write` is limited to the exact job that performs federation;
-- unsupported YAML syntax and parser errors fail closed.
+- write and OIDC jobs are restricted by reviewed refs and live environment
+  protection;
+- scanner or live-evidence failure remains `ERROR` or `NOT_CHECKED` rather
+  than a clean result.
 
 ### PSB-CICD-005 — Fork-safe and untrusted-PR-safe workflows
 
