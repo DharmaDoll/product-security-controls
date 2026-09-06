@@ -9,8 +9,8 @@ Generated from repository control metadata. Do not edit manually.
 | Metric | Value | Meaning |
 |---|---:|---|
 | Catalog controls | 53 | Repository control packages; not organization adoption. |
-| Atomic checks | 471 | Assessable catalog rows generated from control metadata. |
-| Reviewed mapping checks | 415 | Checks with at least one reviewed framework relationship. |
+| Atomic checks | 465 | Assessable catalog rows generated from control metadata. |
+| Reviewed mapping checks | 409 | Checks with at least one reviewed framework relationship. |
 | Provisional mapping checks | 0 | Checks whose framework relationship still needs review. |
 | Unmapped checks | 56 | Explicit framework mapping debt; not silently inherited. |
 | Assessment adapters | 1 | Controls with a repository read-only assessment interface. |
@@ -39,10 +39,10 @@ Generated from repository control metadata. Do not edit manually.
 | PSB-CICD-001 | cicd-security | prototype | E3 | 6 | 5 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CICD-002 | cicd-security | prototype | E3 | 4 | 2 | 0 | 2 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CICD-003 | cicd-security | adopted | E3 | 5 | 5 | 0 | 0 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
-| PSB-CICD-004 | cicd-security | prototype | E3 | 6 | 5 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
-| PSB-CICD-005 | cicd-security | prototype | E3 | 6 | 5 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
+| PSB-CICD-004 | cicd-security | reference | E1 | 6 | 5 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
+| PSB-CICD-005 | cicd-security | prototype | E1 | 6 | 5 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CICD-006 | cicd-security | prototype | E3 | 8 | 7 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
-| PSB-CICD-007 | cicd-security | prototype | E3 | 9 | 8 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
+| PSB-CICD-007 | cicd-security | reference | E1 | 9 | 8 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CICD-008 | cicd-security | prototype | E3 | 7 | 6 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CICD-009 | cicd-security | prototype | E3 | 7 | 6 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CODE-005 | secure-coding | prototype | E3 | 6 | 4 | 0 | 2 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
@@ -53,7 +53,7 @@ Generated from repository control metadata. Do not edit manually.
 | PSB-DEPS-001 | dependency-security | prototype | E3 | 10 | 9 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-DEPS-002 | dependency-security | prototype | E3 | 5 | 4 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-DEPS-003 | dependency-security | prototype | E3 | 5 | 4 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
-| PSB-DEPS-004 | dependency-security | adopted | E3 | 9 | 9 | 0 | 0 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
+| PSB-DEPS-004 | dependency-security | reference | E3 | 3 | 3 | 0 | 0 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-DEPS-005 | dependency-security | prototype | E3 | 9 | 8 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-DETECT-001 | detection-verification | adopted | E3 | 8 | 8 | 0 | 0 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-DETECT-002 | detection-verification | prototype | E3 | 10 | 8 | 0 | 2 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |

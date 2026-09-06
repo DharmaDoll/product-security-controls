@@ -1,0 +1,17 @@
+# DELIBERATELY INSECURE — documentation example only. Do not enable a trigger.
+name: INSECURE persistent self-hosted runner
+
+on: {}
+
+permissions: {}
+
+jobs:
+  build-untrusted-change:
+    # A generic label can route attacker-controlled code to a long-lived machine.
+    runs-on: self-hosted
+    steps:
+      - name: Insecure placeholder
+        shell: bash
+        run: |
+          echo "This workflow is intentionally disabled and must not be executed."
+          exit 1

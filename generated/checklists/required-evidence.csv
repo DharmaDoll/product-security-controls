@@ -291,7 +291,8 @@ PSB-CICD-001,PSB-CICD-001-ACT-006,repository-admin,automated,sanitized advisory 
 PSB-CICD-001,PSB-CICD-001-ACT-006,repository-admin,automated,reviewed Action release inventory
 PSB-CICD-001,PSB-CICD-001-ACT-006,repository-admin,automated,timestamped complete advisory snapshot
 PSB-CICD-002,PSB-CICD-002-INJ-001,developer,automated,sanitized verifier output
-PSB-CICD-002,PSB-CICD-002-INJ-002,developer,automated,sanitized verifier output
+PSB-CICD-002,PSB-CICD-002-INJ-002,developer,hybrid,sanitized self-test output
+PSB-CICD-002,PSB-CICD-002-INJ-002,developer,hybrid,workflow code review
 PSB-CICD-002,PSB-CICD-002-INJ-003,repository-admin,automated,positive-test output
 PSB-CICD-002,PSB-CICD-002-INJ-004,repository-admin,automated,negative-test output
 PSB-CICD-003,PSB-CICD-003-SAS-001,repository-admin,automated,sanitized verifier output
@@ -300,26 +301,34 @@ PSB-CICD-003,PSB-CICD-003-SAS-002,repository-admin,hybrid,repository ruleset evi
 PSB-CICD-003,PSB-CICD-003-SAS-003,repository-admin,automated,sanitized verifier output
 PSB-CICD-003,PSB-CICD-003-SAS-004,repository-admin,automated,negative-test output
 PSB-CICD-003,PSB-CICD-003-SAS-005,repository-admin,automated,sanitized verifier output
-PSB-CICD-004,PSB-CICD-004-PERM-001,repository-admin,automated,sanitized verifier output
-PSB-CICD-004,PSB-CICD-004-PERM-001,repository-admin,automated,reviewed permissions policy
-PSB-CICD-004,PSB-CICD-004-PERM-002,repository-admin,automated,sanitized verifier output
-PSB-CICD-004,PSB-CICD-004-PERM-002,repository-admin,automated,job-purpose sidecar policy
-PSB-CICD-004,PSB-CICD-004-PERM-003,ci-platform,automated,negative-test output
-PSB-CICD-004,PSB-CICD-004-PERM-003,ci-platform,automated,reviewed permissions policy
-PSB-CICD-004,PSB-CICD-004-PERM-004,repository-admin,hybrid,sanitized verifier output
-PSB-CICD-004,PSB-CICD-004-PERM-004,repository-admin,hybrid,GitHub Environment protection evidence
-PSB-CICD-004,PSB-CICD-004-PERM-005,repository-admin,automated,negative-test output
-PSB-CICD-004,PSB-CICD-004-PERM-005,repository-admin,automated,reviewed caller policy
-PSB-CICD-004,PSB-CICD-004-PERM-006,ci-platform,automated,negative-test output
-PSB-CICD-005,PSB-CICD-005-PRB-001,repository-admin,automated,sanitized verifier output
-PSB-CICD-005,PSB-CICD-005-PRB-001,repository-admin,automated,reviewed workflow trust policy
-PSB-CICD-005,PSB-CICD-005-PRB-002,ci-platform,hybrid,sanitized verifier output
-PSB-CICD-005,PSB-CICD-005-PRB-002,ci-platform,hybrid,runner-group access evidence
-PSB-CICD-005,PSB-CICD-005-PRB-003,repository-admin,automated,negative-test output
-PSB-CICD-005,PSB-CICD-005-PRB-004,repository-admin,automated,negative-test output
-PSB-CICD-005,PSB-CICD-005-PRB-005,repository-admin,automated,sanitized verifier output
-PSB-CICD-005,PSB-CICD-005-PRB-005,repository-admin,automated,branch protection evidence
-PSB-CICD-005,PSB-CICD-005-PRB-006,ci-platform,automated,negative-test output
+PSB-CICD-004,PSB-CICD-004-PERM-001,repository-admin,hybrid,exact workflow revision
+PSB-CICD-004,PSB-CICD-004-PERM-001,repository-admin,hybrid,sanitized PSB-CICD-003 result
+PSB-CICD-004,PSB-CICD-004-PERM-001,repository-admin,hybrid,current default workflow permission setting
+PSB-CICD-004,PSB-CICD-004-PERM-002,repository-admin,manual,reviewed workflow diff
+PSB-CICD-004,PSB-CICD-004-PERM-002,repository-admin,manual,operation to permission review record
+PSB-CICD-004,PSB-CICD-004-PERM-003,ci-platform,manual,workflow revision
+PSB-CICD-004,PSB-CICD-004-PERM-003,ci-platform,manual,token exchange design review
+PSB-CICD-004,PSB-CICD-004-PERM-004,repository-admin,external-evidence,exact workflow revision
+PSB-CICD-004,PSB-CICD-004-PERM-004,repository-admin,external-evidence,current GitHub Environment setting
+PSB-CICD-004,PSB-CICD-004-PERM-004,repository-admin,external-evidence,harmless protected-job drill result
+PSB-CICD-004,PSB-CICD-004-PERM-005,repository-admin,hybrid,reusable workflow caller inventory
+PSB-CICD-004,PSB-CICD-004-PERM-005,repository-admin,hybrid,reviewed workflow revision
+PSB-CICD-004,PSB-CICD-004-PERM-005,repository-admin,hybrid,sanitized PSB-CICD-003 result
+PSB-CICD-004,PSB-CICD-004-PERM-006,ci-platform,external-evidence,required scanner run result
+PSB-CICD-004,PSB-CICD-004-PERM-006,ci-platform,external-evidence,complete workflow inventory
+PSB-CICD-004,PSB-CICD-004-PERM-006,ci-platform,external-evidence,live setting review record
+PSB-CICD-005,PSB-CICD-005-PRB-001,repository-admin,external-evidence,sanitized GitHub Actions run URL with repository commit event and effective permission details
+PSB-CICD-005,PSB-CICD-005-PRB-001,repository-admin,external-evidence,current Actions token and fork-workflow settings with target and capture time
+PSB-CICD-005,PSB-CICD-005-PRB-002,ci-platform,external-evidence,sanitized job metadata identifying the hosted or separately approved isolated runner profile
+PSB-CICD-005,PSB-CICD-005-PRB-002,ci-platform,external-evidence,current runner lifecycle network and runner-group access record with target and capture time
+PSB-CICD-005,PSB-CICD-005-PRB-003,repository-admin,manual,reviewed workflow revision and reviewer record
+PSB-CICD-005,PSB-CICD-005-PRB-003,repository-admin,manual,sanitized live run event and checked-out revision details
+PSB-CICD-005,PSB-CICD-005-PRB-004,repository-admin,manual,dated workflow inventory and trust-boundary review
+PSB-CICD-005,PSB-CICD-005-PRB-004,repository-admin,manual,review record for each cross-run data path or an explicit record that none exist
+PSB-CICD-005,PSB-CICD-005-PRB-005,repository-admin,external-evidence,current protected-branch ruleset with target and capture time
+PSB-CICD-005,PSB-CICD-005-PRB-005,repository-admin,external-evidence,sanitized pull-request merge and separate trusted-run records linked by reviewed commit SHA
+PSB-CICD-005,PSB-CICD-005-PRB-006,security,manual,dated workflow inventory with reviewer and target repository
+PSB-CICD-005,PSB-CICD-005-PRB-006,security,manual,manual verification record containing PASS FAIL NOT_CHECKED or ERROR for every check
 PSB-CICD-006,PSB-CICD-006-OIDC-001,ci-platform,automated,sanitized verifier output
 PSB-CICD-006,PSB-CICD-006-OIDC-001,ci-platform,automated,synthetic public key and signed-token fixture
 PSB-CICD-006,PSB-CICD-006-OIDC-002,ci-platform,automated,exact trust-policy fixture
@@ -335,26 +344,29 @@ PSB-CICD-006,PSB-CICD-006-OIDC-006,repository-admin,hybrid,workflow scan output
 PSB-CICD-006,PSB-CICD-006-OIDC-007,ci-platform,hybrid,sanitized exchange receipt
 PSB-CICD-006,PSB-CICD-006-OIDC-007,ci-platform,hybrid,provider role and audit evidence
 PSB-CICD-006,PSB-CICD-006-OIDC-008,ci-platform,automated,negative-test output
-PSB-CICD-007,PSB-CICD-007-RNR-001,ci-platform,hybrid,sanitized verifier output
-PSB-CICD-007,PSB-CICD-007-RNR-001,ci-platform,hybrid,fleet dispatch snapshot
-PSB-CICD-007,PSB-CICD-007-RNR-001,ci-platform,hybrid,runner-group access export
-PSB-CICD-007,PSB-CICD-007-RNR-002,ci-platform,automated,provisioner request
-PSB-CICD-007,PSB-CICD-007-RNR-002,ci-platform,automated,teardown receipt
-PSB-CICD-007,PSB-CICD-007-RNR-003,ci-platform,hybrid,image digest
-PSB-CICD-007,PSB-CICD-007-RNR-003,ci-platform,hybrid,provenance verification receipt
-PSB-CICD-007,PSB-CICD-007-RNR-003,ci-platform,hybrid,runner version support decision
-PSB-CICD-007,PSB-CICD-007-RNR-004,ci-platform,automated,sanitized startup probe
-PSB-CICD-007,PSB-CICD-007-RNR-005,security,hybrid,sanitized network-probe results
-PSB-CICD-007,PSB-CICD-007-RNR-005,security,hybrid,runner firewall policy
-PSB-CICD-007,PSB-CICD-007-RNR-006,ci-platform,hybrid,sanitized registration receipt
-PSB-CICD-007,PSB-CICD-007-RNR-006,ci-platform,hybrid,management network policy
-PSB-CICD-007,PSB-CICD-007-RNR-006,ci-platform,hybrid,break-glass approval record
-PSB-CICD-007,PSB-CICD-007-RNR-007,ci-platform,automated,teardown receipt
-PSB-CICD-007,PSB-CICD-007-RNR-007,ci-platform,automated,deregistration event
-PSB-CICD-007,PSB-CICD-007-RNR-007,ci-platform,automated,compute and storage destruction event
-PSB-CICD-007,PSB-CICD-007-RNR-008,security,hybrid,log export receipt
-PSB-CICD-007,PSB-CICD-007-RNR-008,security,hybrid,external log query result
-PSB-CICD-007,PSB-CICD-007-RNR-009,ci-platform,automated,negative-test output
+PSB-CICD-007,PSB-CICD-007-RNR-001,ci-platform,external-evidence,workflow revision and run link
+PSB-CICD-007,PSB-CICD-007-RNR-001,ci-platform,external-evidence,current runner-group access export or read-only view
+PSB-CICD-007,PSB-CICD-007-RNR-001,ci-platform,external-evidence,current selected repository and workflow scope
+PSB-CICD-007,PSB-CICD-007-RNR-002,ci-platform,external-evidence,two GitHub job and runner identities
+PSB-CICD-007,PSB-CICD-007-RNR-002,ci-platform,external-evidence,provider provision events
+PSB-CICD-007,PSB-CICD-007-RNR-002,ci-platform,external-evidence,exact-generation destruction events
+PSB-CICD-007,PSB-CICD-007-RNR-003,ci-platform,external-evidence,provider image documentation or release identity
+PSB-CICD-007,PSB-CICD-007-RNR-003,ci-platform,external-evidence,self-hosted image digest when applicable
+PSB-CICD-007,PSB-CICD-007-RNR-003,ci-platform,external-evidence,provenance verification and runner version decision when applicable
+PSB-CICD-007,PSB-CICD-007-RNR-004,ci-platform,external-evidence,two workflow run links and sanitized marker results
+PSB-CICD-007,PSB-CICD-007-RNR-004,ci-platform,external-evidence,sanitized startup observation for self-hosted configurations
+PSB-CICD-007,PSB-CICD-007-RNR-005,security,external-evidence,sanitized live deny results
+PSB-CICD-007,PSB-CICD-007-RNR-005,security,external-evidence,effective runner network and host policy revision
+PSB-CICD-007,PSB-CICD-007-RNR-006,ci-platform,external-evidence,sanitized JIT provision metadata
+PSB-CICD-007,PSB-CICD-007-RNR-006,ci-platform,external-evidence,management network setting
+PSB-CICD-007,PSB-CICD-007-RNR-006,ci-platform,external-evidence,break-glass approval path
+PSB-CICD-007,PSB-CICD-007-RNR-007,ci-platform,external-evidence,GitHub deregistration event or read-only absence
+PSB-CICD-007,PSB-CICD-007-RNR-007,ci-platform,external-evidence,compute and storage destruction events
+PSB-CICD-007,PSB-CICD-007-RNR-007,ci-platform,external-evidence,job to runner generation correlation
+PSB-CICD-007,PSB-CICD-007-RNR-008,security,external-evidence,external log query result
+PSB-CICD-007,PSB-CICD-007-RNR-008,security,external-evidence,log retention and access setting
+PSB-CICD-007,PSB-CICD-007-RNR-009,ci-platform,external-evidence,actual error or not-checked result
+PSB-CICD-007,PSB-CICD-007-RNR-009,ci-platform,external-evidence,assignment-stop or recovery record when applicable
 PSB-CICD-008,PSB-CICD-008-CPC-001,ci-platform,hybrid,sanitized administrator identity record
 PSB-CICD-008,PSB-CICD-008-CPC-001,ci-platform,hybrid,organization membership decision
 PSB-CICD-008,PSB-CICD-008-CPC-001,ci-platform,hybrid,authentication assurance record
@@ -459,25 +471,23 @@ PSB-DEPS-001,PSB-DEPS-001-COOL-010,security,hybrid,negative-test output
 PSB-DEPS-001,PSB-DEPS-001-COOL-010,security,hybrid,exception approval
 PSB-DEPS-002,PSB-DEPS-002-INS-001,developer,automated,sanitized verifier output
 PSB-DEPS-002,PSB-DEPS-002-INS-002,developer,automated,sanitized verifier output
-PSB-DEPS-002,PSB-DEPS-002-INS-002,developer,automated,approved build exception
+PSB-DEPS-002,PSB-DEPS-002-INS-002,developer,automated,reviewed native approval diff when an approval exists
 PSB-DEPS-002,PSB-DEPS-002-INS-003,developer,automated,sanitized verifier output
-PSB-DEPS-002,PSB-DEPS-002-INS-004,security,automated,negative-test output
-PSB-DEPS-002,PSB-DEPS-002-INS-004,security,automated,exception approval
+PSB-DEPS-002,PSB-DEPS-002-INS-004,security,hybrid,negative-test output
+PSB-DEPS-002,PSB-DEPS-002-INS-004,security,hybrid,reviewed native approval diff
+PSB-DEPS-002,PSB-DEPS-002-INS-004,security,hybrid,active PSB-GOV-002 decision when an exception is required
 PSB-DEPS-002,PSB-DEPS-002-INS-005,developer,automated,negative-test output
-PSB-DEPS-003,PSB-DEPS-003-LOCK-001,developer,automated,sanitized verifier output
-PSB-DEPS-003,PSB-DEPS-003-LOCK-002,repository-admin,automated,sanitized verifier output
-PSB-DEPS-003,PSB-DEPS-003-LOCK-003,developer,automated,sanitized verifier output
-PSB-DEPS-003,PSB-DEPS-003-LOCK-004,developer,automated,negative-test output
-PSB-DEPS-003,PSB-DEPS-003-LOCK-005,developer,automated,negative-test output
-PSB-DEPS-004,PSB-DEPS-004-DCR-001,repository-admin,automated,sanitized graph binding result
-PSB-DEPS-004,PSB-DEPS-004-DCR-002,developer,automated,sanitized dependency delta result
-PSB-DEPS-004,PSB-DEPS-004-DCR-003,developer,automated,sanitized source decision
-PSB-DEPS-004,PSB-DEPS-004-DCR-004,security,automated,sanitized advisory decision
-PSB-DEPS-004,PSB-DEPS-004-DCR-005,repository-admin,automated,sanitized license decision
-PSB-DEPS-004,PSB-DEPS-004-DCR-006,security,hybrid,sanitized provenance binding result
-PSB-DEPS-004,PSB-DEPS-004-DCR-007,repository-admin,automated,sanitized approval result
-PSB-DEPS-004,PSB-DEPS-004-DCR-008,security,automated,sanitized exception decision
-PSB-DEPS-004,PSB-DEPS-004-DCR-009,ci-platform,automated,fail-closed negative-test output
+PSB-DEPS-003,PSB-DEPS-003-LOCK-001,developer,automated,sanitized native installer output
+PSB-DEPS-003,PSB-DEPS-003-LOCK-002,developer,automated,sanitized direct and transitive fixture output
+PSB-DEPS-003,PSB-DEPS-003-LOCK-003,developer,automated,sanitized native integrity failure output
+PSB-DEPS-003,PSB-DEPS-003-LOCK-004,repository-admin,automated,before and after lockfile digests from the self-test
+PSB-DEPS-003,PSB-DEPS-003-LOCK-005,repository-admin,automated,sanitized missing-runtime and malformed-input output
+PSB-DEPS-004,PSB-DEPS-004-DCR-001,ci-platform,hybrid,supported manifest decision
+PSB-DEPS-004,PSB-DEPS-004-DCR-001,ci-platform,hybrid,sanitized live dependency-diff receipt
+PSB-DEPS-004,PSB-DEPS-004-DCR-004,security,hybrid,local workflow regression output
+PSB-DEPS-004,PSB-DEPS-004-DCR-004,security,hybrid,sanitized live negative-test receipt
+PSB-DEPS-004,PSB-DEPS-004-DCR-009,repository-admin,manual,live ruleset identity and required-check receipt
+PSB-DEPS-004,PSB-DEPS-004-DCR-009,repository-admin,manual,sanitized failed and missing-check merge rejection
 PSB-DEPS-005,PSB-DEPS-005-AMS-001,build-platform,automated,sanitized AMS-001 result
 PSB-DEPS-005,PSB-DEPS-005-AMS-001,build-platform,automated,model ID version revision digest and size without model content
 PSB-DEPS-005,PSB-DEPS-005-AMS-002,build-platform,automated,sanitized AMS-002 result

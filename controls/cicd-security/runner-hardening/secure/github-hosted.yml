@@ -1,0 +1,33 @@
+name: Runner isolation self-test - GitHub hosted
+
+on:
+  workflow_dispatch:
+    inputs:
+      force_negative:
+        description: Create an inert marker so the check must fail
+        required: true
+        default: false
+        type: boolean
+
+permissions: {}
+
+jobs:
+  clean-runner-generation:
+    # A versioned VM image is easier to review than a floating "-latest" label.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Confirm no marker from an earlier job
+        shell: bash
+        run: |
+          set -euo pipefail
+          marker="${HOME}/.psb-cicd-007-prior-job"
+          if [[ "${{ inputs.force_negative }}" == "true" ]]; then
+            touch "${marker}"
+          fi
+          if [[ -e "${marker}" ]]; then
+            echo "FAIL prior-job marker exists"
+            exit 1
+          fi
+          printf 'run_id=%s\n' "${GITHUB_RUN_ID}" >"${marker}"
+          echo "PASS clean runner generation for run ${GITHUB_RUN_ID}"
