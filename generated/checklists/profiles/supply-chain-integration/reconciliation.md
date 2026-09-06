@@ -18,7 +18,7 @@ This view verifies whether identities and decisions stay connected between contr
 | Row | NIST sections | Integration boundary | Disposition | Current check evidence | Planned controls | Owner | Remaining work or boundary |
 |---|---|---|---|---|---|---|---|
 | SCIR-001 | 3.1.1; 5.1.4 | Developer identity to source revision | implemented | PSB-SOURCE-001-END-013; PSB-SOURCE-004-SCL-007; PSB-SOURCE-004-SCL-008 |  |  |  |
-| SCIR-002 | 3.2.2; 5.1.1 | Dependency declaration to acquired artifact | implemented | PSB-DEPS-003-LOCK-001; PSB-DEPS-003-LOCK-002; PSB-DEPS-003-LOCK-003; PSB-DEPS-004-DCR-001; PSB-DEPS-004-DCR-002; PSB-DEPS-004-DCR-003 |  |  |  |
+| SCIR-002 | 3.2.2; 5.1.1 | Dependency declaration to acquired artifact | implemented | PSB-DEPS-001-COOL-004; PSB-DEPS-001-COOL-007; PSB-DEPS-003-LOCK-001; PSB-DEPS-003-LOCK-002; PSB-DEPS-003-LOCK-003; PSB-DEPS-003-LOCK-004; PSB-DEPS-004-DCR-001; PSB-DEPS-004-DCR-004; PSB-DEPS-004-DCR-009 |  |  |  |
 | SCIR-003 | 3.2.2; 5.1.1 | Reviewed source revision to build invocation | implemented | PSB-CICD-005-PRB-003; PSB-CICD-005-PRB-005; PSB-BUILD-002-HCB-002; PSB-BUILD-002-HCB-003; PSB-BUILD-002-HCB-004 |  |  |  |
 | SCIR-004 | 4; 5.2 | Pipeline workload identity to deployment authority | implemented | PSB-BUILD-001-BLD-002; PSB-CICD-006-OIDC-002; PSB-CICD-006-OIDC-003; PSB-CICD-006-OIDC-005; PSB-CICD-006-OIDC-007 |  |  |  |
 | SCIR-005 | 5.1.1 | Build platform identity to artifact digest and provenance | implemented | PSB-BUILD-003-PPG-001; PSB-BUILD-003-PPG-002; PSB-BUILD-003-PPG-003; PSB-BUILD-003-PPG-004 |  |  |  |

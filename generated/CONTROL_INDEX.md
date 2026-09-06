@@ -21,10 +21,10 @@ Generated control catalog. Do not edit manually.
 | [PSB-CICD-001](../controls/cicd-security/action-sha-pinning/README.md) | cicd-security | Pin external GitHub Actions and reusable workflows to immutable commits | 6 | prototype | E3 |
 | [PSB-CICD-002](../controls/cicd-security/actions-command-injection/README.md) | cicd-security | Prevent GitHub Actions command injection from direct expression interpolation | 4 | prototype | E3 |
 | [PSB-CICD-003](../controls/cicd-security/actions-static-analysis/README.md) | cicd-security | Statically analyze GitHub Actions workflows with a pinned scanner | 5 | adopted | E3 |
-| [PSB-CICD-004](../controls/cicd-security/actions-least-privilege/README.md) | cicd-security | Enforce explicit least-privilege GitHub Actions permissions | 6 | prototype | E3 |
-| [PSB-CICD-005](../controls/cicd-security/untrusted-pr-boundary/README.md) | cicd-security | Isolate fork and untrusted pull-request workflows from privileged CI | 6 | prototype | E3 |
+| [PSB-CICD-004](../controls/cicd-security/actions-least-privilege/README.md) | cicd-security | Enforce explicit least-privilege GitHub Actions permissions | 6 | reference | E1 |
+| [PSB-CICD-005](../controls/cicd-security/untrusted-pr-boundary/README.md) | cicd-security | Isolate fork and untrusted pull-request workflows from privileged CI | 6 | prototype | E1 |
 | [PSB-CICD-006](../controls/cicd-security/audience-bound-oidc-federation/README.md) | cicd-security | Enforce audience-bound cloud OIDC federation | 8 | prototype | E3 |
-| [PSB-CICD-007](../controls/cicd-security/runner-hardening/README.md) | cicd-security | CI runnerをjobごとに隔離し使用後に破棄する | 9 | prototype | E3 |
+| [PSB-CICD-007](../controls/cicd-security/runner-hardening/README.md) | cicd-security | CI runnerをjobごとに隔離し使用後に破棄する | 9 | reference | E1 |
 | [PSB-CICD-008](../controls/cicd-security/privileged-control-plane-change/README.md) | cicd-security | CI/CDの特権control-plane変更を本人・承認・監査証跡へ結合する | 7 | prototype | E3 |
 | [PSB-CICD-009](../controls/cicd-security/cache-provenance-isolation/README.md) | cicd-security | CI cache restoreを署名済みproducer provenanceとexact trust境界へ結合する | 7 | prototype | E3 |
 | [PSB-CODE-005](../controls/secure-coding/unicode-source-deception/README.md) | secure-coding | Detect deceptive Unicode controls and identifiers in source code | 6 | prototype | E3 |
@@ -34,8 +34,8 @@ Generated control catalog. Do not edit manually.
 | [PSB-CONTAINER-004](../controls/container-cloud-iac-security/runtime-threat-detection/README.md) | container-cloud-iac-security | Detect workload-bound container runtime threats without treating telemetry failure as clean | 12 | adopted | E3 |
 | [PSB-DEPS-001](../controls/dependency-security/release-cooldown/README.md) | dependency-security | managed registry proxyとrelease cooldownで依存パッケージ採用を制御 | 10 | prototype | E3 |
 | [PSB-DEPS-002](../controls/dependency-security/install-script-execution/README.md) | dependency-security | install時の任意コード実行をdefault denyにする | 5 | prototype | E3 |
-| [PSB-DEPS-003](../controls/dependency-security/lockfile-integrity/README.md) | dependency-security | lockfileと取得artifactの完全性を強制する | 5 | prototype | E3 |
-| [PSB-DEPS-004](../controls/dependency-security/dependency-change-review/README.md) | dependency-security | Review dependency graph changes before merge | 9 | adopted | E3 |
+| [PSB-DEPS-003](../controls/dependency-security/lockfile-integrity/README.md) | dependency-security | native lockfileと取得artifactの完全性を強制する | 5 | prototype | E3 |
+| [PSB-DEPS-004](../controls/dependency-security/dependency-change-review/README.md) | dependency-security | Review dependency changes before merge | 3 | reference | E3 |
 | [PSB-DEPS-005](../controls/dependency-security/ai-model-supply-chain/README.md) | dependency-security | Verify AI model and dataset supply-chain integrity | 9 | prototype | E3 |
 | [PSB-DETECT-001](../controls/detection-verification/integrity-verified-scanner/README.md) | detection-verification | Execute integrity-verified security scanning with fail-closed evidence | 8 | adopted | E3 |
 | [PSB-DETECT-002](../controls/detection-verification/ai-tevv-release-gate/README.md) | detection-verification | Bind AI TEVV and adversarial evaluation to release decisions | 10 | prototype | E3 |
