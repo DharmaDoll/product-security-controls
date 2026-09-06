@@ -1,17 +1,42 @@
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:1 - SARIF write job must be restricted to pushes on refs/heads/main
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:1 - both checkout steps must disable credential persistence
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:1 - exactly two zizmor steps are required: blocking and SARIF reporting
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:1 - one blocking mode and one SARIF reporting mode are required
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:1 - security-events: write must occur exactly once in the trusted report job
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:6 - top-level permissions must be deny-all ({})
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:12 - actions/checkout must use a full commit SHA
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:14 - zizmor input collect must be explicit
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:14 - zizmor input persona must be explicit
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:14 - zizmor input token must be explicit
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:14 - zizmor-action is not pinned to the reviewed commit
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:14 - zizmorcore/zizmor-action must use a full commit SHA
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:16 - zizmor input inputs must be '.github'
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:17 - zizmor input online-audits must be 'false'
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:18 - zizmor input version must be '1.28.0'
-FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:20 - zizmor input fail-on-no-inputs must be 'true'
-REJECTED 16 workflow policy violation(s)
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:3 - events must be exactly pull_request and push
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:6 - top-level env must not inject credentials into scanner jobs
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:9 - top-level permissions must be deny-all ({})
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:12 - gate job fields must be exactly ['name', 'permissions', 'runs-on', 'steps']
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:12 - gate must run on ubuntu-latest
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:12 - gate name must be 'Block workflow security findings'
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:12 - gate permissions must be exactly {'contents': 'read'}
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:19 - gate must contain only checkout and zizmor steps
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:20 - gate step fields must be exactly name, uses, and with
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:21 - actions/checkout must use a full commit SHA
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:21 - gate checkout inputs must be exactly persist-credentials: false
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:22 - gate step fields must be exactly name, uses, and with
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:23 - gate zizmor inputs must contain only the reviewed keys
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:23 - zizmor input collect must be explicit
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:23 - zizmor input persona must be explicit
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:23 - zizmor-action is not pinned to the reviewed commit
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:23 - zizmorcore/zizmor-action must use a full commit SHA
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:24 - continue-on-error must not hide scanner or checkout failures
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:26 - zizmor input inputs must be '.github'
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:27 - zizmor input online-audits must be 'false'
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:28 - zizmor input version must be '1.28.0'
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:29 - zizmor input token must be ''
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:30 - gate advanced-security must be false
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:31 - zizmor input fail-on-no-inputs must be 'true'
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:32 - gate step fields must be exactly name, uses, and with
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:33 - gate must not execute repository commands
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:35 - report must be restricted to the trusted default-branch push
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:35 - report name must be 'Upload trusted-branch SARIF'
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:35 - report permissions must be exactly {'actions': 'read', 'contents': 'read', 'security-events': 'write'}
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:44 - actions/checkout must use a full commit SHA
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:44 - report checkout inputs must be exactly persist-credentials: false
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:48 - report zizmor inputs must contain only the reviewed keys
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:48 - zizmor input collect must be explicit
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:48 - zizmor input persona must be explicit
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:48 - zizmor-action is not pinned to the reviewed commit
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:48 - zizmorcore/zizmor-action must use a full commit SHA
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:50 - zizmor input inputs must be '.github'
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:51 - zizmor input online-audits must be 'false'
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:52 - zizmor input version must be '1.28.0'
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:53 - zizmor input token must be ''
+FAIL controls/cicd-security/actions-static-analysis/insecure/workflow.yml:55 - zizmor input fail-on-no-inputs must be 'true'
+REJECTED 41 workflow policy violation(s)

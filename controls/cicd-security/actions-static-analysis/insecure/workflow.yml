@@ -3,18 +3,53 @@ name: Insecure GitHub Actions security analysis
 on:
   pull_request:
 
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 permissions: write-all
 
 jobs:
-  scan:
-    runs-on: ubuntu-latest
+  gate:
+    name: Scanner with pull-request write authority
+    if: ${{ false }}
+    runs-on: self-hosted
+    permissions:
+      contents: write
+      security-events: write
     steps:
-      - uses: actions/checkout@v6
-      - name: Run an unpinned and floating scanner
+      - name: Checkout with a mutable reference
+        uses: actions/checkout@v6
+      - name: Run a mutable scanner and hide its failure
+        uses: zizmorcore/zizmor-action@v0.6.1
+        continue-on-error: true
+        with:
+          inputs: .
+          online-audits: true
+          version: latest
+          token: ${{ secrets.GITHUB_TOKEN }}
+          advanced-security: true
+          fail-on-no-inputs: false
+      - name: Execute pull-request repository code in the scanner job
+        run: ./ci-from-pull-request.sh
+
+  report:
+    name: Upload SARIF from an untrusted pull request
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout and persist credentials
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: true
+      - name: Run an unpinned reporting scanner
         uses: zizmorcore/zizmor-action@v0.6.1
         with:
           inputs: .
           online-audits: true
           version: latest
+          token: ${{ secrets.GITHUB_TOKEN }}
           advanced-security: true
           fail-on-no-inputs: false

@@ -20,14 +20,16 @@ implementations:
     - secure/workflow.yml
     - secure/clean.sarif
 verification:
+  type: hybrid
   commands:
     - make verify-control CONTROL=PSB-CICD-003
+  procedure: README.md#live-verification
   expected:
-    - scanner Action and zizmor version are immutable and integrity-bound
-    - pull requests are blocked by an unprivileged scanner job
+    - the reference and adopted workflow pass the local immutable scanner and trust-boundary policy
+    - a live repository ruleset requires the unprivileged pull-request scanner job
     - SARIF write permission is restricted to trusted main-branch pushes
     - clean findings policy violations and scanner failures use distinct exit states
-    - adopted workflow matches the reviewed secure example
+    - a harmless live negative pull request is rejected while missing or failed checks cannot merge
 checks:
   - id: SAS-001
     title: Workflow scanner and Action are immutable and integrity-bound
