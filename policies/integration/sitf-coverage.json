@@ -275,7 +275,7 @@
       "technique_id": "T-C007",
       "disposition": "implemented",
       "check_refs": ["PSB-CICD-009-CAC-001", "PSB-CICD-009-CAC-002", "PSB-CICD-009-CAC-003", "PSB-CICD-009-CAC-004", "PSB-CICD-009-CAC-005", "PSB-CICD-009-CAC-006"],
-      "rationale": "Signed producer provenance and exact repository workflow trust platform revision dependency content path lifetime and lookup identities directly reject cross-boundary cache promotion and broad restore fallback; provider adoption remains outside the repository result."
+      "rationale": "Trusted default-branch save authority, restore-only pull requests, exact purpose platform runtime and dependency lookup, download-only paths, independent package hash verification, and cache-free privileged jobs directly reduce cross-boundary cache poisoning; provider adoption remains outside the repository result."
     },
     {
       "technique_id": "T-C008",

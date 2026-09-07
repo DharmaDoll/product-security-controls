@@ -1,0 +1,79 @@
+name: Dependency cache with a trusted writer
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+env:
+  PIP_CACHE_DIR: ${{ github.workspace }}/.cache/pip-downloads
+
+jobs:
+  dependency-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out the reviewed source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.13.15"
+          check-latest: false
+
+      - name: Require the reviewed dependency identity
+        shell: bash
+        env:
+          LOCK_HASH: ${{ hashFiles('requirements.lock') }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$LOCK_HASH" ]]; then
+            echo "ERROR requirements.lock is missing or did not hash" >&2
+            exit 2
+          fi
+          echo "LOCKFILE_READY sha256=$LOCK_HASH"
+
+      - name: Restore only the exact dependency-download cache
+        id: cache-restore
+        continue-on-error: true
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ${{ env.PIP_CACHE_DIR }}
+          key: pip-download-v1-${{ runner.os }}-${{ runner.arch }}-py3.13.15-${{ hashFiles('requirements.lock') }}
+
+      - name: Reset a missing partial or failed restore
+        if: ${{ steps.cache-restore.outcome != 'success' || steps.cache-restore.outputs.cache-hit != 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${GITHUB_WORKSPACE:?GITHUB_WORKSPACE is required}"
+          cache_dir="${GITHUB_WORKSPACE}/.cache/pip-downloads"
+          rm -rf -- "$cache_dir"
+          mkdir -p -- "$cache_dir"
+          echo "CACHE_NOT_EXACT clean download cache initialized"
+
+      - name: Install and verify the locked dependency graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install \
+            --disable-pip-version-check \
+            --require-hashes \
+            --only-binary=:all: \
+            --requirement requirements.lock
+          python -m pip check
+
+      - name: Save cache only from the protected default branch
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.cache-restore.outputs.cache-hit != 'true' }}
+        continue-on-error: true
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ${{ env.PIP_CACHE_DIR }}
+          key: pip-download-v1-${{ runner.os }}-${{ runner.arch }}-py3.13.15-${{ hashFiles('requirements.lock') }}

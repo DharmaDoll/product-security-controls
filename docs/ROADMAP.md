@@ -730,8 +730,10 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
     closed on incomplete inventory or stale references. `PSB-CODE-005` now
     closes the Python-source Unicode stealth slice with exact bidi, invisible,
     identifier, normalization, and fail-closed checks. `PSB-CICD-009` now
-    closes action cache poisoning through signed provenance, exact trust and
-    producer identities, byte／path／lifetime binding, and fail-closed restore.
+    addresses action cache poisoning for GitHub.com through trusted
+    default-branch save, restore-only pull requests, exact purpose／platform／
+    runtime／dependency keys, dependency hash revalidation, safe cache paths,
+    and cache-free privileged jobs; live provider adoption remains manual.
     `PSB-SOURCE-005` now closes the VCS mass-deletion slice through stable-ID
     inventory, bounded destructive actions, attacker-separated retained recovery
     copies, and exact isolated full-scope restore drills; audit and containment

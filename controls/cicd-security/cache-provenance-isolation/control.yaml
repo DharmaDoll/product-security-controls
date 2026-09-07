@@ -1,169 +1,177 @@
 id: PSB-CICD-009
-title: CI cache restoreを署名済みproducer provenanceとexact trust境界へ結合する
+title: GitHub Actions cacheをtrusted writerと非特権consumerへ隔離する
 domain: cicd-security
-summary: CI cacheのkeyと内容をrepository、workflow、trust class、platform、producer revision、dependency digest、期限、署名済みrecordへ結合し、異なる境界からのrestoreとprefix fallbackを拒否する。
+summary: GitHub Actions cacheの保存をprotected default branchへ限定し、PRをrestore-only、lookupをexact、内容をhash再検証するdownload cacheへ限定し、privileged jobからcacheを除外する。
 check_context_version: "1.0"
 security_functions:
   - prevent
   - verify
 threats:
   - id: CICD-CACHE-POISONING
-    description: Untrusted or compromised producer stores executable or dependency state that a later privileged job restores and executes.
+    description: An untrusted or compromised cache producer stores executable or dependency state that a later privileged workflow restores and executes.
   - id: CICD-CACHE-IDENTITY-CONFUSION
-    description: Broad keys or restore prefixes select cache state from another repository workflow revision platform or dependency graph.
-  - id: CICD-CACHE-EVIDENCE-FAILURE
-    description: Missing signature invalid policy stale record or verifier failure is interpreted as a cache miss or clean restore.
+    description: A broad key partial match or restore prefix selects cache state created for another workflow purpose platform runtime or dependency graph.
+  - id: CICD-CACHE-INTEGRITY-BYPASS
+    description: A cache hit causes the consumer to skip dependency integrity verification or execute an installed tree build output tool or hook directly from cache.
+  - id: CICD-CACHE-VERIFICATION-GAP
+    description: Missing workflow inventory inaccessible provider state or failed live tests are treated as proof that cache isolation is active.
 implementations:
   insecure:
-    - insecure/restore-request.json
+    - insecure/workflow.yml
   secure:
-    - secure/policy.json
-    - secure/cache-record.json
-    - secure/cache-record.sig
-    - secure/cache-content.json
-    - secure/restore-request.json
-    - secure/trust/cache-producer-public.pem
+    - secure/workflow.yml
 verification:
-  commands:
-    - make verify-control CONTROL=PSB-CICD-009
+  type: manual
+  procedure: README.md#verification
   expected:
-    - the signed synthetic cache record is accepted only for the exact repository workflow trust class platform revision dependency digest path content and reviewed policy
-    - untrusted-to-trusted promotion cross-repository or cross-workflow reuse broad restore prefixes path substitution and digest mismatch are denied
-    - record tampering content tampering and expiry are security findings
-    - malformed incomplete symbolic or cryptographically unevaluable evidence returns ERROR rather than a clean cache miss
-    - verifier output contains metadata only and does not echo cached content
+    - the canonical command reports NOT_CHECKED instead of treating repository files as proof of live GitHub adoption
+    - only a reviewed push to the protected default branch can save the reference cache
+    - pull-request and fork runs restore only and cannot create or update the default-branch cache
+    - cache lookup accepts only the exact purpose platform runtime and lockfile identity and resets all other restore results
+    - cached paths contain dependency downloads rather than secrets installed trees tools build output or startup state
+    - every cache hit is followed by hash-locked dependency verification and every privileged release deploy or signing job remains cache-free
+    - incomplete provider evidence and failed collection remain NOT_CHECKED or ERROR rather than PASS
 checks:
   - id: CAC-001
-    title: Cache producer record is signed by the reviewed key and policy
-    required_state: canonical producer record has a valid Ed25519 signature from the exact digest-pinned public key and names the reviewed policy digest
-    responsible_role: ci-platform
+    title: Cache save is limited to a reviewed protected-default-branch producer
+    required_state: only the reference dependency job on a reviewed push to the protected default branch can execute the cache save action
+    responsible_role: repository-admin
     applies_to:
-      - ci-cache-producer-record
-      - cache-signing-key
-      - cache-policy
+      - github-actions-cache-writer
+      - protected-default-branch
+      - cache-save-trigger
     context:
-      threat_actor: attacker who can write cache storage or a compromised producer attempting to forge trusted provenance
-      attack_or_failure_scenario: an unsigned substituted or differently governed cache record is presented as output from an approved trusted build
-      why_required: key names and cache IDs are mutable metadata; cryptographic binding is needed before downstream identity and content assertions can be trusted
+      threat_actor: untrusted contributor compromised workflow dependency or operator enabling cache writes on an actor-influenced trigger
+      attack_or_failure_scenario: a workflow running attacker-controlled or unreviewed bytes writes cache state into the default branch namespace consumed by later runs
+      why_required: provider branch scope does not identify the workflow purpose or prove the producer executed reviewed bytes so save authority must be constrained at the workflow boundary
     verification:
-      type: automated
-      method: verify canonical record bytes with the policy-pinned Ed25519 public key and compare signer and policy digests
-      expected: authentic fixture passes while record or signature substitution is rejected and unavailable OpenSSL is an error
+      type: external-evidence
+      method: inspect every cache save step and compare its event and ref condition with a live reviewed default-branch run and current branch protection
+      expected: save executes only for push on the protected default branch and every other trigger skips the save step
       evidence:
-        - synthetic detached signature
-        - public-key and policy digests
+        - exact workflow revision and sanitized trusted push run showing the save decision
+        - current protected default branch rule or ruleset with target and capture time
     mapping_status: reviewed
   - id: CAC-002
-    title: Cache key binds the exact producer identity and dependency graph
-    required_state: independently derived key includes stable repository ID workflow full-SHA identity trust class platform producer revision and dependency-lock digest
-    responsible_role: ci-platform
+    title: Cache lookup binds exact purpose platform runtime and dependency identity
+    required_state: the cache key contains a fixed purpose and schema namespace runner OS architecture exact runtime version and non-empty lockfile SHA-256 and defines no restore prefixes
+    responsible_role: developer
     applies_to:
-      - ci-cache-key
-      - repository-workflow-identity
+      - github-actions-cache-key
       - dependency-lockfile
+      - runtime-platform
     context:
-      threat_actor: fork contributor compromised workflow or operator choosing a convenient shared cache namespace
-      attack_or_failure_scenario: a consumer restores state produced for another repository workflow platform revision or dependency set
-      why_required: a content digest detects later modification but does not authorize which producer context may supply state to this consumer
+      threat_actor: workflow author compromised producer or configuration mistake choosing a shared stale or incomplete cache identity
+      attack_or_failure_scenario: a consumer receives bytes created for another workflow purpose platform runtime or dependency graph through a broad or empty key
+      why_required: branch isolation alone permits multiple workflows to share cache entries and a lockfile hash alone does not separate incompatible runtime or cache format contexts
     verification:
-      type: automated
-      method: independently derive and compare the complete cache key and producer-consumer identity fields
-      expected: omitted changed or cross-boundary key components are findings
+      type: manual
+      method: review the resolved live cache key lockfile hash and absence of restore-keys for the exact workflow revision
+      expected: every identity component is present the lockfile hash is non-empty and no fallback key is configured
       evidence:
-        - metadata-only key derivation result
+        - reviewed workflow revision and sanitized resolved key
+        - exact reviewed lockfile digest
     mapping_status: reviewed
   - id: CAC-003
-    title: Cache restore stays inside an explicit trust-class transition
-    required_state: only trusted-to-trusted and untrusted-to-untrusted restore transitions are allowed
-    responsible_role: ci-platform
+    title: Pull-request and fork consumers are restore-only
+    required_state: pull-request runs do not invoke cache save and cannot create or update cache entries in the protected default branch scope
+    responsible_role: repository-admin
     applies_to:
-      - cache-producer-trust-class
-      - cache-consumer-trust-class
-      - privileged-ci-job
+      - github-actions-pull-request-job
+      - github-actions-cache-writer
+      - default-branch-cache-scope
     context:
-      threat_actor: untrusted pull-request author or compromised low-privilege job able to populate a shared cache
-      attack_or_failure_scenario: attacker-controlled cache state is restored by a secret-bearing release or deployment job and gains code execution in the privileged context
-      why_required: namespace separation blocks cache storage from becoming an indirect promotion channel across the repository execution boundary
+      threat_actor: fork or pull-request author controlling source dependency inputs tests or workflow changes in the untrusted run
+      attack_or_failure_scenario: a pull-request run populates a cache later restored by a trusted default-branch or privileged workflow
+      why_required: removing direct secrets from an untrusted job does not prevent indirect elevation when attacker-controlled persistent state can cross into a higher-trust run
     verification:
-      type: automated
-      method: compare producer and consumer classes against the exact same-class transition allowlist
-      expected: untrusted-to-trusted and trusted-to-untrusted transitions are denied
+      type: external-evidence
+      method: run a harmless pull request and compare the default-branch cache list before and after while confirming the save step is skipped
+      expected: the pull request may restore readable cache state but performs no save and creates or updates no default-branch cache entry
       evidence:
-        - sanitized transition decision
+        - sanitized pull-request run with event ref workflow revision and skipped save step
+        - before and after read-only cache listings scoped to the protected default branch
     mapping_status: reviewed
   - id: CAC-004
-    title: Restored bytes and paths match the signed producer record
-    required_state: independently hashed cache content and exact requested paths equal the signed record and reviewed path allowlist
-    responsible_role: ci-platform
+    title: Cache paths contain no secret or directly executed persistent state
+    required_state: cache paths are limited to reviewed package download stores and exclude credentials source installed dependency trees environments tools build output plugins startup files and PATH directories
+    responsible_role: developer
     applies_to:
-      - restored-cache-content
-      - cache-extraction-path
+      - cached-path-inventory
+      - dependency-download-cache
+      - workflow-secret-boundary
     context:
-      threat_actor: cache-storage attacker compromised producer or path-confusion bug replacing tools scripts or startup files
-      attack_or_failure_scenario: the selected record is authentic but restored bytes changed afterward or extract into an executable path outside the reviewed dependency-download cache
-      why_required: provenance without byte and destination binding does not prevent post-production tampering or unsafe placement of otherwise authentic data
+      threat_actor: cache-reading fork contributor compromised cache writer or developer accidentally selecting a broad directory
+      attack_or_failure_scenario: sensitive data is disclosed through a readable cache or restored files are executed directly without dependency artifact verification
+      why_required: trusted-writer restrictions do not provide cache confidentiality and do not make executable cache contents safe when a trusted producer is compromised
     verification:
-      type: automated
-      method: hash content independently and compare content digest requested paths record paths and policy allowlist
-      expected: content or path substitution is rejected without printing cache contents
+      type: manual
+      method: inspect each live cache path and the package manager cache contract then trace whether any restored file is executed or contains sensitive data
+      expected: only dependency download data is cached and no cached path contains secrets installed environments tools or build output
       evidence:
-        - content SHA-256
-        - path allowlist decision
+        - dated cache path inventory with content classification and reviewer
+        - reviewed package manager cache documentation or observed path behavior
     mapping_status: reviewed
   - id: CAC-005
-    title: Cache record is current and revision exact
-    required_state: consumer revision equals producer revision and evaluation occurs inside a positive lifetime no longer than 24 hours
-    responsible_role: ci-platform
+    title: Non-exact restores are discarded and dependency integrity is revalidated
+    required_state: a failed missing or partial restore is removed before clean download and an exact hit still passes complete hash-locked wheel-only installation and dependency consistency checks
+    responsible_role: developer
     applies_to:
-      - cache-record-lifetime
-      - source-revision
+      - cache-restore-decision
+      - restored-dependency-artifact
+      - dependency-integrity-check
     context:
-      threat_actor: attacker replaying an old signed cache or build automation restoring obsolete mutable state
-      attack_or_failure_scenario: a once-valid cache survives a dependency or source correction and reintroduces stale vulnerable or attacker-influenced output
-      why_required: valid signatures do not expire by themselves; explicit revision and time bounds limit replay of authentic historical state
+      threat_actor: cache storage attacker compromised trusted producer stale cache entry or service failure leaving partial bytes on disk
+      attack_or_failure_scenario: the consumer treats any restored bytes as an exact trusted dependency set or skips integrity verification because the cache action reported a match
+      why_required: exact naming authorizes a lookup context but only independent artifact hashes detect malicious or corrupted content returned for that identity
     verification:
-      type: automated
-      method: compare created expiry evaluation and exact producer-consumer revision values
-      expected: expired future overlong and revision-mismatched records are findings
+      type: external-evidence
+      method: compare an exact-hit run with a harmless lockfile-change run and confirm cleanup plus require-hashes only-binary installation and pip check in both paths
+      expected: only exact hits survive cleanup every install verifies hashes and missing partial corrupt or unavailable cache state cannot bypass dependency checks
       evidence:
-        - metadata-only lifetime decision
+        - sanitized exact-hit and changed-lockfile run logs
+        - dependency integrity command and result bound to the reviewed lockfile digest
     mapping_status: reviewed
   - id: CAC-006
-    title: Consumer requests exact cache record content policy and key identities
-    required_state: restore request fixes exact record policy content and cache-key digests and supplies no prefix fallback
-    responsible_role: ci-platform
+    title: Privileged release deploy and signing jobs consume no CI cache
+    required_state: every job with secret write OIDC protected Environment release deploy or signing authority uses no cache-aware action or cached path
+    responsible_role: release-manager
     applies_to:
-      - ci-cache-restore-request
-      - cache-lookup-policy
+      - privileged-ci-job
+      - release-workflow
+      - deployment-workflow
+      - signing-workflow
     context:
-      threat_actor: workflow author compromised action or cache client falling back to a broader earlier cache after an exact miss
-      attack_or_failure_scenario: a prefix match silently selects a different record or content than the consumer reviewed and expected
-      why_required: exact producer metadata is insufficient when lookup semantics may substitute another candidate before verification
+      threat_actor: compromised cache writer workflow dependency or trusted producer able to persist malicious executable state
+      attack_or_failure_scenario: a privileged job restores cache state and executes attacker-influenced tools hooks dependencies interpreters or build output with release or deployment authority
+      why_required: avoiding the high-impact consumer closes the cache-to-privilege path even when native cache content cannot be cryptographically authenticated before extraction
     verification:
-      type: automated
-      method: compare all expected digests and key values and require an empty restore-prefix list
-      expected: prefix and identity fallback are rejected
+      type: manual
+      method: inventory all privileged workflows and trace cache-aware actions setup-action caching custom clients and shared cache paths
+      expected: no privileged job restores saves or directly consumes CI cache state
       evidence:
-        - sanitized exact-lookup decision
+        - dated complete privileged workflow inventory with reviewer
+        - exact reviewed workflow revisions and cache-use decision for each privileged job
     mapping_status: reviewed
   - id: CAC-007
-    title: Cache provenance evaluation is complete metadata-only and fail closed
-    required_state: strict complete schemas bounded regular files validated policy and available cryptographic verifier produce only metadata decisions with distinct error status
-    responsible_role: ci-platform
+    title: Incomplete live cache verification is never reported as clean
+    required_state: missing workflow inventory inaccessible branch or cache state incomplete pagination stale evidence and failed positive or negative runs remain NOT_CHECKED or ERROR
+    responsible_role: security
     applies_to:
-      - cache-provenance-verifier
-      - cache-restore-quality-gate
-      - security-evidence-output
+      - cache-workflow-inventory
+      - github-provider-evidence
+      - cache-isolation-assessment
     context:
-      threat_actor: malformed evidence symlink oversized input missing tool or pipeline logic treating evaluation failure as an ordinary cache miss
-      attack_or_failure_scenario: a cache restore proceeds because the verifier could not parse authenticate or safely read its evidence, or cached data leaks into logs
-      why_required: an explicit error state prevents loss of assurance from becoming implicit authorization and metadata-only output avoids creating a new exfiltration channel
+      threat_actor: provider API failure permission denial partial inventory stale evidence or reviewer relying on copied reference files
+      attack_or_failure_scenario: one or more cache writers consumers or provider states cannot be evaluated but the adopting repository is reported as protected
+      why_required: configuration examples establish a design but only complete current live observations can establish whether the provider enforces that design for the target repository
     verification:
-      type: automated
-      method: exercise malformed incomplete symlink invalid-policy and missing-OpenSSL cases and scan output for cache payload text
-      expected: failures return exit 2 never exit 0 and output does not contain cached artifact names
+      type: manual
+      method: require a complete dated workflow inventory provider cache listing and both harmless live runs with explicit result status for every check
+      expected: only complete current evidence supports PASS while missing observations are NOT_CHECKED and collection or evaluation failures are ERROR
       evidence:
-        - sanitized negative-test output
+        - manual assessment record with PASS FAIL NOT_CHECKED or ERROR for every check
+        - source target capture time and reviewer for every live observation
     mapping_status: unmapped
 mappings:
   - framework: sitf
@@ -171,9 +179,9 @@ mappings:
     id: T-C007
     relationship: mitigates
     confidence: high
-    rationale: Exact producer and consumer trust namespaces signed provenance content and path digests revision and lifetime binding and prohibition of restore-prefix fallback directly address action cache poisoning while live provider storage enforcement remains external.
+    rationale: Trusted default-branch save authority exact purpose platform runtime and dependency identity restore-only pull requests non-executable cache paths independent artifact verification and a cache-free privileged consumer directly reduce action cache poisoning paths while live provider adoption remains external.
     reviewer: product-security
-    review_date: "2026-08-17"
+    review_date: "2026-09-07"
     applies_to:
       - CAC-001
       - CAC-002
@@ -181,13 +189,40 @@ mappings:
       - CAC-004
       - CAC-005
       - CAC-006
+  - framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHAS-REF-SECURE-USE
+    relationship: supports
+    confidence: high
+    rationale: The GitHub-specific reference constrains cache writing to reviewed default-branch pushes treats restored state as untrusted and removes cache-aware actions from privileged release deploy and signing jobs.
+    reviewer: product-security
+    review_date: "2026-09-07"
+    applies_to:
+      - CAC-001
+      - CAC-003
+      - CAC-004
+      - CAC-005
+      - CAC-006
+  - framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-BR-01.03
+    relationship: supports
+    confidence: medium
+    rationale: Restore-only untrusted workflows and cache-free privileged jobs close one persistent-state route from untrusted code snapshots to privileged CI/CD credentials and assets while PSB-CICD-005 and PSB-BUILD-001 own the complete requirement boundary.
+    reviewer: product-security
+    review_date: "2026-09-07"
+    applies_to:
+      - CAC-003
+      - CAC-006
 limitations:
-  - The runnable slice verifies provider-neutral offline evidence and does not configure or attest GitHub Actions another CI provider or cache service enforcement.
-  - The committed Ed25519 public key signature and cache payload are synthetic test material; production private keys require isolated signing service custody rotation revocation and audit.
-  - A trusted producer compromised before hashing and signing can create authentic malicious cache content; hermetic build isolation dependency verification and producer review remain necessary.
-  - The verifier authenticates one content blob rather than a directory archive manifest; production adapters must hash every entry type mode link target and extraction path before use.
-  - Same-class untrusted caches remain attacker-controlled and must not be treated as executable or promoted into privileged jobs.
-  - Exact revision keys intentionally reduce cache hit rate and increase storage and build cost; relaxing that property requires a separately reviewed immutable input-equivalence proof.
+  - Repository files and reference workflow presence do not prove current GitHub cache scope branch protection workflow inventory or live run behavior in an adopting repository.
+  - GitHub native cache archives are not signed or independently authenticated before extraction and a compromised trusted default-branch producer can still supply malicious bytes to non-privileged consumers.
+  - The reference depends on complete hash-locked binary Python requirements and does not support sdist-only projects without a separately isolated dependency build design.
+  - Pull requests can read default-branch cache contents so secrets credentials private source and other sensitive data must never enter a cached path.
+  - Cache service outage eviction quota and denial of service can increase build time or network use and are not integrity findings when the job resets to a clean verified install.
+  - GitHub Enterprise Server self-hosted runners macOS Windows and other CI providers require separate review of cache access extraction runtime and evidence behavior.
+  - Branch protection workflow review token policy runner lifecycle install hooks and release provenance remain owned by their related controls and are not reimplemented here.
+  - Static cache-poisoning audits detect known release and cache patterns but cannot prove live provider state custom client behavior cache contents or complete organization adoption.
 status: prototype
 owner: product-security
-evidence_level: E3
+evidence_level: E1

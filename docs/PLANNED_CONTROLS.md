@@ -2570,34 +2570,38 @@ repository／branch identity, current-state collection, reviewed before state,
 and exact audit/session joins. Other legacy branch settings and ruleset
 create／delete remain follow-on work.
 
-### PSB-CICD-009 — Signed cache provenance and trust isolation
+### PSB-CICD-009 — GitHub Actions cache writer and consumer isolation
 
-Status: `implemented` — E3 provider-neutral exact restore slice
+Status: `implemented` — E1 GitHub.com configuration-first reference
 
-Goal: prevent attacker-controlled, cross-workflow, stale, or substituted cache
-state from crossing into a privileged CI job through shared namespaces or broad
-restore fallback.
+Goal: prevent attacker-controlled or compromised cache state from crossing into
+a privileged CI job while preserving low-cost dependency download caching for
+ordinary pull-request and default-branch tests.
 
 Implemented in
 [`controls/cicd-security/cache-provenance-isolation/`](../controls/cicd-security/cache-provenance-isolation/):
 
-- an Ed25519-signed canonical producer record binds a reviewed policy, stable
-  repository ID, full-SHA workflow identity, trust class, platform, producer
-  revision, dependency-lock digest, content digest, path, and 24-hour lifetime;
-- cache keys are independently derived from the same producer identity and
-  only trusted-to-trusted or untrusted-to-untrusted restore is allowed;
-- the consumer pins exact key, record, policy, and content identities and may
-  not use restore-prefix fallback;
-- record and content tampering, cross-boundary substitution, path changes,
-  revision mismatch, and expiry are findings;
-- invalid policy, malformed or symbolic evidence, and missing OpenSSL are
-  evaluation errors, while output stays metadata-only;
+- a copyable GitHub Actions workflow separates cache restore and save, permits
+  save only on a protected default-branch push, and keeps pull requests
+  restore-only;
+- the exact key binds purpose, cache schema, runner OS and architecture, Python
+  runtime, and a non-empty hash-locked dependency identity without restore-key
+  fallback;
+- partial, missing, or failed restores are removed before a clean install while
+  exact hits still pass complete package hash and dependency checks;
+- only the pip download store is cached; installed environments, build output,
+  tools, startup state, secrets, and privileged release／deploy／signing jobs are
+  excluded;
+- live positive and negative runs, cache listings, workflow inventory, and
+  branch protection are manual evidence; missing or failed observations remain
+  `NOT_CHECKED` or `ERROR`;
 - `SITF T-C007` resolves to exact `CAC-001..006` checks without claiming live
   provider enforcement or complete mitigation.
 
-Production archive manifests, signing-key custody, provider adapters, and
-protection from a trusted producer compromised before signing remain adoption
-and residual-risk work.
+GitHub native cache archives are not independently signed before extraction.
+A compromised trusted producer, provider archive defect, non-Python ecosystem,
+self-hosted runner, GitHub Enterprise Server, and other CI providers remain
+explicit adoption or residual-risk work.
 
 ### PSB-SOURCE-006 — GitHub Organization governance and continuous posture
 
