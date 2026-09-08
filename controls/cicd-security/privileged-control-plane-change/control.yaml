@@ -1,99 +1,41 @@
 id: PSB-CICD-008
 title: CI/CDの特権control-plane変更を本人・承認・監査証跡へ結合する
 domain: cicd-security
-summary: SCM、CI、cloud federation、registry、signing serviceの特権設定変更を、named administrator、phishing-resistant session、exact policy差分、独立承認、実行、provider audit eventへ結合する。
+summary: SCM、CI、cloud、registry、signing serviceの重要設定変更を、記名管理者、具体的な変更内容、独立承認、provider audit、変更後確認へ結び付ける。
 check_context_version: "1.0"
 security_functions:
-  - prevent
   - detect
   - verify
   - govern
 threats:
   - id: CICD-CONTROL-PLANE-ACCOUNT-COMPROMISE
-    description: A stolen or shared administrator session changes privileged software supply-chain configuration outside the reviewed pipeline.
+    description: A stolen shared or malicious administrator identity weakens a software supply-chain setting outside the reviewed change path and the changed authority is then usable by a downstream workflow or actor.
   - id: CICD-CONTROL-PLANE-CHANGE-SUBSTITUTION
-    description: Approval or audit evidence is replayed for a different target request policy version or resulting configuration.
+    description: A request or approval names one target and desired setting but the administrator applies a different target or value and the mismatch is not reviewed against provider state.
   - id: CICD-CONTROL-PLANE-EMERGENCY-BYPASS
-    description: An emergency path becomes a permanent unreviewed bypass or missing provider evidence is interpreted as a clean change.
+    description: An emergency change remains active without bounded independent review or missing provider evidence is treated as proof that no unauthorized change occurred.
 implementations:
   insecure:
-    - insecure/policy.json
-    - insecure/change-evidence.json
+    - insecure/uncontrolled-change.md
   secure:
-    - secure/policy.json
-    - secure/change-evidence.json
-    - secure/github/audit-events.json
-    - secure/github/identity-sessions.json
-    - secure/github/change-register.json
-    - secure/github/runner-groups.json
-    - secure/github-scm/audit-events.json
-    - secure/github-scm/identity-sessions.json
-    - secure/github-scm/change-register.json
-    - secure/github-scm/ruleset-snapshot.json
-    - secure/github-org-scm/audit-events.json
-    - secure/github-org-scm/identity-sessions.json
-    - secure/github-org-scm/change-register.json
-    - secure/github-org-scm/ruleset-snapshot.json
-    - secure/github-tag-scm/audit-events.json
-    - secure/github-tag-scm/identity-sessions.json
-    - secure/github-tag-scm/change-register.json
-    - secure/github-tag-scm/ruleset-snapshot.json
-    - secure/github-push-scm/audit-events.json
-    - secure/github-push-scm/identity-sessions.json
-    - secure/github-push-scm/change-register.json
-    - secure/github-push-scm/ruleset-snapshot.json
-    - secure/github-push-scm/fork-network-snapshot.json
-    - secure/github-legacy-branch-scm/audit-events.json
-    - secure/github-legacy-branch-scm/identity-sessions.json
-    - secure/github-legacy-branch-scm/change-register.json
-    - secure/github-legacy-branch-scm/branch-protection-snapshot.json
-    - secure/github-legacy-admin-branch-scm/audit-events.json
-    - secure/github-legacy-admin-branch-scm/identity-sessions.json
-    - secure/github-legacy-admin-branch-scm/change-register.json
-    - secure/github-legacy-admin-branch-scm/branch-protection-snapshot.json
-    - secure/github-legacy-codeowner-branch-scm/audit-events.json
-    - secure/github-legacy-codeowner-branch-scm/identity-sessions.json
-    - secure/github-legacy-codeowner-branch-scm/change-register.json
-    - secure/github-legacy-codeowner-branch-scm/branch-protection-snapshot.json
-    - secure/github-legacy-deletion-branch-scm/audit-events.json
-    - secure/github-legacy-deletion-branch-scm/identity-sessions.json
-    - secure/github-legacy-deletion-branch-scm/change-register.json
-    - secure/github-legacy-deletion-branch-scm/branch-protection-snapshot.json
-    - secure/aws/cloudtrail-events.json
-    - secure/aws/identity-sessions.json
-    - secure/aws/change-register.json
-    - secure/aws/iam-roles.json
-    - secure/aws-ecr/cloudtrail-events.json
-    - secure/aws-ecr/identity-sessions.json
-    - secure/aws-ecr/change-register.json
-    - secure/aws-ecr/repositories.json
-    - secure/aws-kms/cloudtrail-events.json
-    - secure/aws-kms/identity-sessions.json
-    - secure/aws-kms/change-register.json
-    - secure/aws-kms/keys.json
+    - secure/privileged-change-runbook.md
+    - secure/change-record-template.md
 verification:
-  commands:
-    - make verify-control CONTROL=PSB-CICD-008
+  type: manual
+  procedure: README.md#verification
   expected:
-    - every privileged change names one current human administrator and phishing-resistant bounded session
-    - request execution and provider audit event bind the exact service target policy version and before-after digests
-    - ordinary changes require independent digest-bound approval before execution
-    - emergency changes are time-bound and independently reviewed against the applied digest
-    - required SCM CI cloud identity registry and signing service evidence is complete fresh and collector-pinned
-    - missing stale malformed incomplete or credential-bearing evidence returns ERROR rather than PASS
-    - the GitHub adapter joins stable audit actor request exact environment old-new settings and a runner-group current-state snapshot but remains partial until composed with the complete service inventory
-    - the GitHub live collector proves a bounded query and complete pagination before atomically publishing a field-allow-listed audit export
-    - the runner-group collector reads one stable group ID and completely paginates selected repository access before publishing a canonical current-state snapshot
-    - the GitHub SCM adapter joins branch tag or repository-scoped push repository_ruleset.update to stable source ruleset and exact before-after history while push additionally requires one complete root-bound fork-network digest
-    - the GitHub legacy branch adapter joins exact force-push deletion administrator-enforcement and CODEOWNER-review updates to stable repository and branch identity external human session reviewed before state and a current protection snapshot
-    - the AWS adapter joins a successful CloudTrail UpdateAssumeRolePolicy event to an IAM GetRole snapshot external human session and reviewed change through stable account role event and request identities
-    - the ECR adapter joins a successful CloudTrail SetRepositoryPolicy event to DescribeRepositories and GetRepositoryPolicy current state external human session and reviewed change while detecting same-name repository recreation
-    - the KMS adapter joins a successful CloudTrail PutKeyPolicy event to DescribeKey and GetKeyPolicy current state external human session and reviewed change through one signing key ID and ARN while rejecting lockout-safety bypass
+    - the canonical command reports NOT_CHECKED instead of treating repository documentation as live adoption
+    - each in-scope privileged change names an attributable current administrator and an independent approver
+    - the request records the exact provider target readable before and after values impact conditions and rollback before execution
+    - the provider audit event and current setting are reviewed after execution and match the approved change
+    - emergency changes expire within one hour and receive an independent accepted or reverted decision
+    - missing partial stale inaccessible or inconsistent live evidence remains NOT_CHECKED FAIL or ERROR rather than PASS
+    - a harmless sandbox drill verifies both the ordinary path and detection of an unapproved direct change without weakening production protection
 checks:
   - id: CPC-001
     title: Privileged change actor is an attributable current human
-    required_state: named organization administrator in an explicit service-specific role allow-list using phishing-resistant authentication rather than a shared or anonymous identity
-    responsible_role: ci-platform
+    required_state: each change is performed by one named current human in an explicit service-specific administrator role rather than a shared or anonymous account
+    responsible_role: shared
     applies_to:
       - scm-control-plane
       - ci-control-plane
@@ -101,39 +43,39 @@ checks:
       - artifact-registry-control-plane
       - signing-control-plane
     context:
-      threat_actor: external attacker using a phished administrator credential or an insider using a shared owner account
-      attack_or_failure_scenario: branch environment runner federation registry or signing policy changes cannot be attributed to one current authorized person
-      why_required: workflow least privilege does not protect provider settings when a broad or shared human administrator can change the trust boundary directly
+      threat_actor: an external attacker using a stolen administrator session or an insider using a shared owner account
+      attack_or_failure_scenario: a security-impacting setting is changed but the organization cannot identify one current authorized person responsible for the action
+      why_required: attribution and current role review limit shared ambient authority and make investigation and revocation possible without claiming that identity alone prevents misuse
     verification:
-      type: hybrid
-      method: normalize provider identity and membership evidence and evaluate it with make verify-control CONTROL=PSB-CICD-008
-      expected: each change actor is one named current organization human in an allowed service role authenticated with phishing-resistant assurance
+      type: external-evidence
+      method: compare the live provider audit actor with current organization membership and the approved service-specific administrator role
+      expected: the audit event identifies one named current human authorized for the exact target service
       evidence:
-        - sanitized administrator identity record
-        - organization membership decision
-        - authentication assurance record
+        - current membership and role observation with source target and capture time
+        - provider audit event identifying the human actor
     mapping_status: reviewed
   - id: CPC-002
-    title: Privileged session is short-lived and recently reauthenticated
-    required_state: exact session ID with at most one-hour lifetime and step-up authentication no more than 15 minutes before execution
-    responsible_role: ci-platform
+    title: Administrator authentication and session are bounded
+    required_state: the administrator uses phishing-resistant authentication and the reference session is at most one hour with step-up no more than 15 minutes before execution
+    responsible_role: shared
     applies_to:
       - administrator-session
       - privileged-reauthentication
     context:
-      threat_actor: attacker reusing a stolen browser session or unattended administrator workstation
-      attack_or_failure_scenario: a long-lived session changes a supply-chain trust policy hours after the user last proved possession of a phishing-resistant authenticator
-      why_required: actor naming alone does not limit replay; bounded lifetime and recent step-up reduce the usable window for stolen authenticated sessions
+      threat_actor: an attacker reusing a phished browser session or an unattended unlocked administrator workstation
+      attack_or_failure_scenario: a long-lived session changes a supply-chain trust setting well after the human last proved possession of a strong authenticator
+      why_required: named identity does not limit session replay while bounded lifetime and recent reauthentication reduce the useful window for a stolen session
     verification:
-      type: automated
-      method: compare session issuance expiry reauthentication request and execution timestamps
-      expected: execution occurs inside the session and within the reviewed reauthentication age
+      type: external-evidence
+      method: inspect the current provider or IdP authentication policy and the session or reauthentication record associated with the live drill
+      expected: phishing-resistant authentication is enforced and the observed execution meets the reference session and step-up limits
       evidence:
-        - content-free session timeline
+        - current authentication policy with source and capture time
+        - sanitized session or reauthentication observation
     mapping_status: reviewed
   - id: CPC-003
-    title: Request fixes exact target policy and before-after configuration
-    required_state: digest-pinned policy version exact service type target before digest after digest reason and owned change record
+    title: Request fixes the exact target and readable before-after change
+    required_state: the request records the provider service stable target setting name current value intended value reason impact conditions and rollback before execution
     responsible_role: ci-platform
     applies_to:
       - privileged-change-request
@@ -144,104 +86,107 @@ checks:
       - registry-protection
       - signing-policy
     context:
-      threat_actor: compromised administrator or faulty automation substituting a broader target or weaker configuration after review
-      attack_or_failure_scenario: an approval for one branch environment trust policy or digest is reused to apply a different privileged configuration
-      why_required: immutable request identity makes reviewer intent comparable to the provider-side result and prevents approval from becoming a generic write permit
+      threat_actor: a compromised administrator or mistaken operator substituting a broader target or weaker value after review
+      attack_or_failure_scenario: an approval for one repository branch role or policy is reused to apply a materially different control-plane change
+      why_required: a reviewer can compare intent with provider state only when the request identifies the exact target and understandable values rather than granting a generic permission to change settings
     verification:
-      type: automated
-      method: validate policy pin exact target type and distinct SHA-256 before-after digests
-      expected: wildcard unclassified mutable unowned or digest-less changes are rejected
+      type: manual
+      method: review the completed change record before execution and compare its target and before-after values with the provider screen or approved export
+      expected: wildcard unowned ambiguous or value-less requests are not approved and large machine-readable policies use an attached reviewed representation
       evidence:
-        - sanitized change request
-        - before-after configuration digests
+        - completed change request
+        - provider before-state observation or approved export
     mapping_status: reviewed
   - id: CPC-004
     title: Ordinary privileged changes receive independent approval
-    required_state: at least one non-requesting approver binds approval to exact request and after digest before execution
+    required_state: a person other than the requester and executor approves the exact target and intended after value before execution
     responsible_role: security
     applies_to:
       - privileged-change-approval
       - separation-of-duties
     context:
-      threat_actor: malicious or compromised administrator able to propose approve and execute a trust-boundary change alone
-      attack_or_failure_scenario: one privileged account silently weakens branch runner federation registry or signing protections without a second party seeing the resulting policy
-      why_required: digest-bound separation of duties detects and blocks unilateral control-plane tampering that repository pull-request review cannot observe
+      threat_actor: a malicious or compromised administrator able to propose approve and execute a trust-boundary change alone
+      attack_or_failure_scenario: one administrator weakens branch runner federation registry or signing protection without another person seeing the actual intended value
+      why_required: independent review reduces unilateral mistakes and misuse while making a direct provider bypass unauthorized and detectable even where the provider cannot enforce two-person approval
     verification:
-      type: automated
-      method: compare approver identity request ID resulting digest and timestamp to the execution record
-      expected: requester or executor self-approval replay late approval and digest mismatch are rejected
+      type: manual
+      method: compare requester executor approver target after value approval time and execution time in the completed change record
+      expected: self-approval generic approval approval after execution and approval for another target or value are FAIL
       evidence:
-        - sanitized approval receipt
+        - timestamped approval in the organization change system
+        - completed identity separation review
     mapping_status: reviewed
   - id: CPC-005
-    title: Provider execution and audit event match the approved request
-    required_state: unique provider event binds actor session request target execution time and exact applied digest
+    title: Provider audit and current state match the approved change
+    required_state: an independent reviewer confirms that the provider event actor action time and stable target plus the current setting match the approved request
     responsible_role: security
     applies_to:
       - provider-audit-log
       - privileged-change-execution
-      - incident-evidence
+      - provider-current-setting
     context:
-      threat_actor: compromised provider session or administrator applying a different configuration than reviewers approved
-      attack_or_failure_scenario: ticket and approval appear valid but the provider audit record names another actor session target request or resulting policy
-      why_required: provider-side observation closes the evidence chain at the actual control plane instead of trusting only self-reported change-management records
+      threat_actor: a compromised administrator applying a different value or an operator mistakenly changing the wrong provider object
+      attack_or_failure_scenario: the ticket appears approved but the provider records another actor target action or resulting setting and the mismatch is never noticed
+      why_required: provider-side observation checks what actually happened instead of treating the request or executor statement as proof of the applied state
     verification:
-      type: hybrid
-      method: correlate normalized provider audit events to request execution and applied configuration digest
-      expected: missing duplicate early or mismatched audit events and substituted executions are rejected
+      type: external-evidence
+      method: inspect the live provider audit event and current setting then compare them with the completed request and approval
+      expected: actor action time target and current value agree with the approved change and any missing or inconsistent observation is not PASS
       evidence:
-        - provider audit event ID
-        - applied configuration digest
-        - correlation result
+        - provider audit event ID or durable reference
+        - current setting observation with source target and capture time
+        - independent comparison result
     mapping_status: reviewed
   - id: CPC-006
     title: Emergency changes are bounded and independently reviewed
-    required_state: owned incident reason one-hour expiry and separate timely review bound to exact request and applied digest
-    responsible_role: security
+    required_state: each emergency change has an incident reason exact target intended state one-hour expiry and a separate timely accepted or reverted decision
+    responsible_role: incident-response
     applies_to:
       - emergency-control-plane-change
       - break-glass-governance
     context:
-      threat_actor: attacker or operator retaining an emergency bypass after urgent containment is complete
-      attack_or_failure_scenario: approval is skipped during an incident and the weakened or changed trust policy persists without independent review or reversion
-      why_required: a bounded separately reviewed emergency path supports urgent containment without turning break-glass authority into an indefinite approval bypass
+      threat_actor: an attacker or operator retaining emergency authority or a temporary weak setting after urgent containment is complete
+      attack_or_failure_scenario: pre-approval is skipped during an incident and the change remains active indefinitely without another person checking what was applied
+      why_required: a bounded independent post-review permits urgent containment without converting emergency access into a permanent approval bypass
     verification:
-      type: automated
-      method: evaluate emergency reason expiry post-review independence digest binding and decision
-      expected: missing late self-reviewed unbound or overlong emergency changes are rejected
+      type: external-evidence
+      method: inspect the incident record provider event current state expiry reviewer identity review time and accepted or reverted decision
+      expected: missing late self-reviewed unscoped or indefinitely extended emergency changes are FAIL
       evidence:
-        - incident change record
-        - post-change review receipt
+        - incident-linked emergency change record
+        - provider current-state observation
+        - independent post-change decision
     mapping_status: reviewed
   - id: CPC-007
-    title: Cross-service collection is complete fresh and fails closed
-    required_state: digest-pinned collector covers required SCM CI cloud identity registry and signing services with evidence age at most 15 minutes and no credentials
+    title: In-scope change verification is complete and fails closed
+    required_state: every declared service and security-impacting change type has an owner review path current evidence source and explicit PASS FAIL NOT_CHECKED ERROR or reviewed N/A result
     responsible_role: ci-platform
     applies_to:
-      - control-plane-evidence-collector
-      - cross-provider-change-inventory
-      - control-plane-change-verifier
+      - control-plane-change-inventory
+      - live-verification-record
+      - evidence-collection
     context:
-      threat_actor: collector outage provider API failure stale cache malformed input or evidence export accidentally containing a credential
-      attack_or_failure_scenario: an unseen privileged change or unsafe evidence bundle is interpreted as no findings because one provider was not collected or parsing failed
-      why_required: complete explicit service coverage and ERROR semantics prevent partial inventory from becoming false assurance while secret-field rejection keeps audit evidence from creating another credential leak
+      threat_actor: an incomplete inventory inaccessible provider setting stale record missing audit event or failed evidence collection
+      attack_or_failure_scenario: one unreviewed provider or change path is omitted and the organization reports the whole control as clean because the documented sandbox example passed
+      why_required: explicit scope completeness and non-clean failure states prevent one successful example or missing data from becoming false assurance about every control-plane change
     verification:
-      type: automated
-      method: run negative tests for missing services unavailable stale malformed incomplete mutable and credential-bearing evidence
-      expected: evidence failure returns ERROR and never echoes credential values
+      type: external-evidence
+      method: compare the approved scope inventory with current completed change records audit access evidence and result states including the harmless drill
+      expected: omitted unavailable stale partial or inconsistent evidence is NOT_CHECKED FAIL or ERROR and only an owner-reviewed absent target can be N/A
       evidence:
-        - collector identity and coverage record
-        - sanitized negative-test output
-    mapping_status: unmapped
+        - current in-scope service and change-type inventory
+        - result record for each in-scope check and provider
+        - evidence-source and failure-owner review
+    mapping_status: reviewed
 mappings:
   - framework: github-security-guidance
     version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
     id: GHSC-SECURE-ACCOUNTS
     relationship: supports
     confidence: high
-    rationale: Named administrators phishing-resistant authentication bounded sessions and independent review support secure account use for supply-chain administration without claiming that fixture evidence configures GitHub.
+    rationale: The guidance requires named current administrators phishing-resistant authentication bounded sessions and an independent approver without claiming that repository templates configure GitHub.
     reviewer: product-security
-    review_date: "2026-08-12"
+    review_date: "2026-09-07"
     applies_to:
       - CPC-001
       - CPC-002
@@ -249,69 +194,58 @@ mappings:
   - framework: github-security-guidance
     version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
     id: GHAS-REF-SECURE-USE
-    relationship: verifies
+    relationship: supports
     confidence: medium
-    rationale: Exact protected-setting change identity provider audit correlation and bounded emergency review create evidence relevant to secure GitHub Actions administration while wider cross-provider enforcement remains external.
+    rationale: Exact change review provider-side observation and bounded emergency handling support secure Actions administration while live enforcement and wider organization adoption remain external evidence.
     reviewer: product-security
-    review_date: "2026-08-12"
+    review_date: "2026-09-07"
     applies_to:
       - CPC-003
+      - CPC-004
       - CPC-005
       - CPC-006
   - framework: github-security-guidance
     version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
     id: GH-ADMIN-SAML-IAM
-    relationship: supports
+    relationship: related-to
     confidence: medium
-    rationale: The normalized change contract requires current organization membership and bounded phishing-resistant session evidence, but the local fixture does not prove live GitHub SAML enforcement or deprovisioning.
+    rationale: Current membership strong authentication and bounded session evidence are relevant to the administrator identity boundary but must be confirmed in the adopting organization and IdP.
     reviewer: product-security
-    review_date: "2026-08-14"
+    review_date: "2026-09-07"
     applies_to:
       - CPC-001
       - CPC-002
   - framework: github-security-guidance
     version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
     id: GH-ADMIN-RULESETS
-    relationship: verifies
+    relationship: related-to
     confidence: medium
-    rationale: The GitHub SCM adapters verify selected repository and organization branch tag and push ruleset changes through stable identities exact state digests history and bypass actors without claiming complete ruleset coverage.
+    rationale: The GitHub reference drill reviews one exact sandbox ruleset before and after a privileged change but does not prove complete repository or organization ruleset coverage.
     reviewer: product-security
-    review_date: "2026-08-14"
+    review_date: "2026-09-07"
     applies_to:
       - CPC-003
       - CPC-005
-      - CPC-006
-  - framework: github-security-guidance
-    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
-    id: GH-ADMIN-RULESET-RULES
-    relationship: verifies
-    confidence: medium
-    rationale: Exact branch tag and repository push targets and their reviewed before-after rule bodies are checked while unsupported rule types and organization-wide push remain fail-closed or out of scope.
-    reviewer: product-security
-    review_date: "2026-08-14"
-    applies_to:
-      - CPC-003
-      - CPC-005
-      - CPC-006
   - framework: github-security-guidance
     version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
     id: GH-ADMIN-AUDIT-EVENTS
-    relationship: verifies
+    relationship: supports
     confidence: medium
-    rationale: Selected documented organization audit events are normalized and joined to actor request target and resulting state, while complete event coverage retention and provider integrity remain external.
+    rationale: Provider audit review supplies the actor action time and target observation for the reference change while complete export retention and provider integrity remain organization-owned.
     reviewer: product-security
-    review_date: "2026-08-14"
+    review_date: "2026-09-07"
     applies_to:
       - CPC-005
       - CPC-006
+      - CPC-007
   - framework: openssf-osps-baseline
     version: "2026.02.19"
     id: OSPS-AC-01.01
     relationship: supports
     confidence: high
-    rationale: The control requires phishing-resistant authentication and recent reauthentication for sensitive administrative changes, strengthening the evidence for MFA-protected sensitive actions.
+    rationale: Requiring phishing-resistant authentication and bounded reauthentication for sensitive administration supports MFA-protected privileged actions without proving the live provider state.
     reviewer: product-security
-    review_date: "2026-08-12"
+    review_date: "2026-09-07"
     applies_to:
       - CPC-001
       - CPC-002
@@ -320,9 +254,9 @@ mappings:
     id: OSPS-AC-02.01
     relationship: supports
     confidence: medium
-    rationale: Attributable current administrators and separation of duties support restricted collaborator privilege but do not by themselves assess every repository permission.
+    rationale: Named administrators and independent approval support restricted collaborator privilege but do not assess the complete access inventory owned by PSB-SOURCE-006.
     reviewer: product-security
-    review_date: "2026-08-12"
+    review_date: "2026-09-07"
     applies_to:
       - CPC-001
       - CPC-004
@@ -331,9 +265,9 @@ mappings:
     id: T1078
     relationship: mitigates
     confidence: medium
-    rationale: Phishing-resistant short-lived attributable administrator sessions reduce the usefulness of stolen valid accounts for privileged control-plane changes without eliminating provider account compromise.
+    rationale: Named administrators phishing-resistant authentication and bounded sessions reduce the opportunity to reuse stolen valid accounts but do not eliminate an unlocked endpoint or malicious authorized administrator.
     reviewer: product-security
-    review_date: "2026-08-12"
+    review_date: "2026-09-07"
     applies_to:
       - CPC-001
       - CPC-002
@@ -342,44 +276,20 @@ mappings:
     id: T1098
     relationship: detects
     confidence: medium
-    rationale: Exact request-to-provider audit correlation exposes unauthorized account trust runner and policy manipulation associated with persistence through account changes.
+    rationale: Comparing approved target and values with provider audit and current state can detect unauthorized account trust runner and policy manipulation without claiming prevention where direct administration remains possible.
     reviewer: product-security
-    review_date: "2026-08-12"
+    review_date: "2026-09-07"
     applies_to:
       - CPC-003
       - CPC-005
 limitations:
-  - The fixtures are provider-neutral normalized evidence and do not prove live GitHub GitLab cloud registry or signing-service configuration.
-  - The verifier does not call provider APIs mutate settings validate hardware authenticator custody or establish organization membership.
-  - The GitHub normalizer consumes reviewed exports and does not itself call the live REST API; GitHub audit fields cannot prove phishing-resistant authentication or independent approval without the organization identity/session and change-register joins.
-  - The live GitHub collector selects environment.update_protection_rule org.runner_group_updated repository_ruleset.update protected_branch.update_allow_force_pushes_enforcement_level protected_branch.update_allow_deletions_enforcement_level protected_branch.update_admin_enforced and protected_branch.update_require_code_owner_review; runner ruleset and legacy branch events become evidence only after their required current-state or history joins are complete.
-  - GitHub runner-group current state independently confirms the applied after digest but not the historical before state; the before digest remains a reviewed change-register assertion and needs an independently retained pre-change snapshot for stronger historical assurance.
-  - Runner-group update and snapshot collection are not transactionally atomic; the normalizer rejects later updates found before the snapshot, but provider event omission or concurrent changes outside the complete audit window remain residual risk.
-  - The GitHub SCM adapters cover repository- and organization-scoped branch and tag ruleset updates repository-scoped push updates and legacy branch force-push deletion administrator-enforcement and CODEOWNER-review updates; other legacy branch fields ruleset create delete organization-wide push repository transfer rename and archive require separately reviewed adapters.
-  - Repository push rulesets bind a private or internal non-fork root stable identity network_count completely paginated fork identities and reviewed network digest; the REST reads are not transactional and fork visibility or concurrent network changes remain residual risk.
-  - Organization-wide push rulesets require complete expansion of every repository selector and every resulting root fork network; this adapter rejects that scope rather than extrapolating one repository snapshot.
-  - Organization ruleset audit classification is an implementation inference from the documented repository_ruleset.update event ruleset_source_type Organization stable org_id and absent repository fields; validate the sanitized event shape in the adopting tenant and fail closed on divergence.
-  - Reading repository or organization ruleset bypass actors and exact history requires the corresponding Administration write permission even though the collector only performs GET requests; isolate that credential from mutation paths and monitor all use because GitHub does not expose a narrower read-only history permission and organization scope has a larger blast radius.
-  - Ruleset state is structurally canonicalized and may fail closed for semantically harmless list ordering changes; current and history APIs are not transactionally atomic despite later-version rejection.
-  - The legacy branch adapter covers protected_branch.update_allow_force_pushes_enforcement_level protected_branch.update_allow_deletions_enforcement_level protected_branch.update_admin_enforced and protected_branch.update_require_code_owner_review; the versioned contract accepts force-push and deletion numeric levels zero disabled and one or two enabled plus strict boolean admin_enforced and require_code_owner_review fields. The numeric enum meaning is not documented in the public audit-event catalog, so tenant event shape must be validated before adoption and any other value fails closed.
-  - GitHub exposes current legacy branch protection but no version history through this REST path, so the before state remains a reviewed register assertion; a separately retained pre-change snapshot is required for stronger historical assurance.
-  - The AWS adapter is limited to root-path IAM roles changed through UpdateAssumeRolePolicy; roles with another path, CloudFormation or Terraform replacement, CreateRole, service-linked roles, SAML trust, permission policies, Azure, and GCP need separately reviewed adapters.
-  - IAM GetRole confirms the applied trust policy and stable RoleId but does not return its historical predecessor; the before digest remains a reviewed register assertion unless an independent pre-change snapshot is retained.
-  - CloudTrail identity attributes do not prove phishing-resistant authentication or current employment; those properties come from an organization identity and session export joined to the exact assumed-role principal and source identity.
-  - IAM policy canonicalization is structural JSON rather than full IAM semantic normalization; harmless statement or array reordering may fail closed and require a new reviewed adapter version.
-  - The ECR adapter covers repository access-policy changes only; transport workload identity image tag immutability operation audit and lifecycle enforcement remain PSB-CONTAINER-002, while registry-level policy replication lifecycle and scanning configuration need distinct adapters.
-  - ECR has no immutable repository ID equivalent to IAM RoleId, so the adapter binds account region repository ARN name and creation time as one generation; assurance still depends on trustworthy DescribeRepositories evidence and complete delete-create audit retention.
-  - Forced SetRepositoryPolicy operations can intentionally bypass lockout prevention and are rejected by the ordinary path until a separately governed emergency adapter binds the force decision and post-review.
-  - GetRepositoryPolicy confirms the current after state but not the historical before state, and structural JSON canonicalization may reject semantically equivalent ordering changes.
-  - The KMS adapter covers direct default-policy PutKeyPolicy changes for enabled customer-managed SIGN_VERIFY keys only; key creation deletion disablement grants aliases imported material custom key stores multi-Region operations and cryptographic Sign use need separately owned controls or adapters.
-  - DescribeKey and GetKeyPolicy confirm the current signing key identity purpose and after policy but not the historical before state; structural JSON canonicalization may reject semantically equivalent ordering changes.
-  - A KMS key policy alone is not the complete effective-authorization graph; IAM policies grants and VPC endpoint policies require separate inventory and review before claiming that signing or policy-administration authority was actually removed.
-  - BypassPolicyLockoutSafetyCheck is rejected by the ordinary KMS path because it can make a key unmanageable; its use requires a separately governed emergency adapter that binds the exact bypass decision expiry and post-review.
-  - Each GitHub CI or SCM fragment remains partial and cannot satisfy the five-service completeness check by itself.
-  - Provider control-plane compromise could forge or omit events unless independent export integrity retention and provider assurance are established.
-  - Machine workload federation remains PSB-CICD-006 and runner registration lifecycle remains PSB-CICD-007.
-  - Repository workflow permissions branch behavior and untrusted PR execution remain PSB-CICD-004 and PSB-CICD-005.
-  - Emergency response still requires organization incident authority rollback testing and an independently protected audit backend.
-status: prototype
+  - Repository templates and metadata do not prove live provider settings organization membership authentication assurance approval enforcement audit completeness or adoption.
+  - Where the provider allows direct administrator changes without a two-person gate the reference process detects unauthorized changes only at the audit-review cadence and does not guarantee prevention.
+  - Provider or IdP compromise can forge or omit identity setting and event observations unless independently protected export and provider assurance are established.
+  - Current-state observation may not prove the historical before state when the provider exposes no immutable history.
+  - Human reviewers can approve an unsafe setting or misunderstand its downstream authority and must compose this control with the domain control that defines the secure required state.
+  - Session and emergency time defaults may require provider-specific implementation and unsupported evidence remains NOT_CHECKED rather than a self-asserted PASS.
+  - Machine workload federation remains PSB-CICD-006 runner lifecycle remains PSB-CICD-007 and GitHub organization posture remains PSB-SOURCE-006.
+status: reference
 owner: product-security
-evidence_level: E3
+evidence_level: E1

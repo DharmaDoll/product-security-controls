@@ -194,7 +194,7 @@
       "disposition": "gap",
       "check_refs": ["PSB-SOURCE-003-MON-002", "PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-005"],
       "remaining_work": "Enforce repository visibility changes through independent approval and provider audit alerts, then correlate newly public repositories with exposure monitoring.",
-      "rationale": "Privileged-change evidence can bind reviewed configuration changes and public monitoring can detect some domain-anchored content after exposure, but neither currently proves provider-side prevention or alerting for every visibility change."
+      "rationale": "The privileged-change procedure defines how to compare a reviewed visibility change with live provider state, and public monitoring can detect some domain-anchored content after exposure, but neither currently proves provider-side prevention or alerting for every visibility change."
     },
     {
       "technique_id": "T-V007",
@@ -220,25 +220,25 @@
       "technique_id": "T-V010",
       "disposition": "implemented",
       "check_refs": ["PSB-CICD-005-PRB-001", "PSB-CICD-005-PRB-005", "PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-004"],
-      "rationale": "Untrusted changes remain unprivileged and protected source changes bind an exact target and before-after state to independent approval."
+      "rationale": "The untrusted-PR boundary keeps contributor execution unprivileged, while the privileged-change reference requires an exact source-protection target and before-after state to receive independent approval; live hosted adoption remains external."
     },
     {
       "technique_id": "T-V011",
       "disposition": "implemented",
       "check_refs": ["PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-005", "PSB-REL-001-REL-004"],
-      "rationale": "Protected reference changes are bound to reviewed control-plane evidence and release consumers reject silent trust-signal downgrades."
+      "rationale": "The privileged-change reference requires a protected ref change to be compared with live provider audit and current state, while release consumers reject silent trust-signal downgrades; the repository does not prove live provider adoption."
     },
     {
       "technique_id": "T-V012",
       "disposition": "implemented",
-      "check_refs": ["PSB-CICD-005-PRB-003", "PSB-CICD-005-PRB-004", "PSB-CICD-005-PRB-005", "PSB-CICD-008-CPC-007"],
-      "rationale": "Exact pull-request revision binding, blocked cross-run elevation, separate trusted execution, and complete fork-network evidence directly address cross-fork object abuse."
+      "check_refs": ["PSB-CICD-005-PRB-003", "PSB-CICD-005-PRB-004", "PSB-CICD-005-PRB-005", "PSB-CICD-005-PRB-006"],
+      "rationale": "Exact pull-request revision review, blocked cross-run elevation, separate trusted execution, and fail-closed incomplete live evidence address cross-fork object confusion without claiming that repository files prove every provider path."
     },
     {
       "technique_id": "T-C001",
       "disposition": "implemented",
       "check_refs": ["PSB-CICD-008-CPC-001", "PSB-CICD-008-CPC-002", "PSB-CICD-008-CPC-005"],
-      "rationale": "Privileged CI/CD changes require an attributable current human, a short-lived reauthenticated session, and matching provider audit evidence."
+      "rationale": "The privileged-change reference requires an attributable current human, a short-lived reauthenticated session, and matching live provider audit evidence; those properties remain NOT_CHECKED until the adopter reviews them."
     },
     {
       "technique_id": "T-C002",
@@ -281,7 +281,7 @@
       "technique_id": "T-C008",
       "disposition": "implemented",
       "check_refs": ["PSB-CICD-004-PERM-004", "PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-004", "PSB-CICD-008-CPC-005"],
-      "rationale": "Write-capable jobs are restricted and protected workflow or repository policy changes bind exact state to independent approval and provider execution."
+      "rationale": "Write-capable jobs are restricted, and the privileged-change reference requires exact protected-workflow or repository-policy state to be independently approved and compared with provider execution; live adoption remains external."
     },
     {
       "technique_id": "T-C009",
@@ -350,7 +350,7 @@
       "disposition": "gap",
       "check_refs": ["PSB-CICD-008-CPC-004", "PSB-CICD-008-CPC-005", "PSB-CICD-008-CPC-007"],
       "remaining_work": "Protect CI/CD organizations, runners, variables, logs, and workflow history with destructive-action guardrails, immutable backups, and tested recovery objectives.",
-      "rationale": "Privileged changes are approved and collected, but CI/CD platform destruction prevention and recovery are not verified."
+      "rationale": "The privileged-change reference requires approval and live provider review, but repository guidance does not prove adoption, and CI/CD platform destruction prevention and recovery are not verified."
     },
     {
       "technique_id": "T-C020",

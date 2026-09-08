@@ -92,14 +92,14 @@ host-side policy boundary is implemented in `PSB-CONTAINER-003`; live sensor
 installation, kernel driver, and host enforcement evidence remain
 provider-specific follow-on work.
 Human administrator control-plane changes are implemented as `PSB-CICD-008`
-through a provider-neutral E3 evidence contract. GitHub environment and
-runner-group evidence plus AWS IAM workload-trust evidence have executable
-provider adapters. AWS ECR repository access-policy evidence is also
-implemented, and AWS KMS `PutKeyPolicy` evidence covers the signing-service
-policy fragment. GitHub repository- and organization-ruleset branch／tag update evidence
-now covers SCM fragments with stable source／ruleset identity and exact version
-history. Remaining legacy or lifecycle SCM, CI, cloud, registry, non-policy
-signing, Azure, and GCP collectors remain organization evidence.
+through an E1 guidance-first reference. It provides a copyable change runbook
+and record template for named administrators, explicit target and before／after
+values, independent approval, provider audit plus current-state review, and a
+bounded emergency path. A GitHub private-sandbox ruleset drill is the smallest
+supported live procedure. GitHub, AWS, registry, and signing adoption remain
+organization evidence; no synthetic provider adapter or repository fixture is
+treated as proof of current control-plane state.
+
 The `PSB-CICD-006` provider-neutral E3 slice is implemented; live cloud-provider
 adapters remain organization evidence and a dependency for live identity use.
 
@@ -2285,7 +2285,7 @@ licenses, and detailed limitations are recorded in
 | cicd-sensor | `PSB-BUILD-001` telemetry adapter | identified pre-release candidate | Prototype only after privilege, kernel support, event schema, redaction, health failure, and integrity requirements are testable |
 | OpenSSF Scorecard | governance or supplier-assessment evidence | adopted as guidance only | Implement an adapter only for individually mapped checks with freshness and error semantics; never use the aggregate score as compliance evidence |
 | OpenSSF Allstar | `PSB-CICD-008` or a future GitHub organization-posture adapter | identified, source-pinned, not installed or authorized | Add only for a unique organization-scale drift outcome with least-privilege App permissions, alert／mutation separation, dry-run negative fixtures, rollback, independent audit, bounded exceptions, and explicit unavailable-App `ERROR` |
-| Checkov GitHub configuration | `PSB-DETECT-001` comparison with `PSB-SOURCE-004`／`PSB-CICD-008` provider boundaries | reviewed and rejected for the current slice | Reconsider only when a pinned rule finds one required configuration-as-code outcome that existing scanners and live GitHub collectors do not; never present a file scan as current hosted enforcement |
+| Checkov GitHub configuration | `PSB-DETECT-001` comparison with `PSB-SOURCE-004`／`PSB-CICD-008` provider boundaries | reviewed and rejected for the current slice | Reconsider only when a pinned rule finds one required configuration-as-code outcome that existing scanners and live provider-evidence procedures do not; never present a file scan as current hosted enforcement |
 | TruffleHog | `PSB-SOURCE-003` organization-operated assessment | introduced as a complementary candidate; not recommended for developer-local hooks | Add only for a demonstrated onboarding, scheduled full-history, incident-response, or credential-verification gap, with controlled egress and distinct scanner-error evidence |
 
 For every candidate, the executable adoption slice must pin the version and
@@ -2452,12 +2452,12 @@ remain adoption work and are not implied by the prototype.
 
 ### PSB-CICD-008 — Privileged CI/CD control-plane change assurance
 
-Status: `implemented` — E3 provider-neutral human administrator change evidence slice
+Status: `implemented` — E1 guidance-first human administrator change reference
 
-Goal: prevent a compromised or unilateral administrator session from changing
-SCM, CI, cloud federation, registry, or signing trust outside the reviewed
-pipeline without exact identity, approval, resulting-policy, and provider audit
-evidence.
+Goal: reduce the chance that one compromised, malicious, or mistaken
+administrator can silently weaken a software-supply-chain trust boundary
+without an exact request, independent review, provider observation, and owned
+recovery.
 
 Implemented boundary:
 
@@ -2465,110 +2465,44 @@ Implemented boundary:
   behavior;
 - `PSB-CICD-006` continues to own machine workload federation claims;
 - `PSB-CICD-007` continues to own runner registration and lifecycle;
-- `PSB-CICD-008` owns named human administrator assurance, bounded session,
-  exact target and before-after configuration identity, independent approval,
-  provider execution／audit correlation, and emergency post-review;
-- live provider membership, authenticator custody, configuration API, audit
-  export integrity, and control-plane assurance remain organization evidence.
+- `PSB-SOURCE-006` continues to own current GitHub Organization posture and
+  access inventory;
+- `PSB-CICD-008` owns the human privileged-change procedure: named current
+  actor, strong bounded authentication, exact readable target and before／after,
+  independent pre-approval, provider audit and current-state review, and a
+  bounded emergency decision.
 
-The runnable slice covers ordinary and emergency changes, seven atomic checks,
-SCM／CI／cloud identity／registry／signing service completeness, content-free
-evidence, and negative tests for shared identity, broad session, wildcard,
-request substitution, missing approval, audit mismatch, emergency review
-failure, stale or malformed evidence, collector outage, and credential-bearing
-input. `SCIR-010` now references these exact checks without making a live NIST
-SP 800-204D adoption or compliance claim.
+The reference implementation is intentionally small. It contains one copyable
+ordinary／emergency runbook, one change-record template, one isolated insecure
+scenario, and manual atomic checks `CPC-001..007`. The README explains for
+rulesets, Environments, runners, OIDC trust, registries, and signing policies
+which additional authority and downstream path must exist before a setting
+change becomes concrete product harm. It also records conditions that limit
+the impact instead of treating every administrator action as an inevitable
+compromise.
 
-The first provider adapter normalizes reviewed GitHub organization audit
-exports for environment protection changes whose audit event exposes exact
-old and new values.
-It joins stable actor and request identities to organization-owned
-identity/session and change-register records, computes canonical old／new
-configuration digests, strips token metadata, and refuses missing or tampered
-joins. The adapter is intentionally a partial `ci` fragment: provider
-authentication assurance and the other required service fragments remain
-external work, and no individual GitHub or AWS fragment can satisfy `CPC-007`.
+The shortest live procedure uses a private GitHub sandbox repository and
+strengthens one test-branch ruleset from one required approval to two. A
+separate approver reviews the exact change, an administrator applies it, and
+an independent reviewer compares the audit event and current setting. The
+negative procedure confirms that missing approval stops the normal path and
+that a direct sandbox strengthening change without a ticket becomes `FAIL` at
+the audit review. It does not weaken production protection.
 
-The GitHub live collection slice fixes the organization audit endpoint, API
-version, 24-hour maximum window, ascending order, 100-event pages, and same-host
-cursor pagination. It field-allow-lists selected events, records page and event
-counts plus pagination completion, writes atomically, and rejects rate limits,
-network or parser failure, loops, duplicates, oversize output, and partial
-collection. It admits `environment.update_protection_rule`, whose official
-event exposes exact old and new values, and `org.runner_group_updated`. The
-runner-group path additionally reads exact current group settings and complete
-selected-repository access, joins the stable group ID and reviewed digest,
-requires a snapshot within five minutes and a later complete audit window, and
-rejects a second update that makes the current-state join ambiguous.
+Top-level verification is manual. The canonical runner returns `NOT_CHECKED`
+with exit `2` until the adopting organization provides current provider, IdP,
+approval, and setting evidence. There is no control-local verifier, policy
+JSON, synthetic organization evidence, or no-op test. If a future read-only
+collector is justified by actual scale, it must first define provider
+authority, complete scope and pagination, redaction, failure states, and the
+remaining live boundary; its local regression result must not become an
+organization `PASS`.
 
-The AWS cloud-identity slice normalizes direct `UpdateAssumeRolePolicy` changes
-to root-path IAM roles used for CI workload federation. It joins successful
-complete CloudTrail management events, exact assumed-role principal／issuer／
-source identity, organization session evidence, reviewed event／request／stable
-role IDs and digests, and an `iam:GetRole` current-state snapshot collected
-within five minutes. CloudTrail errors, partial collection, identity or RoleId
-substitution, current-policy tampering, and a later trust update all fail
-closed. `GetRole` does not establish the historical before state, and neither
-CloudTrail nor the public fixture proves phishing-resistant authentication;
-those remain explicitly separated evidence boundaries. Azure／GCP and IAM
-changes through resource replacement remain follow-on adapters.
+Where a provider cannot enforce two-person administrative changes, the
+reference supplies governance and detection at the audit-review cadence rather
+than claiming guaranteed prevention. Stronger pre-execution enforcement
+requires a provider-native gate or a separately reviewed change gateway.
 
-The AWS ECR artifact-registry slice normalizes direct `SetRepositoryPolicy`
-changes. It joins successful complete CloudTrail events, exact attributed human
-sessions, a reviewed event／request／repository-generation／digest record,
-`DescribeRepositories` resource identity, and `GetRepositoryPolicy` current
-state. Because ECR exposes no immutable repository ID comparable to IAM
-`RoleId`, account, region, ARN, name, and creation time are fixed together and
-same-name recreation is rejected. Ordinary evidence rejects `force=true`,
-partial or failed collection, identity substitution, policy tampering, stale
-state, and later updates. Registry transport, workload identity, tag
-immutability, image operations, audit completeness, and lifecycle remain
-`PSB-CONTAINER-002`.
-
-The AWS KMS signing-service slice normalizes direct `PutKeyPolicy` changes for
-enabled customer-managed `SIGN_VERIFY` keys. It binds a complete successful
-CloudTrail event, exact attributed human session, reviewed event／request／Key
-ID／ARN／digest record, `DescribeKey` purpose and current identity, and
-`GetKeyPolicy` after state. The ordinary adapter rejects
-`BypassPolicyLockoutSafetyCheck=true`, partial or failed collection, identity
-or key substitution, ineffective policy statements, stale state, and later
-policy updates. Key lifecycle, grants, aliases, material custody, cryptographic
-`Sign` use and signature verification stay outside this control. The SCM
-service now has repository- and organization-scoped GitHub ruleset adapters.
-
-The GitHub SCM slice normalizes `repository_ruleset.update` for repository-
-scoped branch rulesets. It binds the organization audit event, exact attributed
-human session, reviewed stable repository／ruleset／version／digest record,
-current ruleset, complete history, and independently fetched before／after
-version states. It rejects a later version, partial history, repository or
-actor substitution, audit-delta mismatch, stale state, and ruleset-body or
-credential retention in normalized output. GitHub requires repository
-Administration write permission to read exact history and bypass actors, so
-the GET-only collector still needs an isolated short-lived installation token,
-write-endpoint egress denial, and monitoring.
-
-The organization SCM slice uses the organization ruleset REST endpoints and
-binds stable organization ID／node ID, repository and branch conditions, exact
-history versions, actor, request, and reviewed digests. GitHub documents
-`repository_ruleset.update` with `ruleset_source_type`; therefore classification
-as an organization update from `ruleset_source_type=Organization`, stable
-`org_id`, and absent repository fields is an explicit implementation inference
-that must be checked against sanitized tenant events. It rejects source-ID
-substitution, repository-field contamination, later versions, partial history,
-and stale state. Branch and tag targets are normalized to distinct change types,
-and target substitution fails closed. Repository-scoped push additionally binds
-a private／internal non-fork root, root `network_count`, completely paginated
-fork identities, stable root-source identities, and reviewed network digest.
-Missing, partial, stale, or foreign-root network evidence fails closed.
-Organization Administration write permission has a larger
-blast radius even for this GET-only collector and requires separate short-lived
-credential and egress isolation. Organization-wide push remains follow-on work
-because its repository selector must expand to every root and every fork network;
-one repository snapshot cannot prove that effective scope. The legacy branch
-slices now cover force-push, deletion, administrator-enforcement, and CODEOWNER-review updates through stable
-repository／branch identity, current-state collection, reviewed before state,
-and exact audit/session joins. Other legacy branch settings and ruleset
-create／delete remain follow-on work.
 
 ### PSB-CICD-009 — Signed cache provenance and trust isolation
 

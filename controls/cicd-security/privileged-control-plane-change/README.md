@@ -4,530 +4,409 @@
 
 ### セキュリティ上の問題
 
-workflowを安全にしても、SCM、CI、cloud federation、registry、signing serviceの管理者がprovider画面やAPIからbranch protection、environment、runner登録、OIDC trust、release保護、signing policyを直接変更できれば、review済みpipelineの外側で供給網のtrust boundaryを弱められる。
+GitHubやcloudの管理者権限があるだけで、直ちに製品へ被害が出るわけではない。実害につながるのは、概ね次の条件がつながったときである。
+
+1. 管理者または盗まれた管理者sessionが、branch ruleset、protected Environment、runner group、OIDC trust、
+   artifact registry、signing policyなど、softwareの作成・承認・公開を支える設定を変更できる。
+2. その変更を別人が事前確認する仕組みがない、またはprovider画面やAPIから承認経路を迂回できる。
+3. 変更後の設定によって、未review codeのmerge、権限あるrunnerの利用、広いcloud roleの取得、artifactの
+   差し替え、または本来許可されない署名など、後続の攻撃経路が実際に開く。
+4. Audit logと変更後設定を確認していないため、不正変更を悪用前に発見・復元できない。
+
+例えば、required reviewを外しただけではproduction侵害は確定しない。しかし、そのrepositoryのdefault branchから
+release workflowが起動し、package公開権限を持つなら、攻撃者または不正な管理者が未review codeをmergeして
+不正packageを公開できる可能性が生まれる。OIDC trustのsubjectを広げた場合も、対象workflowがtokenを発行でき、
+cloud roleが重要resourceへの権限を持つ場合に初めてcloud変更へ進める。Runner groupをpublic repositoryへ広げても、
+runnerにinternal networkやcredentialがなければ被害は限定的だが、それらがあればcredential窃取や横展開につながり得る。
+
+逆に、変更権限が少数の記名管理者に限定され、別人がexactな変更内容を事前承認し、変更直後にprovider auditと
+current settingを確認できるなら、一つの盗難sessionや操作ミスだけでtrust boundaryを静かに弱めることは難しくなる。
+本controlは、この条件を満たす変更手順とlive確認を提供する。
 
 ### 誰から、または何から守るか
 
-phished／stolen管理者sessionを使う外部攻撃者、単独で不正変更するinsider、共有owner account、誤ったautomation、provider audit収集の欠落、恒久化したbreak-glass bypassから守る。
+Phishingや端末侵害で管理者sessionを得た外部攻撃者、単独で設定を弱めるinsider、共有管理者account、対象や値を
+取り違えたoperator、承認後に別の設定を適用するautomation、緊急権限を戻し忘れるincident対応、audit確認の欠落から
+守る。変更権限がなく、後続で利用できるauthorityもなく、変更が速やかに検知・復元される場合は、想定する被害経路は
+成立しにくい。
 
 ### 何が対象か
 
-SCMとCIの管理plane、cloud workload-identity trust、artifact registry保護、signing service policy、およびそれらを変更するhuman identity、session、request、approval、execution、provider audit event。
+SCM／CIの管理画面とAPI、branch／tag ruleset、protected Environment、runner access、CI-to-cloud trust、
+artifact registryの保護、signing service policy、およびそれらを変更するhuman identity、session、申請、承認、
+provider audit event、変更後のcurrent setting。
 
 ### 何をするか
 
-各特権変更を、named current human、phishing-resistantで短寿命かつrecently reauthenticatedなsession、exact targetとbefore／after digest、独立承認、実行結果、unique provider eventへ結合する。緊急変更は1時間以内の失効と独立事後reviewを要求する。
+対象をsecurity-impacting changeへ絞り、通常変更では「誰が、何を、どの値からどの値へ、なぜ変更するか」を
+別人が実行前に承認する。記名管理者が変更し、別のreviewerがprovider audit eventとcurrent settingを確認する。
+緊急変更には期限とincident reasonを付け、1時間以内に別人が継続またはrevertを判断する。確認不能や収集失敗は
+`PASS`にしない。
 
 ### 成功状態
 
-全required serviceのfreshで完全なcollector evidenceがあり、通常変更は実行前に別人がexact digestを承認し、provider eventがactor／session／request／target／applied digestと一致する。緊急変更は期限内に別人がacceptまたはrevertし、欠落・stale・malformed・credential-bearing evidenceは`ERROR`になる。
+採用scope内の全対象について、管理者が記名され強い認証を使い、通常変更には独立した事前承認があり、実行後の
+provider記録とcurrent settingが承認内容に一致している。緊急変更は期限内に追認またはrevertされている。
+Harmless drillでこの一連の手順と無承認変更の検知を確認し、未確認は`NOT_CHECKED`、不一致は`FAIL`、取得失敗は
+`ERROR`として記録できる。
 
 ### 対象外・残余リスク
 
-このoffline fixtureはlive provider設定、管理者在籍、hardware authenticator、audit backendの耐改ざん性、provider自身の侵害を証明しない。machine OIDCは`PSB-CICD-006`、runner lifecycleは`PSB-CICD-007`、workflow権限とPR境界は`PSB-CICD-004／005`が所有する。
+このrepositoryのtemplateをcopyしてもprovider設定は変わらず、organization adoptionの証明にはならない。
+GitHubが管理設定の二者承認を強制できない構成では、本controlは無承認の直接変更を必ず事前阻止するものではなく、
+運用上の抑止と事後検知が中心になる。Provider、IdP、approverが同時に侵害された場合、audit log自体の欠落、
+変更内容のbusiness上の正しさ、各settingのsecure baselineは別途確認が必要である。
 
-## Security problem
+## このcontrolの本質
 
-CI/CDの供給網には、repository内のworkflowとは別の管理面があります。攻撃者が
-administrator sessionを得ると、pull requestを通さずにrequired reviewを外す、
-production environmentを開く、malicious runnerを登録する、OIDC subjectを広げる、
-release tagのimmutabilityを解除する、またはsigning authorityを広げることができます。
+本controlが要求するのは、すべてのproviderを一つの判定器へ接続することではない。次の五つが一つの変更について
+確認できることである。
 
-workflow lint、SHA pin、least privilege tokenはこの直接変更を止めません。本controlは、
-「変更ticketがある」だけでなく、誰がどの認証sessionで、どの対象の何byte相当の設定を、
-誰の承認を受け、providerが実際に何へ変更したかを一つのidentity chainとして検証します。
+```text
+記名された変更者
+      +
+対象と変更前後が分かる申請
+      +
+別人による事前承認
+      +
+provider上の実行記録
+      +
+変更後のcurrent setting
+      =
+誰が何を承認どおり変更したかを説明できる
+```
 
-## Threat, target, and boundary
+Hashや自動collectorは、この結合を正確かつ低負担にできる場合の補助である。Provider画面から取得した設定値を
+人間が十分に比較できるなら、SHA-256や共通JSON schemaを導入する必要はない。反対に、対象が多く人手では漏れる場合は、
+read-only APIによる収集を追加できるが、そのcollector自体をcontrol導入の証明にはしない。
 
-想定する攻撃者は、phishingやinfostealerで管理者sessionを盗んだ外部攻撃者、広いowner
-権限を持つinsider、共有accountや長寿命sessionを誤用する運用者です。収集失敗、API
-pagination漏れ、audit event遅延、emergency pathの放置もfailure sourceです。
+本controlは変更内容のsecure baselineを重複して定義しない。例えばworkflow permissionは`PSB-CICD-004`、
+OIDC trustの内容は`PSB-CICD-006`、runnerの安全な状態は`PSB-CICD-007`、GitHub Organizationのcurrent postureは
+`PSB-SOURCE-006`が所有する。本controlは、それらの設定を変更するときの人、承認、実行、確認を所有する。
 
-対象と責務は次のように分離します。
+## 何が、どの条件で被害になるか
 
-- `PSB-CICD-004`: workflow／jobのtoken permissions;
-- `PSB-CICD-005`: untrusted pull requestとprivileged runの分離;
-- `PSB-CICD-006`: pipeline workloadがcloud authorityを得るOIDC claim;
-- `PSB-CICD-007`: runner routing、registration、one-job lifecycleとteardown;
-- `PSB-CICD-008`: human administratorによるprovider control-plane変更のidentity、
-  exact configuration、approval、execution、audit、emergency reviewの連結;
-- `PSB-SOURCE-006`: GitHub Organizationのcurrent access、default、Actions、App、
-  repository coverage、audit／drift healthのcomplete posture。
+| 変更対象 | 被害が成立する主な条件 | 起こり得ること | 条件が揃わない例 |
+|---|---|---|---|
+| Branch／tag ruleset | Reviewやdeletion／non-fast-forward保護が弱まり、変更者がbranchやtagを書き換えられ、後続CIがそれを信頼する | 未review codeのmerge、release tagやsource identityの差し替え | 変更者にwrite権限がなく、releaseがexact commit／artifact digestを別途検証する |
+| Protected Environment | Required reviewerやdeployment branch制限を外し、対象jobがsecretやdeploy権限を持つ | 未承認deployment、Environment secretの利用 | JobがEnvironmentを参照せず、実効deploy権限もない |
+| Runner group | 未信頼workflowがinternal network、host credential、persistent stateへ到達できるrunnerを選べる | Credential窃取、internal serviceへの横展開、後続jobへの永続化 | Runnerがone-jobで破棄され、credentialやinternal routeを持たない |
+| OIDC trust | 広げたissuer／audience／subjectをCIが発行でき、cloud roleが重要操作を許す | Cloud resource変更、artifactやdeployment authorityの取得 | Cloud側conditionが拒否する、またはroleが対象操作を許可しない |
+| Registry protection | Tag immutabilityや削除制限を弱め、変更者が同じ名前へ別artifactをpushでき、consumerが名前だけを信頼する | Release artifactの差し替え、誤ったimageのdeployment | Consumerがverified immutable digestだけを使用する |
+| Signing policy | 新しいprincipalがsigning operationを呼べ、consumerがその署名を信頼する | 未承認artifactへの正規署名 | Principalにsign権限がなく、release authorizationも別途必要 |
+
+「設定が変更された」という事実だけでseverityを決めない。変更者が実際に利用できるauthorityと、後続consumerまでの
+経路を確認する。一方、直接の被害経路がまだ見つからなくても、重要な保護を無承認で変更できる状態は、
+将来の構成変更と組み合わさるため、未管理のまま放置しない。
+
+## Guidance-first implementation
+
+Security効果は、次のlive settingと運用から生まれる。
+
+- Shared accountを使わず、対象serviceの変更権限を少数のnamed humanへ限定する。
+- ProviderまたはIdPでphishing-resistant authenticationを要求する。
+- 通常変更は、変更者とは別の人物がexactなtargetとbefore／afterを実行前に確認する。
+- 変更直後にprovider auditとcurrent settingを、変更者以外が確認する。
+- Audit記録をcontrol-plane administratorだけでは消せない場所へ保管する。
+- Emergency pathへincident reason、期限、独立事後reviewを付ける。
+
+このrepositoryは、copy可能なrunbookとchange record templateを提供する。Templateをcopyしただけでは、MFA、
+権限分離、audit export、承認経路は有効にならない。Organization ownerとPlatform／SREが実際のproviderへ反映する。
+
+## 誰が何をするcontrolか
+
+| 担当 | 作業 |
+|---|---|
+| Product owner／Development team | 変更対象、必要な理由、期待する結果、変更後に確認するbuild／release behaviorを説明する |
+| Repository administrator／Organization owner | Named roleと認証を整備し、承認済み内容をproviderへ適用する |
+| CI platform／Platform／SRE | 対象inventory、session policy、audit export、保管先、時刻同期、収集失敗時の対応を運用する |
+| Security／Independent approver | Exact target、before／after、被害条件、rollbackを事前reviewし、実行後のprovider記録を確認する |
+| Incident response | Emergency changeのscopeと期限を管理し、別人による`accepted`／`reverted`判断を完了させる |
+
+Developerへorganization-wide admin権限、audit collector credential、provider evidence保管の責任を持たせない。
+
+## Prerequisites and trust assumptions
+
+最小構成は次のとおり。
+
+- 対象providerとsecurity-impacting settingのownerが決まっている。
+- Requester／executorとは別に、変更内容を理解できるapproverが1名以上いる。
+- Shared administrator accountを使わず、audit logで個人を識別できる。
+- ProviderまたはIdPでphishing-resistant authenticationを利用できる。
+- Ticket、issue、change-management systemのいずれかに承認と実行結果を残せる。
+- Provider audit logと変更後settingを、変更者以外が閲覧できる。
+- Harmless drillに使用できるnon-production organization、account、repository、branchのいずれかがある。
+
+Reference providerはGitHub.com／GitHub Enterprise Cloudである。最初の導入対象は、専用private sandbox
+repositoryのbranch rulesetとする。GitHub Enterprise Server、GitLab、AWS、Azure、GCP等へ適用するときは、
+同じ手順をそのまま信用せず、providerが提供するstable target、audit event、current-state確認方法、必要権限を
+確認する。
+
+Session最大1時間、実行前15分以内のstep-up、emergency review最大1時間をreference defaultとする。
+Provider／IdPがsession evidenceを提供しない場合は架空の時刻を記録せず、`CPC-002`を`NOT_CHECKED`とする。
 
 ## Insecure example
 
-[`insecure/policy.json`](insecure/policy.json)はpassword-only、12時間session、mutable
-policy、approvalなし、SCMのみのpartial collection、fail-openを許します。
-[`insecure/change-evidence.json`](insecure/change-evidence.json)では、shared service
-accountがwildcard targetを変更し、requestより先に別actor／sessionが実行し、provider
-eventとpost-reviewが欠落しています。
+[`insecure/uncontrolled-change.md`](insecure/uncontrolled-change.md)は、共有Owner accountからbranch rulesetを
+直接弱め、承認、変更前後、audit review、rollbackが残らない例である。危険なのは「Ownerが設定を変更した」という
+一文ではなく、その後に未review codeをmergeでき、権限あるrelease workflowが動く条件までつながる点である。
 
-これは意図的な危険fixtureです。providerへ適用する設定ではありません。
+これは意図的な危険例であり、providerへ適用する設定ではない。
 
-## Secure example
+## Secure reference
 
-[`secure/policy.json`](secure/policy.json)は次を要求します。
+採用先へcopyするfileは二つだけである。
 
-- SCM、CI、cloud identity、registry、signing serviceの全inventory;
-- digest-pinned policyとcollector identity;
-- named current humanとphishing-resistant authentication;
-- serviceごとの明示的administrator role allow-list;
-- sessionは最大1時間、step-up後15分以内の実行;
-- exact service、change type、target、before／after SHA-256、reason、ticket;
-- ordinary changeのindependent pre-approval;
-- provider execution／audit eventのrequestとapplied digestへの結合;
-- emergency changeの1時間以内のexpiryとindependent post-review;
-- collection failure、stale、malformed、secret fieldの`ERROR`。
+- [`secure/privileged-change-runbook.md`](secure/privileged-change-runbook.md): 通常／緊急変更とfailure recoveryの手順。
+- [`secure/change-record-template.md`](secure/change-record-template.md): Ticketへ貼り付ける申請、承認、実行、確認記録。
 
-[`secure/change-evidence.json`](secure/change-evidence.json)は通常のbranch rule変更と、
-credential incident中の緊急OIDC trust縮小を別のpathとして示します。fixtureはreal user、
-token、repository ID、production dataを含みません。
-
-## Integration
-
-各provider adapterはread-only APIまたは外部audit exportを使い、次の正規化recordを
-secret-freeで作成します。
-
-1. provider側のcurrent organization membershipとauthentication assuranceを取得する。
-2. session IDとissuance／expiry／reauthentication timeをcontent-freeに記録する。
-3. provider設定のcanonical representationから変更前後SHA-256を計算する。
-4. requestとapprovalをexact target／after digestへ結合する。
-5. providerのunique audit eventを取得し、actor、session、target、request、applied digestを
-   照合する。
-6. required serviceが一つでも未収集なら`complete: false`として終了する。
-7. organization evidence storeへ保存する前にcredential fieldを除去する。
-
-Provider固有adapterはこのcontrolに追加できますが、write APIをverification pathへ混ぜず、
-version／integrity、pagination、rate limit、event lag、error stateを明示する必要があります。
-
-### GitHub read-only normalization adapter
-
-[`scripts/normalize_github.py`](scripts/normalize_github.py)は、GitHub organization audit
-export、organization側のidentity／session export、review済みchange registerをjoinし、
-本controlのcanonical change evidenceへ変換します。GitHub公式audit eventで確認できる
-`_document_id`、stable `actor_id`、`request_id`、repository／environment／runner-group target、
-`old_value`／`new_value`を利用します。runner-group変更はさらにread-only current-state
-snapshotをstable group IDでjoinします。provider exportに含まれる`hashed_token`、IP、token
-metadata等は出力しません。
+既存fileを上書きせず、repository-localな運用資料としてcopyする。
 
 ```bash
-make normalize-github-control-plane-evidence \
-  GITHUB_AUDIT_EVENTS=organization-github-audit.json \
-  GITHUB_ADMIN_SESSIONS=organization-admin-sessions.json \
-  GITHUB_CHANGE_REGISTER=organization-reviewed-changes.json \
-  GITHUB_RUNNER_GROUPS=organization-runner-group-state.json \
-  CONTROL_PLANE_EVIDENCE_OUTPUT=generated/assessments/github-control-plane-evidence.json
+mkdir -p docs/security/privileged-changes
+test ! -e docs/security/privileged-changes/runbook.md
+test ! -e docs/security/privileged-changes/change-record-template.md
+cp controls/cicd-security/privileged-control-plane-change/secure/privileged-change-runbook.md \
+  docs/security/privileged-changes/runbook.md
+cp controls/cicd-security/privileged-control-plane-change/secure/change-record-template.md \
+  docs/security/privileged-changes/change-record-template.md
 ```
 
-GitHub audit eventだけからphishing-resistant authentication、current membership、approvalを
-推論しません。exact stable actor／requestで外部identity/session evidenceとchange registerへ
-joinできないeventはnormalization `ERROR`です。またGitHub fragmentの`covered_services`は
-`ci`だけであり、単独では5-service completenessをPASSにしません。cloud identity、registry、
-signing service等のadapter outputとcross-service collectorでcomposeしてから本体verifierへ
-渡します。
+Copy後は、対象provider、担当group、ticket system、audit保存先、sandbox targetをreviewしてからmergeする。
+このcopyはglobal Git、shell、IDE、OS、provider settingを変更しない。Actual activationは次の手順で行う。
 
-### GitHub live audit collector
+## 最短の導入手順
 
-[`scripts/collect_github_audit.py`](scripts/collect_github_audit.py)は、GitHub organization
-audit REST APIをread-onlyで取得します。query windowは最大24時間、`include=all`、昇順、
-100件／pageに固定し、GitHubが返す`after` cursorを同じHTTPS host／organization／queryへ
-完全paginationします。途中の403／429、timeout、malformed response、cursor loop、100 page／
-10,000 event超過では出力を公開しません。
+### 1. 対象を小さく決める
 
-```bash
-# GITHUB_TOKEN is already injected by the approved secret boundary.
-make collect-github-control-plane-audit \
-  GITHUB_ORGANIZATION=example-org \
-  AUDIT_WINDOW_START=2026-08-12T03:00:00Z \
-  AUDIT_WINDOW_END=2026-08-12T04:00:00Z \
-  GITHUB_AUDIT_OUTPUT=generated/assessments/github-audit.json
-```
+最初はGitHubの専用private sandbox repositoryと、その`control-test` branchを対象にする。Repository
+administratorが`Settings > Rules > Rulesets`で対象rulesetを確認し、stableなrepository／rulesetのURLまたはID、
+current enforcement、target branch、required review数をchange recordへ記録する。
 
-Tokenは環境からmemory内だけで利用し、command lineや出力へ書きません。collectorは
-`environment.update_protection_rule`、`org.runner_group_updated`、`repository_ruleset.update`、
-`protected_branch.update_allow_force_pushes_enforcement_level`、
-`protected_branch.update_allow_deletions_enforcement_level`、
-`protected_branch.update_admin_enforced`、`protected_branch.update_require_code_owner_review`を選択します。最初のeventはexact
-`old_value`／`new_value`を持ちます。後者は完全な設定差分を持たないため、次のcurrent-state
-collectorなしでは`CPC-003／005` evidenceへ昇格しません。ruleset eventはその次のhistory
-collectorでexact before／after versionへ結合します。
+Referenceの初期状態は、rulesetが`Active`、targetが`control-test`、pull request必須、required approving
+review数が`1`である。Rulesetがまだない場合は、`before: absent`、`after: この初期状態`として最初の通常変更を
+申請・承認し、作成eventとcurrent settingまで確認する。
 
-### GitHub runner-group current-state collector
+Production repository、全Organization、AWS IAM、registry、signing serviceを最初から一括導入しない。
+未導入scopeは`NOT_CHECKED`として残す。
 
-[`scripts/collect_github_runner_group.py`](scripts/collect_github_runner_group.py)は、stable
-runner-group IDを指定してorganizationのread-only detail APIを取得します。visibilityが
-`selected`ならrepository access APIも全page取得し、URL等の不要なprovider fieldを落として、
-name、visibility、public repository許可、workflow制限、selected workflow、network設定、
-stable repository IDをcanonical snapshotへ変換します。
+### 2. 人と権限を分ける
 
-```bash
-make collect-github-runner-group-state \
-  GITHUB_ORGANIZATION=example-org \
-  GITHUB_RUNNER_GROUP_ID=42 \
-  GITHUB_RUNNER_GROUP_OUTPUT=generated/assessments/github-runner-group-42.json
-```
+Organization ownerは次をliveで確認する。
 
-normalizerはaudit eventから5分以内のsnapshotだけを受け入れ、stable group ID、eventに含まれる
-設定field、review済み`after_digest`を照合します。snapshot時刻までを含む完全なaudit windowに
-同じgroupの後続更新があれば曖昧として`ERROR`にします。これにより現在の適用後設定は独立に
-確認できますが、GitHub APIは過去状態を返さないため、`before_digest`はchange register側の
-review済みassertionです。より強い保証には変更前snapshotの独立保存が必要です。
+1. Shared administrator accountがない。
+2. Executorとapproverが別のnamed humanである。
+3. Executorがcurrent memberで、対象serviceに必要なroleだけを持つ。Approverはstable identityと変更を判断できる知識を持つが、providerの管理権限は必須にしない。
+4. Phishing-resistant authenticationが有効である。
+5. Audit reviewerは、変更者に依存せずaudit logとcurrent settingを確認できる。
 
-### GitHub repository／organization ruleset SCM adapter
+GitHubのorganization全体のOwner数、2FA／SSO、membership、audit運用は
+[`PSB-SOURCE-006`](../../source-protection/github-organization-governance/README.md)と組み合わせる。
 
-[`scripts/collect_github_ruleset.py`](scripts/collect_github_ruleset.py)はrepositoryのstable ID／
-node ID、repository-scoped branch／tag rulesetのstable ID／node ID、current state、全version history、
-指定したbefore／after version stateをread-only REST APIで収集します。`includes_parents=false`を
-固定し、organization rulesetをrepository rulesetと誤結合しません。
+### 3. 通常変更経路を有効にする
 
-```bash
-make collect-github-ruleset-state \
-  GITHUB_ORGANIZATION=example-org \
-  GITHUB_REPOSITORY=product-api \
-  GITHUB_RULESET_ID=73 \
-  GITHUB_RULESET_BEFORE_VERSION_ID=4 \
-  GITHUB_RULESET_AFTER_VERSION_ID=5 \
-  GITHUB_RULESET_OUTPUT=generated/assessments/github-ruleset-73.json
-```
+[`secure/change-record-template.md`](secure/change-record-template.md)をapproved ticket systemへ登録する。
+通常変更は次の順序を必須にする。
 
-organization rulesetは同じcollectorをorganization endpoint modeで実行します。stable organization
-ID／node ID、repository selectorを含むconditions、branch／tag selector、全version historyを一組として
-取得するため、名前が同じ別organizationやrepository-scoped rulesetへ証跡を流用できません。
+1. Requesterがexact target、before、after、理由、被害条件、rollbackを記入する。
+2. Independent approverがtargetとafterを確認し、実行前に承認時刻を記録する。
+3. Executorが承認済みの値だけをproviderへ適用する。
+4. Executor以外のreviewerがprovider audit eventとcurrent settingを確認する。
+5. 一致すれば`PASS`、不一致なら`FAIL`としてticketを閉じずに対応する。
 
-```bash
-make collect-github-organization-ruleset-state \
-  GITHUB_ORGANIZATION=example-org \
-  GITHUB_RULESET_ID=74 \
-  GITHUB_RULESET_BEFORE_VERSION_ID=8 \
-  GITHUB_RULESET_AFTER_VERSION_ID=9 \
-  GITHUB_RULESET_OUTPUT=generated/assessments/github-org-ruleset-74.json
-```
+GitHubには、すべてのadministrative setting changeへ汎用の二者承認を強制できない構成がある。その場合、
+このreferenceは直接変更の完全なpreventive gateではない。Named roleの限定、事前承認、audit reviewを組み合わせ、
+無承認の直接変更を検知する。事前阻止が必須なら、provider-native approvalまたは別途reviewしたchange gatewayが必要である。
 
-[`scripts/normalize_github_ruleset.py`](scripts/normalize_github_ruleset.py)は、完全なorganization
-audit exportの`repository_ruleset.update`、外部human session、review済みchange register、
-上記snapshotを`scm` fragmentへ変換します。
+### 4. Auditを別境界へ残す
 
-```bash
-make normalize-github-ruleset-control-plane-evidence \
-  GITHUB_AUDIT_EVENTS=organization-github-audit.json \
-  GITHUB_ADMIN_SESSIONS=organization-admin-sessions.json \
-  GITHUB_CHANGE_REGISTER=organization-reviewed-scm-changes.json \
-  GITHUB_RULESET_SNAPSHOT=github-ruleset-73.json \
-  CONTROL_PLANE_EVIDENCE_OUTPUT=generated/assessments/github-scm-evidence.json
-```
+GitHub organization audit logで、対象時刻、actor、action、repository／rulesetを確認する。可能なら、
+Organization ownerだけでは上書きできないlogging／SIEM accountへexportする。
 
-event actorとhistoryのafter-version actor／時刻、stable repositoryまたはorganization／ruleset identity、auditの
-old／new enforcementとname、before／after state digestをすべて一致させます。historyの最新versionが
-review対象after versionより進んでいれば現在状態との対応が曖昧なので`ERROR`です。audit logが
-持つadded／deleted／updated fieldだけを完全stateと誤認しません。
+Audit eventが設定全体を示さない場合は、`Settings > Rules > Rulesets`またはapproved read-only APIから変更後の
+current settingを取得する。Audit eventだけからMFA強度、current membership、承認を推測しない。
 
-`target=branch`は`branch-protection`、`target=tag`は`tag-protection`として別の変更種別に正規化します。
-tag rulesetではrelease tagの削除、non-fast-forward更新、署名要求を弱める変更が供給網のrelease
-identityを差し替えるため、branch設定と同じ厳密なreview／history結合を要求します。beforeとafterで
-targetが変わる証跡は`ERROR`です。
+### 5. Harmless drillを実行する
 
-repository-scoped `target=push`はroot repositoryのfork network全体へ波及するため、ruleset snapshotに
-加えて専用のfork-network snapshotを要求します。rootがforkでなくprivate／internalであること、rootの
-stable ID／node ID、`network_count`、最大100件／pageで完全取得した各forkのstable IDとroot sourceを
-照合し、review済み`network_digest`へ結合します。
+[Verification](#verification)のpositive／negative drillをsandboxで実行する。Production settingを弱めて
+テストしない。結果と不足項目をchange recordへ記録し、review cadenceとfailure ownerを決める。
 
-```bash
-make collect-github-fork-network-state \
-  GITHUB_ORGANIZATION=example-org \
-  GITHUB_REPOSITORY=product-api \
-  GITHUB_FORK_NETWORK_OUTPUT=generated/assessments/github-product-api-network.json
+## Ordinary change procedure
 
-make normalize-github-ruleset-control-plane-evidence \
-  GITHUB_AUDIT_EVENTS=organization-github-audit.json \
-  GITHUB_ADMIN_SESSIONS=organization-admin-sessions.json \
-  GITHUB_CHANGE_REGISTER=organization-reviewed-push-ruleset.json \
-  GITHUB_RULESET_SNAPSHOT=github-push-ruleset-76.json \
-  GITHUB_FORK_NETWORK_SNAPSHOT=github-product-api-network.json \
-  CONTROL_PLANE_EVIDENCE_OUTPUT=generated/assessments/github-push-scm-evidence.json
-```
+1. 対象serviceとsettingが採用scopeに含まれるか確認する。
+2. Provider画面またはread-only APIからbefore stateを取得する。
+3. After stateを具体的な値で記述する。Export可能なら同じ形式を添付する。
+4. 被害が成立する条件、想定impact、rollback、利用者への影響を記録する。
+5. Requester／executorではないapproverがexact after stateを承認する。
+6. Executorが再認証し、承認から時間を空けずに変更する。
+7. Reviewerがprovider audit eventのactor、time、action、targetを確認する。
+8. Reviewerがcurrent settingを取得し、approved after stateと比較する。
+9. `PASS`、`FAIL`、`NOT_CHECKED`、`ERROR`のいずれかをcheckごとに記録する。
 
-fork名や一覧はnormalized outputへ残さず、root-bound network digestだけをtarget identityへ含めます。
-ruleset変更後5分以内、かつ完全なaudit window内のnetwork snapshotだけを受け入れます。
+Hashは必須ではない。大きなJSON policyなど、人間が比較すると取り違えやすい場合だけ、approved attachmentと
+current exportを同じ規則でcanonicalizeしSHA-256を併記する。Hash文字列だけを残して内容をreviewしない運用は不可とする。
 
-GitHub公式audit event catalogはorganization ruleset専用の別actionを記載せず、
-`repository_ruleset.update`に`ruleset_source_type`を載せています。本実装は
-`ruleset_source_type=Organization`、stable `org_id`、repository field不在を組み合わせて
-organization ruleset updateと判定します。これは公式fieldから導く実装上の推論であり、導入時は
-実tenantのsanitized event shapeを確認してください。形が異なる場合は成功扱いにせずcollectorを
-更新します。
+## Emergency change procedure
 
-GitHubはruleset history取得にrepositoryまたはorganization Administration write permissionを要求し、
-bypass actorもwrite accessがなければ省略します。collectorはGETしか実行しませんがcredential自体は
-write可能です。専用GitHub App installation、対象repository／organizationの限定、短寿命token、
-collectorからwrite endpointへのegress拒否、利用監視を組み合わせてください。この残余権限を
-「read-only token」と表現しません。organization credentialは多数repositoryへ影響できるため、
-repository modeよりblast radiusが大きいものとして別管理します。
+Production incidentのcontainmentで事前承認を待てない場合だけ使用する。
 
-本adapterはrepository／organization-scoped branch／tagとrepository-scoped push ruleset updateの証跡を
-所有します。ruleset内容の安全性要件、workflow token、untrusted PR executionは
-`PSB-CICD-004／005`、create／delete、organization-wide push、repository transfer／rename／archiveは
-将来adapterの対象です。
-organization-wide pushはrepository selectorが示す全rootと各fork networkの完全列挙が必要なので、単一
-repositoryのnetwork evidenceを流用せず`ERROR`にします。
+1. Incident ID、緊急理由、target、予定するafter state、executor、開始時刻、expiryを変更前に記録する。
+2. Expiryは実行から最大1時間とする。
+3. Named administratorが必要最小限の変更を行う。
+4. Provider audit eventとcurrent settingを直ちに保存する。
+5. Executorとは別のreviewerがexpiryまでに内容を確認する。
+6. 必要かつ妥当なら`accepted`、不要または不適切なら`reverted`を記録する。
+7. `accepted`した一時変更を恒久化する場合は、通常変更または
+   [`PSB-GOV-002`](../../governance-operations/time-bound-security-exceptions/README.md)へ移す。
 
-### GitHub legacy branch-protection force-push, deletion, administrator-enforcement, and CODEOWNER-review adapter
-
-[`scripts/collect_github_branch_protection.py`](scripts/collect_github_branch_protection.py)は、
-stable repository ID／node IDと、wildcardを含まないexact branchのlegacy branch-protection
-current stateをread-only REST APIから取得します。このsliceは
-`allow_force_pushes.enabled`、`allow_deletions.enabled`、`enforce_admins.enabled`、
-`required_pull_request_reviews.require_code_owner_reviews`だけをsnapshotへ残し、各変更では対応する
-一つのsettingだけをcanonical digestへ含めます。他のbranch-protection fieldを検証したとは主張しません。
-
-```bash
-make collect-github-branch-protection-state \
-  GITHUB_ORGANIZATION=example-org \
-  GITHUB_REPOSITORY=product-api \
-  GITHUB_BRANCH=main \
-  GITHUB_BRANCH_PROTECTION_OUTPUT=generated/assessments/github-main-protection.json
-```
-
-[`scripts/normalize_github_branch_protection.py`](scripts/normalize_github_branch_protection.py)は、
-`protected_branch.update_allow_force_pushes_enforcement_level`または
-`protected_branch.update_allow_deletions_enforcement_level`、
-`protected_branch.update_admin_enforced`、
-`protected_branch.update_require_code_owner_review`のunique audit event、外部human session、review済みchange
-register、上記current-state snapshotを`scm` fragmentへ結合します。adapter contractはforce-pushと
-deletion enforcement levelの`0`をdisabled、`1／2`をenabledとして扱い、`admin_enforced`と
-`require_code_owner_review`にはstrict booleanを要求します。数値とbooleanの型置換を拒否し、
-導入時はsanitized tenant eventでprovider表現を確認します。公開audit-event catalogはlevel fieldの
-enum値を定義していないため、確認できないtenantはこのadapterでPASSにしません。
-
-```bash
-make normalize-github-branch-protection-evidence \
-  GITHUB_AUDIT_EVENTS=organization-github-audit.json \
-  GITHUB_ADMIN_SESSIONS=organization-admin-sessions.json \
-  GITHUB_CHANGE_REGISTER=organization-reviewed-legacy-branch-change.json \
-  GITHUB_BRANCH_PROTECTION_SNAPSHOT=github-main-protection.json \
-  CONTROL_PLANE_EVIDENCE_OUTPUT=generated/assessments/github-legacy-branch-evidence.json
-```
-
-snapshotはeventから5分以内かつsnapshot後まで完全なaudit windowに含まれなければなりません。
-同じrepository／branch／settingへ後続変更があればcurrent stateとの対応が曖昧なので`ERROR`です。
-GitHub RESTはlegacy branch-protection historyを返さないため、`before_digest`はreview済みregisterの
-setting固有のbefore booleanから再計算します。高保証環境では変更直前snapshotを独立保存してください。
-
-### AWS IAM trust-policy normalization adapter
-
-[`scripts/normalize_aws.py`](scripts/normalize_aws.py)は、CI workloadが引き受けるAWS IAM
-roleのtrust policy変更だけを`cloud-identity` fragmentへ変換します。次の4入力を結合します。
-
-1. completeなorganization CloudTrail management-event exportの成功した
-   `UpdateAssumeRolePolicy` event;
-2. eventから5分以内にread-only `iam:GetRole`で取得したstable `RoleId`と現在のtrust policy;
-3. assumed-role principal、issuer、`sourceIdentity`に結合されたorganization identity/session;
-4. CloudTrail `eventID`／`requestID`、stable role ID、before／after digestを固定したreview済み
-   change register。
-
-```bash
-make normalize-aws-control-plane-evidence \
-  AWS_CLOUDTRAIL_EVENTS=organization-cloudtrail-events.json \
-  AWS_ADMIN_SESSIONS=organization-aws-admin-sessions.json \
-  AWS_CHANGE_REGISTER=organization-reviewed-aws-changes.json \
-  AWS_IAM_ROLES=organization-iam-role-snapshot.json \
-  CONTROL_PLANE_EVIDENCE_OUTPUT=generated/assessments/aws-control-plane-evidence.json
-```
-
-CloudTrail windowはsnapshot後まで完全である必要があります。同じroleへsnapshot前の後続
-`UpdateAssumeRolePolicy`があれば、どのeventが現在状態を作ったか曖昧なので`ERROR`です。
-CloudTrail request policy、`GetRole` current policy、review済み`after_digest`は同一でなければ
-なりません。`accessKeyId`、IP、user agent、policy本文はnormalized outputへ残しません。
-
-CloudTrailだけからcurrent membershipやphishing-resistant MFAを推論せず、organization
-session exportとのexact joinを要求します。AWS fragmentのcoverageは`cloud-identity`だけなので、
-GitHubと同様、単独ではcross-service completenessをPASSにしません。
-
-### AWS ECR repository-policy normalization adapter
-
-[`scripts/normalize_aws_ecr.py`](scripts/normalize_aws_ecr.py)は、AWS ECR
-repository access policyの直接変更だけを`artifact-registry` fragmentへ変換します。
-CloudTrailの成功した`SetRepositoryPolicy`、`DescribeRepositories`のresource identity、
-`GetRepositoryPolicy`の現在policy、外部human session、review済みchange registerを結合します。
-
-```bash
-make normalize-aws-ecr-control-plane-evidence \
-  AWS_ECR_CLOUDTRAIL_EVENTS=organization-ecr-cloudtrail-events.json \
-  AWS_ECR_ADMIN_SESSIONS=organization-ecr-admin-sessions.json \
-  AWS_ECR_CHANGE_REGISTER=organization-reviewed-ecr-changes.json \
-  AWS_ECR_REPOSITORIES=organization-ecr-repository-snapshot.json \
-  CONTROL_PLANE_EVIDENCE_OUTPUT=generated/assessments/ecr-control-plane-evidence.json
-```
-
-ECRにはIAM `RoleId`相当のimmutable repository IDがないため、account、region、repository
-ARN、name、作成時刻を一つのrepository generationとして固定します。同名repositoryを削除・
-再作成した場合、過去のapprovalを新しいresourceへ再利用できません。CloudTrail request policy、
-`GetRepositoryPolicy` current policy、review済み`after_digest`を一致させ、snapshotまでの後続
-policy updateがあれば曖昧として`ERROR`にします。
-
-`force=true`は将来のpolicy更新を妨げる設定を強制できるため、通常変更として受け入れません。
-利用する場合はexact force decision、break-glass authority、期限、post-reviewを所有する別の
-emergency adapterが必要です。tag immutability、push／delete operation、lifecycle等は
-`PSB-CONTAINER-002`が所有し、このadapterへ重複実装しません。
-
-### AWS KMS signing-key policy normalization adapter
-
-[`scripts/normalize_aws_kms.py`](scripts/normalize_aws_kms.py)は、AWS KMSのcustomer-managed
-署名鍵に対する`default` key policyの直接変更だけを`signing-service` fragmentへ変換します。
-CloudTrailの成功した`PutKeyPolicy`、`DescribeKey`のstable Key ID／ARNと`SIGN_VERIFY`用途、
-`GetKeyPolicy`の現在policy、外部human session、review済みchange registerを結合します。
-
-```bash
-make normalize-aws-kms-control-plane-evidence \
-  AWS_KMS_CLOUDTRAIL_EVENTS=organization-kms-cloudtrail-events.json \
-  AWS_KMS_ADMIN_SESSIONS=organization-kms-admin-sessions.json \
-  AWS_KMS_CHANGE_REGISTER=organization-reviewed-kms-changes.json \
-  AWS_KMS_KEYS=organization-kms-key-snapshot.json \
-  CONTROL_PLANE_EVIDENCE_OUTPUT=generated/assessments/kms-control-plane-evidence.json
-```
-
-eventから5分以内のcurrent snapshotを要求し、snapshot後までの完全なCloudTrail windowに
-同じKey ID／ARNの後続`PutKeyPolicy`があれば曖昧として`ERROR`にします。request policy、
-current policy、review済み`after_digest`が一致し、keyがenabled、customer-managed、
-`SIGN_VERIFY`でなければ証跡を作りません。KMS APIは結果整合性を持つため、write直後の単発readを
-無条件に信頼せず、collectorは収束を確認してから時刻付きsnapshotを発行する必要があります。
-
-`BypassPolicyLockoutSafetyCheck=true`は鍵を管理不能にする危険があるため通常pathでは拒否します。
-必要ならexact bypass decision、break-glass authority、期限、post-reviewを結合する別のemergency
-adapterを設計します。署名要求・署名生成・鍵version・receiptは`PSB-REL-005`、artifact側の
-署名検証は`PSB-REL-001`が所有し、本adapterはhumanによるkey-policy管理変更だけを扱います。
+Expiryまでにreviewできなければ`FAIL`である。Incidentが継続中であることを理由に、同じemergency recordを
+無期限延長しない。
 
 ## Verification
+
+本controlのverificationはmanual／live external evidenceである。Repository内のfixtureやREADME文字列から
+organization adoptionを判定しない。
+
+### Harmless positive drill
+
+専用private sandbox repositoryと`control-test` branchで実施する。
+
+1. Current rulesetのrequired approving review数を記録する。
+2. 例えば`1`から`2`へ強化する変更を、通常変更templateで申請する。
+3. Executorとは別の人物がexact targetと`after: 2`を承認する。
+4. ExecutorがGitHubの`Settings > Rules > Rulesets`で変更する。
+5. Reviewerがorganization audit logのactor、action（referenceでは`repository_ruleset.update`）、time、targetを確認する。
+6. Reviewerがrulesetを再表示し、required approving review数が`2`であることを確認する。
+7. `CPC-001..007`を評価し、current evidenceに基づく`PASS`またはownerが理由をreviewした`N/A`だけを完了扱いにする。
+8. 元へ戻す必要があれば、`2`から`1`への変更を別の通常変更として承認・実行する。
+
+### Harmless negative drill
+
+Production protectionを弱めず、次の二つを確認する。
+
+1. **事前承認の停止確認:** Sandbox変更を申請するがapprovalを空欄にする。Executorがprovider変更を開始せず、
+   `CPC-004: FAIL`として返すことを確認する。
+2. **直接変更の検知確認:** Sandbox rulesetを、例えばreview数`1`から`2`へ強化する方向でticketなしに変更する。
+   次回audit reviewが対応するapproved requestを見つけられず、`CPC-003／004: FAIL`としてincidentを起票することを
+   確認する。検知後のrevertも新しい承認済み変更として行う。
+
+Provider-native gateがない場合、二つ目のdrillは「変更前に止める」ことを証明しない。Audit review cadenceの範囲で
+直接変更を発見できることだけを証明する。
+
+### Result semantics
+
+| Result | 使用条件 |
+|---|---|
+| `PASS` | 対象checkについてcurrentなauthoritative evidenceがあり、期待状態と一致する |
+| `FAIL` | Evidenceを確認でき、self-approval、無申請変更、target／value不一致、期限超過等がある |
+| `NOT_CHECKED` | Provider機能、権限、担当者、対象inventory、live evidenceのいずれかが未確認 |
+| `ERROR` | API／画面取得失敗、audit欠落、partial export、時刻不整合、読めない記録等で安全に判定できない |
+| `N/A` | 採用scopeに存在しない対象で、ownerが理由とscopeをreviewした |
+
+一つのGitHub ruleset drillが通っても、Organization全体、AWS、registry、signing serviceを`PASS`にしない。
+
+### Required evidence
+
+Completed recordはrepositoryへcommitせず、approved ticket／evidence systemへ保存する。最低限次を含める。
+
+- Providerとstable target
+- 取得元と取得時刻
+- Requester、executor、approver、reviewerのstable identity
+- Before／afterの人が読める値
+- Approvalとexecutionの時刻
+- Provider audit event IDまたは直接参照
+- 変更後current setting
+- Collection scopeと欠落の有無
+- Resultとfailure owner
+
+Token、cookie、authorization header、private key、secret value、不要なIP／個人情報を保存しない。
+
+### Canonical command
+
+Repository rootで実行する。
 
 ```bash
 make verify-control CONTROL=PSB-CICD-008
 ```
 
-直接実行する場合:
-
-```bash
-python3 controls/cicd-security/privileged-control-plane-change/scripts/verify.py \
-  --policy controls/cicd-security/privileged-control-plane-change/secure/policy.json \
-  --change-evidence controls/cicd-security/privileged-control-plane-change/secure/change-evidence.json \
-  --evaluation-time 2026-08-12T04:10:00Z
-```
-
-Verifierは`PASS`を0、semantic findingを1、評価不能を2で返します。negative testsは
-shared identity、weak／broad session、wildcard、request substitution、approval欠落、
-audit mismatch、unreviewed emergency、stale、malformed、unavailable、secret-bearing evidenceを
-検証します。GitHub adapterについてもsession join欠落、old／new値改ざん、partial-service
-bundle、sensitive provider field除去を検証します。
-runner-group adapterはrepository pagination、stable ID mismatch、snapshot欠落、5分超過、
-field改ざん、後続updateによる曖昧性もfail closedで検証します。
-AWS adapterはidentity substitution、stable RoleId mismatch、trust-policy改ざん、snapshot遅延、
-後続update、partial collection、provider error、secret-bearing provider fieldsを検証します。
-ECR adapterはidentity substitution、同名repository再作成、policy改ざん、`force=true`、
-snapshot遅延、後続update、partial collection、provider errorをfail closedで検証します。
-GitHub SCM adapterはrepository／organization／ruleset／history actor差し替え、organization eventへの
-repository field混入、digest改ざん、partial audit、stale snapshot、後続version、current/history不一致、
-credential field残留をfail closedで検証します。
-legacy branch adapterはrepository／branch／session差し替え、current force-push／deletion／admin-enforcement／CODEOWNER-review
-stateとaudit fieldの不一致、review済みdigest改ざん、5分超過、後続update、不完全またはcredential-bearing inputを
-fail closedで検証します。
-
-## Expected output
-
-安全fixture:
+期待結果は`NOT_CHECKED`とexit `2`である。非zero exitは自動検証済みとして先へ進ませないためのもので、
+repositoryの文書だけではlive providerとorganization evidenceを確認できないことを示す。
 
 ```text
-PASS PSB-CICD-008 privileged control-plane changes are identity and evidence bound
+NOT_CHECKED PSB-CICD-008: manual verification; follow controls/cicd-security/privileged-control-plane-change/README.md#verification
 ```
 
-危険fixtureは`FAIL CPC-* ...`を返します。collector unavailable、stale、JSON parse failure、
-credential fieldは`ERROR PSB-CICD-008 ...`になり、credential valueは出力しません。
+## Failure recovery
+
+- Approval前に情報が不足した場合は変更を開始せず、`NOT_CHECKED`としてrequesterへ戻す。
+- Audit eventまたはcurrent settingを取得できない場合は`ERROR`とし、last-known-goodをcurrent evidenceとして使わない。
+- Approved afterとcurrent settingが違う場合は`FAIL`とし、追加変更を止め、影響を確認する。
+- 不正または誤った変更を戻す場合も、緊急経路または新しい通常変更としてactor、target、resultを記録する。
+- Evidenceへcredentialが混入した場合は共有を止め、保存先から隔離し、実credentialなら
+  [`PSB-GOV-004`](../../governance-operations/credential-exposure-containment/README.md)に従って失効する。
+- Direct changeを検知した場合は、変更者が正規管理者でも「問題なし」とせず、被害条件、後続run、artifact、
+  cloud operationを確認する。
+
+## Rollback
+
+Repository-localな導入を外す場合は、copyしたrunbookとtemplateへの参照だけを削除する。Global Git、shell、IDE、
+provider settingを自動変更しない。
+
+Hosted security settingを以前の値へ戻す操作は、それ自体がprivileged changeである。安全設定を無承認で弱める
+rollback scriptは提供しない。通常変更またはemergency procedureを通し、変更後stateとauditを再確認する。
 
 ## Operational notes and cost
 
-- Providerごとにidentity、membership、audit、current configurationのread-only collectorが必要です。
-- GitHub REST audit logは最大100件／pageです。collectorはAPI version、query window、page／
-  event count、pagination完了を記録します。GitHub event retentionを超える欠損は復元できないため、
-  schedule、checkpoint、外部保存と監視は組織側で必要です。
-- provider eventの遅延を考慮しつつ、本例では15分以内のfreshnessを要求します。
-- canonicalizationが変わるとdigestが変わるため、adapter versionもcollector identityへ固定します。
-- Runner-group snapshotは変更eventから5分以内に取り、snapshot後までのaudit windowを再収集します。
-  Audit logとstate APIはtransactionではないため、同じgroupの後続変更があれば証跡を作り直します。
-- Ruleset snapshotも5分以内に取得し、snapshot後までaudit windowを再収集します。historyの全pageを
-  取得し、最新versionが変わった場合は新しいbefore／after pairで証跡を作り直します。
-- Legacy branch-protection snapshotも5分以内に取得し、snapshot後までaudit windowを再収集します。
-  `allow_force_pushes`、`allow_deletions`、`enforce_admins`、`require_code_owner_reviews`以外のlegacy setting変更は
-  本sliceのPASSへ含めず、別adapterとして追加します。required pull-request review設定自体が欠落する
-  branchはCODEOWNER review無効と推測せず、snapshot収集をfail closedにします。
-- AWS IAM snapshotも変更eventから5分以内に取り、snapshot後までのCloudTrail windowを確定します。
-  CloudTrail Event Historyだけに依存せず、organization trailの完全性、retention、独立保存を監視します。
-- ECR snapshotも同じ5分境界で収集し、repository delete／createとpolicy updateを含むorganization
-  trailを保持します。repository ARNだけでは同名再作成を区別できないため、作成時刻を失わないでください。
-- KMS snapshotも5分以内に`DescribeKey`と`GetKeyPolicy`から作成し、snapshot後までの
-  `PutKeyPolicy` management eventを保持します。CloudTrail trailからKMS eventを除外しないでください。
-- 独立承認は日常変更の摩擦になります。対象をtrust-boundary変更へ限定し、read-only操作へ
-  適用しないことでHITL頻度を抑えます。
-- emergency pathはapprovalを省略できますが、失効と事後reviewは省略できません。
-- Audit backendはcontrol-planeとは別のwrite boundaryとretentionを持たせます。
+- Developerの日常作業は、変更理由と期待結果の記載、変更後のbuild／release確認に限る。
+- Organization owner、Platform／SRE、Securityには、approver availability、audit review、evidence retentionの
+  運用負担が生じる。
+- Provider-native approvalがない場合、検知までの時間はaudit review cadenceに依存する。高impact scopeでは
+  alertまたは短いreview cadenceを用意する。
+- 少人数teamでexecutorとapproverを分けられない場合、controlを`PASS`にせず、対象を限定し、期限付き例外と
+  強いaudit／rollbackを`PSB-GOV-002`で管理する。
+- Hash、collector、SIEM連携は対象数と取り違えriskが人手確認を超えたときに追加する。最初から必須にしない。
 
 ## Limitations and residual risk
 
-- Normalized fixtureが通っても、実環境でcollectorが配備されている証拠にはなりません。
-- Providerが侵害されればmembership、authentication、configuration、eventを同時に偽造する
-  可能性があり、independent export、provider assurance、incident investigationが必要です。
-- 本controlは変更内容のbusiness correctnessを証明しません。ownerとsecurity reviewerが
-  exact diffの妥当性を判断します。
-- Configuration canonicalization、eventual consistency、SCIM／IdP latencyはprovider adapterで
-  個別に検証します。
-- Runner-group current-state snapshotは適用後digestを確認しますが、変更前のprovider状態を
-  復元しません。高保証環境ではwriteの直前にも同じcollectorでsnapshotを保存します。
-- GitHub SCM sliceはrepository／organization-scoped branch／tag、repository-scoped push ruleset
-  update、およびlegacy branchのforce-push／deletion／administrator enforcement／CODEOWNER review updateを扱います。ruleset create／delete、
-  その他のlegacy branch setting、organization-wide push、repository lifecycleは対象外です。
-- Push rulesetはfork networkへ継承され、root repositoryのbypass権限がnetwork全体へ影響します。fork一覧と
-  `network_count`はtransactional snapshotではなく、collection中のfork作成／削除やAPIの可視性欠損は残余
-  リスクです。organization-wide selectorは全root networkを証明できないため拒否します。
-- Ruleset historyとbypass actorの完全取得にrepository／organization Administration write permissionが
-  必要なのはprovider上の制約です。GET-only実装でもtoken窃取時のmutation riskが残るため、credentialと
-  egressを分離します。organization権限はより大きいblast radiusとして扱います。
-- Organization ruleset audit分類は公式eventの`ruleset_source_type=Organization`等からの推論です。
-  providerがtenantで異なるfieldを返す場合、本adapterは未検証であり、sanitized実eventを基に更新が必要です。
-- Legacy branch REST snapshotはcurrent stateだけで、provider-side before historyを証明しません。
-  force-pushの数値levelとadmin-enforcementのboolean表現をtenantで検証し、不一致や未知の値を成功扱いにしないでください。
-- AWS sliceはroot-path roleの直接`UpdateAssumeRolePolicy`に限定します。IaCによるreplacement、
-  `CreateRole`、SAML、Azure／GCP、role permission policyはこのadapterの対象外です。
-- IAM policyはstructural JSONとしてdigest化します。意味が同じでもstatementやarray順が変われば
-  fail closedになるため、providerが並べ替える環境ではreview済みsemantic canonicalizerが必要です。
-- ECR policyもstructural JSONとして扱い、`GetRepositoryPolicy`は過去のbefore stateを返しません。
-  高保証環境では変更直前snapshotを独立保存し、force変更は通常pathから分離します。
-- KMS sliceはenabled customer-managed `SIGN_VERIFY` keyの直接`PutKeyPolicy`に限定します。
-  key create／disable／delete、grant、alias、key material、multi-Region操作と`Sign`実行は対象外です。
-- `GetKeyPolicy`も過去のbefore stateを返さず、key policyをstructural JSONとしてdigest化するため、
-  高保証環境では変更前snapshotを保存し、semantic上無害な配列順変更もreviewし直します。
-- KMSの実効権限はkey policyだけでなくIAM policy、grant、VPC endpoint policyにも依存します。
-  本adapterのPASSを「signing権限またはpolicy管理権限を完全に除去した証明」と解釈しないでください。
+- Manual approvalは、approverが変更の意味を誤解するriskを残す。
+- Providerが直接変更を許す場合、無承認変更を事前阻止できず、検知まで一時的に弱い状態が残り得る。
+- Provider／IdP／audit backendが同時に侵害されると、actorやeventを偽装・欠落できる。
+- Current settingは変更後の状態を示すが、providerがhistoryを持たなければbefore stateを独立に証明できない。
+- Phishing-resistant authenticationの設定だけでは、既にunlockされた端末や悪意あるauthorized administratorを
+  防げない。
+- 本controlは設定内容のsecure baseline、workflow permission、untrusted PR、machine OIDC、runner lifecycle、
+  registry運用、signing authorizationを全面的には評価しない。
+- GitHubの画面、event、利用可能な保護はplanとversionで異なり得る。導入時に公式documentationとlive tenantで
+  再確認する。
 
-## Provider references
+## Relationship to other controls
 
-- [GitHub organization audit-log events](https://docs.github.com/en/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/audit-log-events-for-your-organization)
-- [GitHub repository ruleset REST API and history](https://docs.github.com/en/rest/repos/rules)
-- [GitHub organization ruleset REST API and history](https://docs.github.com/en/rest/orgs/rules)
-- [GitHub protected-branch REST API](https://docs.github.com/en/rest/branches/branch-protection)
-- [AWS IAM UpdateAssumeRolePolicy API](https://docs.aws.amazon.com/IAM/latest/APIReference/API_UpdateAssumeRolePolicy.html)
-- [AWS IAM GetRole API](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetRole.html)
-- [AWS CloudTrail record contents](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-record-contents.html)
-- [AWS CloudTrail userIdentity element](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-user-identity.html)
-- [AWS ECR SetRepositoryPolicy API](https://docs.aws.amazon.com/AmazonECR/latest/APIReference/API_SetRepositoryPolicy.html)
-- [AWS ECR GetRepositoryPolicy API](https://docs.aws.amazon.com/AmazonECR/latest/APIReference/API_GetRepositoryPolicy.html)
-- [AWS ECR Repository resource fields](https://docs.aws.amazon.com/AmazonECR/latest/APIReference/API_Repository.html)
-- [AWS ECR CloudTrail logging](https://docs.aws.amazon.com/AmazonECR/latest/userguide/logging-using-cloudtrail.html)
-- [AWS KMS PutKeyPolicy API](https://docs.aws.amazon.com/kms/latest/APIReference/API_PutKeyPolicy.html)
-- [AWS KMS PutKeyPolicy CloudTrail event](https://docs.aws.amazon.com/kms/latest/developerguide/ct-put-key-policy.html)
-- [AWS KMS GetKeyPolicy API](https://docs.aws.amazon.com/kms/latest/APIReference/API_GetKeyPolicy.html)
-- [AWS KMS KeyMetadata](https://docs.aws.amazon.com/kms/latest/APIReference/API_KeyMetadata.html)
-- [AWS KMS CloudTrail logging](https://docs.aws.amazon.com/kms/latest/developerguide/logging-using-cloudtrail.html)
+- [`PSB-CICD-004`](../actions-least-privilege/README.md): Workflow／job tokenのexact permission。
+- [`PSB-CICD-005`](../untrusted-pr-boundary/README.md): Untrusted PR codeとprivileged executionの分離。
+- [`PSB-CICD-006`](../audience-bound-oidc-federation/README.md): Machine OIDC claimとcloud trustのrequired content。
+- [`PSB-CICD-007`](../runner-hardening/README.md): Runner routing、registration、image、network、lifecycle。
+- [`PSB-SOURCE-004`](../../source-protection/source-access-credential-lifecycle/README.md): Human／App credentialの
+  発行、保管、scope、期限、失効。
+- [`PSB-SOURCE-006`](../../source-protection/github-organization-governance/README.md): GitHub Organizationの
+  current posture、membership、Actions policy、audit operation。
+- [`PSB-SOURCE-005`](../../source-protection/repository-destruction-recovery/README.md): Repository destruction制限、
+  independent backup、restore drill。
+- [`PSB-CONTAINER-002`](../../container-cloud-iac-security/container-registry-security/README.md): Registry policyの
+  secure required state。
+- [`PSB-REL-005`](../../release-integrity/artifact-signing-generation/README.md): Signing authorizationとartifact署名。
+- [`PSB-GOV-002`](../../governance-operations/time-bound-security-exceptions/README.md): Time-bound exception lifecycle。
+
+## References
+
+- [GitHub: About rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)
+- [GitHub: Managing rulesets for a repository](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/managing-rulesets-for-a-repository)
+- [GitHub: Reviewing the audit log for your organization](https://docs.github.com/en/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/reviewing-the-audit-log-for-your-organization)
+- [GitHub: Organization audit-log events](https://docs.github.com/en/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/audit-log-events-for-your-organization)
+- [GitHub: Requiring two-factor authentication in your organization](https://docs.github.com/en/organizations/keeping-your-organization-secure/managing-two-factor-authentication-for-your-organization/requiring-two-factor-authentication-in-your-organization)
+- [GitHub: About passkeys](https://docs.github.com/en/authentication/authenticating-with-a-passkey/about-passkeys)
 
 ## Framework mapping boundary
 
-行単位mappingは[`control.yaml`](control.yaml)にあります。GitHub guidance、OpenSSF OSPS
-Baseline、MITRE ATT&CKへのmappingは関連するevidenceを示すもので、GitHub設定完了、OSPS
-compliance、ATT&CK coverage、NIST SP 800-204D complianceを意味しません。SP 800-204Dは
-framework mappingとして重複登録せず、`SCIR-010` integration reconciliationからexact checkを
-参照します。
+行単位mappingは[`control.yaml`](control.yaml)に記録する。GitHub guidance、OpenSSF OSPS Baseline、
+MITRE ATT&CKへのmappingは、各checkとの限定された関係を示すものであり、GitHub設定完了、organization adoption、
+formal compliance、攻撃の完全なmitigationを意味しない。

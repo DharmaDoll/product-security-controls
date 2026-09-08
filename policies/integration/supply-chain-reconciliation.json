@@ -147,8 +147,8 @@
       "planned_control_ids": [],
       "gap_owner": "",
       "gap_description": "",
-      "rationale": "PSB-CICD-008 joins named administrator assurance, bounded session, exact before-after policy identity, independent approval, execution, provider audit, and emergency review across the required service inventory.",
-      "limitations": "The provider-neutral E3 verifier does not prove live provider configuration, organization membership, authenticator custody, audit-backend independence, or provider control-plane integrity."
+      "rationale": "PSB-CICD-008 defines a manual procedure that joins a named administrator, bounded session, exact readable before-after state, independent approval, provider audit, current state, and emergency review for each declared service.",
+      "limitations": "The E1 guidance and repository metadata do not prove live provider configuration, organization membership, authenticator custody, approval operation, audit-backend independence, scope completeness, or provider control-plane integrity. Each adopting organization must review current external evidence."
     },
     {
       "id": "SCIR-011",

@@ -324,35 +324,25 @@ threats are covered.
 - exact artifact digestとactive deploymentの関係が欠落し、稼働中の影響serviceが
   SBOM incident scopeから漏れること;
 
-`PSB-CICD-008` owns the provider-neutral evidence chain for human privileged
-control-plane changes across SCM, CI, cloud identity, artifact registry, and
-signing services. It binds one named phishing-resistant administrator session,
-exact target and before-after configuration digests, independent approval,
-execution, provider audit, and bounded emergency review. Its offline fixtures
-do not prove live provider configuration, membership, authenticator custody,
-audit-backend independence, or provider control-plane integrity.
-The executable GitHub fragment covers environment protection and runner-group
-configuration through bounded audit collection and current-state joins. The
-AWS fragment covers direct IAM workload-trust updates through CloudTrail,
-stable `RoleId`, `iam:GetRole`, external human-session evidence, and a reviewed
-change register. The ECR fragment covers direct repository access-policy
-changes through CloudTrail, current policy, and repository-generation identity.
-The KMS fragment covers direct signing-key default-policy changes through
-CloudTrail, stable Key ID／ARN, signing-purpose metadata, and current policy,
-while rejecting the lockout-safety bypass in the ordinary path. The GitHub SCM
-fragment covers repository- and organization-scoped branch／tag and repository-scoped
-push ruleset updates using stable source and ruleset identities plus exact history
-states. Push evidence additionally binds a private／internal root and its completely
-paginated fork-network identity; organization-wide push remains outside scope. The organization
-classification from audit source type and org identity is an explicit inference
-that needs tenant-event validation. A separate legacy branch slice binds only
-the force-push enforcement audit event to stable repository／branch identity,
-reviewed before state, and a current REST snapshot; it does not cover the other
-legacy branch settings or provider-side before history. Each fragment remains
-partial; none proves live cross-service completeness, and remaining legacy SCM,
-organization-wide push scope, or ruleset lifecycle operations,
-remaining CI／registry／signing operations, plus Azure／GCP adapters remain
-outside the implemented boundary.
+`PSB-CICD-008` owns the human privileged-change procedure across SCM, CI,
+cloud identity, artifact registry, and signing services. Concrete product harm
+requires more than an administrator setting change: the actor must be able to
+weaken an effective setting, the changed authority must be usable by a
+workflow or person, and a downstream branch, runner, cloud role, registry, or
+signature consumer must trust the result. The guidance therefore records both
+the attack-enabling conditions and the conditions that limit impact.
+
+The reference binds a named current administrator, phishing-resistant bounded
+authentication, an exact human-readable target and before／after, independent
+pre-approval, provider audit plus current-state review, and a one-hour
+independently reviewed emergency path. It supplies a copyable runbook,
+change-record template, and harmless GitHub private-sandbox ruleset drill.
+Repository files do not prove live membership, authentication, approval,
+provider state, audit completeness, or Organization-wide adoption; these remain
+`NOT_CHECKED` until current external evidence is reviewed. Where direct
+administration cannot be gated, the control detects unauthorized changes at
+the audit-review cadence and does not claim guaranteed prevention.
+
 
 The
 [CI/CD threat-matrix reconciliation](CICD_THREAT_MATRIX_RECONCILIATION.md)
