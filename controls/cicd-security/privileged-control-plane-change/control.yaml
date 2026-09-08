@@ -22,7 +22,7 @@ implementations:
     - secure/change-record-template.md
 verification:
   type: manual
-  procedure: README.md#verification
+  procedure: README.md#live-verification
   expected:
     - the canonical command reports NOT_CHECKED instead of treating repository documentation as live adoption
     - each in-scope privileged change names an attributable current administrator and an independent approver
