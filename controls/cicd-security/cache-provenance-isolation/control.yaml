@@ -17,7 +17,7 @@ threats:
     description: Missing workflow inventory inaccessible provider state or failed live tests are treated as proof that cache isolation is active.
 implementations:
   insecure:
-    - insecure/workflow.yml
+    - insecure/cache-fragment.yml
   secure:
     - secure/workflow.yml
 verification:

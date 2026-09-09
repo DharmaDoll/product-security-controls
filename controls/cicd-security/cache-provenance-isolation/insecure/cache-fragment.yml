@@ -1,0 +1,12 @@
+# INSECURE FRAGMENT: comparison only; this is not a complete workflow.
+# Sharing this pattern between a low-trust writer and privileged consumer creates the unsafe path.
+- uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+  with:
+    path: .venv
+    key: python-${{ runner.os }}
+    restore-keys: |
+      python-
+
+- name: Execute restored state
+  shell: bash
+  run: .venv/bin/python -c 'print("cached interpreter executed")'
