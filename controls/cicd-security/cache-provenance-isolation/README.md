@@ -76,7 +76,9 @@ Cache poisoning単独でorganization administrator権限が得られるわけで
 
 迷った場合の最終原則は単純です。低信頼writerと高権限consumerの間にcache経路を作らないでください。
 
-## 最短の導入手順
+## GitHub Actionsのcache分離を有効にする最短手順
+
+ここでいう「最短」は、既存の全workflowを作り直す手順ではありません。Review済みのreference workflowを1本配置し、`main`へのpushとPRで「誰がcacheを保存できるか」「何を復元するか」を確認する、最小の導入経路です。既に別のcache workflowがある場合は、そのworkflowも同じ確認対象になります。
 
 ### 前提条件
 
@@ -85,14 +87,14 @@ Cache poisoning単独でorganization administrator権限が得られるわけで
 - Cache miss時に`pip`がdependencyを取得できる。
 - Release、deploy、signing workflowはcacheを使用しない。
 
-### Copyとactivation
+### 実施すること
 
-1. [`secure/workflow.yml`](secure/workflow.yml)を採用repositoryの`.github/workflows/dependency-cache.yml`へcopyする。
-2. [`PSB-DEPS-003`](../../dependency-security/lockfile-integrity/README.md)に従い、hash付き`requirements.lock`をrepository rootへ置く。
+1. [`secure/workflow.yml`](secure/workflow.yml)を採用repositoryの`.github/workflows/dependency-cache.yml`として配置する。これにより、dependency download cacheのrestoreとsaveの条件がworkflowへ追加される。
+2. [`PSB-DEPS-003`](../../dependency-security/lockfile-integrity/README.md)に従い、hash付き`requirements.lock`をrepository rootへ置く。これがcache keyとinstall時のartifact identityになる。
 3. Python versionを変える場合は、`python-version`と2か所のcache keyを同時に変える。
 4. Default branchが異なる場合は、`push.branches`とsave条件の`github.ref`を同時に変える。
-5. GitHubの`Settings > Rules > Rulesets`で`main`を対象にし、`Require a pull request before merging`を有効化して最低1 approvalを要求する。
-6. Workflow変更をreviewしてmergeする。これが明示的なactivationです。
+5. GitHubの`Settings > Rules > Rulesets`で`main`を対象にし、`Require a pull request before merging`を有効化して最低1 approvalを要求する。これでcache save条件を変更するworkflow自体をreview対象にする。
+6. Workflow変更をreviewして`main`へmergeする。merge後の`main` runがcacheを保存し、PR runはrestoreだけを行えば、このreferenceの設定が実際に有効になった状態です。
 
 既存の`.github/workflows/dependency-cache.yml`は上書きせず、差分を採用者がmergeします。Global Git、shell、IDE、OS設定は変更しません。
 
@@ -106,7 +108,7 @@ Cache poisoning単独でorganization administrator権限が得られるわけで
 | Hash不一致 | Cacheを信用しない | `pip`が拒否 | 実行しない | Job failure |
 
 [`insecure/cache-fragment.yml`](insecure/cache-fragment.yml)は、broad keyで`.venv`を共有し、cache済みinterpreterを実行する最小の比較snippetです。
-完全なworkflowではなく、`.github/workflows/`へcopyしないでください。
+完全なworkflowではなく、`.github/workflows/`へ配置しないでください。
 
 ## 誰が何をするか
 
