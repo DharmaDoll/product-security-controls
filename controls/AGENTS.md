@@ -21,6 +21,28 @@ supported path and state:
 7. CI or server-side enforcement still required;
 8. rollback steps and residual risk.
 
+## Reader-centered README
+
+The README is a decision guide for a developer or Product Security reviewer,
+not a transcript of every possible test or evidence record.
+
+- Explain the actual risk in plain language. State which actor or failure source
+  can change what, which authority or asset is reached, and the conditions that
+  must all hold before concrete harm occurs.
+- Include at least one case where the attack path is blocked or the impact is
+  limited. Do not treat the presence of a file, setting name, cache, token, or
+  finding label as proof of a vulnerability by itself.
+- Define the target of the shortest path and its observable completion state.
+  Avoid unexplained labels such as `copy`, `activation`, or `test`; say what is
+  copied or changed, what becomes active, and what a reviewer should observe.
+- Put the minimum working implementation and the design decisions before
+  long-form operational detail. Keep insecure examples, self-tests, and
+  evidence instructions only when they clarify a real security property.
+- A guidance-first control may use a short manual verification section when
+  provider state or organizational operation is the security mechanism. Do not
+  add synthetic evidence, no-op tests, or elaborate procedures that cannot
+  establish adoption.
+
 ## Keep the implementation small
 
 - Prefer repository-owned shell wrappers, standard-library code, and existing
