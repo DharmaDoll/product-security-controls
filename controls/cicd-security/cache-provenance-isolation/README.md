@@ -2,14 +2,39 @@
 
 ## このcontrolを一枚で理解する
 
-| 項目 | 内容 |
-| --- | --- |
-| セキュリティ上の問題 | CI cacheはrunをまたいでbytesを渡す共有channelであり、poisonされた内容を後続jobが実行すると、secretを直接渡さなくても権限を横断できる。 |
-| 誰から、または何から守るか | Untrusted PR作成者、侵害されたAction／dependency／trusted job、広すぎるcache key、破損cache、cacheを検証済みartifactと誤認する設計から守る。 |
-| 何が対象か | GitHub Actionsのcache writer／consumer、trigger、key、path、dependency lockfile、およびrelease／deploy／signing jobとの境界。 |
-| 何をするか | Protected default branchへの`push`だけがdownload cacheを保存し、PRはrestore-onlyにする。Exact hit以外を破棄し、restore後もdependency hashを検証する。高権限jobではcacheを使わない。 |
-| 成功状態 | PRはdefault branch cacheを作成・更新せず、lockfile変更時はclean downloadになり、cache hit時も同じintegrity checkが実行され、privileged jobがcacheをconsumeしない。 |
-| 対象外・残余リスク | Repository fileだけではlive設定を証明できない。Trusted writer、GitHub cache service、archive展開、package manager、self-hosted runner自体の侵害は別の境界または残余リスク。 |
+### セキュリティ上の問題
+
+CI cacheは、あるrunで作ったfileを別のrunが再利用する仕組みです。GitHub Actionsでは、cacheはworkflowやjobの名前だけで分離されず、同じrepositoryのbranch scopeを使う別workflowからも読めます。Default branchのcacheは、forkからのPRでも読めます。復元されたfileは署名済みとは限らず、readできるrunはその内容をそのまま取得できます。[GitHubのcache security仕様](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching)も、cacheをuntrusted inputとして扱うよう説明しています。
+
+ただし、cacheが存在するだけでrepositoryやcloudが直ちに侵害されるわけではありません。実害には、次の三条件が同時に必要です。
+
+1. 攻撃者が、cacheへ新しい内容を保存できる。例えば、PR runのsave、侵害されたdefault-branch job、またはcacheを書ける別workflowがある。
+2. 後のrunが、そのcacheを同じscopeまたはfallbackから復元できる。branch scopeだけではworkflowの目的やproducerの信頼度を区別できない。
+3. 復元したfileを、install、build、script、interpreter、plugin、または未検証のdependencyとして実行・採用する。高権限jobなら、そのjobのsecret、write token、OIDC、Environment、内部networkを利用できる。
+
+例えば`.venv`や`node_modules`、compiler、build toolをcacheし、後続のrelease jobがその中の実行fileを使うと、cacheへ混入したcodeがrelease権限で動く可能性があります。download cacheでも、hash検証を省略してinstallしたり、package hookを無制限に実行したりすれば、悪意あるdependencyへ置き換わる余地があります。Cache pathにsecretやcredentialが入っていれば、cacheを読めるPRへ漏えいします。
+
+一方、PRがcacheを保存できず、consumerがprivilegedでなく、restore後にlockfileのhashを毎回検証してclean installするなら、cache poisoningだけで高権限へ到達する経路は成立しません。このcontrolは「cacheを使うな」という一般論ではなく、三条件の接続を切るものです。被害範囲も、侵害されたconsumerの実効権限が許すrepository、package、cloud role、deployment targetに限定されます。
+
+### 誰から、または何から守るか
+
+Cacheを書けるPR作成者、侵害されたActionやdependency、既に侵害されたtrusted job、cacheを読むfork contributor、広すぎるkeyやprefix fallback、破損cacheを成功扱いする運用から守ります。Cache writerがtrusted branchだけにあり、consumerがcacheを実行せず、独立したhash検証も行う場合は、このattack pathの主な被害は成立しません。
+
+### 何が対象か
+
+GitHub Actionsのcache writer／consumer、trigger、branch scope、key、restore path、dependency lockfile、package managerのintegrity check、およびrelease／deploy／signing jobとの境界です。`actions/cache`だけでなく、`setup-python`などの自動cache、custom upload／download、別workflowの同一pathもinventoryに含めます。
+
+### 何をするか
+
+Protected default branchへのreview済み`push`だけがdownload cacheを保存し、PRはrestore-onlyにします。Keyへpurpose、schema、OS、architecture、runtime、lockfile digestを含め、exact hit以外の復元結果は削除します。Restore後もdependency hashを検証し、secret、installed tree、tool、build outputをcacheしません。高権限jobはcacheを使わず、verified artifactまたはclean buildから開始します。
+
+### 成功状態
+
+PRはdefault branch cacheを作成・更新せず、lockfile変更時は旧cacheを使わずclean downloadになります。Exact hitでも同じhash-locked installとdependency checkが実行され、release、deploy、signing jobはcacheをconsumeしません。Live設定やrunを確認できない部分は、成功扱いではなく`NOT_CHECKED`または`ERROR`です。
+
+### 対象外・残余リスク
+
+Repository fileだけではbranch protection、全workflow inventory、cache ACL、実際のwriter、run結果を証明できません。Trusted writer、GitHub cache service、archive展開、package manager、self-hosted runner自体の侵害も完全には防げません。Cache障害やevictionによるbuild遅延はavailabilityの問題であり、security PASSとは別に扱います。
 
 ## 適用判断
 
@@ -22,6 +47,19 @@ Cacheは高速化手段であり、artifact、provenance、承認済みbuild out
 - `.venv`、`node_modules`、compiler、plugin、build outputを再利用したい: 直接実行されるstateなので本controlの対象外とする。
 - Self-hosted runner、GitHub Enterprise Server、他CI provider: cache ACL、保存先、展開処理、runner永続状態を再評価する。
 - Hash付きlockfileを用意できない: cache設計より先にdependency integrityを整備する。
+
+## 本当に被害になる条件
+
+次の表は、対象があるだけでFAILとするためのものではありません。採用repositoryのworkflowで、左から右へdata flowがつながるかを確認します。
+
+| 状況 | 被害が成立する条件 | 起こり得ること | 条件が欠ける場合 |
+| --- | --- | --- | --- |
+| 実行可能stateをcacheする | 攻撃者がsaveでき、後続jobが同じcacheをrestoreして実行する | そのjobの権限でcode injection、release汚染、deploy操作 | PRがsaveできない、またはconsumerがcacheを実行しない |
+| Download cacheをcacheする | Restore後のhash検証を省略し、取得fileやinstall hookを信頼する | 悪意あるdependency、install時のcode execution | `--require-hashes`等でlockfileとartifactを照合し、失敗時はjobを止める |
+| Cache pathにsecretを置く | Fork PRなどcacheを読めるrunが存在する | Token、credential、private sourceの漏えい | Cache pathにsecretがなく、cacheを公開可能なdataだけに限定する |
+| Broad key／prefix fallbackを使う | 別目的・別runtime・別dependencyのcacheを選び、後続処理が採用する | 古い、異なる、または意図しないbytesの混入 | Purposeとlockfile identityをkeyへ含め、exact hit以外を削除する |
+
+Cache poisoning単独でorganization administrator権限が得られるわけではありません。高権限consumerのeffective permission、secret配送、OIDCのcloud側trust policy、Environment protection、runnerの到達性を合わせて被害を見積もります。
 
 ## 設計の羅針盤
 
