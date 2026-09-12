@@ -92,27 +92,7 @@ one-job lifecycle, clean startup, metadata／management／host-socket isolation,
 bounded registration authority, teardown, external log correlation, and
 fail-closed evidence health. Live fleet adapters remain adoption work.
 
-Privileged CI/CD control-plane change assurance is implemented as
-`PSB-CICD-008`. It covers human administrator changes outside repository
-workflows across SCM, CI, cloud federation, artifact registry, and signing
-services. The E3 contract requires a named phishing-resistant administrator,
-bounded recently reauthenticated session, exact target and before-after policy
-digests, independent approval, provider execution and audit correlation, and a
-one-hour independently reviewed emergency path. Cross-service collector gaps,
-stale or malformed input, and credential-bearing evidence fail closed. Live
-provider adapters, organization membership, authenticator custody, and audit
-backend assurance remain adoption evidence. A first read-only GitHub
-normalization adapter now joins organization audit events to stable actor and
-request identities, exact old／new setting digests, external session assurance,
-and the reviewed change register. It strips provider token metadata and rejects
-missing joins or tampering. A bounded GitHub REST collector now adds fixed API
-version and query,
-complete cursor pagination, field allow-listing, atomic output, and fail-closed
-rate-limit／network／loop handling. Environment protection, runner-group current
-state, repository／organization branch-ruleset history, and legacy branch
-force-push, deletion, administrator-enforcement, and CODEOWNER-review adapters are implemented; broader Actions policy, other
-legacy branch settings, and ruleset lifecycle events still need separate state
-joins. Remaining provider adapters are adoption work.
+Privileged changes use [共通変更管理runbook](runbooks/privileged-changes/README.md). PSB-CICD-008 is retired; complete cross-provider change detection remains a gap.
 
 Secure infrastructure golden-path composition is implemented as
 `PSB-IAC-001`. It provides a versioned multi-cloud secure-compute module
@@ -469,25 +449,7 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
     with exact inventory and evidence identity, policy-derived deadlines,
     distinct lifecycle states, sanitized output, and fail-closed negative
     fixtures. Live scanner／build／registry／cluster adapters remain external.
-11. `PSB-CICD-008` — privileged CI/CD control-plane change assurance —
-    implemented at E3 with named phishing-resistant administrator sessions,
-    exact before-after policy identity, independent approval, provider audit
-    correlation, bounded emergency review, complete cross-service inventory,
-    and fail-closed evidence handling. GitHub environment and runner-group
-    fragments plus the AWS IAM workload-trust fragment are implemented with
-    stable provider identities and current-state joins. AWS ECR repository
-    access-policy changes are also implemented with repository-generation
-    binding. AWS KMS signing-key policy changes now bind `PutKeyPolicy`, stable
-    Key ID／ARN, signing purpose, current policy, and reviewed human session
-    while rejecting the lockout-safety bypass. GitHub repository and
-    organization branch／tag ruleset updates now bind stable source／ruleset IDs
-    and exact before／after history versions. Repository-scoped push updates
-    additionally bind a private／internal root and complete fork-network digest;
-    legacy branch force-push, deletion, administrator-enforcement, and CODEOWNER-review updates now bind the
-    audit action to stable repository／branch identity and current protection state. Other legacy
-    branch settings, create／delete／organization-wide push rulesets,
-    CI／registry, Azure, GCP, and non-policy
-    signing operations remain external.
+11. PSB-CICD-008 is retired in favor of [共通変更管理runbook](runbooks/privileged-changes/README.md); see ADR-0003.
 12. `PSB-SOURCE-006` — GitHub Organization governance — implemented at E3
     with stable-ID complete inventory, policy-digest binding, SSO／provisioning,
     Owner and collaborator review, restrictive repository defaults,

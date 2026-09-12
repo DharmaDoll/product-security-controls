@@ -77,9 +77,9 @@
     {
       "technique_id": "T-E008",
       "disposition": "gap",
-      "check_refs": ["PSB-CICD-008-CPC-001", "PSB-CICD-008-CPC-002"],
+      "check_refs": [],
       "remaining_work": "Inventory and govern developer-held CI/CD sessions and API credentials, including phishing resistance, scope, lifetime, revocation, and endpoint binding.",
-      "rationale": "Privileged control-plane actor and session checks cover reviewed changes, not all local CI/CD credentials available after endpoint compromise."
+      "rationale": "Retired CPC checks are removed. Developer-held CI/CD credentials remain outside the verified inventory."
     },
     {
       "technique_id": "T-E009",
@@ -192,9 +192,11 @@
     {
       "technique_id": "T-V006",
       "disposition": "gap",
-      "check_refs": ["PSB-SOURCE-003-MON-002", "PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-005"],
+      "check_refs": [
+        "PSB-SOURCE-003-MON-002"
+      ],
       "remaining_work": "Enforce repository visibility changes through independent approval and provider audit alerts, then correlate newly public repositories with exposure monitoring.",
-      "rationale": "Privileged-change evidence can bind reviewed configuration changes and public monitoring can detect some domain-anchored content after exposure, but neither currently proves provider-side prevention or alerting for every visibility change."
+      "rationale": "Retired CPC checks are removed. Public exposure monitoring can detect some exposure after a visibility change, not enforce prior authorization."
     },
     {
       "technique_id": "T-V007",
@@ -218,27 +220,35 @@
     },
     {
       "technique_id": "T-V010",
-      "disposition": "implemented",
-      "check_refs": ["PSB-CICD-005-PRB-001", "PSB-CICD-005-PRB-005", "PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-004"],
-      "rationale": "Untrusted changes remain unprivileged and protected source changes bind an exact target and before-after state to independent approval."
+      "disposition": "gap",
+      "check_refs": [
+        "PSB-CICD-005-PRB-001",
+        "PSB-CICD-005-PRB-005"
+      ],
+      "rationale": "Retired CPC checks are removed. Untrusted PR isolation covers contributor execution, not every protected-source modification path.",
+      "remaining_work": "Verify protected source changes and administrator bypass handling on the live source provider, including unauthorized changes outside the PR path."
     },
     {
       "technique_id": "T-V011",
-      "disposition": "implemented",
-      "check_refs": ["PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-005", "PSB-REL-001-REL-004"],
-      "rationale": "Protected reference changes are bound to reviewed control-plane evidence and release consumers reject silent trust-signal downgrades."
+      "disposition": "gap",
+      "check_refs": [
+        "PSB-REL-001-REL-004"
+      ],
+      "rationale": "Retired CPC checks are removed. Release verification provides partial consumer protection, not live reference-change authorization.",
+      "remaining_work": "Verify live branch and tag protection, unauthorized reference-change detection and response; consumer verification alone does not protect source refs."
     },
     {
       "technique_id": "T-V012",
       "disposition": "implemented",
-      "check_refs": ["PSB-CICD-005-PRB-003", "PSB-CICD-005-PRB-004", "PSB-CICD-005-PRB-005", "PSB-CICD-008-CPC-007"],
-      "rationale": "Exact pull-request revision binding, blocked cross-run elevation, separate trusted execution, and complete fork-network evidence directly address cross-fork object abuse."
+      "check_refs": ["PSB-CICD-005-PRB-003", "PSB-CICD-005-PRB-004", "PSB-CICD-005-PRB-005", "PSB-CICD-005-PRB-006"],
+      "rationale": "Exact pull-request revision review, blocked cross-run elevation, separate trusted execution, and fail-closed incomplete live evidence address cross-fork object confusion without claiming that repository files prove every provider path."
     },
     {
       "technique_id": "T-C001",
-      "disposition": "implemented",
-      "check_refs": ["PSB-CICD-008-CPC-001", "PSB-CICD-008-CPC-002", "PSB-CICD-008-CPC-005"],
-      "rationale": "Privileged CI/CD changes require an attributable current human, a short-lived reauthenticated session, and matching provider audit evidence."
+      "disposition": "gap",
+      "check_refs": [],
+      "rationale": "Retired CPC checks are removed. No current check establishes the complete CI/CD access credential boundary across services.",
+      "remaining_work": "Verify service-specific CI/CD credentials, authentication, session lifetime, revocation and audit; the common runbook does not implement these boundaries."
     },
     {
       "technique_id": "T-C002",
@@ -279,9 +289,12 @@
     },
     {
       "technique_id": "T-C008",
-      "disposition": "implemented",
-      "check_refs": ["PSB-CICD-004-PERM-004", "PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-004", "PSB-CICD-008-CPC-005"],
-      "rationale": "Write-capable jobs are restricted and protected workflow or repository policy changes bind exact state to independent approval and provider execution."
+      "disposition": "gap",
+      "check_refs": [
+        "PSB-CICD-004-PERM-004"
+      ],
+      "rationale": "Retired CPC checks are removed. Restricted job authority provides partial protection; hosted source-change enforcement still needs live verification.",
+      "remaining_work": "Verify that write-capable workflows cannot alter protected source or weaken provider protection without authorization."
     },
     {
       "technique_id": "T-C009",
@@ -348,9 +361,9 @@
     {
       "technique_id": "T-C019",
       "disposition": "gap",
-      "check_refs": ["PSB-CICD-008-CPC-004", "PSB-CICD-008-CPC-005", "PSB-CICD-008-CPC-007"],
+      "check_refs": [],
       "remaining_work": "Protect CI/CD organizations, runners, variables, logs, and workflow history with destructive-action guardrails, immutable backups, and tested recovery objectives.",
-      "rationale": "Privileged changes are approved and collected, but CI/CD platform destruction prevention and recovery are not verified."
+      "rationale": "Retired CPC checks are removed. CI/CD destruction guardrails, independent backups and tested recovery remain unimplemented."
     },
     {
       "technique_id": "T-C020",
