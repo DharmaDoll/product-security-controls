@@ -166,7 +166,7 @@ organization導入の`PASS`として扱いません。
 | job内へ渡すcredential、root権限、外向き通信、sandbox、実行時telemetry／脅威検知 | [PSB-BUILD-001](../../build-security/build-containment/README.md) |
 | `GITHUB_TOKEN`へ何の操作を許可するか | [PSB-CICD-004](../actions-least-privilege/README.md) |
 | GitHub Actionsがcloud権限を得るためのOIDC trust policy | [PSB-CICD-006](../audience-bound-oidc-federation/README.md) |
-| runner group等の管理設定を誰が、どの承認で変更したか | [PSB-CICD-008](../privileged-control-plane-change/README.md) |
+| runner group等の管理設定を誰が、どの承認で変更したか | [共通変更管理runbook](../../../docs/runbooks/privileged-changes/README.md) |
 | runnerを登録するGitHub App／tokenの保管、期限、失効 | [PSB-SOURCE-004](../../source-protection/source-access-credential-lifecycle/README.md) |
 | persistent runner等を一時的に認めるsecurity exception | [PSB-GOV-002](../../governance-operations/time-bound-security-exceptions/README.md) |
 

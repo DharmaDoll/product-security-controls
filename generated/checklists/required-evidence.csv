@@ -367,29 +367,20 @@ PSB-CICD-007,PSB-CICD-007-RNR-008,security,external-evidence,external log query 
 PSB-CICD-007,PSB-CICD-007-RNR-008,security,external-evidence,log retention and access setting
 PSB-CICD-007,PSB-CICD-007-RNR-009,ci-platform,external-evidence,actual error or not-checked result
 PSB-CICD-007,PSB-CICD-007-RNR-009,ci-platform,external-evidence,assignment-stop or recovery record when applicable
-PSB-CICD-008,PSB-CICD-008-CPC-001,ci-platform,hybrid,sanitized administrator identity record
-PSB-CICD-008,PSB-CICD-008-CPC-001,ci-platform,hybrid,organization membership decision
-PSB-CICD-008,PSB-CICD-008-CPC-001,ci-platform,hybrid,authentication assurance record
-PSB-CICD-008,PSB-CICD-008-CPC-002,ci-platform,automated,content-free session timeline
-PSB-CICD-008,PSB-CICD-008-CPC-003,ci-platform,automated,sanitized change request
-PSB-CICD-008,PSB-CICD-008-CPC-003,ci-platform,automated,before-after configuration digests
-PSB-CICD-008,PSB-CICD-008-CPC-004,security,automated,sanitized approval receipt
-PSB-CICD-008,PSB-CICD-008-CPC-005,security,hybrid,provider audit event ID
-PSB-CICD-008,PSB-CICD-008-CPC-005,security,hybrid,applied configuration digest
-PSB-CICD-008,PSB-CICD-008-CPC-005,security,hybrid,correlation result
-PSB-CICD-008,PSB-CICD-008-CPC-006,security,automated,incident change record
-PSB-CICD-008,PSB-CICD-008-CPC-006,security,automated,post-change review receipt
-PSB-CICD-008,PSB-CICD-008-CPC-007,ci-platform,automated,collector identity and coverage record
-PSB-CICD-008,PSB-CICD-008-CPC-007,ci-platform,automated,sanitized negative-test output
-PSB-CICD-009,PSB-CICD-009-CAC-001,ci-platform,automated,synthetic detached signature
-PSB-CICD-009,PSB-CICD-009-CAC-001,ci-platform,automated,public-key and policy digests
-PSB-CICD-009,PSB-CICD-009-CAC-002,ci-platform,automated,metadata-only key derivation result
-PSB-CICD-009,PSB-CICD-009-CAC-003,ci-platform,automated,sanitized transition decision
-PSB-CICD-009,PSB-CICD-009-CAC-004,ci-platform,automated,content SHA-256
-PSB-CICD-009,PSB-CICD-009-CAC-004,ci-platform,automated,path allowlist decision
-PSB-CICD-009,PSB-CICD-009-CAC-005,ci-platform,automated,metadata-only lifetime decision
-PSB-CICD-009,PSB-CICD-009-CAC-006,ci-platform,automated,sanitized exact-lookup decision
-PSB-CICD-009,PSB-CICD-009-CAC-007,ci-platform,automated,sanitized negative-test output
+PSB-CICD-009,PSB-CICD-009-CAC-001,repository-admin,external-evidence,exact workflow revision and sanitized trusted push run showing the save decision
+PSB-CICD-009,PSB-CICD-009-CAC-001,repository-admin,external-evidence,current protected default branch rule or ruleset with target and capture time
+PSB-CICD-009,PSB-CICD-009-CAC-002,developer,manual,reviewed workflow revision and sanitized resolved key
+PSB-CICD-009,PSB-CICD-009-CAC-002,developer,manual,exact reviewed lockfile digest
+PSB-CICD-009,PSB-CICD-009-CAC-003,repository-admin,external-evidence,sanitized pull-request run with event ref workflow revision and skipped save step
+PSB-CICD-009,PSB-CICD-009-CAC-003,repository-admin,external-evidence,before and after read-only cache listings scoped to the protected default branch
+PSB-CICD-009,PSB-CICD-009-CAC-004,developer,manual,dated cache path inventory with content classification and reviewer
+PSB-CICD-009,PSB-CICD-009-CAC-004,developer,manual,reviewed package manager cache documentation or observed path behavior
+PSB-CICD-009,PSB-CICD-009-CAC-005,developer,external-evidence,sanitized exact-hit and changed-lockfile run logs
+PSB-CICD-009,PSB-CICD-009-CAC-005,developer,external-evidence,dependency integrity command and result bound to the reviewed lockfile digest
+PSB-CICD-009,PSB-CICD-009-CAC-006,release-manager,manual,dated complete privileged workflow inventory with reviewer
+PSB-CICD-009,PSB-CICD-009-CAC-006,release-manager,manual,exact reviewed workflow revisions and cache-use decision for each privileged job
+PSB-CICD-009,PSB-CICD-009-CAC-007,security,manual,manual assessment record with PASS FAIL NOT_CHECKED or ERROR for every check
+PSB-CICD-009,PSB-CICD-009-CAC-007,security,manual,source target capture time and reviewer for every live observation
 PSB-CODE-005,PSB-CODE-005-UNI-001,developer,automated,sanitized verifier output
 PSB-CODE-005,PSB-CODE-005-UNI-002,developer,automated,sanitized verifier output
 PSB-CODE-005,PSB-CODE-005-UNI-003,developer,automated,sanitized verifier output

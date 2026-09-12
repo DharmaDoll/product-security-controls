@@ -11,11 +11,11 @@ Source version: `1.0.0@d1d1536`; artifact SHA-256: `3f45ca1033e09deab0b66e432969
 | Component | Techniques | Implemented | Gap |
 |---|---:|---:|---:|
 | endpoint | 19 | 5 | 14 |
-| vcs | 12 | 6 | 6 |
-| cicd | 21 | 17 | 4 |
+| vcs | 12 | 4 | 8 |
+| cicd | 21 | 15 | 6 |
 | registry | 13 | 8 | 5 |
 | production | 16 | 7 | 9 |
-| **total** | **81** | **43** | **38** |
+| **total** | **81** | **39** | **42** |
 
 ## Technique rows
 
@@ -28,7 +28,7 @@ Source version: `1.0.0@d1d1536`; artifact SHA-256: `3f45ca1033e09deab0b66e432969
 | T-E005 | Cryptomining on Endpoints | endpoint | Post-Compromise | gap | PSB-SOURCE-001-END-012 | endpoint-security | Verify endpoint CPU, GPU, process, and energy anomaly detection plus automated containment without relying only on generic EDR enrollment. |
 | T-E006 | Register Local Machine as CI Runner | endpoint | Discovery and Lateral Movement | gap | PSB-SOURCE-001-END-006; PSB-CICD-007-RNR-006 | endpoint-security | Deny and detect runner registration from developer endpoints and correlate registration authority to an approved ephemeral runner inventory. |
 | T-E007 | Abuse Local VCS Access from Endpoint | endpoint | Discovery and Lateral Movement | implemented | PSB-SOURCE-004-SCL-003; PSB-SOURCE-004-SCL-005; PSB-SOURCE-004-SCL-007; PSB-SOURCE-004-SCL-010 | endpoint-security |  |
-| T-E008 | Abuse Local CI/CD Access from Endpoint | endpoint | Discovery and Lateral Movement | gap | PSB-CICD-008-CPC-001; PSB-CICD-008-CPC-002 | endpoint-security | Inventory and govern developer-held CI/CD sessions and API credentials, including phishing resistance, scope, lifetime, revocation, and endpoint binding. |
+| T-E008 | Abuse Local CI/CD Access from Endpoint | endpoint | Discovery and Lateral Movement | gap |  | endpoint-security | Inventory and govern developer-held CI/CD sessions and API credentials, including phishing resistance, scope, lifetime, revocation, and endpoint binding. |
 | T-E009 | Abuse Local AI Tools | endpoint | Discovery and Lateral Movement | implemented | PSB-AI-004-AAR-003; PSB-AI-004-AAR-004; PSB-AI-004-AAR-012; PSB-AI-004-AAR-013 | endpoint-security |  |
 | T-E010 | Endpoint Infrastructure Destruction | endpoint | Post-Compromise | gap | PSB-SOURCE-001-END-010 | endpoint-security | Add immutable endpoint configuration backups, destructive-action detection, rebuild objectives, and tested fleet recovery evidence. |
 | T-E011 | Unicode Stealth Code Injection | endpoint | Initial Access | implemented | PSB-CODE-005-UNI-001; PSB-CODE-005-UNI-002; PSB-CODE-005-UNI-003; PSB-CODE-005-UNI-004; PSB-CODE-005-UNI-005; PSB-CODE-005-UNI-006 | endpoint-security |  |
@@ -45,21 +45,21 @@ Source version: `1.0.0@d1d1536`; artifact SHA-256: `3f45ca1033e09deab0b66e432969
 | T-V003 | Secret Exfiltration from Repo | vcs | Discovery and Lateral Movement | gap | PSB-SOURCE-001-DEH-004; PSB-SOURCE-003-MON-002; PSB-SOURCE-004-SCL-003 | source-platform-security | Verify repository read authorization, bulk-clone and archive-download detection, egress controls, and attributable response for sensitive repositories. |
 | T-V004 | Secret Exfiltration from Personal Repo | vcs | Discovery and Lateral Movement | gap | PSB-SOURCE-003-MON-001; PSB-SOURCE-003-MON-002; PSB-SOURCE-003-MON-005 | source-platform-security | Define ownership and monitoring for work-related personal repositories, forks, archives, and tokens without assuming enterprise controls cover personal accounts. |
 | T-V005 | VCS Vulnerability Exploitation | vcs | Initial Access | gap | PSB-DETECT-001-DVS-001; PSB-DETECT-001-DVS-003 | source-platform-security | Verify VCS server and client version inventory, vulnerability intelligence, patch deadlines, compensating isolation, and patch-failure evidence. |
-| T-V006 | Turn Private Repos Public | vcs | Post-Compromise | gap | PSB-SOURCE-003-MON-002; PSB-CICD-008-CPC-003; PSB-CICD-008-CPC-005 | source-platform-security | Enforce repository visibility changes through independent approval and provider audit alerts, then correlate newly public repositories with exposure monitoring. |
+| T-V006 | Turn Private Repos Public | vcs | Post-Compromise | gap | PSB-SOURCE-003-MON-002 | source-platform-security | Enforce repository visibility changes through independent approval and provider audit alerts, then correlate newly public repositories with exposure monitoring. |
 | T-V007 | Clone Sensitive Repositories | vcs | Post-Compromise | gap | PSB-SOURCE-004-SCL-003; PSB-SOURCE-004-SCL-011 | source-platform-security | Add complete repository read audit, archive and clone volume thresholds, network context, alert delivery, and response for sensitive repositories. |
 | T-V008 | Malicious Repo Hosting | vcs | Post-Compromise | gap | PSB-SOURCE-003-MON-002; PSB-SOURCE-003-MON-005 | source-platform-security | Detect compromised organization accounts creating or repurposing repositories for payload hosting, including releases, Pages, and workflow artifacts. |
 | T-V009 | Mass Deletion of Repositories | vcs | Post-Compromise | implemented | PSB-SOURCE-005-RDR-001; PSB-SOURCE-005-RDR-002; PSB-SOURCE-005-RDR-003; PSB-SOURCE-005-RDR-006 | source-platform-security |  |
-| T-V010 | Malicious Code Modification in Repository | vcs | Post-Compromise | implemented | PSB-CICD-005-PRB-001; PSB-CICD-005-PRB-005; PSB-CICD-008-CPC-003; PSB-CICD-008-CPC-004 | source-platform-security |  |
-| T-V011 | Git Tag/Reference Manipulation | vcs | Post-Compromise | implemented | PSB-CICD-008-CPC-003; PSB-CICD-008-CPC-005; PSB-REL-001-REL-004 | source-platform-security |  |
-| T-V012 | Cross-Fork Object Reference Abuse | vcs | Initial Access | implemented | PSB-CICD-005-PRB-003; PSB-CICD-005-PRB-004; PSB-CICD-005-PRB-005; PSB-CICD-008-CPC-007 | source-platform-security |  |
-| T-C001 | Abuse Credentials for CI/CD Access | cicd | Initial Access | implemented | PSB-CICD-008-CPC-001; PSB-CICD-008-CPC-002; PSB-CICD-008-CPC-005 | cicd-platform-security |  |
+| T-V010 | Malicious Code Modification in Repository | vcs | Post-Compromise | gap | PSB-CICD-005-PRB-001; PSB-CICD-005-PRB-005 | source-platform-security | Verify protected source changes and administrator bypass handling on the live source provider, including unauthorized changes outside the PR path. |
+| T-V011 | Git Tag/Reference Manipulation | vcs | Post-Compromise | gap | PSB-REL-001-REL-004 | source-platform-security | Verify live branch and tag protection, unauthorized reference-change detection and response; consumer verification alone does not protect source refs. |
+| T-V012 | Cross-Fork Object Reference Abuse | vcs | Initial Access | implemented | PSB-CICD-005-PRB-003; PSB-CICD-005-PRB-004; PSB-CICD-005-PRB-005; PSB-CICD-005-PRB-006 | source-platform-security |  |
+| T-C001 | Abuse Credentials for CI/CD Access | cicd | Initial Access | gap |  | cicd-platform-security | Verify service-specific CI/CD credentials, authentication, session lifetime, revocation and audit; the common runbook does not implement these boundaries. |
 | T-C002 | Malicious Execution in Workflow Context | cicd | Initial Access | implemented | PSB-BUILD-001-BLD-001; PSB-BUILD-001-BLD-003; PSB-BUILD-001-BLD-004 | cicd-platform-security |  |
 | T-C003 | PWN Request / Poisoned Pipeline Execution | cicd | Initial Access | implemented | PSB-CICD-005-PRB-001; PSB-CICD-005-PRB-002; PSB-CICD-005-PRB-004; PSB-CICD-005-PRB-005 | cicd-platform-security |  |
 | T-C004 | Workflow Script Injection | cicd | Initial Access | implemented | PSB-CICD-002-INJ-001; PSB-CICD-002-INJ-002; PSB-CICD-002-INJ-004 | cicd-platform-security |  |
 | T-C005 | Secret Exfiltration from Workflow | cicd | Discovery and Lateral Movement | implemented | PSB-BUILD-001-BLD-001; PSB-BUILD-001-BLD-003; PSB-CICD-004-PERM-002 | cicd-platform-security |  |
 | T-C006 | Secret Enumeration in Workflows Using GitHub Search | cicd | Discovery and Lateral Movement | gap | PSB-SOURCE-003-MON-001; PSB-SOURCE-003-MON-002; PSB-SOURCE-003-MON-005; PSB-CICD-004-PERM-002 | cicd-platform-security | Scan workflow definitions, logs, artifacts, and public search results for secret-reference enumeration patterns without exposing secret values. |
 | T-C007 | Action Cache Poisoning | cicd | Post-Compromise | implemented | PSB-CICD-009-CAC-001; PSB-CICD-009-CAC-002; PSB-CICD-009-CAC-003; PSB-CICD-009-CAC-004; PSB-CICD-009-CAC-005; PSB-CICD-009-CAC-006 | cicd-platform-security |  |
-| T-C008 | Malicious Workflow Performing Code Modification | cicd | Post-Compromise | implemented | PSB-CICD-004-PERM-004; PSB-CICD-008-CPC-003; PSB-CICD-008-CPC-004; PSB-CICD-008-CPC-005 | cicd-platform-security |  |
+| T-C008 | Malicious Workflow Performing Code Modification | cicd | Post-Compromise | gap | PSB-CICD-004-PERM-004 | cicd-platform-security | Verify that write-capable workflows cannot alter protected source or weaken provider protection without authorization. |
 | T-C009 | CI/CD Vulnerability Exploitation | cicd | Initial Access | gap | PSB-BUILD-002-HCB-001; PSB-BUILD-002-HCB-002 | cicd-platform-security | Add CI/CD service version and advisory inventory, patch or provider-remediation objectives, compensating isolation, and vulnerability-exploitation detection. |
 | T-C010 | Runner Executing Malicious Package | cicd | Discovery and Lateral Movement | implemented | PSB-DEPS-002-INS-001; PSB-DEPS-002-INS-003; PSB-BUILD-001-BLD-004 | cicd-platform-security |  |
 | T-C011 | Stealing Registry Tokens | cicd | Discovery and Lateral Movement | implemented | PSB-CONTAINER-002-REG-003; PSB-CICD-006-OIDC-006; PSB-BUILD-001-BLD-001 | cicd-platform-security |  |
@@ -70,7 +70,7 @@ Source version: `1.0.0@d1d1536`; artifact SHA-256: `3f45ca1033e09deab0b66e432969
 | T-C016 | Pivot from Self-Hosted VM Runner into Local Network / Cloud | cicd | Discovery and Lateral Movement | implemented | PSB-CICD-007-RNR-005; PSB-BUILD-001-BLD-003 | cicd-platform-security |  |
 | T-C017 | Pivot from Self-Hosted Container Runner into K8s Cluster | cicd | Discovery and Lateral Movement | implemented | PSB-CICD-007-RNR-005; PSB-CONTAINER-001-CNT-005; PSB-CONTAINER-001-CNT-008 | cicd-platform-security |  |
 | T-C018 | Data Exfiltration from CI/CD | cicd | Post-Compromise | implemented | PSB-BUILD-001-BLD-003; PSB-CICD-007-RNR-005; PSB-CICD-007-RNR-008 | cicd-platform-security |  |
-| T-C019 | CI/CD Infrastructure Destruction | cicd | Post-Compromise | gap | PSB-CICD-008-CPC-004; PSB-CICD-008-CPC-005; PSB-CICD-008-CPC-007 | cicd-platform-security | Protect CI/CD organizations, runners, variables, logs, and workflow history with destructive-action guardrails, immutable backups, and tested recovery objectives. |
+| T-C019 | CI/CD Infrastructure Destruction | cicd | Post-Compromise | gap |  | cicd-platform-security | Protect CI/CD organizations, runners, variables, logs, and workflow history with destructive-action guardrails, immutable backups, and tested recovery objectives. |
 | T-C020 | CI/CD Misconfiguration Exploitation | cicd | Initial Access | implemented | PSB-CICD-003-SAS-001; PSB-CICD-003-SAS-002; PSB-CICD-003-SAS-004; PSB-CICD-004-PERM-001; PSB-CICD-004-PERM-002 | cicd-platform-security |  |
 | T-C021 | AI Agent Prompt Injection in Workflow | cicd | Initial Access | implemented | PSB-AI-003-AII-002; PSB-AI-003-AII-005; PSB-AI-003-AII-007; PSB-AI-003-AII-009 | cicd-platform-security |  |
 | T-R001 | Abuse Credentials for Registry Access | registry | Initial Access | implemented | PSB-CONTAINER-002-REG-002; PSB-CONTAINER-002-REG-003; PSB-CONTAINER-002-REG-005 | artifact-registry-security |  |

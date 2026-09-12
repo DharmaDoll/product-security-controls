@@ -9,7 +9,7 @@ A flow exposes how an unclosed technique can connect otherwise strong controls a
 | SITF-FLOW-001: Developer endpoint to poisoned production image | 1 | T-E001: Malicious Execution on Endpoint | endpoint | implemented | Execute attacker-controlled code on the developer endpoint. |
 | SITF-FLOW-001: Developer endpoint to poisoned production image | 2 | T-E003: Harvest Local Secrets / Credentials from Endpoint | endpoint | implemented | Harvest locally available credentials and tokens. |
 | SITF-FLOW-001: Developer endpoint to poisoned production image | 3 | T-V001: Abuse Credentials for VCS Access | vcs | implemented | Use stolen credentials to access the source platform. |
-| SITF-FLOW-001: Developer endpoint to poisoned production image | 4 | T-V010: Malicious Code Modification in Repository | vcs | implemented | Modify protected source or workflow content. |
+| SITF-FLOW-001: Developer endpoint to poisoned production image | 4 | T-V010: Malicious Code Modification in Repository | vcs | gap | Modify protected source or workflow content. |
 | SITF-FLOW-001: Developer endpoint to poisoned production image | 5 | T-C002: Malicious Execution in Workflow Context | cicd | implemented | Run malicious code in the workflow context. |
 | SITF-FLOW-001: Developer endpoint to poisoned production image | 6 | T-C005: Secret Exfiltration from Workflow | cicd | implemented | Attempt to obtain additional workflow secrets. |
 | SITF-FLOW-001: Developer endpoint to poisoned production image | 7 | T-R005: Publishing Malicious Container/VM Image | registry | implemented | Publish an attacker-controlled container image. |
@@ -27,7 +27,7 @@ A flow exposes how an unclosed technique can connect otherwise strong controls a
 | SITF-FLOW-003: Malicious package to release and deployment credentials | 6 | T-R005: Publishing Malicious Container/VM Image | registry | implemented | Publish a malicious image under trusted naming. |
 | SITF-FLOW-003: Malicious package to release and deployment credentials | 7 | T-P004: Container Image Poisoning to Production | production | implemented | Attempt to admit the malicious image to production. |
 | SITF-FLOW-004: Workflow prompt injection to malicious deployment | 1 | T-C021: AI Agent Prompt Injection in Workflow | cicd | implemented | Inject instructions through untrusted workflow input. |
-| SITF-FLOW-004: Workflow prompt injection to malicious deployment | 2 | T-C008: Malicious Workflow Performing Code Modification | cicd | implemented | Cause the workflow to modify repository content. |
-| SITF-FLOW-004: Workflow prompt injection to malicious deployment | 3 | T-V010: Malicious Code Modification in Repository | vcs | implemented | Persist malicious code in protected source. |
+| SITF-FLOW-004: Workflow prompt injection to malicious deployment | 2 | T-C008: Malicious Workflow Performing Code Modification | cicd | gap | Cause the workflow to modify repository content. |
+| SITF-FLOW-004: Workflow prompt injection to malicious deployment | 3 | T-V010: Malicious Code Modification in Repository | vcs | gap | Persist malicious code in protected source. |
 | SITF-FLOW-004: Workflow prompt injection to malicious deployment | 4 | T-C012: PR from Malicious Workflow | cicd | implemented | Create or promote a pull request from the compromised workflow. |
 | SITF-FLOW-004: Workflow prompt injection to malicious deployment | 5 | T-P002: Malicious Deployment via Compromised Pipeline | production | implemented | Attempt deployment through the compromised pipeline. |

@@ -5,7 +5,7 @@
 このページは、実装済みcontrolを目的別に探すための入口です。
 `control.yaml`を正本として`make generate-index`で生成されます。
 
-現在、**53 controls / 465 atomic checks**を収録しています。
+現在、**52 controls / 458 atomic checks**を収録しています。
 
 ## 使い方
 
@@ -25,7 +25,7 @@
 | [Secure Coding](#domain-secure-coding) | 認証・認可、入力処理、secret、暗号など、application実装の安全性。 | 1 | 6 |
 | [Source Protection](#domain-source-protection) | 開発端末、Git、repository、source access credential、公開露出の保護。 | 6 | 79 |
 | [Dependency Security](#domain-dependency-security) | registry、cooldown、install script、lockfile、artifact integrityの保護。 | 5 | 32 |
-| [CI/CD Security](#domain-cicd-security) | workflow dependency、command injection、権限、未信頼PR境界の保護。 | 9 | 58 |
+| [CI/CD Security](#domain-cicd-security) | workflow dependency、command injection、権限、未信頼PR境界の保護。 | 8 | 51 |
 | [Build Security](#domain-build-security) | build隔離、hosted build、credential境界、provenance生成の保護。 | 3 | 16 |
 | [Container / Cloud / IaC Security](#domain-container-cloud-iac-security) | IaC Golden Path、container admission、runtime、cloud control planeの保護。 | 5 | 49 |
 | [Release Integrity](#domain-release-integrity) | 署名、provenance、SBOM、supplier artifact、配布時の完全性。 | 5 | 35 |
@@ -95,8 +95,7 @@ workflow dependency、command injection、権限、未信頼PR境界の保護。
 | [PSB-CICD-005](cicd-security/untrusted-pr-boundary/README.md) | PR作成者が変更できるcodeや実行可能stateとprivileged authorityを分離し、権限処理へ移る前にreview可能なtrust boundaryを再確立する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `verify` | 6 | `prototype` / `E1` |
 | [PSB-CICD-006](cicd-security/audience-bound-oidc-federation/README.md) | 署名済みGitHub ActionsワークロードIDを不変かつ厳密なOIDCクレームと照合し、保存済みクラウド鍵を使わず、対象リソースに限定した短期認証情報だけを発行する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `verify` | 8 | `prototype` / `E3` |
 | [PSB-CICD-007](cicd-security/runner-hardening/README.md) | GitHub-hostedまたはmanaged ephemeral runnerを既定とし、必要なself-hosted runnerを限定groupのJIT one-job fresh computeとして隔離・破棄する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [NIST SSDF](../generated/mappings/nist-ssdf.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify` | 9 | `reference` / `E1` |
-| [PSB-CICD-008](cicd-security/privileged-control-plane-change/README.md) | SCM、CI、cloud federation、registry、signing serviceの特権設定変更を、named administrator、phishing-resistant session、exact policy差分、独立承認、実行、provider audit eventへ結合する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [MITRE ATT&CK](../generated/mappings/mitre-attack.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) | `prevent`, `detect`, `verify`, `govern` | 7 | `prototype` / `E3` |
-| [PSB-CICD-009](cicd-security/cache-provenance-isolation/README.md) | CI cacheのkeyと内容をrepository、workflow、trust class、platform、producer revision、dependency digest、期限、署名済みrecordへ結合し、異なる境界からのrestoreとprefix fallbackを拒否する。 | [sitf](../generated/mappings/sitf.md) | `prevent`, `verify` | 7 | `prototype` / `E3` |
+| [PSB-CICD-009](cicd-security/cache-provenance-isolation/README.md) | GitHub Actions cacheの保存をprotected default branchへ限定し、PRをrestore-only、lookupをexact、内容をhash再検証するdownload cacheへ限定し、privileged jobからcacheを除外する。 | [GitHub Security Guidance](../generated/mappings/github-security-guidance.md) / [OpenSSF OSPS Baseline](../generated/mappings/openssf-osps-baseline.md) / [sitf](../generated/mappings/sitf.md) | `prevent`, `verify` | 7 | `prototype` / `E1` |
 
 <a id="domain-build-security"></a>
 

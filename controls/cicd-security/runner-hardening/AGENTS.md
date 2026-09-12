@@ -60,7 +60,7 @@ Provider-neutral guidanceの改善ではprovider未決定を架空値で埋め�
 - `PSB-BUILD-001`: job内credential、privilege、egress、sandbox、runtime telemetry／threat detection。
 - `PSB-CICD-004`: `GITHUB_TOKEN` permission。
 - `PSB-CICD-006`: cloud OIDC trust policy。
-- `PSB-CICD-008`: runner group等の管理面変更に対するhuman identity、approval、audit。
+- [共通変更管理runbook](../../../docs/runbooks/privileged-changes/README.md): runner group等の管理面変更に対するhuman identity、approval、auditの手順。独立controlやatomic-check evidenceではない。
 - `PSB-SOURCE-004`: provisioner用GitHub App／tokenの選択、保管、期限、失効。
 - `PSB-GOV-002`: persistent runnerまたはbroad scopeのtime-bound exception。
 
