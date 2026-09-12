@@ -4,44 +4,137 @@
 
 ### セキュリティ上の問題
 
-GitHub ActionsをOIDCへ移行しても、AWS IAM roleのtrust policyがorganization wildcardや誤った
-audienceを許すと、別repositoryの正規GitHub tokenまでproduction roleへ交換できる。OIDC導入後も
-長期AWS access keyが残っていれば、攻撃者はfederationを迂回できる。
+OIDCは、GitHub Actionsのjobが「自分はどのrepositoryの、どの実行contextか」を示す署名付きtokenを受け取り、
+AWSがそれを一時credentialへ交換する仕組みである。長期AWS access keyをGitHubへ保存せずに済むが、
+OIDCを有効にしただけでproductionへの経路が安全になるわけではない。
+
+具体的な被害が成立するには、概ね次の三条件が揃う必要がある。
+
+1. 攻撃者が、OIDC tokenを要求できるGitHub Actions jobを起動できるか、そのjobが実行するcodeやdependencyを
+   変更・侵害できる。
+2. AWS IAM roleのtrust policyが、そのjobの`aud`（tokenの利用先）と`sub`（どのworkloadかを示す識別子）を
+   受理する。Organizationやrepository全体を許すwildcardがあると、意図していないjobまで一致し得る。
+3. 交換後のAWS roleが、攻撃者にとって意味のあるactionとresourceを許し、短いsessionが失効する前に
+   AWS APIを実行できる。
+
+したがって、organization wildcardがあるだけで、internet上の任意の攻撃者が直ちにAWS accountを奪えるとは限らない。
+例えば`repo:example-org/*`を悪用するには、攻撃者がそのorganization内の一致するrepositoryでOIDC許可jobを
+動かせる必要がある。一方、その条件を満たす侵害repositoryや過剰権限jobが一つでもあれば、tokenはGitHubが
+正規に発行したものなので、AWSは署名が正しいという理由だけでは攻撃を見分けられない。
+
+被害範囲は、引き受けたroleの権限で決まる。このreferenceのように一つのS3 prefixへの`PutObject`だけなら、
+その場所をreleaseやdeploymentが信用している場合に限り、artifactの差し替えや配布停止へつながり得る。
+ECR、Lambda、ECS等の更新権限があれば実行codeを変更でき、IAM管理権限まであれば権限拡大へ進む可能性がある。
+逆に、roleに対象dataの読取りも変更もできる権限がない、または書込み先を後続systemが利用しないなら、
+roleを取得した事実だけからproduction被害を断定できない。
+
+OIDC導入後も有効な長期AWS access keyが残る場合は、別の攻撃経路が残る。そのkeyを攻撃者が読めるjobや
+accountがあり、keyに有効なAWS権限があると、exactなOIDC条件や900秒の有効期間を通らずに操作できる。
+Secret名が存在するだけでは漏えいの証明にならないが、移行対象の有効なkeyは撤去する必要がある。
 
 ### 誰から、または何から守るか
 
-別repositoryや未承認contextを操作する攻撃者、侵害されたworkflow step、利便性のためtrustやroleを
-広げる管理者、OIDC移行後も残った長期credential、live設定を確認せずfixtureだけで安全と判断する運用から守る。
+AWS trustの範囲内にある別repositoryや未承認branch／Environmentでworkflowを動かせる攻撃者、正規deploy jobの
+Actionやdependencyを侵害した攻撃者、利便性のためtrustやroleを広げる設定ミス、OIDC移行後も残った長期credential、
+live設定を確認せずsample fileだけで安全と判断する運用から守る。
+
+単に外部forkを作れるだけで、そのforkのtokenがexact repository／Environment subjectに一致せず、base repositoryの
+OIDC許可jobでも攻撃者のcodeが動かない場合、このcontrolが扱うrole取得経路は成立しない。また、正規deploy jobを
+侵害された場合はexact subjectにも一致するため、trust条件では防げず、roleの最小権限と短いsessionだけが被害を限定する。
 
 ### 何が対象か
 
-GitHub Actionsのdeploy job、GitHub OIDC issuerとimmutable subject、AWS IAM OIDC provider、IAM roleの
-trust／permissions policy、GitHub repository／Environment secrets、AWS STS sessionを対象とする。
+GitHub Actionsのdeploy jobからAWS resourceへ届く認証・認可の経路全体を対象とする。具体的には、jobの
+`id-token: write`、GitHub OIDC issuerとimmutable subject、GitHub Environmentのbranch protection、AWS IAM OIDC
+provider、IAM roleのtrust policyとpermissions policy、AWS STS session、repository／Environment／organizationに
+残る長期AWS credentialである。
 
 ### 何をするか
 
-AWS側でissuer、`sts.amazonaws.com` audience、immutable repository IDと`production` Environmentを含む
-subjectを完全一致させる。専用roleのaction／resourceを限定し、STS sessionを900秒で要求し、長期AWS keyを削除する。
+OIDC tokenを要求できるjob、AWSが受理するworkload、交換後に操作できるAWS resourceを、それぞれ独立して狭める。
+AWS側ではissuer、`sts.amazonaws.com` audience、immutable repository IDと`production` Environmentを含むsubjectを
+完全一致させる。Environment subject自体にはbranchが入らないため、GitHub Environment側で`main`だけを許可する。
+専用roleのaction／resourceをdeploymentに必要な範囲へ限定し、STS sessionを最小の900秒で要求し、同じ用途の
+長期AWS keyを既知consumerの移行後に削除する。
 
 ### 成功状態
 
-`main`からprotected `production` Environmentを通るjobだけが期待するAWS roleを引き受け、別audienceや
-別subjectのharmless testは拒否される。GitHubに長期AWS access keyがなく、live設定と試験結果が確認されている。
+`main`からprotected `production` Environmentを通るreview済みjobだけが、期待するAWS accountの専用roleを
+900秒で引き受ける。別Environmentのsubjectと別audienceを使う無害な試験は、networkやYAMLの失敗ではなくAWS STSの
+trust判定で拒否される。Role policyは列挙したdeployment operation以外を許さず、同じ用途の長期AWS access keyが
+GitHubに残っていない。これらがsampleの見た目ではなく、current設定、actual run、CloudTrailで確認されている。
 
 ### 対象外・残余リスク
 
-許可されたdeploy job自体が侵害されると、900秒以内のcredentialは盗まれ得る。Runner／egress保護、
-untrusted PR分離、provider設定変更の承認、AWS以外のprovider、実deploymentの正当性は別controlまたは導入先で確認する。
+許可されたdeploy job自体が侵害されると、そのjobは正しいsubjectを持つため、900秒以内のcredentialは取得・窃取され得る。
+このcontrolはsessionを一回限りにはせず、deployment内容やS3 objectの完全性も検証しない。Runner／egress保護、
+untrusted PR分離、artifact provenance、provider設定変更の承認、AWS以外のproviderは別controlまたは導入先で確認する。
+また、role policyが本当に業務上の必要最小権限かは、AWSのsyntax checkだけでは決まらず、deployment設計との人手reviewが残る。
+900秒はsample Actionが要求して取得したsessionの長さであり、同じtokenで行われる全STS requestへの強制上限ではない。
+OIDC tokenを要求できるjob全体を攻撃者が制御した場合、AWS roleのmaximum session durationまでの別sessionを直接要求し得る。
+
+## まず、このcontrolの本質を理解する
+
+AWSへのOIDC federationでは、GitHubのtokenとAWSの一時credentialは同じものではない。GitHub tokenはjobのidentityを
+AWSへ伝える材料であり、AWS IAM roleのtrust policyが「そのidentityへroleを貸すか」を決める。貸した後に何ができるかは、
+roleのpermissions policyが決める。
+
+実害へ至る基本経路は次のとおりである。
+
+```text
+攻撃者が変更・起動できるjob
+        ↓  id-token: writeがあり、OIDC tokenを要求できる
+GitHubが正規tokenを発行
+        ↓  AWS trustがaudienceとsubjectを受理する
+AWS STSが一時credentialを発行
+        ↓  roleが価値あるaction／resourceを許す
+AWS resourceの読取り・変更・deployment
+```
+
+このうち一つでも成立しなければ、この経路によるAWS被害はそこで止まる。Exact trustは二番目の境界を狭めるcontrolであり、
+未信頼codeの実行防止やrole権限の設計を代替しない。本controlは、token発行jobの限定、exact trust、最小role、短いsession、
+旧key撤去を一つの導入単位として扱い、一つの対策だけを安全性の根拠にしない。
+
+## 何が、どの条件で被害になるか
+
+| 対象 | 被害が成立する主な条件 | 起こり得ること | 経路が成立しない、または限定される例 |
+|---|---|---|---|
+| OIDC token発行 | 攻撃者が変更・起動できるjobに`id-token: write`がある | AWSへ提示できる正規GitHub tokenを取得する | 未信頼jobにOIDC permissionがなく、protected jobは攻撃者のcodeを実行しない |
+| AWS role trust | Tokenのissuerが登録済みで、`aud`と`sub`がbroadな条件に一致する | 意図しないrepository／Environmentからproduction roleを引き受ける | `StringEquals`のexact audience／immutable subjectが不一致tokenを拒否する |
+| GitHub Environment | Environment subjectを使うが、deployment branch restrictionやreviewがない | 同じrepositoryの未承認branchから一致subjectを取得する | `production`が`main`だけを許可し、job開始前に必要なprotectionを通す |
+| AWS role permissions | Roleが対象resourceの変更、機密dataの読取り、deployment、IAM操作等を許す | Artifact差替え、service変更、data取得、権限拡大。Exact impactはpolicy次第 | 一つのrelease prefix等へ限定され、無関係なAWS API／resourceが拒否される |
+| 発行済み900秒sessionの窃取 | Approved job内の悪意あるstepがActionの取得した一時credentialを失効前に外部送信・利用する | Roleの許可範囲をjob外からsessionの残り時間だけ利用する | Egress／runner isolationが持出しを妨げ、900秒requestがそのcredentialの再利用時間を限定する |
+| 残存する長期key | 有効なkeyがjobやaccountから読め、key policyが価値ある操作を許す | OIDC trustと短期TTLを迂回し、失効まで繰り返し利用する | 既知consumer移行後にkeyを無効化・削除し、secret storeから撤去する |
+
+設定名やtokenが存在するだけでfindingとはしない。実際のjobからtoken、trust、role、resourceまでを順にたどり、
+攻撃者が制御できる入力とAWSで得る実効権限がつながるかを確認する。
+
+### 反証してから判断する
+
+最初に見つけた設定だけで結論を出さず、少なくとも次の仮説を反証する。
+
+- **仮説: organization wildcardがあれば侵害済みである。** 一致するorganization内で攻撃者がjobを動かせるか、
+  そのjobに`id-token: write`があるか、roleに価値ある権限があるかを確認する。いずれかがなければ、設定は広すぎても
+  記載した被害経路が既に使われたとは言えない。
+- **仮説: exact subjectならproduction jobは安全である。** Approved job内のActionやdependencyが侵害されれば、
+  正しいsubjectでroleを取得できる。Role policy、session時間、runner、egressを別々に確認する。
+- **仮説: negative runが失敗したのでAWS trustが拒否した。** Environmentのbranch rule、approval待ち、YAML error、
+  network障害でもrunは失敗する。AWS STSの拒否応答とCloudTrailを確認するまでtrust testの成功にしない。
+- **仮説: OIDC workflowが動いたので長期keyはなくなった。** Repository以外のEnvironment／organization secret、
+  独自名のkey、別consumer、AWS側でまだactiveなaccess keyを確認する。
 
 ## セキュリティ向上の効果はどこから生まれるか
 
 このcontrolの効果は、採用先で次のlive状態を作ることから生まれる。
 
-- AWS IAM roleがGitHub issuer、用途固有audience、exact subjectを検証する。
-- GitHub Environmentが`main`以外からproduction jobを開始させない。
-- Exchange後のroleが一つのdeployment用途とresourceだけを許可する。
-- GitHubから長期AWS access keyを撤去する。
-- 実際のAWS STSで、許可contextと拒否contextを試す。
+- AWS IAM roleがGitHub issuer、用途固有audience、exact subjectを検証し、別repository／Environmentの正規tokenを拒否する。
+- GitHub Environmentが`main`以外からproduction jobを開始させず、Environment subjectに含まれないbranch条件を補う。
+- OIDC permissionをproduction jobだけへ置き、無関係なtest／build codeがcandidate tokenを要求できないようにする。
+- Exchange後のroleが一つのdeployment用途とresourceだけを許可し、認証に成功しても被害範囲をそのresourceへ限定する。
+- Sample ActionがSTS sessionを900秒で要求し、そのActionが取得したcredentialの利用時間を短くする。ただしsingle-useや、
+  同じOIDC tokenを使った別STS requestの900秒上限にはならない。
+- GitHubから同じ用途の長期AWS access keyを撤去し、exact trustを通らない迂回経路を閉じる。
+- 実際のAWS STSで、許可contextの成功と拒否contextの`AccessDenied`を確認する。
 
 このREADME、sample policy、workflowをcopyしただけではAWSやGitHubの設定は変わらず、導入済みにはならない。
 JWT署名、issuer key rotation、token有効期間の検証はAWS federation serviceへ任せる。Repository内に
@@ -61,6 +154,16 @@ providerを模倣するtoken verifierやreplay ledgerを実装しない。
 同じworkflowや変更者だけに、trust変更、role付与、試験、最終承認を完結させない。
 
 ## 最短の導入手順
+
+この最短手順が有効化する対象は、`main`から`production` Environmentを通る一つのdirect workflowと、
+一つのAWS accountにある専用IAM roleである。最初はdeployment commandを入れず、`sts get-caller-identity`だけを行う。
+変更する実設定は、AWS OIDC provider、role trust、role permissions、GitHub Environment、repository-local workflow、
+旧AWS keyである。
+
+完了時に観測する状態は、trusted runだけが期待account／roleを返し、別Environmentと別audienceのrunはAWS STSで
+拒否され、roleが宣言したexact deployment resource（sampleでは一つのS3 prefix）以外を許さず、旧keyがsecret
+inventoryと既知consumerから消えていることである。
+この状態を確認する前に実deployment stepを追加しない。
 
 ### 0. Reference profileと置換値を確認する
 
@@ -122,11 +225,19 @@ repository、ID、Environmentを実値へ置換してIAM roleのtrust policyへ�
 `StringLike`、`repo:example-org/*`、`repo:example-org/secure-app:*`、audience省略へ弱めない。
 [insecure/aws/wildcard-trust-policy.json](insecure/aws/wildcard-trust-policy.json)は比較専用であり、AWSへ適用しない。
 
+AWSがGitHub tokenの署名を検証しても、それは「GitHubが発行したtoken」という確認にすぎない。`aud`はこのtokenを
+AWS STS用として要求したこと、`sub`はこのrepository／Environmentのjobであることをrole引受け条件へ結び付ける。
+Exact conditionは別workloadのtokenを拒否するが、許可済みproduction job内の悪意あるstepは拒否しない。
+
 ### 3. Roleのactionとresourceを限定する
 
 [secure/aws/role-permissions-policy.json](secure/aws/role-permissions-policy.json)は、一つのS3 release prefixへ
 `s3:PutObject`だけを許可する例である。実deploymentが使うactionとresourceへ置換し、`Action: "*"`、
 `Resource: "*"`、IAM管理権限、不要なrole chainingを追加しない。
+
+このsample権限で想定する価値は、release objectの書込みである。後続の配布・deploymentがそのprefixを信用する場合、
+不正な書込みはartifact差替えにつながり得る。一方、sampleはobjectの読取り、削除、別bucket、compute、IAMを許可しない。
+実装先でも「API名が少ない」だけでなく、各resourceを誰が何に使うかまで確認する。
 
 [IAM Access Analyzer policy validation](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-policy-validation.html)で
 grammarとAWSのsecurity warningを確認する。その結果だけではsemantic least privilegeを証明しないため、
@@ -135,6 +246,11 @@ development teamが列挙したoperationとpolicyを一対一でreviewする。
 ### 4. GitHub Environmentを保護する
 
 `Repository Settings → Environments → production`で次を設定する。
+
+[GitHub OIDC reference](https://docs.github.com/en/actions/reference/security/oidc)にあるとおり、OIDC subjectはjobが
+Environmentを参照するとEnvironment名を含む形式になり、branch名は同じsubjectへ同時には入らない。このためAWSで
+`production` subjectをexact matchするだけでは、どのbranchがそのEnvironmentを使えるか決まらない。`main`制限は
+この手順の必須境界である。
 
 - Deployment branches and tags: `Selected branches and tags`
 - Allowed branch: `main`
@@ -149,6 +265,9 @@ development teamが列挙したoperationとpolicyを一対一でreviewする。
 ### 5. Workflowをcopyして明示的に有効化する
 
 [secure/aws/workflow.yml](secure/aws/workflow.yml)をreviewし、既存fileを上書きしない新しいpathへcopyする。
+
+ここでいう「有効化」は、置換値とAWS側設定をreviewしたworkflowをdefault branchへmergeし、GitHub Actions画面から
+手動実行できる状態にすることである。Fileを作業branchへ置いただけ、またはsample値のまま置いただけでは有効化されない。
 
 ```bash
 mkdir -p .github/workflows
@@ -199,6 +318,10 @@ Workflow runは成功する。CloudTrailの`AssumeRoleWithWebIdentity`でexpecte
 `durationSeconds: 900`を確認する。[AWS STS API](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html)と
 [CloudTrail user identity reference](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-user-identity.html)を参照する。
 
+この成功で確認できるのは、expected workflowからのtokenをAWSが受理し、Actionが要求した900秒sessionでexpected
+account／roleを取得したことまでである。別contextが拒否されること、role権限が必要最小であること、長期keyがないことは
+このrunだけでは分からないため、後続のnegative testと設定reviewを省略しない。
+
 ### Harmless negative self-test
 
 Production deploy commandを含まないreview branchでworkflowを一時的にcopyし、`environment`を
@@ -217,6 +340,10 @@ inline-session-policy: >-
 どちらもAWS STSで拒否され、caller identity stepへ到達しないことが期待結果である。単なるnetwork failure、
 YAML error、Environment未作成をtrust policyの拒否と誤認しない。試験後は一時workflowとEnvironmentを削除する。
 
+WorkflowがGitHub Environmentのbranch ruleやapprovalで停止し、AWS STSへrequestを送っていない場合は、AWS trustの
+negative testとしては`NOT_CHECKED`である。対象runの時刻とroleをCloudTrailで照合し、`AssumeRoleWithWebIdentity`が
+wrong subject／audienceにより拒否されたことを確認する。
+
 ### Stored credential removal
 
 Positive test成功後、repository、`production` Environment、organizationのsecret-name inventoryで次を確認する。
@@ -229,6 +356,10 @@ Positive test成功後、repository、`production` Environment、organizationの
 既知consumerをOIDCへ移行してから長期keyを削除し、positive testを再実行する。
 [insecure/aws/stored-credentials-workflow.yml](insecure/aws/stored-credentials-workflow.yml)は、OIDC導入後も旧keyが
 残る失敗例であり、`.github/workflows`へcopyしない。
+
+Secret-name inventoryはcredential値を収集せず、GitHub上に候補が残っているかを調べるためのものである。候補があれば、
+使用workflow、所有IAM principal、AWS側のactive／inactive状態、最終利用を確認してから削除する。逆にGitHubのinventoryが
+空でも、外部secret managerや別CIに同じdeployment keyが残っていないことまでは証明しない。
 
 ### Decision semantics
 
@@ -359,7 +490,10 @@ federationだけで直接のrequirement evidenceを示せないためmappingし�
 - AWS標準partitionだけをreferenceにする。AWS China／GovCloudはaudienceとARNを別profileで確認する。
 - GitHub Enterprise Serverでは同じimmutable subjectを利用できない場合がある。
 - GitHub Environmentのreviewerやbypass機能はrepository visibilityとplanに依存する。
-- `role-duration-seconds: 900`はAWS STSの最小requestである。Provider側のrole maximum sessionとは別に確認する。
+- `role-duration-seconds: 900`は[AssumeRoleWithWebIdentity](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html)の
+  最小requestであり、Actionが取得するsessionだけを900秒にする。AWS roleのmaximum session durationは最短でも1時間で、
+  [`sts:DurationSeconds`](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_iam-condition-keys.html#condition-keys-sts)は
+  STS assume-role operationに適用されない。許可jobを制御した攻撃者による別requestを900秒へ強制する境界ではない。
 - Approved job内の悪意あるstepは短期credentialを盗み得る。Job分離、egress制限、runner monitoringが必要である。
 - AWS Actionの更新にはupstream差分、full SHA、Node runtime、input behaviorの再reviewが必要である。
 - Manual verificationにはGitHub administrator、AWS IAM administrator、CloudTrail閲覧者の協力が必要である。
