@@ -1,197 +1,191 @@
 id: PSB-CICD-006
-title: Enforce audience-bound cloud OIDC federation
+title: Enforce exact GitHub Actions federation to AWS
 domain: cicd-security
-summary: 署名済みGitHub ActionsワークロードIDを不変かつ厳密なOIDCクレームと照合し、保存済みクラウド鍵を使わず、対象リソースに限定した短期認証情報だけを発行する。
+summary: GitHub Actionsのworkload identityをAWSのexact audienceとimmutable subjectへ限定し、長期AWS keyを残さず、対象resourceだけの900秒sessionへ交換する。
 check_context_version: "1.0"
 security_functions:
   - prevent
   - verify
 threats:
   - id: CICD-OIDC-OVERBROAD-TRUST
-    description: A valid token from a fork pull request different repository or mutable reusable workflow matches an organization-wide cloud trust policy and obtains deployment authority.
+    description: A valid GitHub token from another repository environment or purpose matches an overbroad AWS IAM role trust policy and obtains production authority.
   - id: CICD-OIDC-CREDENTIAL-EXPOSURE
-    description: Long-lived stored cloud keys or an overbroad exchanged credential are stolen by compromised workflow code and reused beyond the intended deployment.
-  - id: CICD-OIDC-REPLAY-OR-FAIL-OPEN
-    description: An expired replayed malformed or unevaluable token is accepted or an exchange failure is interpreted as a clean skipped deployment check.
+    description: A long-lived stored AWS access key or an overprivileged STS role is stolen by compromised workflow code and used beyond the intended deployment.
+  - id: CICD-OIDC-UNVERIFIED-LIVE-STATE
+    description: Repository fixtures missing provider evidence or a failed exchange check are interpreted as proof that the live GitHub and AWS federation is secure.
 implementations:
   insecure:
-    - insecure/workflow.yml
-    - insecure/policy.json
-    - insecure/token.jwt
-    - insecure/trust/oidc-public.pem
-    - insecure/secret-inventory.json
-    - insecure/replay-state.json
-    - insecure/credential-receipt.json
+    - insecure/aws/wildcard-trust-policy.json
+    - insecure/aws/stored-credentials-workflow.yml
   secure:
-    - secure/workflow.yml
-    - secure/policy.json
-    - secure/token.jwt
-    - secure/trust/oidc-public.pem
-    - secure/secret-inventory.json
-    - secure/replay-state.json
-    - secure/credential-receipt.json
+    - secure/aws/workflow.yml
+    - secure/aws/role-trust-policy.json
+    - secure/aws/role-permissions-policy.json
 verification:
-  commands:
-    - make verify-control CONTROL=PSB-CICD-006
+  type: manual
+  procedure: README.md#verification
   expected:
-    - a correctly signed synthetic GitHub OIDC token passes only when every issuer audience subject stable repository ref environment and workflow condition is exact
-    - correctly signed fork pull-request wrong-audience wrong-repository mutable-workflow expired and replayed tokens are rejected
-    - id-token write is present only on the protected exchange job and static cloud credential names are absent from workflow and repository secret inventory
-    - exchanged credentials have a maximum 15-minute lifetime and exact role action resource token JTI audience subject and policy bindings
-    - invalid signature denied exchange missing cryptographic verification and incomplete evidence never produce a clean result
+    - the current AWS IAM role trust uses the GitHub issuer exact sts.amazonaws.com audience and exact immutable repository and production Environment subject
+    - only the protected production job can request an OIDC token and a trusted main run obtains the expected AWS account and role
+    - harmless wrong-subject and wrong-audience runs are rejected by AWS STS before any deployment operation
+    - the dedicated role permits only reviewed deployment actions on exact resources and the workflow requests a 900-second session
+    - repository Environment and organization secret-name inventories contain no long-lived AWS access key used by the deployment
+    - missing stale incomplete or failed live verification remains NOT_CHECKED or ERROR rather than PASS
 checks:
   - id: OIDC-001
-    title: OIDC JWT signature and protected header are verified
-    required_state: trusted RS256 key ID and signature validate the exact compact JWT signing input
+    title: AWS validates the GitHub OIDC issuer and token
+    required_state: the current AWS IAM OIDC provider is exactly token.actions.githubusercontent.com with sts.amazonaws.com as an allowed audience and AWS performs the token validation
     responsible_role: ci-platform
     applies_to:
       - github-actions-oidc-jwt
-      - cloud-identity-provider
+      - aws-iam-oidc-provider
     context:
-      threat_actor: network intermediary compromised pipeline component or attacker fabricating a workload token
-      attack_or_failure_scenario: cloud federation evaluates attacker-controlled claims without authenticating the issuer signature and approved key
-      why_required: claim matching has no security value unless the claims are cryptographically bound to the trusted issuer key and algorithm
+      threat_actor: attacker network intermediary or compromised pipeline component presenting a token from an untrusted or fabricated issuer
+      attack_or_failure_scenario: AWS grants a role without authenticating the GitHub issuer and the token through its configured OIDC federation service
+      why_required: audience and subject conditions have no security value unless AWS first authenticates the token and issuer that supplied those claims
     verification:
-      type: automated
-      method: make verify-control CONTROL=PSB-CICD-006
-      expected: the authentic fixture passes while signature tampering is a finding and unavailable OpenSSL is an error
+      type: external-evidence
+      method: Inspect the current AWS IAM OIDC provider and a successful AssumeRoleWithWebIdentity event for the target role
+      expected: the provider URL and audience are exact and AWS records a successful web-identity exchange only for the trusted issuer
       evidence:
-        - sanitized verifier output
-        - synthetic public key and signed-token fixture
+        - current AWS IAM OIDC provider setting with account and capture time
+        - sanitized CloudTrail AssumeRoleWithWebIdentity event
     mapping_status: reviewed
   - id: OIDC-002
-    title: Issuer audience subject and immutable repository identity are exact
-    required_state: exact issuer audience immutable-ID subject repository repository ID owner ID and protected environment with no wildcard
+    title: AWS role trust uses an exact audience and immutable repository subject
+    required_state: the current role trust uses StringEquals for sts.amazonaws.com and one immutable owner ID repository ID and production Environment subject without wildcard
     responsible_role: ci-platform
     applies_to:
-      - cloud-oidc-trust-policy
+      - aws-iam-role-trust-policy
       - github-repository-identity
     context:
-      threat_actor: fork owner namespace squatter malicious organization repository or trust-policy maintainer using a convenience wildcard
-      attack_or_failure_scenario: a valid GitHub-issued token from a different workload matches a broad cloud role trust condition
-      why_required: signature validity proves GitHub issued the token but exact stable identity and audience decide whether this particular workload is authorized
+      threat_actor: malicious repository namespace squatter or administrator using an organization or repository wildcard for convenience
+      attack_or_failure_scenario: a valid GitHub-issued token from another repository environment or purpose matches the production role trust policy
+      why_required: token authenticity proves GitHub issued a token while exact audience and immutable subject decide whether this particular workload may assume the role
     verification:
-      type: automated
-      method: make verify-control CONTROL=PSB-CICD-006
-      expected: wrong audience repository stable ID environment and wildcard policy values are rejected
+      type: hybrid
+      method: Compare secure/aws/role-trust-policy.json with the current AWS role trust and run the wrong-subject and wrong-audience tests in README.md
+      expected: the live trust has no wildcard and AWS STS rejects both mismatched contexts
       evidence:
-        - exact trust-policy fixture
-        - signed wrong-audience and wrong-repository negative output
+        - current AWS IAM role trust policy with account role and capture time
+        - sanitized negative exchange results
     mapping_status: reviewed
   - id: OIDC-003
-    title: Deploy context and reusable workflow identity are immutable and exact
-    required_state: exact trusted branch push event caller workflow source commit hosted runner and full-SHA reusable workflow
-    responsible_role: ci-platform
+    title: GitHub Environment limits the trusted deployment context
+    required_state: the direct workflow uses the production Environment and its current deployment branch policy permits only main with required independent review where the provider plan supports it
+    responsible_role: repository-admin
     applies_to:
-      - github-actions-deploy-context
-      - reusable-workflow
+      - github-actions-deploy-job
+      - github-environment
     context:
-      threat_actor: pull-request contributor compromised caller or maintainer replacing a branch-referenced reusable workflow
-      attack_or_failure_scenario: unreviewed code reaches the same cloud role through a PR ref another workflow or a reusable workflow changed after trust review
-      why_required: repository trust alone does not distinguish trusted deployment code from other workflows and events within the repository
+      threat_actor: untrusted branch contributor compromised maintainer or operator starting the deployment workflow from an unreviewed ref
+      attack_or_failure_scenario: a non-main run reaches the production Environment and obtains a token whose environment subject matches the AWS role trust
+      why_required: an environment-based OIDC subject does not itself encode the branch so the live Environment branch policy supplies the missing trusted-ref restriction
     verification:
-      type: automated
-      method: make verify-control CONTROL=PSB-CICD-006
-      expected: fork PR mutable reusable workflow non-push wrong ref and workflow identity cases are rejected
+      type: external-evidence
+      method: Inspect the current production Environment deployment branch required reviewer self-review and bypass settings then run a harmless branch rejection drill
+      expected: only main can enter the production job and unavailable plan-dependent protections remain explicitly NOT_CHECKED or documented residual risk
       evidence:
-        - signed fork and mutable-workflow fixtures
-        - sanitized verifier output
+        - current GitHub Environment setting with repository and capture time
+        - sanitized protected-job drill result
     mapping_status: reviewed
   - id: OIDC-004
-    title: OIDC token is current short lived and single use
-    required_state: valid nbf iat exp maximum 10-minute lifetime freshness window and previously unused JTI
+    title: GitHub token and AWS STS session are current and short lived
+    required_state: AWS validates token time claims and the workflow requests a 900-second AssumeRoleWithWebIdentity session
     responsible_role: ci-platform
     applies_to:
       - github-actions-oidc-jwt
-      - replay-ledger
+      - aws-sts-session
     context:
-      threat_actor: attacker replaying a token captured from logs runner memory network telemetry or a compromised step
-      attack_or_failure_scenario: a previously issued or expired token remains exchangeable after its intended job and decision window
-      why_required: short lifetime limits exposure duration while atomic single-use enforcement addresses replay inside that remaining window
+      threat_actor: attacker replaying a token or temporary credential captured from runner memory logs telemetry or a compromised deploy step
+      attack_or_failure_scenario: an expired token is accepted or an issued AWS session remains useful longer than the smallest supported deployment window
+      why_required: provider-side time validation rejects stale tokens and the 900-second request bounds the useful lifetime of a stolen AWS session without claiming single-use enforcement
     verification:
-      type: automated
-      method: make verify-control CONTROL=PSB-CICD-006
-      expected: current unused token passes while expired stale future and consumed JTI cases are rejected
+      type: external-evidence
+      method: Inspect the successful AWS STS and CloudTrail exchange for token acceptance time and durationSeconds 900
+      expected: stale or invalid tokens are rejected and the accepted session request is 900 seconds
       evidence:
-        - signed expired-token fixture
-        - replay-state negative output
+        - sanitized successful and rejected exchange records
+        - CloudTrail request duration
     mapping_status: reviewed
   - id: OIDC-005
-    title: Token issuance is isolated to the protected exchange job
-    required_state: workflow deny-all and exact contents read plus id-token write only on the trusted-ref protected-environment deploy job
+    title: OIDC token issuance is isolated to the protected exchange job
+    required_state: workflow deny-all with id-token write only on the production Environment job that performs the AWS exchange
     responsible_role: repository-admin
     applies_to:
       - github-actions-workflow
       - protected-deploy-job
       - github-environment
     context:
-      threat_actor: compromised test dependency pull-request code or maintainer granting OIDC permission at workflow scope
-      attack_or_failure_scenario: code outside the reviewed exchange job requests a valid JWT and exchanges it against the cloud role
-      why_required: exact cloud claims reduce who can exchange tokens while job isolation reduces which executed code can obtain one in the first place
+      threat_actor: compromised test dependency pull-request code or maintainer granting OIDC permission to unrelated jobs
+      attack_or_failure_scenario: code outside the reviewed production exchange job requests a valid GitHub token and attempts to use the AWS role
+      why_required: exact AWS claims limit which token is accepted while job isolation limits which executed code can request a candidate token in the first place
     verification:
       type: hybrid
-      method: make verify-control CONTROL=PSB-CICD-006 and review GitHub Environment protection through repository evidence
-      expected: broad defaults multiple id-token jobs missing ref guard missing environment and wrong audience request are rejected
+      method: Review every id-token write grant under PSB-CICD-004 and compare the deployed workflow with secure/aws/workflow.yml
+      expected: only the exact production federation job has id-token write and all other jobs remain denied
       evidence:
-        - workflow verifier output
-        - GitHub Environment protection evidence
+        - exact deployed workflow revision
+        - PSB-CICD-004 permission review record
     mapping_status: reviewed
   - id: OIDC-006
-    title: Stored cloud credentials are absent
-    required_state: workflow and fresh complete repository secret inventory contain no static AWS Azure GCP or generic cloud credential
+    title: Long-lived AWS credentials are absent
+    required_state: workflow and current repository Environment and organization secret-name inventories contain no long-lived AWS access key used by this deployment
     responsible_role: repository-admin
     applies_to:
       - github-actions-secret
       - workflow-environment
     context:
-      threat_actor: compromised Action malicious step repository maintainer or attacker reading accidentally exposed workflow configuration
-      attack_or_failure_scenario: a long-lived cloud key remains available after OIDC adoption and can be stolen and reused independently of exact token claims
-      why_required: OIDC reduces durable credential risk only when legacy keys and fallback secrets are actually removed
+      threat_actor: compromised Action malicious step repository maintainer or attacker obtaining a legacy stored AWS key
+      attack_or_failure_scenario: a long-lived AWS key remains after OIDC adoption and can be stolen and reused independently of the exact federation conditions
+      why_required: exact OIDC trust reduces durable credential risk only when the legacy credential path and its known consumers are actually removed
     verification:
-      type: hybrid
-      method: make verify-control CONTROL=PSB-CICD-006 and collect a current repository and environment secret-name inventory
-      expected: recognized static cloud credential names are findings while unavailable or stale inventory is an error
+      type: external-evidence
+      method: Review current repository Environment and organization secret names migrate known consumers remove the old key and rerun the positive exchange
+      expected: no deployment consumer or GitHub secret inventory contains a long-lived AWS access key
       evidence:
-        - sanitized secret-name inventory
-        - workflow scan output
+        - sanitized current secret-name inventories with target and capture time
+        - old-key deletion and consumer migration record
+        - post-removal positive exchange result
     mapping_status: reviewed
   - id: OIDC-007
-    title: Exchanged cloud credential is short lived and least privilege
-    required_state: successful exchange receipt bound to token JTI audience subject policy revision exact role action resource and maximum 15-minute TTL
+    title: AWS session is dedicated and least privilege
+    required_state: the expected account issues one named role for a 900-second session and that role permits only reviewed actions on exact deployment resources
     responsible_role: ci-platform
     applies_to:
-      - cloud-temporary-credential
-      - cloud-iam-role
+      - aws-sts-session
+      - aws-iam-role
       - deployment-resource
     context:
-      threat_actor: compromised deploy step or cloud IAM maintainer assigning administrator or wildcard permissions for convenience
-      attack_or_failure_scenario: a correctly authenticated workload receives authority that can modify unrelated resources or remains useful long after deployment
-      why_required: strong workload authentication cannot compensate for an overprivileged or long-lived authorization decision downstream
+      threat_actor: compromised production step or cloud administrator assigning wildcard permissions or an unrelated account role
+      attack_or_failure_scenario: a correctly authenticated workflow receives authority over unrelated AWS resources or a different account than reviewers intended
+      why_required: strong workload authentication cannot compensate for an overprivileged or misdirected authorization decision after token exchange
     verification:
       type: hybrid
-      method: make verify-control CONTROL=PSB-CICD-006 and compare the provider role policy and audit event with the receipt contract
-      expected: wildcard action resource TTL over 15 minutes binding mismatch credential material and denied exchange are rejected
+      method: Match the live role policy to documented deployment operations validate it with IAM Access Analyzer and confirm account and role through sts get-caller-identity
+      expected: the expected account and role are used with no wildcard action or resource and every grant has a reviewed deployment operation
       evidence:
-        - sanitized exchange receipt
-        - provider role and audit evidence
+        - current IAM role permissions policy
+        - IAM Access Analyzer result
+        - sanitized caller identity and semantic permission review
     mapping_status: reviewed
   - id: OIDC-008
-    title: Federation verification fails closed
-    required_state: malformed missing stale incomplete or cryptographically unevaluable input returns error and denied exchange returns a finding
-    responsible_role: ci-platform
+    title: Live federation verification fails closed
+    required_state: missing stale partial or failed GitHub AWS secret-inventory and exchange evidence remains NOT_CHECKED or ERROR and an unexpectedly denied trusted exchange is FAIL
+    responsible_role: security
     applies_to:
-      - oidc-federation-verifier
+      - oidc-federation-verification
       - deployment-quality-gate
     context:
-      threat_actor: verifier outage malformed evidence stale secret inventory or pipeline logic treating skipped exchange as success
-      attack_or_failure_scenario: the deployment proceeds or records clean evidence even though identity trust or issuance could not be evaluated
-      why_required: an explicit error state prevents telemetry and verifier failure from silently bypassing the cloud identity gate
+      threat_actor: provider API failure insufficient reviewer permission partial inventory or operator treating skipped verification as success
+      attack_or_failure_scenario: deployment federation is reported secure even though one or more live trust authorization or legacy-credential facts could not be evaluated
+      why_required: explicit non-clean states prevent repository samples and missing provider evidence from becoming a false organization adoption claim
     verification:
-      type: automated
-      method: make verify-control CONTROL=PSB-CICD-006
-      expected: unavailable OpenSSL and incomplete inventory return exit 2 while denied exchange returns exit 1
+      type: manual
+      method: Complete every README verification row and record PASS FAIL NOT_CHECKED or ERROR without inferring missing observations
+      expected: only complete current live evidence can support PASS and the canonical runner reports NOT_CHECKED before that review
       evidence:
-        - negative-test output
+        - dated manual verification record with target reviewer and result per check
     mapping_status: unmapped
 mappings:
   - framework: github-security-guidance
@@ -199,9 +193,9 @@ mappings:
     id: GHAS-CONCEPT-OIDC
     relationship: verifies
     confidence: high
-    rationale: The control verifies the signed GitHub workload token exact cloud trust relationship short-lived exchange and removal of duplicated long-lived cloud secrets described by the OIDC concept guidance.
+    rationale: The AWS reference and live procedure verify exact GitHub workload trust short-lived role exchange and removal of duplicated long-lived AWS credentials without treating repository files as adoption evidence.
     reviewer: product-security
-    review_date: "2026-08-04"
+    review_date: "2026-09-06"
     applies_to:
       - OIDC-001
       - OIDC-002
@@ -213,10 +207,11 @@ mappings:
     id: GHAS-REF-OIDC
     relationship: verifies
     confidence: high
-    rationale: Exact audience subject repository stable IDs environment ref workflow and reusable-workflow claims plus job-level id-token permission directly exercise the documented GitHub OIDC trust inputs.
+    rationale: The exact issuer audience immutable repository subject Environment workflow permission and negative exchange procedure directly exercise the documented GitHub OIDC trust inputs.
     reviewer: product-security
-    review_date: "2026-08-04"
+    review_date: "2026-09-06"
     applies_to:
+      - OIDC-001
       - OIDC-002
       - OIDC-003
       - OIDC-004
@@ -226,9 +221,9 @@ mappings:
     id: OSPS-AC-04.02
     relationship: supports
     confidence: high
-    rationale: Exchange-job isolation and exact downstream role action resource and lifetime constraints support least privilege for CI deployment credentials without asserting complete pipeline access-control coverage.
+    rationale: Exchange-job isolation and exact AWS role action resource account and duration restrictions support least privilege while live adoption remains manual evidence.
     reviewer: product-security
-    review_date: "2026-08-04"
+    review_date: "2026-09-06"
     applies_to:
       - OIDC-005
       - OIDC-007
@@ -237,19 +232,19 @@ mappings:
     id: T1552.001
     relationship: mitigates
     confidence: medium
-    rationale: Removing long-lived cloud credentials from workflow text and repository secrets reduces credentials-in-files opportunities but does not claim compliance or eliminate runtime token theft.
+    rationale: Removing long-lived AWS access keys from workflow and GitHub secret stores reduces credentials-in-files opportunities but does not eliminate theft of a temporary session from an approved job.
     reviewer: product-security
-    review_date: "2026-08-04"
+    review_date: "2026-09-06"
     applies_to:
       - OIDC-006
 limitations:
-  - The first slice is a provider-neutral offline contract and does not validate AWS Azure GCP or another provider-specific trust-policy syntax or live configuration.
-  - Production validation must use issuer discovery and rotating JWKS with authenticated transport while the committed public key is synthetic test material only.
-  - Repository and environment secret inventory and GitHub Environment protection require separately collected current API evidence.
-  - The static JSON replay fixture demonstrates the decision contract but production single-use enforcement requires an atomic durable provider-side ledger.
-  - A malicious step in the approved deploy job can still steal the OIDC or exchanged credential during its short lifetime so build separation egress restriction and runtime monitoring remain necessary.
-  - Provider claim support minimum credential TTL session cleanup and audit fields vary and require a reviewed provider adapter.
-  - Package registry Trusted Publishing is a separate future adoption profile and is not covered by this cloud deployment control.
-status: prototype
+  - The reference profile covers the standard AWS partition and does not establish equivalent audiences ARNs conditions or behavior for AWS China AWS GovCloud Azure Google Cloud or another provider.
+  - GitHub Enterprise Server may not support the immutable subject format used by the reference and requires a separate reviewed profile.
+  - GitHub Environment protection and secret inventory require current provider evidence and cannot be inferred from the committed workflow.
+  - AWS STS does not provide the synthetic single-use JTI ledger previously modeled by this package so replay within a stolen temporary session lifetime remains residual risk.
+  - A successful sts get-caller-identity call verifies the account and role but not the semantic minimum of every deployment permission.
+  - A malicious step in the approved job can steal the OIDC token or AWS session during its short lifetime so job separation egress restriction and runner monitoring remain necessary.
+  - IAM trust permission Environment and Action behavior can change and require review against the linked official guidance before updates.
+status: reference
 owner: product-security
-evidence_level: E3
+evidence_level: E1
