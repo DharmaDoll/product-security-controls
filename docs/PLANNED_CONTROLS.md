@@ -37,7 +37,7 @@ PSB-CICD-004 ──> PSB-CICD-005 ──> PSB-CICD-006
 
 PSB-CICD-005 + PSB-BUILD-001 ──> PSB-CICD-007 runner hardening
 
-PSB-CICD-004..007 + provider audit inventory ──> PSB-CICD-008 control-plane change assurance
+PSB-CICD-004..007 + provider audit inventory ──> shared change runbook (no independent control)
 
 PSB-REL-002 + PSB-DETECT-001 ──> PSB-REL-003 ──> Golden Path + PSB-GOV-001
 PSB-REL-003 + PSB-REL-001 ─────> PSB-REL-004 supplier SBOM trust
@@ -61,7 +61,7 @@ PSB-GOV-003 ──> organization-owned FIRST PSIRT capability profile
 PSB-SOURCE-003 + PSB-SOURCE-004 + PSB-GOV-001 ──> PSB-GOV-004
 PSB-CICD-006 + PSB-REL-004 ──────────────────────> PSB-GOV-004 adapters
 
-PSB-SOURCE-004 + PSB-SOURCE-005 + PSB-CICD-008 ──> PSB-SOURCE-006 Organization posture
+PSB-SOURCE-004 + PSB-SOURCE-005 ──> PSB-SOURCE-006 Organization posture
 
 PSB-GOV-001 + PSB-GOV-003 + build/release/container evidence ──> PSB-GOV-005
 
@@ -91,14 +91,7 @@ now composes with Falco and Sysdig runtime event adapters. The provider-neutral
 host-side policy boundary is implemented in `PSB-CONTAINER-003`; live sensor
 installation, kernel driver, and host enforcement evidence remain
 provider-specific follow-on work.
-Human administrator control-plane changes are implemented as `PSB-CICD-008`
-through an E1 guidance-first reference. It provides a copyable change runbook
-and record template for named administrators, explicit target and before／after
-values, independent approval, provider audit plus current-state review, and a
-bounded emergency path. A GitHub private-sandbox ruleset drill is the smallest
-supported live procedure. GitHub, AWS, registry, and signing adoption remain
-organization evidence; no synthetic provider adapter or repository fixture is
-treated as proof of current control-plane state.
+Human administrator changes use [共通変更管理runbook](runbooks/privileged-changes/README.md). PSB-CICD-008 is retired and supplies no current checks.
 
 The `PSB-CICD-006` provider-neutral E3 slice is implemented; live cloud-provider
 adapters remain organization evidence and a dependency for live identity use.
@@ -2284,8 +2277,8 @@ licenses, and detailed limitations are recorded in
 | poutine | `PSB-CICD-003` and the `PSB-CICD-001..005` boundary | identified comparison candidate | Add only for a unique pipeline supply-chain finding; do not duplicate existing SHA, injection, privilege, or untrusted-PR controls |
 | cicd-sensor | `PSB-BUILD-001` telemetry adapter | identified pre-release candidate | Prototype only after privilege, kernel support, event schema, redaction, health failure, and integrity requirements are testable |
 | OpenSSF Scorecard | governance or supplier-assessment evidence | adopted as guidance only | Implement an adapter only for individually mapped checks with freshness and error semantics; never use the aggregate score as compliance evidence |
-| OpenSSF Allstar | `PSB-CICD-008` or a future GitHub organization-posture adapter | identified, source-pinned, not installed or authorized | Add only for a unique organization-scale drift outcome with least-privilege App permissions, alert／mutation separation, dry-run negative fixtures, rollback, independent audit, bounded exceptions, and explicit unavailable-App `ERROR` |
-| Checkov GitHub configuration | `PSB-DETECT-001` comparison with `PSB-SOURCE-004`／`PSB-CICD-008` provider boundaries | reviewed and rejected for the current slice | Reconsider only when a pinned rule finds one required configuration-as-code outcome that existing scanners and live provider-evidence procedures do not; never present a file scan as current hosted enforcement |
+| OpenSSF Allstar | `PSB-SOURCE-006` or a future GitHub organization-posture adapter | identified, source-pinned, not installed or authorized | Add only for a unique organization-scale drift outcome with least-privilege App permissions, alert／mutation separation, dry-run negative fixtures, rollback, independent audit, bounded exceptions, and explicit unavailable-App `ERROR` |
+| Checkov GitHub configuration | `PSB-DETECT-001` comparison with `PSB-SOURCE-004`／`PSB-SOURCE-006` provider boundaries | reviewed and rejected for the current slice | Reconsider only when a pinned rule finds one required configuration-as-code outcome that existing scanners and live provider-evidence procedures do not; never present a file scan as current hosted enforcement |
 | TruffleHog | `PSB-SOURCE-003` organization-operated assessment | introduced as a complementary candidate; not recommended for developer-local hooks | Add only for a demonstrated onboarding, scheduled full-history, incident-response, or credential-verification gap, with controlled egress and distinct scanner-error evidence |
 
 For every candidate, the executable adoption slice must pin the version and
@@ -2345,8 +2338,9 @@ generated under
 [`generated/checklists/profiles/supply-chain-integration/`](../generated/checklists/profiles/supply-chain-integration/),
 and both XLSX workbooks include a filterable `SSC Integration` sheet. Current
 repository evidence leaves application-security integration planned;
-CI/CD control-plane administrator identity is now implemented through
-`PSB-CICD-008`, and running-artifact rebuild closure through `PSB-GOV-005`.
+Cross-provider privileged-change assurance remains a gap after retirement of PSB-CICD-008.
+The [shared runbook](runbooks/privileged-changes/README.md) provides procedure guidance;
+running-artifact rebuild closure remains implemented through `PSB-GOV-005`.
 No row claims live adoption or NIST compliance.
 
 ### SITF technique coverage and attack flows
@@ -2450,59 +2444,9 @@ unavailable, malformed, mismatched-generation, and credential-bearing
 evidence. Live provider, provisioner, network-probe, and log-backend adapters
 remain adoption work and are not implied by the prototype.
 
-### PSB-CICD-008 — Privileged CI/CD control-plane change assurance
+### Retired PSB-CICD-008
 
-Status: `implemented` — E1 guidance-first human administrator change reference
-
-Goal: reduce the chance that one compromised, malicious, or mistaken
-administrator can silently weaken a software-supply-chain trust boundary
-without an exact request, independent review, provider observation, and owned
-recovery.
-
-Implemented boundary:
-
-- `PSB-CICD-004／005` continue to own workflow permission and untrusted-PR
-  behavior;
-- `PSB-CICD-006` continues to own machine workload federation claims;
-- `PSB-CICD-007` continues to own runner registration and lifecycle;
-- `PSB-SOURCE-006` continues to own current GitHub Organization posture and
-  access inventory;
-- `PSB-CICD-008` owns the human privileged-change procedure: named current
-  actor, strong bounded authentication, exact readable target and before／after,
-  independent pre-approval, provider audit and current-state review, and a
-  bounded emergency decision.
-
-The reference implementation is intentionally small. It contains one copyable
-ordinary／emergency runbook, one change-record template, one isolated insecure
-scenario, and manual atomic checks `CPC-001..007`. The README explains for
-rulesets, Environments, runners, OIDC trust, registries, and signing policies
-which additional authority and downstream path must exist before a setting
-change becomes concrete product harm. It also records conditions that limit
-the impact instead of treating every administrator action as an inevitable
-compromise.
-
-The shortest live procedure uses a private GitHub sandbox repository and
-strengthens one test-branch ruleset from one required approval to two. A
-separate approver reviews the exact change, an administrator applies it, and
-an independent reviewer compares the audit event and current setting. The
-negative procedure confirms that missing approval stops the normal path and
-that a direct sandbox strengthening change without a ticket becomes `FAIL` at
-the audit review. It does not weaken production protection.
-
-Top-level verification is manual. The canonical runner returns `NOT_CHECKED`
-with exit `2` until the adopting organization provides current provider, IdP,
-approval, and setting evidence. There is no control-local verifier, policy
-JSON, synthetic organization evidence, or no-op test. If a future read-only
-collector is justified by actual scale, it must first define provider
-authority, complete scope and pagination, redaction, failure states, and the
-remaining live boundary; its local regression result must not become an
-organization `PASS`.
-
-Where a provider cannot enforce two-person administrative changes, the
-reference supplies governance and detection at the audit-review cadence rather
-than claiming guaranteed prevention. Stronger pre-execution enforcement
-requires a provider-native gate or a separately reviewed change gateway.
-
+See [ADR-0003](adr/0003-privileged-change-runbook.md). [共通変更管理runbook](runbooks/privileged-changes/README.md) replaces the package and is not independent control evidence.
 
 ### PSB-CICD-009 — Signed cache provenance and trust isolation
 
@@ -2576,7 +2520,7 @@ automatic remediation to the verifier.
 Live GitHub／IdP collectors, current hosted enforcement, provider-side
 mutation, audit-backend integrity, and organization adoption remain external
 evidence. Credential lifecycle, destructive recovery, and privileged change
-approval stay with `PSB-SOURCE-004`, `PSB-SOURCE-005`, and `PSB-CICD-008`.
+approval stay with `PSB-SOURCE-004`, `PSB-SOURCE-005`, and [共通変更管理runbook](runbooks/privileged-changes/README.md).
 
 ### PSB-SOURCE-005 — Critical repository destruction resilience and recovery assurance
 

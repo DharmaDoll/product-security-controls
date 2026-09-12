@@ -103,7 +103,7 @@ requires healthy independently retained audit, drift, and alert evidence. Its
 provider-neutral E3 snapshot does not prove live GitHub or IdP enforcement,
 perform remediation, replace credential lifecycle in `PSB-SOURCE-004`, replace
 destruction recovery in `PSB-SOURCE-005`, or replace privileged-change
-correlation in `PSB-CICD-008`.
+correlation in [共通変更管理runbook](runbooks/privileged-changes/README.md).
 
 ### External attack surface discovery threats
 
@@ -324,25 +324,7 @@ threats are covered.
 - exact artifact digestとactive deploymentの関係が欠落し、稼働中の影響serviceが
   SBOM incident scopeから漏れること;
 
-`PSB-CICD-008` owns the human privileged-change procedure across SCM, CI,
-cloud identity, artifact registry, and signing services. Concrete product harm
-requires more than an administrator setting change: the actor must be able to
-weaken an effective setting, the changed authority must be usable by a
-workflow or person, and a downstream branch, runner, cloud role, registry, or
-signature consumer must trust the result. The guidance therefore records both
-the attack-enabling conditions and the conditions that limit impact.
-
-The reference binds a named current administrator, phishing-resistant bounded
-authentication, an exact human-readable target and before／after, independent
-pre-approval, provider audit plus current-state review, and a one-hour
-independently reviewed emergency path. It supplies a copyable runbook,
-change-record template, and harmless GitHub private-sandbox ruleset drill.
-Repository files do not prove live membership, authentication, approval,
-provider state, audit completeness, or Organization-wide adoption; these remain
-`NOT_CHECKED` until current external evidence is reviewed. Where direct
-administration cannot be gated, the control detects unauthorized changes at
-the audit-review cadence and does not claim guaranteed prevention.
-
+[共通変更管理runbook](runbooks/privileged-changes/README.md) describes approval and comparison with provider state. Identity and audit stay with PSB-SOURCE-006; setting values stay with service controls. Complete cross-provider detection remains a gap.
 
 The
 [CI/CD threat-matrix reconciliation](CICD_THREAT_MATRIX_RECONCILIATION.md)

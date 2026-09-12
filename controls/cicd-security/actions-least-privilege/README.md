@@ -282,7 +282,7 @@ Controlを外すとjob-level driftのreview可能性が下がるため、server-
 - [`PSB-CICD-005`](../untrusted-pr-boundary/README.md): fork／untrusted PRからprivileged contextを分離する。
 - [`PSB-CICD-006`](../audience-bound-oidc-federation/README.md): OIDC claims、audience、cloud trust、exchangeを検証する。
 - [`PSB-CICD-007`](../runner-hardening/README.md): runner image、network、lifecycle、teardown。
-- [`PSB-CICD-008`](../privileged-control-plane-change/README.md): GitHub setting変更のhuman identity、approval、audit。
+- [共通変更管理runbook](../../../docs/runbooks/privileged-changes/README.md): GitHub setting変更のhuman identity、approval、audit。
 - [`PSB-SOURCE-004`](../../source-protection/source-access-credential-lifecycle/README.md): PAT、GitHub App、OAuth、SSH credential lifecycle。
 - [`PSB-SOURCE-006`](../../source-protection/github-organization-governance/README.md): organization-wide Actions policyとrepository coverage。
 

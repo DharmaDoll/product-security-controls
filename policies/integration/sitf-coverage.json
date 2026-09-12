@@ -77,9 +77,9 @@
     {
       "technique_id": "T-E008",
       "disposition": "gap",
-      "check_refs": ["PSB-CICD-008-CPC-001", "PSB-CICD-008-CPC-002"],
+      "check_refs": [],
       "remaining_work": "Inventory and govern developer-held CI/CD sessions and API credentials, including phishing resistance, scope, lifetime, revocation, and endpoint binding.",
-      "rationale": "Privileged control-plane actor and session checks cover reviewed changes, not all local CI/CD credentials available after endpoint compromise."
+      "rationale": "Retired CPC checks are removed. Developer-held CI/CD credentials remain outside the verified inventory."
     },
     {
       "technique_id": "T-E009",
@@ -192,9 +192,11 @@
     {
       "technique_id": "T-V006",
       "disposition": "gap",
-      "check_refs": ["PSB-SOURCE-003-MON-002", "PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-005"],
+      "check_refs": [
+        "PSB-SOURCE-003-MON-002"
+      ],
       "remaining_work": "Enforce repository visibility changes through independent approval and provider audit alerts, then correlate newly public repositories with exposure monitoring.",
-      "rationale": "The privileged-change procedure defines how to compare a reviewed visibility change with live provider state, and public monitoring can detect some domain-anchored content after exposure, but neither currently proves provider-side prevention or alerting for every visibility change."
+      "rationale": "Retired CPC checks are removed. Public exposure monitoring can detect some exposure after a visibility change, not enforce prior authorization."
     },
     {
       "technique_id": "T-V007",
@@ -218,15 +220,22 @@
     },
     {
       "technique_id": "T-V010",
-      "disposition": "implemented",
-      "check_refs": ["PSB-CICD-005-PRB-001", "PSB-CICD-005-PRB-005", "PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-004"],
-      "rationale": "The untrusted-PR boundary keeps contributor execution unprivileged, while the privileged-change reference requires an exact source-protection target and before-after state to receive independent approval; live hosted adoption remains external."
+      "disposition": "gap",
+      "check_refs": [
+        "PSB-CICD-005-PRB-001",
+        "PSB-CICD-005-PRB-005"
+      ],
+      "rationale": "Retired CPC checks are removed. Untrusted PR isolation covers contributor execution, not every protected-source modification path.",
+      "remaining_work": "Verify protected source changes and administrator bypass handling on the live source provider, including unauthorized changes outside the PR path."
     },
     {
       "technique_id": "T-V011",
-      "disposition": "implemented",
-      "check_refs": ["PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-005", "PSB-REL-001-REL-004"],
-      "rationale": "The privileged-change reference requires a protected ref change to be compared with live provider audit and current state, while release consumers reject silent trust-signal downgrades; the repository does not prove live provider adoption."
+      "disposition": "gap",
+      "check_refs": [
+        "PSB-REL-001-REL-004"
+      ],
+      "rationale": "Retired CPC checks are removed. Release verification provides partial consumer protection, not live reference-change authorization.",
+      "remaining_work": "Verify live branch and tag protection, unauthorized reference-change detection and response; consumer verification alone does not protect source refs."
     },
     {
       "technique_id": "T-V012",
@@ -236,9 +245,10 @@
     },
     {
       "technique_id": "T-C001",
-      "disposition": "implemented",
-      "check_refs": ["PSB-CICD-008-CPC-001", "PSB-CICD-008-CPC-002", "PSB-CICD-008-CPC-005"],
-      "rationale": "The privileged-change reference requires an attributable current human, a short-lived reauthenticated session, and matching live provider audit evidence; those properties remain NOT_CHECKED until the adopter reviews them."
+      "disposition": "gap",
+      "check_refs": [],
+      "rationale": "Retired CPC checks are removed. No current check establishes the complete CI/CD access credential boundary across services.",
+      "remaining_work": "Verify service-specific CI/CD credentials, authentication, session lifetime, revocation and audit; the common runbook does not implement these boundaries."
     },
     {
       "technique_id": "T-C002",
@@ -279,9 +289,12 @@
     },
     {
       "technique_id": "T-C008",
-      "disposition": "implemented",
-      "check_refs": ["PSB-CICD-004-PERM-004", "PSB-CICD-008-CPC-003", "PSB-CICD-008-CPC-004", "PSB-CICD-008-CPC-005"],
-      "rationale": "Write-capable jobs are restricted, and the privileged-change reference requires exact protected-workflow or repository-policy state to be independently approved and compared with provider execution; live adoption remains external."
+      "disposition": "gap",
+      "check_refs": [
+        "PSB-CICD-004-PERM-004"
+      ],
+      "rationale": "Retired CPC checks are removed. Restricted job authority provides partial protection; hosted source-change enforcement still needs live verification.",
+      "remaining_work": "Verify that write-capable workflows cannot alter protected source or weaken provider protection without authorization."
     },
     {
       "technique_id": "T-C009",
@@ -348,9 +361,9 @@
     {
       "technique_id": "T-C019",
       "disposition": "gap",
-      "check_refs": ["PSB-CICD-008-CPC-004", "PSB-CICD-008-CPC-005", "PSB-CICD-008-CPC-007"],
+      "check_refs": [],
       "remaining_work": "Protect CI/CD organizations, runners, variables, logs, and workflow history with destructive-action guardrails, immutable backups, and tested recovery objectives.",
-      "rationale": "The privileged-change reference requires approval and live provider review, but repository guidance does not prove adoption, and CI/CD platform destruction prevention and recovery are not verified."
+      "rationale": "Retired CPC checks are removed. CI/CD destruction guardrails, independent backups and tested recovery remain unimplemented."
     },
     {
       "technique_id": "T-C020",

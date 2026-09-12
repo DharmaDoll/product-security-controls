@@ -147,7 +147,7 @@ regression sampleとして短くリンクするだけにする。
   allowed Actions policyだけを所有する。
 - `PSB-CICD-004／005`: Workflow／job permissionとuntrusted PR safety。このcontrolのActions設定だけで
   workflow内容が安全だと判定しない。
-- `PSB-CICD-008`: 特権設定変更のactor、session、approval、before／after、execution、audit eventの結合。
+- [共通変更管理runbook](../../../docs/runbooks/privileged-changes/README.md): 設定変更の申請、独立承認、実行後の実設定確認の共通手順。認証や権限の検証を代替しない。
   このcontrolはcurrent postureと完全な対象集合を所有する。
 - `PSB-GOV-002`: Security exception lifecycle。独自のlocal exception formatを作らない。
 - `PSB-GOV-004`: 漏洩後の横断credential containmentとrotation。
@@ -197,7 +197,7 @@ verifier自身のregressionに限定し、organization adoption testと呼ばな
 `secure: true`、no-op、実際のsettingと無関係なschema testは追加しない。
 
 Hosted settingを変更するscript、automatic remediation、Owner／member変更、App uninstallをverificationへ
-混ぜない。Live変更はOrganization ownerが影響を確認し`PSB-CICD-008`の承認境界で行う。
+混ぜない。Live変更はOrganization ownerが影響を確認し[共通変更管理runbook](../../../docs/runbooks/privileged-changes/README.md)の承認境界で行う。
 
 ## Adoption and completion criteria
 

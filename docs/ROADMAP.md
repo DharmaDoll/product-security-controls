@@ -92,20 +92,7 @@ one-job lifecycle, clean startup, metadata／management／host-socket isolation,
 bounded registration authority, teardown, external log correlation, and
 fail-closed evidence health. Live fleet adapters remain adoption work.
 
-Privileged CI/CD control-plane change assurance is implemented as
-`PSB-CICD-008`. It covers human administrator changes outside repository
-workflows across SCM, CI, cloud federation, artifact registry, and signing
-services. The E1 guidance-first reference requires a named administrator,
-phishing-resistant authentication, an exact human-readable target and
-before／after change, independent pre-approval, provider audit and current-state
-review, and a one-hour independently reviewed emergency path. The repository
-provides a copyable runbook and change-record template; live provider and IdP
-evidence remains `NOT_CHECKED` until the adopting organization completes the
-manual procedure. A GitHub private-sandbox ruleset drill demonstrates the
-smallest supported adoption path without implying Organization-wide or
-cross-provider coverage. Where the provider cannot enforce two-person
-administrative changes, unauthorized direct changes remain detectable at the
-audit-review cadence rather than guaranteed to be prevented.
+Privileged changes use [共通変更管理runbook](runbooks/privileged-changes/README.md). PSB-CICD-008 is retired; complete cross-provider change detection remains a gap.
 
 Secure infrastructure golden-path composition is implemented as
 `PSB-IAC-001`. It provides a versioned multi-cloud secure-compute module
@@ -462,15 +449,7 @@ start a new SLSA L3 milestone until the cumulative L1+L2 assessment is complete.
     with exact inventory and evidence identity, policy-derived deadlines,
     distinct lifecycle states, sanitized output, and fail-closed negative
     fixtures. Live scanner／build／registry／cluster adapters remain external.
-11. `PSB-CICD-008` — privileged CI/CD control-plane change assurance —
-    implemented at E1 as a guidance-first reference with a copyable ordinary／
-    emergency runbook, change-record template, explicit actor and role
-    separation, human-readable before／after review, provider audit plus
-    current-state confirmation, and a harmless GitHub private-sandbox ruleset
-    drill. Canonical verification remains `NOT_CHECKED` until current live
-    organization evidence is reviewed; repository fixtures and provider
-    adapters do not stand in for adoption.
-
+11. PSB-CICD-008 is retired in favor of [共通変更管理runbook](runbooks/privileged-changes/README.md); see ADR-0003.
 12. `PSB-SOURCE-006` — GitHub Organization governance — implemented at E3
     with stable-ID complete inventory, policy-digest binding, SSO／provisioning,
     Owner and collaborator review, restrictive repository defaults,

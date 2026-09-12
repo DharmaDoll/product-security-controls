@@ -12,7 +12,7 @@
 | 案2: read-only assessment | Daily snapshotの負担を下げる必要がある | Reviewed collectorとnormalized assessment | Read-only GitHub／IdP API |
 | 案3: continuous governance | 多数repository／Organizationのdriftとauditを継続監視する | Versioned policy、collector、verifier integration | Security-owned scheduler、evidence store、alert receiver |
 
-案2と案3を採用しても、provider settingの変更は自動化しません。Remediationは`PSB-CICD-008`のrequest、
+案2と案3を採用しても、provider settingの変更は自動化しません。Remediationは[共通変更管理runbook](../../../../docs/runbooks/privileged-changes/README.md)のrequest、
 independent approval、exact target、before／after、audit eventを経た管理者操作にします。
 
 ## 案2: optional read-only assessment
@@ -115,7 +115,7 @@ install、authorize、executeしておらず、pin済みsource reviewもpublic A
 - Existing collectorと同じ結果を返すだけなら新しいdependencyを採用しない。
 
 Automatic remediation modeはこのcontrolの実装候補にしません。必要性が将来確認された場合も、別の
-security-sensitive design review、least privilege、dry-run、rollback、`PSB-CICD-008`の変更証跡が必要です。
+security-sensitive design review、least privilege、dry-run、rollback、[共通変更管理runbook](../../../../docs/runbooks/privileged-changes/README.md)の変更証跡が必要です。
 
 ## Realistic reference architecture for 案3
 
