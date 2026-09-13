@@ -41,7 +41,7 @@ Generated from repository control metadata. Do not edit manually.
 | PSB-CICD-003 | cicd-security | adopted | E3 | 5 | 5 | 0 | 0 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CICD-004 | cicd-security | reference | E1 | 6 | 5 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CICD-005 | cicd-security | prototype | E1 | 6 | 5 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
-| PSB-CICD-006 | cicd-security | prototype | E3 | 8 | 7 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
+| PSB-CICD-006 | cicd-security | reference | E1 | 8 | 7 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CICD-007 | cicd-security | reference | E1 | 9 | 8 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CICD-009 | cicd-security | prototype | E1 | 7 | 6 | 0 | 1 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |
 | PSB-CODE-005 | secure-coding | prototype | E3 | 6 | 4 | 0 | 2 | not-provided | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED | NOT_CHECKED |

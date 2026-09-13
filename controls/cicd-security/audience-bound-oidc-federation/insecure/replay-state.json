@@ -1,7 +1,0 @@
-{
-  "schema_version": "psb-oidc-replay-state/v1",
-  "status": "complete",
-  "used_jtis": [
-    "oidc-secure-001"
-  ]
-}
