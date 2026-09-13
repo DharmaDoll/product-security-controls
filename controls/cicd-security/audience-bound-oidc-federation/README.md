@@ -450,7 +450,7 @@ resource "aws_iam_openid_connect_provider" "github" {
 - [PSB-CICD-004: Actions least privilege](../actions-least-privilege/README.md): `GITHUB_TOKEN`と`id-token: write`のjob分離。
 - [PSB-CICD-005: Untrusted PR boundary](../untrusted-pr-boundary/README.md): Untrusted codeとprivileged deployの分離。
 - [PSB-CICD-007: Runner hardening](../runner-hardening/README.md): Runner image、network、credential exposure、teardown。
-- [PSB-CICD-008: Privileged control-plane change](../privileged-control-plane-change/README.md): IAM trust変更のidentity、approval、audit。
+- [共通privileged-change runbook](../../../docs/runbooks/privileged-changes/README.md): IAM trust変更のactor、approval、audit chain。
 - [PSB-BUILD-001: Build containment](../../build-security/build-containment/README.md): Approved job内のsandboxとegress。
 - [PSB-SOURCE-004: Source credential lifecycle](../../source-protection/source-access-credential-lifecycle/README.md): Source-platform credential。
 - [PSB-GOV-002: Time-bound exceptions](../../governance-operations/time-bound-security-exceptions/README.md): 例外のscope、owner、approval、expiry。

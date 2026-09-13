@@ -101,7 +101,8 @@ Provider-neutral な設計境界だけを維持し、provider 固有実装と or
   独立 review する。
 
 同じ workflow や変更者だけに、trust policy 変更、role 付与、test evidence 生成、最終承認を完結させない。
-Provider setting の変更管理と緊急 bypass は `PSB-CICD-008` と組み合わせる。
+Provider setting の変更管理と緊急 bypass は
+[共通privileged-change runbook](../../../docs/runbooks/privileged-changes/README.md)と組み合わせる。
 
 ## Guidance-first implementation contract
 
@@ -227,7 +228,7 @@ Check の scope または証拠能力を変更するときは、required state�
 - [`PSB-CICD-004`](../actions-least-privilege/README.md): `GITHUB_TOKEN` permission と `id-token: write` の job-level isolation。
 - [`PSB-CICD-005`](../untrusted-pr-boundary/README.md): fork／untrusted PR と privileged job の分離。
 - [`PSB-CICD-007`](../runner-hardening/README.md): runner image、network、credential exposure、lifecycle、teardown。
-- [`PSB-CICD-008`](../privileged-control-plane-change/README.md): cloud trust／role 等の privileged setting 変更の approval と audit。
+- [共通privileged-change runbook](../../../docs/runbooks/privileged-changes/README.md): cloud trust／role 等の privileged setting 変更の approval と audit。
 - [`PSB-BUILD-001`](../../build-security/build-containment/README.md): approved job 内の sandbox、egress、runtime credential containment。
 - [`PSB-SOURCE-004`](../../source-protection/source-access-credential-lifecycle/README.md): source-platform credential lifecycle。Cloud deploy key の
   OIDC migration は本 control が扱う。

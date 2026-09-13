@@ -23,7 +23,7 @@ Generated control catalog. Do not edit manually.
 | [PSB-CICD-003](../controls/cicd-security/actions-static-analysis/README.md) | cicd-security | Statically analyze GitHub Actions workflows with a pinned scanner | 5 | adopted | E3 |
 | [PSB-CICD-004](../controls/cicd-security/actions-least-privilege/README.md) | cicd-security | Enforce explicit least-privilege GitHub Actions permissions | 6 | reference | E1 |
 | [PSB-CICD-005](../controls/cicd-security/untrusted-pr-boundary/README.md) | cicd-security | Isolate fork and untrusted pull-request workflows from privileged CI | 6 | prototype | E1 |
-| [PSB-CICD-006](../controls/cicd-security/audience-bound-oidc-federation/README.md) | cicd-security | Enforce audience-bound cloud OIDC federation | 8 | prototype | E3 |
+| [PSB-CICD-006](../controls/cicd-security/audience-bound-oidc-federation/README.md) | cicd-security | Enforce exact GitHub Actions federation to AWS | 8 | reference | E1 |
 | [PSB-CICD-007](../controls/cicd-security/runner-hardening/README.md) | cicd-security | CI runnerをjobごとに隔離し使用後に破棄する | 9 | reference | E1 |
 | [PSB-CICD-009](../controls/cicd-security/cache-provenance-isolation/README.md) | cicd-security | GitHub Actions cacheをtrusted writerと非特権consumerへ隔離する | 7 | prototype | E1 |
 | [PSB-CODE-005](../controls/secure-coding/unicode-source-deception/README.md) | secure-coding | Detect deceptive Unicode controls and identifiers in source code | 6 | prototype | E3 |
