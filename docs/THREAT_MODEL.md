@@ -103,7 +103,7 @@ requires healthy independently retained audit, drift, and alert evidence. Its
 provider-neutral E3 snapshot does not prove live GitHub or IdP enforcement,
 perform remediation, replace credential lifecycle in `PSB-SOURCE-004`, replace
 destruction recovery in `PSB-SOURCE-005`, or replace privileged-change
-correlation in `PSB-CICD-008`.
+correlation in [共通変更管理runbook](runbooks/privileged-changes/README.md).
 
 ### External attack surface discovery threats
 
@@ -324,35 +324,7 @@ threats are covered.
 - exact artifact digestとactive deploymentの関係が欠落し、稼働中の影響serviceが
   SBOM incident scopeから漏れること;
 
-`PSB-CICD-008` owns the provider-neutral evidence chain for human privileged
-control-plane changes across SCM, CI, cloud identity, artifact registry, and
-signing services. It binds one named phishing-resistant administrator session,
-exact target and before-after configuration digests, independent approval,
-execution, provider audit, and bounded emergency review. Its offline fixtures
-do not prove live provider configuration, membership, authenticator custody,
-audit-backend independence, or provider control-plane integrity.
-The executable GitHub fragment covers environment protection and runner-group
-configuration through bounded audit collection and current-state joins. The
-AWS fragment covers direct IAM workload-trust updates through CloudTrail,
-stable `RoleId`, `iam:GetRole`, external human-session evidence, and a reviewed
-change register. The ECR fragment covers direct repository access-policy
-changes through CloudTrail, current policy, and repository-generation identity.
-The KMS fragment covers direct signing-key default-policy changes through
-CloudTrail, stable Key ID／ARN, signing-purpose metadata, and current policy,
-while rejecting the lockout-safety bypass in the ordinary path. The GitHub SCM
-fragment covers repository- and organization-scoped branch／tag and repository-scoped
-push ruleset updates using stable source and ruleset identities plus exact history
-states. Push evidence additionally binds a private／internal root and its completely
-paginated fork-network identity; organization-wide push remains outside scope. The organization
-classification from audit source type and org identity is an explicit inference
-that needs tenant-event validation. A separate legacy branch slice binds only
-the force-push enforcement audit event to stable repository／branch identity,
-reviewed before state, and a current REST snapshot; it does not cover the other
-legacy branch settings or provider-side before history. Each fragment remains
-partial; none proves live cross-service completeness, and remaining legacy SCM,
-organization-wide push scope, or ruleset lifecycle operations,
-remaining CI／registry／signing operations, plus Azure／GCP adapters remain
-outside the implemented boundary.
+[共通変更管理runbook](runbooks/privileged-changes/README.md) describes approval and comparison with provider state. Identity and audit stay with PSB-SOURCE-006; setting values stay with service controls. Complete cross-provider detection remains a gap.
 
 The
 [CI/CD threat-matrix reconciliation](CICD_THREAT_MATRIX_RECONCILIATION.md)

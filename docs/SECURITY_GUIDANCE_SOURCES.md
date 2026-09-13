@@ -1302,7 +1302,7 @@ Disposition and limitations:
   [Apache-2.0](https://github.com/ossf/allstar/blob/738a9480c5b870892c890f92217c059ff338569b/LICENSE)
 - Repository review date: `2026-08-14`
 - Related controls and plans:
-  - `PSB-CICD-008` — privileged provider-setting change and audit evidence;
+  - [共通変更管理runbook](runbooks/privileged-changes/README.md) — privileged provider-setting change and audit evidence;
   - `PSB-GOV-002` — narrow, owned, expiring exceptions;
   - `PSB-SOURCE-006` — provider-neutral GitHub Organization posture and drift
     contract without adopting the Allstar App.
@@ -2234,7 +2234,7 @@ Disposition and limitations:
 - Related controls:
   - `PSB-DETECT-001` — scanner integrity, result, and failure semantics;
   - `PSB-IAC-001` — resolved-plan policy and provider enforcement;
-  - `PSB-SOURCE-004` and `PSB-CICD-008` — identity and hosted control-plane
+  - `PSB-SOURCE-004` and `PSB-SOURCE-006` — identity and hosted control-plane
     evidence that a source configuration scan alone cannot prove.
 
 Reviewed contribution:

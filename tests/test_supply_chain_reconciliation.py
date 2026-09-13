@@ -38,7 +38,7 @@ class SupplyChainReconciliationTest(unittest.TestCase):
         self.assertEqual(len(rows), len(self.data["rows"]))
         self.assertEqual(
             {row["Disposition"] for row in rows},
-            {"implemented", "planned", "out-of-scope"},
+            {"implemented", "planned", "gap", "out-of-scope"},
         )
 
     def test_unknown_check_reference_fails_closed(self) -> None:
@@ -63,9 +63,12 @@ class SupplyChainReconciliationTest(unittest.TestCase):
         errors = validate_reconciliation(changed, self.controls)
         self.assertTrue(any("gap requires owner and description" in error for error in errors))
 
-    def test_profile_may_close_its_last_gap(self) -> None:
-        self.assertNotIn("gap", {row["disposition"] for row in self.data["rows"]})
-        self.assertEqual(validate_reconciliation(self.data, self.controls), [])
+    def test_retired_control_is_not_current_evidence(self) -> None:
+        row = next(row for row in self.data["rows"] if row["id"] == "SCIR-010")
+        self.assertEqual(row["disposition"], "gap")
+        self.assertEqual(row["check_refs"], [])
+        self.assertTrue(row["gap_owner"])
+        self.assertTrue(row["gap_description"])
 
     def test_missing_or_malformed_source_is_not_an_empty_clean_profile(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

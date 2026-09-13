@@ -1,7 +1,0 @@
-{
-  "schema": "psb-ci-runner-evidence-health/v1",
-  "collected_at": "2026-08-11T03:08:00Z",
-  "collector_available": true,
-  "collection_complete": true,
-  "sources": ["dispatch-audit", "image-pipeline", "network-probe", "runner-provisioner", "runner-teardown", "security-log-export"]
-}

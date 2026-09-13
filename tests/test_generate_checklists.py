@@ -253,9 +253,9 @@ class GenerateChecklistsTest(unittest.TestCase):
             self.assertEqual(len(rows), 12)
             self.assertEqual(
                 {row["Disposition"] for row in rows},
-                {"implemented", "planned", "out-of-scope"},
+                {"implemented", "planned", "gap", "out-of-scope"},
             )
-            self.assertEqual(sum(row["Disposition"] == "gap" for row in rows), 0)
+            self.assertEqual(sum(row["Disposition"] == "gap" for row in rows), 1)
             self.assertTrue(
                 all(row["Claim Boundary"] for row in rows)
             )

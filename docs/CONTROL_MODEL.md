@@ -85,6 +85,38 @@ status: planned
 owner: product-security
 ```
 
+## Control-level verification modes
+
+The top-level `verification` block describes how the control package is
+verified; it is separate from each atomic check's adoption evidence. Existing
+controls without an explicit `type` are treated as `automated`.
+
+`automated` and `hybrid` controls provide executable `commands` and a
+`tests/test.sh`. `manual` and `external-evidence` controls instead provide a
+repository-relative `procedure` link:
+
+```yaml
+verification:
+  type: external-evidence
+  procedure: docs/ADOPTION.md#live-verification
+  expected:
+    - current provider settings and actual lifecycle results meet every check
+    - unavailable evidence is ERROR or NOT_CHECKED and never PASS
+```
+
+Use `manual` or `external-evidence` when the security outcome exists only in a
+live provider setting, permission boundary, or operational event and a local
+fixture cannot represent it honestly. These modes do not require a no-op test
+script. `make verify-control CONTROL=<id>` prints `NOT_CHECKED`, links the
+procedure, and exits `2` until an adopter performs the live procedure. The full
+repository test run reports these controls separately from verified controls
+without treating them as failures or passes.
+
+A copied workflow, synthetic receipt, or documentation check may exercise the
+reference package but must not convert an organization-owned external-evidence
+control to `PASS`. If an importable configuration or safe live read-only check
+can verify a real security property, prefer `hybrid` and test that property.
+
 ## Atomic adoption checks
 
 `checks` are the source for generated adoption checklists. One check describes

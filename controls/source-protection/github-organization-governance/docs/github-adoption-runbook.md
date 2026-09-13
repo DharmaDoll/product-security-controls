@@ -409,7 +409,7 @@ Synthetic fixture、手書きの`secure: true`、README screenshotだけをevide
 - Collector失敗時はpartial outputを破棄して全件再収集し、古いsnapshotを再timestampしない。
 - Alert failure時はreceiverを修復し、同じharmless canaryが届くまでmonitoringをcleanにしない。
 - Hosted settingのrollbackはsetting単位のimpactと
-  [PSB-CICD-008](../../../cicd-security/privileged-control-plane-change/README.md)の独立承認を必要とする。
+  [共通変更管理runbook](../../../../docs/runbooks/privileged-changes/README.md)の独立承認を必要とする。
 
 ## Optional repository-local reference
 

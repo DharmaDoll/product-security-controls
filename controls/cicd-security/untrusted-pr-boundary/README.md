@@ -325,7 +325,7 @@ make verify-control CONTROL=PSB-CICD-005
 - [`PSB-CICD-009`](../cache-provenance-isolation/README.md): Cache producer／consumer provenanceとtrust namespace
 - [`PSB-BUILD-001`](../../build-security/build-containment/README.md): Build sandbox、egress、telemetry、deploy separation
 - [`PSB-SOURCE-006`](../../source-protection/github-organization-governance/README.md): Organization-wide Actions／fork policy
-- [`PSB-CICD-008`](../privileged-control-plane-change/README.md): Provider設定変更のactor、approval、audit chain
+- [共通変更管理runbook](../../../docs/runbooks/privileged-changes/README.md): Provider設定変更のactor、approval、audit chain
 - [`PSB-GOV-002`](../../governance-operations/time-bound-security-exceptions/README.md): Exact、owned、time-boundなsecurity exception
 
 ## Framework mappings

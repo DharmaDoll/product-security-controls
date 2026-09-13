@@ -216,7 +216,7 @@ data disposal approvalをproduct ownerとsecurity ownerが先に決定します�
 
 ## 既存controlとの分担
 
-- `PSB-CICD-008`はprivileged control-plane変更のapprovalとauditを扱う。
+- [共通変更管理runbook](../../../docs/runbooks/privileged-changes/README.md)はprivileged control-plane変更のapprovalとauditを扱う。
 - `PSB-SOURCE-004`はGitHub App、PAT、SSH key等のcredential lifecycleを扱う。
 - `PSB-SOURCE-006`はOrganization Owner、member／team／App、hosted defaults、Actions、
   repository security coverage、継続monitoringを扱う。

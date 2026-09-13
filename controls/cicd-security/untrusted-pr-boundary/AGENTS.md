@@ -167,7 +167,7 @@ result、API failure、workflow inventory の欠落を PASS に丸めない。
 - [`PSB-BUILD-001`](../../build-security/build-containment/README.md): build job 内部の sandbox と egress
 - [`PSB-SOURCE-006`](../../source-protection/github-organization-governance/README.md): organization-wide
   Actions setting
-- [`PSB-CICD-008`](../privileged-control-plane-change/README.md): privileged provider setting の変更管理
+- [共通変更管理runbook](../../../docs/runbooks/privileged-changes/README.md): privileged provider setting の変更管理
 - [`PSB-GOV-002`](../../governance-operations/time-bound-security-exceptions/README.md): exception lifecycle
 
 別 control の実装をこの package に copy して、見かけ上 self-contained にしない。

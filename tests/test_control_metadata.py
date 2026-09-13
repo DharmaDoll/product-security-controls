@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -54,6 +55,21 @@ class ControlMetadataValidationTest(unittest.TestCase):
         errors = validate_controls([control])
         self.assertTrue(any("missing implementation file" in error for error in errors))
 
+    def test_external_evidence_control_requires_a_real_procedure(self) -> None:
+        control = copy.deepcopy(
+            next(
+                item
+                for item in self.controls
+                if item.get("verification", {}).get("type")
+                == "external-evidence"
+            )
+        )
+        control["verification"].pop("procedure")
+        errors = validate_controls([control])
+        self.assertTrue(
+            any("procedure must be a non-empty string" in error for error in errors)
+        )
+
     def test_legacy_command_verification_defaults_to_automated(self) -> None:
         control = {"verification": {"commands": ["make verify"], "expected": ["pass"]}}
         self.assertEqual(control_verification_type(control), "automated")
@@ -103,6 +119,24 @@ class ControlMetadataValidationTest(unittest.TestCase):
         self.assertTrue(
             any("unsupported top-level verification type" in error for error in errors)
         )
+
+    def test_external_evidence_control_is_not_reported_as_verified(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(REPOSITORY_ROOT / "scripts" / "run-controls.py"),
+                "--control",
+                "PSB-CICD-007",
+            ],
+            cwd=REPOSITORY_ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("NOT_CHECKED PSB-CICD-007", result.stdout)
+        self.assertIn("README.md#verification", result.stdout)
+        self.assertNotIn("verified 1 control(s)", result.stdout)
 
     def test_invalid_mapping_relationship_is_rejected(self) -> None:
         control = copy.deepcopy(self.controls[0])

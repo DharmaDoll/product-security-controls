@@ -175,7 +175,7 @@ make verify-control CONTROL=PSB-SOURCE-006
 | [PSB-CICD-001](../../cicd-security/action-sha-pinning/README.md) | Workflow内のActionをcommit SHAで固定する |
 | [PSB-CICD-004](../../cicd-security/actions-least-privilege/README.md) | WorkflowごとのGITHUB_TOKEN権限を小さくする |
 | [PSB-CICD-005](../../cicd-security/untrusted-pr-boundary/README.md) | 外部からのpull requestへsecretを渡さない |
-| [PSB-CICD-008](../../cicd-security/privileged-control-plane-change/README.md) | 重要な設定変更を申請、承認、記録する |
+| [共通変更管理runbook](../../../docs/runbooks/privileged-changes/README.md) | 重要な設定変更を申請、承認、記録する |
 | [PSB-GOV-002](../../governance-operations/time-bound-security-exceptions/README.md) | 一時的な例外に担当者と期限を付ける |
 
 Publicリポジトリの中身や公開範囲はPSB-SOURCE-003が担当します。このbranchでは同packageを変更しません。

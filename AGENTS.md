@@ -39,10 +39,21 @@ Every important control should therefore include:
 - a concise explanation;
 - insecure and secure examples;
 - runnable implementation;
-- automated verification;
+- automated verification when it can observe the real security property, or a
+  clearly bounded manual／external verification procedure when automation
+  cannot establish adoption;
 - expected output;
 - operational notes;
 - machine-readable framework mappings.
+
+Security explanations must not stop at labels such as "dangerous" or
+"prevents attack". State the conditions required for harm, the concrete
+authority or asset that could be affected, the boundary of the impact, and an
+example where the attack path does not exist. Use plain language first and
+define unavoidable technical terms. A procedure called "shortest" must name
+the control being activated, the files or settings changed, and the observable
+success state; do not leave generic terms such as "copy" or "activation"
+unexplained.
 
 ## 3. Product security domains
 

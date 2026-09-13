@@ -97,7 +97,7 @@ current provider setting、harmless drill resultを含める。Token、secret、
 - [`PSB-CICD-005`](../untrusted-pr-boundary/README.md): Fork／untrusted PRのcredential-free boundary。
 - [`PSB-CICD-006`](../audience-bound-oidc-federation/README.md): OIDC claims、audience、cloud trust、exchange。
 - [`PSB-CICD-007`](../runner-hardening/README.md): Runner image、network、lifecycle、teardown。
-- [`PSB-CICD-008`](../privileged-control-plane-change/README.md): Provider setting変更のidentity、approval、audit。
+- [共通変更管理runbook](../../../docs/runbooks/privileged-changes/README.md): Provider setting変更のidentity、approval、audit。
 - [`PSB-SOURCE-004`](../../source-protection/source-access-credential-lifecycle/README.md): External source credential lifecycle。
 - [`PSB-SOURCE-006`](../../source-protection/github-organization-governance/README.md): Organization-wide Actions policy。
 

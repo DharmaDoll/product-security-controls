@@ -373,7 +373,7 @@ limitations:
   - Organization Owner or GitHub provider compromise can falsify hosted state and requires independent identity audit and backup boundaries.
   - Repository deletion transfer important-ref recovery and GitHub-independent backup remain PSB-SOURCE-005 rather than this posture verifier.
   - Credential issuance storage rotation and revocation remain PSB-SOURCE-004 and PSB-GOV-004.
-  - Exact administrator change approval execution and provider-event correlation remain PSB-CICD-008.
+  - Exact administrator change approval execution and provider-event correlation use docs/runbooks/privileged-changes/README.md as a shared procedure, not independent check evidence.
   - Repository-local workflow semantics ruleset target correctness CODEOWNERS behavior and application code risk require their owning controls even when the Organization baseline passes.
   - Allstar is not installed or authorized and no automated remediation is performed by this control.
 status: prototype

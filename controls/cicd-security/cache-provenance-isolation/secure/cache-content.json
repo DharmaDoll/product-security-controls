@@ -1,9 +1,0 @@
-{
-  "schema": "psb-synthetic-cache-content/v1",
-  "artifacts": [
-    {
-      "name": "example-wheel",
-      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-    }
-  ]
-}

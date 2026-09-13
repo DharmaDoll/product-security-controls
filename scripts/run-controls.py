@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run all control tests, or one selected by control ID."""
+"""Run executable control verification and report external verification state."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from control_metadata import (
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run control verification tests.")
+    parser = argparse.ArgumentParser(description="Run or report control verification.")
     parser.add_argument("--control", help="Run only this control ID.")
     args = parser.parse_args()
 

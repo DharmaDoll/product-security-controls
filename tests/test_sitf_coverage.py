@@ -51,7 +51,7 @@ class SitfCoverageTest(unittest.TestCase):
         )
         self.assertEqual(
             Counter(row["Disposition"] for row in rows),
-            Counter({"implemented": 43, "gap": 38}),
+            Counter({"implemented": 39, "gap": 42}),
         )
         self.assertTrue(build_attack_flow_rows(flows, coverage, self.registry))
 
