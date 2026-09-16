@@ -1,0 +1,71 @@
+schema_version: "0.1-pilot"
+relationships:
+  - from:
+      kind: engineering-pattern
+      id: ENG-SOURCE-001
+      path: ../engineering/source-protection/source-access-credential-lifecycle/README.md
+    to:
+      kind: control-record
+      id: PSB-SOURCE-004
+      path: ../controls/records/source-protection/psb-source-004-source-access-credential-lifecycle/README.md
+    relationship: implements
+    scope:
+      - SRC-AUTH-1
+      - SRC-AUTH-2
+      - SRC-AUTH-3
+      - SRC-AUTH-4
+      - SRC-AUTH-5
+      - SRC-AUTH-6
+    status: pilot
+    rationale: >-
+      The pattern designs human and workload credential issuance, delivery,
+      authorization, inventory, revocation, and audit without making GitHub
+      the meaning of the control.
+  - from:
+      kind: implementation
+      id: IMPL-GITHUB-SOURCE-CREDENTIAL-LIFECYCLE
+      path: ../engineering/source-protection/source-access-credential-lifecycle/implementations/github/README.md
+    to:
+      kind: engineering-pattern
+      id: ENG-SOURCE-001
+      path: ../engineering/source-protection/source-access-credential-lifecycle/README.md
+    relationship: realizes
+    scope: github-organization-and-repository
+    status: source-review-required
+    rationale: >-
+      The implementation translates the pattern into GitHub and IdP adoption
+      decisions, but does not prove live settings or all provider capabilities.
+  - from:
+      kind: engineering-pattern
+      id: ENG-DEPS-001
+      path: ../engineering/dependency-security/dependency-release-cooldown/README.md
+    to:
+      kind: control-record
+      id: PSB-DEPS-001
+      path: ../controls/records/dependency-security/psb-deps-001-dependency-release-cooldown/README.md
+    relationship: implements
+    scope:
+      - DEP-AGE-1
+      - DEP-AGE-2
+      - DEP-AGE-3
+      - DEP-AGE-4
+      - DEP-AGE-5
+      - DEP-AGE-6
+    status: pilot
+    rationale: >-
+      The pattern places an observation-window decision before dependency code
+      execution and separates native, CI, proxy, and manual enforcement options.
+  - from:
+      kind: implementation
+      id: IMPL-NPM-PROJECT-RELEASE-COOLDOWN
+      path: ../engineering/dependency-security/dependency-release-cooldown/implementations/npm/README.md
+    to:
+      kind: engineering-pattern
+      id: ENG-DEPS-001
+      path: ../engineering/dependency-security/dependency-release-cooldown/README.md
+    relationship: realizes
+    scope: npm-project-local-native-gate
+    status: source-review-required
+    rationale: >-
+      The project configuration provides one native npm realization while
+      effective precedence and resolver behavior remain adoption checks.

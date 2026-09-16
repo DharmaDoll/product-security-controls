@@ -1,0 +1,148 @@
+schema_version: "0.1-pilot"
+artifact_kind: framework-mappings
+mapping_policy:
+  adoption_claim: prohibited
+  compliance_claim: prohibited
+  property_allocation_review: required
+  note: >-
+    Exact legacy versions and identifiers are preserved. Relationships were
+    reallocated from legacy atomic checks to the Pilot security properties and
+    therefore remain migration-review-required.
+mappings:
+  - control: PSB-SOURCE-004
+    properties: [SRC-AUTH-1, SRC-AUTH-2, SRC-AUTH-3, SRC-AUTH-4, SRC-AUTH-5, SRC-AUTH-6]
+    framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GHSC-SECURE-ACCOUNTS
+    relationship: supports
+    confidence: medium
+    source_ref: SPEC-GITHUB-SECURITY-GUIDANCE
+    status: migration-review-required
+    rationale: >-
+      Credential selection, authentication, protected delivery, review,
+      revocation, and audit support secure GitHub account use without proving
+      a live account or organization is secure.
+  - control: PSB-SOURCE-004
+    properties: [SRC-AUTH-1, SRC-AUTH-3, SRC-AUTH-4, SRC-AUTH-5, SRC-AUTH-6]
+    framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GH-ADMIN-CREDENTIAL-TYPES
+    relationship: supports
+    confidence: high
+    source_ref: SPEC-GITHUB-SECURITY-GUIDANCE
+    status: migration-review-required
+    rationale: >-
+      The provider credential taxonomy informs identity, lifetime, storage,
+      review, and revocation choices while live grants remain external evidence.
+  - control: PSB-SOURCE-004
+    properties: [SRC-AUTH-2, SRC-AUTH-5]
+    framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GH-ADMIN-SAML-IAM
+    relationship: supports
+    confidence: medium
+    source_ref: SPEC-GITHUB-SECURITY-GUIDANCE
+    status: migration-review-required
+    rationale: >-
+      SAML identity management supports strong source authentication and
+      lifecycle handling but does not prove IdP or session-policy enforcement.
+  - control: PSB-SOURCE-004
+    properties: [SRC-AUTH-5]
+    framework: github-security-guidance
+    version: "github/docs@b17436de8f10c3e7f6a185d6813bf94bc82d22f8 (2026-07-24)"
+    id: GH-ADMIN-SCIM-ORGANIZATIONS
+    relationship: supports
+    confidence: medium
+    source_ref: SPEC-GITHUB-SECURITY-GUIDANCE
+    status: migration-review-required
+    rationale: >-
+      SCIM membership removal supports offboarding and recurring access review;
+      provider latency and unsupported credential classes remain external.
+  - control: PSB-SOURCE-004
+    properties: [SRC-AUTH-1, SRC-AUTH-2, SRC-AUTH-3, SRC-AUTH-4, SRC-AUTH-5]
+    framework: mitre-attack
+    version: "v19.1"
+    id: T1078
+    relationship: mitigates
+    confidence: medium
+    source_ref: SPEC-MITRE-ATTACK-v19.1
+    status: migration-review-required
+    rationale: >-
+      Least privilege, bounded lifetime, protected delivery, review, and
+      revocation reduce persistence and impact from stolen valid credentials.
+  - control: PSB-SOURCE-004
+    properties: [SRC-AUTH-4]
+    framework: mitre-attack
+    version: "v19.1"
+    id: T1552.001
+    relationship: mitigates
+    confidence: medium
+    source_ref: SPEC-MITRE-ATTACK-v19.1
+    status: migration-review-required
+    rationale: >-
+      Protected stores and consumer-bounded delivery reduce reusable tokens or
+      private keys exposed in files; they do not eliminate endpoint compromise.
+  - control: PSB-SOURCE-004
+    properties: [SRC-AUTH-1, SRC-AUTH-2, SRC-AUTH-3, SRC-AUTH-4, SRC-AUTH-5, SRC-AUTH-6]
+    framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PS.3.1
+    relationship: supports
+    confidence: medium
+    source_ref: SPEC-NIST-SSDF-1.1
+    status: migration-review-required
+    rationale: >-
+      Controlled development credentials and protected source access support
+      protection of code from unauthorized access and modification.
+  - control: PSB-SOURCE-004
+    properties: [SRC-AUTH-2]
+    framework: openssf-osps-baseline
+    version: "2026.02.19"
+    id: OSPS-AC-01.01
+    relationship: supports
+    confidence: high
+    source_ref: SPEC-OPENSSF-OSPS-2026.02.19
+    status: migration-review-required
+    rationale: >-
+      Phishing-resistant MFA and centralized source authentication support MFA
+      for sensitive project actions without proving project-wide conformance.
+  - control: PSB-SOURCE-004
+    properties: [SRC-AUTH-1, SRC-AUTH-3, SRC-AUTH-4, SRC-AUTH-5, SRC-AUTH-6]
+    condition: GitHub MCP or equivalent agent-mediated source access is in scope.
+    framework: owasp-agentic-top10
+    version: "2026"
+    id: ASI03
+    relationship: mitigates
+    confidence: high
+    source_ref: SPEC-OWASP-AGENTIC-2026
+    status: migration-review-required
+    rationale: >-
+      OAuth-first identity, bounded PAT fallback, child-only delivery,
+      revocation, and audit reduce inherited credential and delegated privilege
+      abuse but do not cover the complete ASI03 category.
+  - control: PSB-DEPS-001
+    properties: [DEP-AGE-1, DEP-AGE-2, DEP-AGE-3, DEP-AGE-4, DEP-AGE-6]
+    framework: mitre-attack
+    version: "v19.1"
+    id: T1195.001
+    relationship: mitigates
+    confidence: medium
+    source_ref: SPEC-MITRE-ATTACK-v19.1
+    status: migration-review-required
+    rationale: >-
+      Delaying automatic adoption of a newly published version reduces
+      immediate exposure after a dependency compromise but does not detect the
+      malicious dependency itself.
+  - control: PSB-DEPS-001
+    properties: [DEP-AGE-1, DEP-AGE-2, DEP-AGE-3, DEP-AGE-4, DEP-AGE-6]
+    framework: nist-ssdf
+    version: "1.1 (SP 800-218, 2022)"
+    id: PW.4.1
+    relationship: supports
+    confidence: medium
+    source_ref: SPEC-NIST-SSDF-1.1
+    status: migration-review-required
+    rationale: >-
+      Controlled selection, publication-age evaluation, enforcement, and
+      bounded exceptions support acquisition and maintenance of third-party
+      components; cooldown alone does not satisfy the complete practice.

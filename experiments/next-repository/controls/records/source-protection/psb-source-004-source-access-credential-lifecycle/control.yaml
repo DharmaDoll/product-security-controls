@@ -1,0 +1,53 @@
+schema_version: "0.1-pilot"
+artifact_kind: control-record
+id: PSB-SOURCE-004
+title: Source access credential lifecycle
+domain: source-protection
+status: migration-pilot
+question: >-
+  Can source-platform authority be limited to the required actor, purpose,
+  resource, operation, and lifetime, then denied after lifecycle or incident events?
+direct_failure: >-
+  A stolen, excessive, unowned, or obsolete credential remains usable beyond
+  its intended task and reaches source, workflow, release, or organization resources.
+threats:
+  - credential theft from phishing, infostealers, malicious tooling, or endpoint compromise
+  - excessive grants that expand one compromise beyond the intended repositories and operations
+  - lifecycle drift after role change, offboarding, device loss, purpose expiry, or exposure
+  - missing inventory and audit context that delay containment and impact analysis
+security_properties:
+  - id: SRC-AUTH-1
+    statement: Bind each authority to an actor, purpose, resources, operations, and expiry.
+    legacy_check_refs: [SCL-002, SCL-003, SCL-004, SCL-005, SCL-012, SCL-014]
+    source_refs: [SPEC-GITHUB-SECURITY-GUIDANCE, REF-AI-004]
+  - id: SRC-AUTH-2
+    statement: Require risk-appropriate strong authentication for credential issuance and sensitive changes.
+    legacy_check_refs: [SCL-007, SCL-013]
+    source_refs: [SPEC-GITHUB-SECURITY-GUIDANCE, REF-USER-001]
+  - id: SRC-AUTH-3
+    statement: Use task-bounded workload identities instead of developer user credentials for automation.
+    legacy_check_refs: [SCL-001]
+    source_refs: [SPEC-GITHUB-SECURITY-GUIDANCE, REF-AI-004]
+  - id: SRC-AUTH-4
+    statement: Store credentials in an approved protected store and deliver them only to the intended consumer.
+    legacy_check_refs: [SCL-006, SCL-008, SCL-015, SCL-016]
+    source_refs: [SPEC-GITHUB-SECURITY-GUIDANCE, REF-AI-004, REF-USER-001]
+  - id: SRC-AUTH-5
+    statement: Review a complete current inventory and revoke credentials and related sessions after lifecycle or incident triggers.
+    legacy_check_refs: [SCL-009, SCL-010]
+    source_refs: [SPEC-GITHUB-SECURITY-GUIDANCE, REF-AI-004]
+  - id: SRC-AUTH-6
+    statement: Correlate issuance, authorization changes, use, and revocation to the owner and affected resources.
+    legacy_check_refs: [SCL-011, SCL-017]
+    source_refs: [SPEC-GITHUB-SECURITY-GUIDANCE, REF-AI-004]
+links:
+  learning: learning.md
+  engineering_pattern: ../../../../engineering/source-protection/source-access-credential-lifecycle/README.md
+  mapping: ../../../../mappings/pilot.yaml
+  framework_mapping: ../../../../mappings/frameworks.yaml
+  sources: ../../../../sources/README.md
+migration:
+  source_revision: 91fdb7661b38723ce6fb38da93cf3c68b701e521
+  legacy_path: controls/source-protection/source-access-credential-lifecycle/control.yaml
+  mapping_review: required
+  adoption_assessment: not-migrated

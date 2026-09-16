@@ -1,0 +1,61 @@
+schema_version: "0.1-pilot"
+artifact_kind: control-record
+id: PSB-DEPS-001
+title: Dependency release cooldown
+domain: dependency-security
+status: migration-pilot
+question: >-
+  Can newly published dependency versions be held for a reviewed observation
+  period before dependency-controlled code executes and before the change merges?
+direct_failure: >-
+  A resolver, bot, agent, or developer adopts a newly published or unevaluable
+  version before warning signals can emerge.
+threats:
+  - a compromised maintainer or registry publishes a malicious version
+  - automation immediately selects and executes the newest eligible version
+  - configuration drift or alternate resolution paths bypass the observation window
+  - metadata or verifier failure is interpreted as an eligible dependency
+security_properties:
+  - id: DEP-AGE-1
+    statement: Identify each newly selected exact package, version, and registry origin.
+    legacy_check_refs: [COOL-001, COOL-004]
+    source_refs: [REF-DEPS-004, SPEC-NPM-REGISTRY-METADATA]
+  - id: DEP-AGE-2
+    statement: Evaluate publish age from an approved timestamp authority using trusted UTC time.
+    legacy_check_refs: [COOL-001, COOL-004]
+    source_refs: [REF-DEPS-004, SPEC-NPM-REGISTRY-METADATA]
+  - id: DEP-AGE-3
+    statement: Prevent adoption until the reviewed minimum observation period has elapsed.
+    legacy_check_refs: [COOL-001, COOL-003, COOL-009, COOL-010]
+    source_refs: [REF-DEPS-004, SPEC-NPM-CLI-11]
+  - id: DEP-AGE-4
+    statement: Enforce the decision before dependency-controlled code executes and before merge.
+    legacy_check_refs: [COOL-001, COOL-009]
+    source_refs: [REF-DEPS-004, SPEC-NPM-CLI-11]
+  - id: DEP-AGE-5
+    statement: Treat missing, stale, malformed, or unavailable metadata and verifier failure as non-pass.
+    legacy_check_refs: [COOL-006]
+    source_refs: [REF-DEPS-004, SPEC-NPM-CLI-11, SPEC-NPM-REGISTRY-METADATA]
+  - id: DEP-AGE-6
+    statement: Bind urgent exceptions to an exact package and version, owner, independent approval, and expiry.
+    legacy_check_refs: [COOL-002, COOL-010]
+    source_refs: [REF-DEPS-004]
+links:
+  learning: learning.md
+  engineering_pattern: ../../../../engineering/dependency-security/dependency-release-cooldown/README.md
+  mapping: ../../../../mappings/pilot.yaml
+  framework_mapping: ../../../../mappings/frameworks.yaml
+  sources: ../../../../sources/README.md
+migration:
+  source_revision: 91fdb7661b38723ce6fb38da93cf3c68b701e521
+  legacy_path: controls/dependency-security/release-cooldown/control.yaml
+  mapping_review: required
+  deferred_legacy_checks:
+    - COOL-005
+    - COOL-007
+    - COOL-008
+  note: >-
+    Artifact integrity and managed-proxy routing remain important adjacent
+    concerns, but are not silently retained as direct cooldown properties.
+  adjacent_source_refs:
+    - REF-DEPS-001
